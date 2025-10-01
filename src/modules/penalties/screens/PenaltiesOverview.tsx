@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { usePenalties } from '../hooks/usePenalties';
@@ -8,6 +8,8 @@ import PenaltyCard from '../components/PenaltyCard';
 import ReflectionCard from '../components/ReflectionCard';
 import NewPenaltyModal from '../components/NewPenaltyModal';
 import { penaltyTypes } from '../mock/penalties';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface PenaltiesOverviewProps {
     navigation: any;
@@ -30,6 +32,65 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
     } = usePenalties();
 
     const [showNewPenaltyModal, setShowNewPenaltyModal] = useState(false);
+    const [showStats, setShowStats] = useState(true);
+    const [viewMode, setViewMode] = useState('overview'); // overview, history, analytics
+    const [selectedPeriod, setSelectedPeriod] = useState('week'); // week, month, year
+
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+    const statsAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
+        // Stats animation
+        Animated.timing(statsAnim, {
+            toValue: 1,
+            duration: 1200,
+            useNativeDriver: true,
+        }).start();
+
+        // Pulse animation for active penalties
+        const pulseAnimation = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.05,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+        pulseAnimation.start();
+
+        return () => {
+            pulseAnimation.stop();
+        };
+    }, []);
 
     const activePenalties = getActivePenalties();
     const recentlyCompleted = getRecentlyCompletedPenalties();
@@ -123,7 +184,7 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
     };
 
     return (
-        <View style={styles.container}>
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 {/* Header */}
                 <LinearGradient
@@ -139,6 +200,12 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                             <Text style={styles.headerSubtitle}>Family accountability</Text>
                         </View>
                         <View style={styles.headerRight}>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setViewMode(viewMode === 'overview' ? 'analytics' : 'overview')}>
+                                <Ionicons name="analytics" size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setShowStats(!showStats)}>
+                                <Ionicons name={showStats ? "eye-off" : "eye"} size={16} color="white" />
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.headerButton, { backgroundColor: 'rgba(255, 255, 255, 0.4)' }]}
                                 onPress={handleAddPenalty}
@@ -153,11 +220,34 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                 </LinearGradient>
 
                 {/* Summary Stats */}
-                <View style={styles.statsSection}>
+                <Animated.View style={[styles.statsSection, { opacity: statsAnim }]}>
                     <View style={styles.statsCard}>
+                        <View style={styles.statsHeader}>
+                            <Text style={styles.statsTitle}>Family Accountability</Text>
+                            <View style={styles.periodSelector}>
+                                <TouchableOpacity
+                                    style={[styles.periodButton, selectedPeriod === 'week' && styles.periodButtonActive]}
+                                    onPress={() => setSelectedPeriod('week')}
+                                >
+                                    <Text style={[styles.periodButtonText, selectedPeriod === 'week' && styles.periodButtonTextActive]}>Week</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.periodButton, selectedPeriod === 'month' && styles.periodButtonActive]}
+                                    onPress={() => setSelectedPeriod('month')}
+                                >
+                                    <Text style={[styles.periodButtonText, selectedPeriod === 'month' && styles.periodButtonTextActive]}>Month</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.periodButton, selectedPeriod === 'year' && styles.periodButtonActive]}
+                                    onPress={() => setSelectedPeriod('year')}
+                                >
+                                    <Text style={[styles.periodButtonText, selectedPeriod === 'year' && styles.periodButtonTextActive]}>Year</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                         <SummaryStats stats={stats} />
                     </View>
-                </View>
+                </Animated.View>
 
                 {/* Active Penalties */}
                 <View style={styles.section}>
@@ -166,6 +256,10 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                         <View style={styles.badge}>
                             <Text style={styles.badgeText}>{activePenalties.length} running</Text>
                         </View>
+                        <TouchableOpacity style={styles.sectionAction} onPress={() => setViewMode('history')}>
+                            <Text style={styles.sectionActionText}>View All</Text>
+                            <Ionicons name="chevron-forward" size={14} color="#6B7280" />
+                        </TouchableOpacity>
                     </View>
 
                     {activePenalties.length === 0 ? (
@@ -178,16 +272,30 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                         </View>
                     ) : (
                         <View style={styles.penaltiesList}>
-                            {activePenalties.map(penalty => (
-                                <PenaltyCard
+                            {activePenalties.map((penalty, index) => (
+                                <Animated.View
                                     key={penalty.id}
-                                    penalty={penalty}
-                                    onPress={() => handlePenaltyPress(penalty.id)}
-                                    onAddTime={() => handleAddTime(penalty.id)}
-                                    onSubtractTime={() => handleSubtractTime(penalty.id)}
-                                    onEndEarly={() => handleEndEarly(penalty.id)}
-                                    showActions={true}
-                                />
+                                    style={[
+                                        styles.penaltyCardContainer,
+                                        {
+                                            transform: [{
+                                                scale: pulseAnim.interpolate({
+                                                    inputRange: [1, 1.05],
+                                                    outputRange: [1, penalty.status === 'active' ? 1.02 : 1],
+                                                })
+                                            }]
+                                        }
+                                    ]}
+                                >
+                                    <PenaltyCard
+                                        penalty={penalty}
+                                        onPress={() => handlePenaltyPress(penalty.id)}
+                                        onAddTime={() => handleAddTime(penalty.id)}
+                                        onSubtractTime={() => handleSubtractTime(penalty.id)}
+                                        onEndEarly={() => handleEndEarly(penalty.id)}
+                                        showActions={true}
+                                    />
+                                </Animated.View>
                             ))}
                         </View>
                     )}
@@ -348,7 +456,7 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                 onClose={() => setShowNewPenaltyModal(false)}
                 onSubmit={handleNewPenaltySubmit}
             />
-        </View>
+        </Animated.View>
     );
 };
 
@@ -713,6 +821,58 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 80,
+    },
+    statsHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    statsTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    periodSelector: {
+        flexDirection: 'row',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 8,
+        padding: 2,
+    },
+    periodButton: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 6,
+    },
+    periodButtonActive: {
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    periodButtonText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    periodButtonTextActive: {
+        color: '#1F2937',
+        fontWeight: '600',
+    },
+    sectionAction: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    sectionActionText: {
+        fontSize: 14,
+        color: '#6B7280',
+        fontWeight: '500',
+    },
+    penaltyCardContainer: {
+        marginBottom: 12,
     },
 });
 

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useGoals } from '../hooks/useGoals';
 import GoalCard from '../components/GoalCard';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface GoalsScreenProps {
   navigation: any;
@@ -26,6 +28,53 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
   } = useGoals();
 
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
+  const [viewMode, setViewMode] = useState('grid'); // grid, list, timeline
+  const [showStats, setShowStats] = useState(true);
+  const [sortBy, setSortBy] = useState('dueDate'); // dueDate, priority, progress
+
+  // Animation refs
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const statsAnim = useRef(new Animated.Value(0)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Entrance animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Stats animation with delay
+    Animated.timing(statsAnim, {
+      toValue: 1,
+      duration: 1200,
+      delay: 200,
+      useNativeDriver: true,
+    }).start();
+
+    // Progress animation with delay
+    Animated.timing(progressAnim, {
+      toValue: 1,
+      duration: 1500,
+      delay: 400,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const handleBack = () => {
     navigation.goBack();
@@ -88,227 +137,257 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
   const recentAchievements = getRecentAchievements();
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <LinearGradient
-        colors={['#F59E0B', '#D97706']}
-        style={styles.header}
-      >
-        <View style={styles.headerContent}>
-          <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-            <Ionicons name="arrow-back" size={20} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerTitleContainer}>
-            <Text style={styles.headerTitle}>Family Goals</Text>
-            <Text style={styles.headerSubtitle}>Achieve together</Text>
-          </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.headerButton} onPress={handleCreateGoal}>
-              <Ionicons name="add" size={16} color="white" />
+    <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <LinearGradient
+          colors={['#F59E0B', '#D97706']}
+          style={styles.header}
+        >
+          <View style={styles.headerContent}>
+            <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
+              <Ionicons name="arrow-back" size={20} color="white" />
             </TouchableOpacity>
-          </View>
-        </View>
-      </LinearGradient>
-
-      {/* Stats Overview */}
-      <View style={styles.statsSection}>
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Overview</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.total}</Text>
-              <Text style={styles.statLabel}>Total Goals</Text>
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>Family Goals</Text>
+              <Text style={styles.headerSubtitle}>Achieve together</Text>
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.inProgress}</Text>
-              <Text style={styles.statLabel}>Active</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.completed}</Text>
-              <Text style={styles.statLabel}>Completed</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.averageProgress}%</Text>
-              <Text style={styles.statLabel}>Avg Progress</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      {/* Categories */}
-      <View style={styles.categoriesSection}>
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Categories</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-            {categories.map(category => (
-              <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryItem,
-                  { backgroundColor: selectedCategory === category.id ? category.color : '#F3F4F6' }
-                ]}
-                onPress={() => handleCategoryPress(category.id)}
-              >
-                <Ionicons
-                  name={category.icon as any}
-                  size={20}
-                  color={selectedCategory === category.id ? 'white' : category.color}
-                />
-                <Text style={[
-                  styles.categoryText,
-                  { color: selectedCategory === category.id ? 'white' : '#374151' }
-                ]}>
-                  {category.name}
-                </Text>
-                <View style={[
-                  styles.categoryCount,
-                  { backgroundColor: selectedCategory === category.id ? 'rgba(255,255,255,0.2)' : '#E5E7EB' }
-                ]}>
-                  <Text style={[
-                    styles.categoryCountText,
-                    { color: selectedCategory === category.id ? 'white' : '#6B7280' }
-                  ]}>
-                    {category.count}
-                  </Text>
-                </View>
+            <View style={styles.headerRight}>
+              <TouchableOpacity style={styles.headerButton} onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}>
+                <Ionicons name={viewMode === 'grid' ? 'list' : 'grid'} size={16} color="white" />
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-
-      {/* Tabs */}
-      <View style={styles.tabsSection}>
-        <View style={styles.card}>
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'all' && styles.activeTab]}
-              onPress={() => setActiveTab('all')}
-            >
-              <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
-                All Goals
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'active' && styles.activeTab]}
-              onPress={() => setActiveTab('active')}
-            >
-              <Text style={[styles.tabText, activeTab === 'active' && styles.activeTabText]}>
-                Active
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, activeTab === 'completed' && styles.activeTab]}
-              onPress={() => setActiveTab('completed')}
-            >
-              <Text style={[styles.tabText, activeTab === 'completed' && styles.activeTabText]}>
-                Completed
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-
-      {/* Goals List */}
-      <View style={styles.goalsSection}>
-        <View style={styles.card}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>
-              {activeTab === 'all' ? 'All Goals' :
-                activeTab === 'active' ? 'Active Goals' : 'Completed Goals'}
-            </Text>
-            <Text style={styles.goalsCount}>
-              {getFilteredGoals().length} goal{getFilteredGoals().length !== 1 ? 's' : ''}
-            </Text>
-          </View>
-
-          {getFilteredGoals().length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="flag-outline" size={48} color="#9CA3AF" />
-              <Text style={styles.emptyStateText}>No goals found</Text>
-              <Text style={styles.emptyStateSubtext}>
-                {activeTab === 'all' ? 'Create your first family goal!' :
-                  activeTab === 'active' ? 'No active goals at the moment' : 'No completed goals yet'}
-              </Text>
+              <TouchableOpacity style={styles.headerButton} onPress={() => setShowStats(!showStats)}>
+                <Ionicons name={showStats ? "eye-off" : "eye"} size={16} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.headerButton} onPress={handleCreateGoal}>
+                <Ionicons name="add" size={16} color="white" />
+              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.goalsList}>
-              {getFilteredGoals().map(goal => (
-                <GoalCard
-                  key={goal.id}
-                  goal={goal}
-                  onPress={() => handleGoalPress(goal.id)}
-                  onEdit={() => handleEditGoal(goal.id)}
-                  onDelete={() => handleDeleteGoal(goal.id)}
-                />
-              ))}
-            </View>
-          )}
-        </View>
-      </View>
+          </View>
+        </LinearGradient>
 
-      {/* Family Leaderboard */}
-      <View style={styles.leaderboardSection}>
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Family Leaderboard</Text>
-          <View style={styles.leaderboardList}>
-            {leaderboard.map((member, index) => (
-              <View key={member.id} style={styles.leaderboardItem}>
-                <View style={styles.leaderboardRank}>
-                  <Text style={styles.rankNumber}>#{index + 1}</Text>
-                </View>
-                <View style={styles.memberAvatar}>
-                  <Text style={styles.memberInitial}>
-                    {member.name.charAt(0)}
-                  </Text>
-                </View>
-                <View style={styles.memberInfo}>
-                  <Text style={styles.memberName}>{member.name}</Text>
-                  <Text style={styles.memberLevel}>Level {member.level}</Text>
-                </View>
-                <View style={styles.memberPoints}>
-                  <Text style={styles.pointsText}>{member.points}</Text>
-                  <Text style={styles.pointsLabel}>points</Text>
-                </View>
+        {/* Stats Overview */}
+        <Animated.View style={[styles.statsSection, { opacity: statsAnim }]}>
+          <View style={styles.card}>
+            <View style={styles.statsHeader}>
+              <Text style={styles.sectionTitle}>Overview</Text>
+              <View style={styles.sortSelector}>
+                <TouchableOpacity
+                  style={[styles.sortButton, sortBy === 'dueDate' && styles.sortButtonActive]}
+                  onPress={() => setSortBy('dueDate')}
+                >
+                  <Text style={[styles.sortButtonText, sortBy === 'dueDate' && styles.sortButtonTextActive]}>Due Date</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.sortButton, sortBy === 'priority' && styles.sortButtonActive]}
+                  onPress={() => setSortBy('priority')}
+                >
+                  <Text style={[styles.sortButtonText, sortBy === 'priority' && styles.sortButtonTextActive]}>Priority</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.sortButton, sortBy === 'progress' && styles.sortButtonActive]}
+                  onPress={() => setSortBy('progress')}
+                >
+                  <Text style={[styles.sortButtonText, sortBy === 'progress' && styles.sortButtonTextActive]}>Progress</Text>
+                </TouchableOpacity>
               </View>
-            ))}
+            </View>
+            <View style={styles.statsGrid}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.total}</Text>
+                <Text style={styles.statLabel}>Total Goals</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.inProgress}</Text>
+                <Text style={styles.statLabel}>Active</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.completed}</Text>
+                <Text style={styles.statLabel}>Completed</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{stats.averageProgress}%</Text>
+                <Text style={styles.statLabel}>Avg Progress</Text>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Categories */}
+        <View style={styles.categoriesSection}>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
+              {categories.map(category => (
+                <TouchableOpacity
+                  key={category.id}
+                  style={[
+                    styles.categoryItem,
+                    { backgroundColor: selectedCategory === category.id ? category.color : '#F3F4F6' }
+                  ]}
+                  onPress={() => handleCategoryPress(category.id)}
+                >
+                  <Ionicons
+                    name={category.icon as any}
+                    size={20}
+                    color={selectedCategory === category.id ? 'white' : category.color}
+                  />
+                  <Text style={[
+                    styles.categoryText,
+                    { color: selectedCategory === category.id ? 'white' : '#374151' }
+                  ]}>
+                    {category.name}
+                  </Text>
+                  <View style={[
+                    styles.categoryCount,
+                    { backgroundColor: selectedCategory === category.id ? 'rgba(255,255,255,0.2)' : '#E5E7EB' }
+                  ]}>
+                    <Text style={[
+                      styles.categoryCountText,
+                      { color: selectedCategory === category.id ? 'white' : '#6B7280' }
+                    ]}>
+                      {category.count}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         </View>
-      </View>
 
-      {/* Upcoming Milestones */}
-      <View style={styles.milestonesSection}>
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Upcoming Milestones</Text>
-          {upcomingMilestones.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="time-outline" size={32} color="#9CA3AF" />
-              <Text style={styles.emptyStateText}>No upcoming milestones</Text>
+        {/* Tabs */}
+        <View style={styles.tabsSection}>
+          <View style={styles.card}>
+            <View style={styles.tabsContainer}>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+                onPress={() => setActiveTab('all')}
+              >
+                <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
+                  All Goals
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 'active' && styles.activeTab]}
+                onPress={() => setActiveTab('active')}
+              >
+                <Text style={[styles.tabText, activeTab === 'active' && styles.activeTabText]}>
+                  Active
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, activeTab === 'completed' && styles.activeTab]}
+                onPress={() => setActiveTab('completed')}
+              >
+                <Text style={[styles.tabText, activeTab === 'completed' && styles.activeTabText]}>
+                  Completed
+                </Text>
+              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.milestonesList}>
-              {upcomingMilestones.map(milestone => (
-                <View key={milestone.id} style={styles.milestoneItem}>
-                  <View style={styles.milestoneIcon}>
-                    <Ionicons name="flag" size={16} color="#3B82F6" />
+          </View>
+        </View>
+
+        {/* Goals List */}
+        <View style={styles.goalsSection}>
+          <View style={styles.card}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {activeTab === 'all' ? 'All Goals' :
+                  activeTab === 'active' ? 'Active Goals' : 'Completed Goals'}
+              </Text>
+              <Text style={styles.goalsCount}>
+                {getFilteredGoals().length} goal{getFilteredGoals().length !== 1 ? 's' : ''}
+              </Text>
+            </View>
+
+            {getFilteredGoals().length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="flag-outline" size={48} color="#9CA3AF" />
+                <Text style={styles.emptyStateText}>No goals found</Text>
+                <Text style={styles.emptyStateSubtext}>
+                  {activeTab === 'all' ? 'Create your first family goal!' :
+                    activeTab === 'active' ? 'No active goals at the moment' : 'No completed goals yet'}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.goalsList}>
+                {getFilteredGoals().map(goal => (
+                  <GoalCard
+                    key={goal.id}
+                    goal={goal}
+                    onPress={() => handleGoalPress(goal.id)}
+                    onEdit={() => handleEditGoal(goal.id)}
+                    onDelete={() => handleDeleteGoal(goal.id)}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Family Leaderboard */}
+        <View style={styles.leaderboardSection}>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Family Leaderboard</Text>
+            <View style={styles.leaderboardList}>
+              {leaderboard.map((member, index) => (
+                <View key={member.id} style={styles.leaderboardItem}>
+                  <View style={styles.leaderboardRank}>
+                    <Text style={styles.rankNumber}>#{index + 1}</Text>
                   </View>
-                  <View style={styles.milestoneContent}>
-                    <Text style={styles.milestoneTitle}>{milestone.title}</Text>
-                    <Text style={styles.milestoneGoal}>{milestone.goalTitle}</Text>
+                  <View style={styles.memberAvatar}>
+                    <Text style={styles.memberInitial}>
+                      {member.name.charAt(0)}
+                    </Text>
                   </View>
-                  <Text style={styles.milestoneDate}>
-                    {new Date(milestone.targetDate).toLocaleDateString()}
-                  </Text>
+                  <View style={styles.memberInfo}>
+                    <Text style={styles.memberName}>{member.name}</Text>
+                    <Text style={styles.memberLevel}>Level {member.level}</Text>
+                  </View>
+                  <View style={styles.memberPoints}>
+                    <Text style={styles.pointsText}>{member.points}</Text>
+                    <Text style={styles.pointsLabel}>points</Text>
+                  </View>
                 </View>
               ))}
             </View>
-          )}
+          </View>
         </View>
-      </View>
 
-      {/* Bottom spacing */}
-      <View style={styles.bottomSpacing} />
-    </ScrollView>
+        {/* Upcoming Milestones */}
+        <View style={styles.milestonesSection}>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Upcoming Milestones</Text>
+            {upcomingMilestones.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="time-outline" size={32} color="#9CA3AF" />
+                <Text style={styles.emptyStateText}>No upcoming milestones</Text>
+              </View>
+            ) : (
+              <View style={styles.milestonesList}>
+                {upcomingMilestones.map(milestone => (
+                  <View key={milestone.id} style={styles.milestoneItem}>
+                    <View style={styles.milestoneIcon}>
+                      <Ionicons name="flag" size={16} color="#3B82F6" />
+                    </View>
+                    <View style={styles.milestoneContent}>
+                      <Text style={styles.milestoneTitle}>{milestone.title}</Text>
+                      <Text style={styles.milestoneGoal}>{milestone.goalTitle}</Text>
+                    </View>
+                    <Text style={styles.milestoneDate}>
+                      {new Date(milestone.targetDate).toLocaleDateString()}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Bottom spacing */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </Animated.View>
   );
 };
 
@@ -594,6 +673,40 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 80,
+  },
+  statsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sortSelector: {
+    flexDirection: 'row',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    padding: 2,
+  },
+  sortButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  sortButtonActive: {
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  sortButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#6B7280',
+  },
+  sortButtonTextActive: {
+    color: '#1F2937',
+    fontWeight: '600',
   },
 });
 

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useCalendar } from '../hooks/useCalendar';
 import ActivityCard from '../components/ActivityCard';
 import NewEventModal from '../components/NewEventModal';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface CalendarHubScreenProps {
     navigation: any;
@@ -22,6 +24,53 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     } = useCalendar();
 
     const [showNewEventModal, setShowNewEventModal] = useState(false);
+    const [viewMode, setViewMode] = useState('week'); // week, month, agenda
+    const [showWeather, setShowWeather] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState('all'); // all, family, personal, work
+
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const calendarAnim = useRef(new Animated.Value(0)).current;
+    const weatherAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
+        // Calendar animation with delay
+        Animated.timing(calendarAnim, {
+            toValue: 1,
+            duration: 1000,
+            delay: 200,
+            useNativeDriver: true,
+        }).start();
+
+        // Weather animation with delay
+        Animated.timing(weatherAnim, {
+            toValue: 1,
+            duration: 1200,
+            delay: 400,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     const handleBack = () => {
         navigation.goBack();
@@ -186,197 +235,220 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     }
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <LinearGradient
-                colors={['#3B82F6', '#2563EB']}
-                style={styles.header}
-            >
-                <View style={styles.headerContent}>
-                    <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-                        <Ionicons name="arrow-back" size={20} color="white" />
-                    </TouchableOpacity>
-                    <View style={styles.headerTitleContainer}>
-                        <Text style={styles.headerTitle}>Weekly Calendar</Text>
-                        <Text style={styles.headerSubtitle}>Jan 15 - 21, 2024</Text>
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Header */}
+                <LinearGradient
+                    colors={['#3B82F6', '#2563EB']}
+                    style={styles.header}
+                >
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
+                            <Ionicons name="arrow-back" size={20} color="white" />
+                        </TouchableOpacity>
+                        <View style={styles.headerTitleContainer}>
+                            <Text style={styles.headerTitle}>Weekly Calendar</Text>
+                            <Text style={styles.headerSubtitle}>Jan 15 - 21, 2024</Text>
+                        </View>
+                        <View style={styles.headerRight}>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}>
+                                <Ionicons name={viewMode === 'week' ? 'calendar' : 'grid'} size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setShowWeather(!showWeather)}>
+                                <Ionicons name={showWeather ? "sunny" : "cloudy"} size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={handleNewEventPress}>
+                                <Ionicons name="add" size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton}>
+                                <Ionicons name="notifications" size={16} color="white" />
+                                <View style={styles.notificationBadge} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerButton} onPress={handleNewEventPress}>
-                            <Ionicons name="add" size={16} color="white" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.headerButton}>
-                            <Ionicons name="notifications" size={16} color="white" />
-                            <View style={styles.notificationBadge} />
-                        </TouchableOpacity>
+                </LinearGradient>
+
+                {/* Week Navigation */}
+                <Animated.View style={[styles.weekNavigationSection, { opacity: calendarAnim }]}>
+                    <View style={styles.card}>
+                        <View style={styles.weekNavigationHeader}>
+                            <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('prev')}>
+                                <Ionicons name="chevron-back" size={16} color="#6B7280" />
+                            </TouchableOpacity>
+                            <Text style={styles.weekTitle}>{currentWeek}</Text>
+                            <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('next')}>
+                                <Ionicons name="chevron-forward" size={16} color="#6B7280" />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.weekDaysGrid}>
+                            {weekDays.map((day, index) => (
+                                <Animated.View
+                                    key={index}
+                                    style={[
+                                        styles.dayItem,
+                                        {
+                                            transform: [{
+                                                translateY: calendarAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [index * 8, 0],
+                                                })
+                                            }]
+                                        }
+                                    ]}
+                                >
+                                    <TouchableOpacity style={styles.dayButton} onPress={() => selectDay(day.date)}>
+                                        <Text style={styles.dayLabel}>{day.day}</Text>
+                                        <View style={[
+                                            styles.dayNumber,
+                                            selectedDay === day.date && styles.selectedDay,
+                                            !selectedDay && day.isSelected && styles.selectedDay
+                                        ]}>
+                                            <Text style={[
+                                                styles.dayNumberText,
+                                                selectedDay === day.date && styles.selectedDayText,
+                                                !selectedDay && day.isSelected && styles.selectedDayText
+                                            ]}>
+                                                {day.date}
+                                            </Text>
+                                            {day.hasEvent && (
+                                                <View style={[styles.eventDot, { backgroundColor: day.eventColor }]} />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            ))}
+                        </View>
+                    </View>
+                </Animated.View>
+
+                {/* Today's Activities */}
+                <View style={styles.todaysActivitiesSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Today - Monday</Text>
+                            <Text style={styles.activitiesCount}>{todaysActivities.length} activities</Text>
+                        </View>
+
+                        <View style={styles.activitiesList}>
+                            {todaysActivities.map(activity => (
+                                <ActivityCard
+                                    key={activity.id}
+                                    activity={activity}
+                                    onPress={() => handleActivityPress(activity.id)}
+                                    onActionPress={() => handleReminderPress(activity.title)}
+                                />
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </LinearGradient>
 
-            {/* Week Navigation */}
-            <View style={styles.weekNavigationSection}>
-                <View style={styles.card}>
-                    <View style={styles.weekNavigationHeader}>
-                        <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('prev')}>
-                            <Ionicons name="chevron-back" size={16} color="#6B7280" />
-                        </TouchableOpacity>
-                        <Text style={styles.weekTitle}>{currentWeek}</Text>
-                        <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('next')}>
+                {/* Upcoming This Week */}
+                <View style={styles.upcomingWeekSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Upcoming This Week</Text>
+                            <TouchableOpacity onPress={() => Alert.alert('View All', 'View all activities')}>
+                                <Text style={styles.viewAllButton}>View All</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.upcomingEventsList}>
+                            {upcomingActivities.map(activity => (
+                                <ActivityCard
+                                    key={activity.id}
+                                    activity={activity}
+                                    onPress={() => handleActivityPress(activity.id)}
+                                    onActionPress={() => {
+                                        if (activity.action === 'vote') {
+                                            handleVotePress();
+                                        } else {
+                                            handleReminderPress(activity.title);
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </View>
+                    </View>
+                </View>
+
+                {/* Quick Actions */}
+                <View style={styles.quickActionsSection}>
+                    <View style={styles.card}>
+                        <Text style={styles.sectionTitle}>Quick Actions</Text>
+                        <View style={styles.quickActionsGrid}>
+                            <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#3B82F6' }]} onPress={handleNewEventPress}>
+                                <Ionicons name="add" size={20} color="white" />
+                                <Text style={styles.quickActionText}>New Event</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#8B5CF6' }]} onPress={handleVotePress}>
+                                <Ionicons name="people" size={20} color="white" />
+                                <Text style={styles.quickActionText}>Start Vote</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#10B981' }]} onPress={handleSchedulePress}>
+                                <Ionicons name="calendar" size={20} color="white" />
+                                <Text style={styles.quickActionText}>Schedule</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Recent Decisions */}
+                <View style={styles.recentDecisionsSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Recent Decisions</Text>
+                            <TouchableOpacity onPress={handleHistoryPress}>
+                                <Text style={styles.viewAllButton}>View All</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity style={styles.recentDecisionsButton} onPress={handleHistoryPress}>
+                            <Text style={styles.recentDecisionsText}>View all past decisions and voting history</Text>
                             <Ionicons name="chevron-forward" size={16} color="#6B7280" />
                         </TouchableOpacity>
                     </View>
+                </View>
 
-                    <View style={styles.weekDaysGrid}>
-                        {weekDays.map((day, index) => (
-                            <TouchableOpacity key={index} style={styles.dayItem} onPress={() => selectDay(day.date)}>
-                                <Text style={styles.dayLabel}>{day.day}</Text>
-                                <View style={[
-                                    styles.dayNumber,
-                                    selectedDay === day.date && styles.selectedDay,
-                                    !selectedDay && day.isSelected && styles.selectedDay
-                                ]}>
-                                    <Text style={[
-                                        styles.dayNumberText,
-                                        selectedDay === day.date && styles.selectedDayText,
-                                        !selectedDay && day.isSelected && styles.selectedDayText
-                                    ]}>
-                                        {day.date}
-                                    </Text>
-                                    {day.hasEvent && (
-                                        <View style={[styles.eventDot, { backgroundColor: day.eventColor }]} />
-                                    )}
+                {/* Reminders */}
+                <View style={styles.remindersSection}>
+                    <LinearGradient
+                        colors={['#FB923C', '#EF4444']}
+                        style={styles.remindersCard}
+                    >
+                        <View style={styles.remindersHeader}>
+                            <Text style={styles.remindersTitle}>Upcoming Reminders</Text>
+                            <Ionicons name="notifications" size={24} color="white" />
+                        </View>
+
+                        <View style={styles.remindersList}>
+                            {reminders.map(reminder => (
+                                <View key={reminder.id} style={styles.reminderItem}>
+                                    <View style={styles.reminderHeader}>
+                                        <Text style={styles.reminderTitle}>{reminder.title}</Text>
+                                        <Text style={styles.reminderTime}>{reminder.time}</Text>
+                                    </View>
+                                    <Text style={styles.reminderDetails}>{reminder.details}</Text>
                                 </View>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-            </View>
+                            ))}
+                        </View>
 
-            {/* Today's Activities */}
-            <View style={styles.todaysActivitiesSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Today - Monday</Text>
-                        <Text style={styles.activitiesCount}>{todaysActivities.length} activities</Text>
-                    </View>
-
-                    <View style={styles.activitiesList}>
-                        {todaysActivities.map(activity => (
-                            <ActivityCard
-                                key={activity.id}
-                                activity={activity}
-                                onPress={() => handleActivityPress(activity.id)}
-                                onActionPress={() => handleReminderPress(activity.title)}
-                            />
-                        ))}
-                    </View>
-                </View>
-            </View>
-
-            {/* Upcoming This Week */}
-            <View style={styles.upcomingWeekSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Upcoming This Week</Text>
-                        <TouchableOpacity onPress={() => Alert.alert('View All', 'View all activities')}>
-                            <Text style={styles.viewAllButton}>View All</Text>
+                        <TouchableOpacity style={styles.manageNotificationsButton} onPress={() => Alert.alert('Notifications', 'Manage notifications')}>
+                            <Text style={styles.manageNotificationsText}>Manage Notifications</Text>
                         </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.upcomingEventsList}>
-                        {upcomingActivities.map(activity => (
-                            <ActivityCard
-                                key={activity.id}
-                                activity={activity}
-                                onPress={() => handleActivityPress(activity.id)}
-                                onActionPress={() => {
-                                    if (activity.action === 'vote') {
-                                        handleVotePress();
-                                    } else {
-                                        handleReminderPress(activity.title);
-                                    }
-                                }}
-                            />
-                        ))}
-                    </View>
+                    </LinearGradient>
                 </View>
-            </View>
 
-            {/* Quick Actions */}
-            <View style={styles.quickActionsSection}>
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Quick Actions</Text>
-                    <View style={styles.quickActionsGrid}>
-                        <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#3B82F6' }]} onPress={handleNewEventPress}>
-                            <Ionicons name="add" size={20} color="white" />
-                            <Text style={styles.quickActionText}>New Event</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#8B5CF6' }]} onPress={handleVotePress}>
-                            <Ionicons name="people" size={20} color="white" />
-                            <Text style={styles.quickActionText}>Start Vote</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.quickActionButton, { backgroundColor: '#10B981' }]} onPress={handleSchedulePress}>
-                            <Ionicons name="calendar" size={20} color="white" />
-                            <Text style={styles.quickActionText}>Schedule</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
+                {/* Bottom spacing for navigation */}
+                <View style={styles.bottomSpacing} />
 
-            {/* Recent Decisions */}
-            <View style={styles.recentDecisionsSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Recent Decisions</Text>
-                        <TouchableOpacity onPress={handleHistoryPress}>
-                            <Text style={styles.viewAllButton}>View All</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity style={styles.recentDecisionsButton} onPress={handleHistoryPress}>
-                        <Text style={styles.recentDecisionsText}>View all past decisions and voting history</Text>
-                        <Ionicons name="chevron-forward" size={16} color="#6B7280" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Reminders */}
-            <View style={styles.remindersSection}>
-                <LinearGradient
-                    colors={['#FB923C', '#EF4444']}
-                    style={styles.remindersCard}
-                >
-                    <View style={styles.remindersHeader}>
-                        <Text style={styles.remindersTitle}>Upcoming Reminders</Text>
-                        <Ionicons name="notifications" size={24} color="white" />
-                    </View>
-
-                    <View style={styles.remindersList}>
-                        {reminders.map(reminder => (
-                            <View key={reminder.id} style={styles.reminderItem}>
-                                <View style={styles.reminderHeader}>
-                                    <Text style={styles.reminderTitle}>{reminder.title}</Text>
-                                    <Text style={styles.reminderTime}>{reminder.time}</Text>
-                                </View>
-                                <Text style={styles.reminderDetails}>{reminder.details}</Text>
-                            </View>
-                        ))}
-                    </View>
-
-                    <TouchableOpacity style={styles.manageNotificationsButton} onPress={() => Alert.alert('Notifications', 'Manage notifications')}>
-                        <Text style={styles.manageNotificationsText}>Manage Notifications</Text>
-                    </TouchableOpacity>
-                </LinearGradient>
-            </View>
-
-            {/* Bottom spacing for navigation */}
-            <View style={styles.bottomSpacing} />
-
-            {/* New Event Modal */}
-            <NewEventModal
-                visible={showNewEventModal}
-                onClose={() => setShowNewEventModal(false)}
-                onSubmit={handleNewEventSubmit}
-            />
-        </ScrollView>
+                {/* New Event Modal */}
+                <NewEventModal
+                    visible={showNewEventModal}
+                    onClose={() => setShowNewEventModal(false)}
+                    onSubmit={handleNewEventSubmit}
+                />
+            </ScrollView>
+        </Animated.View>
     );
 };
 
@@ -647,6 +719,38 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 80,
+    },
+    dayButton: {
+        alignItems: 'center',
+        padding: 8,
+    },
+    viewModeSelector: {
+        flexDirection: 'row',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 8,
+        padding: 2,
+    },
+    viewModeButton: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 6,
+    },
+    viewModeButtonActive: {
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    viewModeButtonText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    viewModeButtonTextActive: {
+        color: '#1F2937',
+        fontWeight: '600',
     },
 });
 

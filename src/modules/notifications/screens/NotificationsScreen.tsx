@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,8 @@ import {
     TouchableOpacity,
     Alert,
     RefreshControl,
+    Animated,
+    Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +29,18 @@ interface NotificationsScreenProps {
 }
 
 const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation }) => {
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const cardsAnim = useRef(new Animated.Value(0)).current;
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+
+    // Additional states
+    const [viewMode, setViewMode] = useState<'all' | 'unread' | 'priority'>('all');
+    const [showFilters, setShowFilters] = useState(false);
+    const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
+
     const [notifications, setNotifications] = useState<Notification[]>([
         {
             id: '1',
@@ -102,6 +116,56 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
 
     const [refreshing, setRefreshing] = useState(false);
     const [filter, setFilter] = useState<'all' | 'unread' | 'high'>('all');
+
+    useEffect(() => {
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
+        // Cards animation with delay
+        Animated.timing(cardsAnim, {
+            toValue: 1,
+            duration: 1200,
+            delay: 300,
+            useNativeDriver: true,
+        }).start();
+
+        // Pulse animation for unread notifications
+        const pulseAnimation = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+        pulseAnimation.start();
+
+        return () => {
+            pulseAnimation.stop();
+        };
+    }, []);
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -220,7 +284,18 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     };
 
     return (
-        <View style={styles.container}>
+        <Animated.View
+            style={[
+                styles.container,
+                {
+                    opacity: fadeAnim,
+                    transform: [
+                        { translateY: slideAnim },
+                        { scale: scaleAnim }
+                    ]
+                }
+            ]}
+        >
             {/* Header */}
             <LinearGradient
                 colors={['#8B5CF6', '#7C3AED']}
@@ -243,7 +318,20 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
             </LinearGradient>
 
             {/* Filter Tabs */}
-            <View style={styles.filterContainer}>
+            <Animated.View
+                style={[
+                    styles.filterContainer,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <TouchableOpacity
                     style={[styles.filterTab, filter === 'all' && styles.activeFilterTab]}
                     onPress={() => setFilter('all')}
@@ -268,10 +356,23 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
                         Importantes ({highPriorityCount})
                     </Text>
                 </TouchableOpacity>
-            </View>
+            </Animated.View>
 
             {/* Actions */}
-            <View style={styles.actionsContainer}>
+            <Animated.View
+                style={[
+                    styles.actionsContainer,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <TouchableOpacity style={styles.actionButton} onPress={markAllAsRead}>
                     <Ionicons name="checkmark-done" size={16} color="#8B5CF6" />
                     <Text style={styles.actionButtonText}>Marcar todas como leídas</Text>
@@ -280,7 +381,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
                     <Ionicons name="refresh" size={16} color="#8B5CF6" />
                     <Text style={styles.actionButtonText}>Actualizar</Text>
                 </TouchableOpacity>
-            </View>
+            </Animated.View>
 
             {/* Notifications List */}
             <ScrollView
@@ -290,63 +391,80 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {filteredNotifications.map((notification) => (
-                    <TouchableOpacity
+                {filteredNotifications.map((notification, index) => (
+                    <Animated.View
                         key={notification.id}
-                        style={[
-                            styles.notificationCard,
-                            !notification.read && styles.unreadCard,
-                        ]}
-                        onPress={() => {
-                            markAsRead(notification.id);
-                            notification.action?.();
+                        style={{
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [20, 0]
+                                })
+                            }],
+                            opacity: cardsAnim
                         }}
                     >
-                        <View style={styles.notificationContent}>
-                            <View style={styles.notificationHeader}>
-                                <View style={styles.notificationIconContainer}>
-                                    <Ionicons
-                                        name={getNotificationIcon(notification.type) as any}
-                                        size={20}
-                                        color={getNotificationColor(notification.type)}
-                                    />
-                                </View>
-                                <View style={styles.notificationTextContainer}>
-                                    <View style={styles.notificationTitleRow}>
-                                        <Text style={styles.notificationTitle}>
-                                            {notification.title}
-                                        </Text>
-                                        <View style={[
-                                            styles.priorityBadge,
-                                            { backgroundColor: getPriorityColor(notification.priority) }
-                                        ]}>
-                                            <Text style={styles.priorityText}>
-                                                {notification.priority === 'high' ? 'Alta' :
-                                                    notification.priority === 'medium' ? 'Media' : 'Baja'}
-                                            </Text>
-                                        </View>
+                        <TouchableOpacity
+                            style={[
+                                styles.notificationCard,
+                                !notification.read && styles.unreadCard,
+                            ]}
+                            onPress={() => {
+                                markAsRead(notification.id);
+                                notification.action?.();
+                            }}
+                        >
+                            <View style={styles.notificationContent}>
+                                <View style={styles.notificationHeader}>
+                                    <View style={styles.notificationIconContainer}>
+                                        <Ionicons
+                                            name={getNotificationIcon(notification.type) as any}
+                                            size={20}
+                                            color={getNotificationColor(notification.type)}
+                                        />
                                     </View>
-                                    <Text style={styles.notificationTime}>
-                                        {notification.time}
-                                    </Text>
+                                    <View style={styles.notificationTextContainer}>
+                                        <View style={styles.notificationTitleRow}>
+                                            <Text style={styles.notificationTitle}>
+                                                {notification.title}
+                                            </Text>
+                                            <View style={[
+                                                styles.priorityBadge,
+                                                { backgroundColor: getPriorityColor(notification.priority) }
+                                            ]}>
+                                                <Text style={styles.priorityText}>
+                                                    {notification.priority === 'high' ? 'Alta' :
+                                                        notification.priority === 'medium' ? 'Media' : 'Baja'}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Text style={styles.notificationTime}>
+                                            {notification.time}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.notificationActions}>
+                                        {!notification.read && (
+                                            <Animated.View
+                                                style={[
+                                                    styles.unreadDot,
+                                                    { transform: [{ scale: pulseAnim }] }
+                                                ]}
+                                            />
+                                        )}
+                                        <TouchableOpacity
+                                            style={styles.deleteButton}
+                                            onPress={() => deleteNotification(notification.id)}
+                                        >
+                                            <Ionicons name="trash" size={16} color="#9CA3AF" />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                                <View style={styles.notificationActions}>
-                                    {!notification.read && (
-                                        <View style={styles.unreadDot} />
-                                    )}
-                                    <TouchableOpacity
-                                        style={styles.deleteButton}
-                                        onPress={() => deleteNotification(notification.id)}
-                                    >
-                                        <Ionicons name="trash" size={16} color="#9CA3AF" />
-                                    </TouchableOpacity>
-                                </View>
+                                <Text style={styles.notificationMessage}>
+                                    {notification.message}
+                                </Text>
                             </View>
-                            <Text style={styles.notificationMessage}>
-                                {notification.message}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    </Animated.View>
                 ))}
 
                 {/* Empty State */}
@@ -364,7 +482,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
                     </View>
                 )}
             </ScrollView>
-        </View>
+        </Animated.View>
     );
 };
 

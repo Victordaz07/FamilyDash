@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface TasksScreenProps {
     navigation: any;
@@ -10,18 +12,57 @@ interface TasksScreenProps {
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     const [selectedMember, setSelectedMember] = useState('Dad');
     const [selectedTab, setSelectedTab] = useState('Pending');
+    const [showFilters, setShowFilters] = useState(false);
+    const [sortBy, setSortBy] = useState('dueDate');
+    const [viewMode, setViewMode] = useState('grid'); // grid or list
+
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const filterAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
+
+    useEffect(() => {
+        // Filter panel animation
+        Animated.timing(filterAnim, {
+            toValue: showFilters ? 1 : 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [showFilters]);
 
     const familyMembers = [
-        { id: '1', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', tasks: 3, borderColor: '#3B82F6' },
-        { id: '2', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', tasks: 2, borderColor: '#EC4899' },
-        { id: '3', name: 'Emma', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', tasks: 4, borderColor: '#8B5CF6' },
-        { id: '4', name: 'Jake', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', tasks: 1, borderColor: '#F59E0B' },
+        { id: '1', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', tasks: 3, borderColor: '#3B82F6', points: 1250, streak: 7, status: 'online' },
+        { id: '2', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', tasks: 2, borderColor: '#EC4899', points: 1180, streak: 5, status: 'online' },
+        { id: '3', name: 'Emma', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', tasks: 4, borderColor: '#8B5CF6', points: 890, streak: 3, status: 'away' },
+        { id: '4', name: 'Jake', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', tasks: 1, borderColor: '#F59E0B', points: 650, streak: 1, status: 'offline' },
     ];
 
     const taskTabs = [
-        { id: 'Pending', label: 'Pending', count: 3, active: true },
-        { id: 'Completed', label: 'Completed', count: 6, active: false },
-        { id: 'Overdue', label: 'Overdue', count: 1, active: false },
+        { id: 'Pending', label: 'Pending', count: 3, active: true, color: '#F59E0B' },
+        { id: 'Completed', label: 'Completed', count: 6, active: false, color: '#10B981' },
+        { id: 'Overdue', label: 'Overdue', count: 1, active: false, color: '#EF4444' },
     ];
 
     const dadTasks = [
@@ -39,7 +80,21 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
             statusIcon: 'time',
             actionButton: 'Complete',
             actionButtonColor: '#10B981',
-            actionButtonText: 'Complete'
+            actionButtonText: 'Complete',
+            category: 'Home Maintenance',
+            difficulty: 'Hard',
+            estimatedTime: '2 hours',
+            actualTime: null,
+            progress: 30,
+            points: 100,
+            tags: ['urgent', 'plumbing', 'kitchen'],
+            attachments: ['instruction_video.mp4', 'parts_list.pdf'],
+            checklist: [
+                { id: '1', text: 'Turn off water supply', completed: true },
+                { id: '2', text: 'Remove old pipes', completed: false },
+                { id: '3', text: 'Install new pipes', completed: false },
+                { id: '4', text: 'Test for leaks', completed: false }
+            ]
         },
         {
             id: '2',
@@ -113,193 +168,225 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <LinearGradient
-                colors={['#4F46E5', '#7C3AED']}
-                style={styles.header}
-            >
-                <View style={styles.headerContent}>
-                    <View style={styles.headerLeft}>
-                        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-                            <Ionicons name="arrow-back" size={20} color="white" />
-                        </TouchableOpacity>
-                        <View>
-                            <Text style={styles.headerTitle}>Task Management</Text>
-                            <Text style={styles.headerSubtitle}>Assign & Complete Tasks</Text>
-                        </View>
-                    </View>
-                    <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerButton} onPress={handleAddTask}>
-                            <Ionicons name="add" size={16} color="white" />
-                        </TouchableOpacity>
-                        <Image
-                            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
-                            style={styles.profileImage}
-                        />
-                    </View>
-                </View>
-            </LinearGradient>
-
-            {/* Family Member Filter */}
-            <View style={styles.memberFilterSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Filter by Member</Text>
-                        <TouchableOpacity>
-                            <Text style={styles.allTasksText}>All Tasks</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.membersScroll}>
-                        {familyMembers.map(member => (
-                            <TouchableOpacity
-                                key={member.id}
-                                style={[
-                                    styles.memberCard,
-                                    selectedMember === member.name && styles.memberCardSelected
-                                ]}
-                                onPress={() => handleMemberSelect(member.name)}
-                            >
-                                <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
-                                <Text style={[
-                                    styles.memberName,
-                                    selectedMember === member.name && styles.memberNameSelected
-                                ]}>
-                                    {member.name}
-                                </Text>
-                                <Text style={styles.memberTaskCount}>{member.tasks} tasks</Text>
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Header */}
+                <LinearGradient
+                    colors={['#4F46E5', '#7C3AED']}
+                    style={styles.header}
+                >
+                    <View style={styles.headerContent}>
+                        <View style={styles.headerLeft}>
+                            <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
+                                <Ionicons name="arrow-back" size={20} color="white" />
                             </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
-            </View>
-
-            {/* Task Status Tabs */}
-            <View style={styles.taskTabsSection}>
-                <View style={styles.tabsCard}>
-                    <View style={styles.tabsContainer}>
-                        {taskTabs.map(tab => (
-                            <TouchableOpacity
-                                key={tab.id}
-                                style={[
-                                    styles.tabButton,
-                                    selectedTab === tab.id && styles.tabButtonActive
-                                ]}
-                                onPress={() => handleTabSelect(tab.id)}
-                            >
-                                <Text style={[
-                                    styles.tabButtonText,
-                                    selectedTab === tab.id && styles.tabButtonTextActive
-                                ]}>
-                                    {tab.label} ({tab.count})
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-            </View>
-
-            {/* Dad's Tasks List */}
-            <View style={styles.tasksListSection}>
-                <View style={styles.card}>
-                    <View style={styles.tasksListHeader}>
-                        <View style={styles.tasksListHeaderLeft}>
-                            <Image
-                                source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg' }}
-                                style={[styles.tasksListAvatar, { borderColor: '#3B82F6' }]}
-                            />
                             <View>
-                                <Text style={styles.tasksListTitle}>Dad's Tasks</Text>
-                                <Text style={styles.tasksListSubtitle}>3 pending tasks</Text>
+                                <Text style={styles.headerTitle}>Task Management</Text>
+                                <Text style={styles.headerSubtitle}>Assign & Complete Tasks</Text>
                             </View>
                         </View>
-                        <View style={styles.tasksListBadge}>
-                            <Text style={styles.tasksListBadgeText}>3</Text>
+                        <View style={styles.headerRight}>
+                            <TouchableOpacity style={styles.headerButton} onPress={handleAddTask}>
+                                <Ionicons name="add" size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setShowFilters(!showFilters)}>
+                                <Ionicons name="filter" size={16} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}>
+                                <Ionicons name={viewMode === 'grid' ? 'list' : 'grid'} size={16} color="white" />
+                            </TouchableOpacity>
+                            <Image
+                                source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
+                                style={styles.profileImage}
+                            />
                         </View>
                     </View>
+                </LinearGradient>
 
-                    <View style={styles.tasksContainer}>
-                        {dadTasks.map(task => (
-                            <View key={task.id} style={[styles.taskCard, { backgroundColor: task.bgColor, borderLeftColor: task.borderColor }]}>
-                                <View style={styles.taskHeader}>
-                                    <View style={styles.taskHeaderLeft}>
-                                        <View style={[styles.taskIcon, { backgroundColor: task.priorityColor }]}>
-                                            <Ionicons name={task.icon as any} size={16} color="white" />
+                {/* Family Member Filter */}
+                <View style={styles.memberFilterSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Filter by Member</Text>
+                            <View style={styles.sectionActions}>
+                                <TouchableOpacity>
+                                    <Text style={styles.allTasksText}>All Tasks</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => setShowFilters(!showFilters)}>
+                                    <Ionicons name="options" size={16} color="#6B7280" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.membersScroll}>
+                            {familyMembers.map((member, index) => (
+                                <Animated.View
+                                    key={member.id}
+                                    style={[
+                                        styles.memberCard,
+                                        selectedMember === member.name && styles.memberCardSelected,
+                                        {
+                                            transform: [{
+                                                translateX: slideAnim.interpolate({
+                                                    inputRange: [0, 50],
+                                                    outputRange: [0, index * 15],
+                                                })
+                                            }]
+                                        }
+                                    ]}
+                                >
+                                    <TouchableOpacity
+                                        style={styles.memberCardContent}
+                                        onPress={() => handleMemberSelect(member.name)}
+                                    >
+                                        <View style={styles.memberAvatarContainer}>
+                                            <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
+                                            <View style={[styles.statusIndicator, { backgroundColor: member.status === 'online' ? '#10B981' : member.status === 'away' ? '#F59E0B' : '#6B7280' }]} />
                                         </View>
-                                        <View>
-                                            <Text style={styles.taskTitle}>{task.title}</Text>
-                                            <View style={styles.taskMeta}>
-                                                <View style={[styles.priorityBadge, { backgroundColor: task.priorityColor }]}>
-                                                    <Text style={styles.priorityBadgeText}>{task.priority} Priority</Text>
+                                        <Text style={[
+                                            styles.memberName,
+                                            selectedMember === member.name && styles.memberNameSelected
+                                        ]}>
+                                            {member.name}
+                                        </Text>
+                                        <Text style={styles.memberTaskCount}>{member.tasks} tasks</Text>
+                                        <View style={styles.memberStats}>
+                                            <Text style={styles.memberPoints}>{member.points} pts</Text>
+                                            <Text style={styles.memberStreak}>{member.streak} 🔥</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            ))}
+                        </ScrollView>
+                    </View>
+                </View>
+
+                {/* Task Status Tabs */}
+                <View style={styles.taskTabsSection}>
+                    <View style={styles.tabsCard}>
+                        <View style={styles.tabsContainer}>
+                            {taskTabs.map(tab => (
+                                <TouchableOpacity
+                                    key={tab.id}
+                                    style={[
+                                        styles.tabButton,
+                                        selectedTab === tab.id && styles.tabButtonActive
+                                    ]}
+                                    onPress={() => handleTabSelect(tab.id)}
+                                >
+                                    <Text style={[
+                                        styles.tabButtonText,
+                                        selectedTab === tab.id && styles.tabButtonTextActive
+                                    ]}>
+                                        {tab.label} ({tab.count})
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+                </View>
+
+                {/* Dad's Tasks List */}
+                <View style={styles.tasksListSection}>
+                    <View style={styles.card}>
+                        <View style={styles.tasksListHeader}>
+                            <View style={styles.tasksListHeaderLeft}>
+                                <Image
+                                    source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg' }}
+                                    style={[styles.tasksListAvatar, { borderColor: '#3B82F6' }]}
+                                />
+                                <View>
+                                    <Text style={styles.tasksListTitle}>Dad's Tasks</Text>
+                                    <Text style={styles.tasksListSubtitle}>3 pending tasks</Text>
+                                </View>
+                            </View>
+                            <View style={styles.tasksListBadge}>
+                                <Text style={styles.tasksListBadgeText}>3</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.tasksContainer}>
+                            {dadTasks.map(task => (
+                                <View key={task.id} style={[styles.taskCard, { backgroundColor: task.bgColor, borderLeftColor: task.borderColor }]}>
+                                    <View style={styles.taskHeader}>
+                                        <View style={styles.taskHeaderLeft}>
+                                            <View style={[styles.taskIcon, { backgroundColor: task.priorityColor }]}>
+                                                <Ionicons name={task.icon as any} size={16} color="white" />
+                                            </View>
+                                            <View>
+                                                <Text style={styles.taskTitle}>{task.title}</Text>
+                                                <View style={styles.taskMeta}>
+                                                    <View style={[styles.priorityBadge, { backgroundColor: task.priorityColor }]}>
+                                                        <Text style={styles.priorityBadgeText}>{task.priority} Priority</Text>
+                                                    </View>
+                                                    <Text style={styles.dueDate}>Due: {task.dueDate}</Text>
                                                 </View>
-                                                <Text style={styles.dueDate}>Due: {task.dueDate}</Text>
                                             </View>
                                         </View>
-                                    </View>
-                                    <TouchableOpacity>
-                                        <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <Text style={styles.taskDescription}>{task.description}</Text>
-
-                                {task.descriptionIcon && (
-                                    <View style={styles.taskDescriptionIcon}>
-                                        <Ionicons name={task.descriptionIcon as any} size={16} color="#3B82F6" />
-                                        <Text style={styles.taskDescriptionIconText}>Video instructions attached</Text>
-                                    </View>
-                                )}
-
-                                <View style={styles.taskFooter}>
-                                    <View style={styles.taskStatus}>
-                                        <Ionicons name={task.statusIcon as any} size={12} color="#9CA3AF" />
-                                        <Text style={styles.taskStatusText}>{task.status}</Text>
-                                    </View>
-                                    <View style={styles.taskActions}>
-                                        <TouchableOpacity style={styles.viewButton} onPress={() => handleViewTaskDetails(task.id)}>
-                                            <Ionicons name="eye" size={12} color="white" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.actionButton, { backgroundColor: task.actionButtonColor }]}
-                                            onPress={() => handleTaskAction(task.id, task.actionButton)}
-                                        >
-                                            <Text style={styles.actionButtonText}>{task.actionButtonText}</Text>
+                                        <TouchableOpacity>
+                                            <Ionicons name="ellipsis-vertical" size={16} color="#9CA3AF" />
                                         </TouchableOpacity>
                                     </View>
+
+                                    <Text style={styles.taskDescription}>{task.description}</Text>
+
+                                    {task.descriptionIcon && (
+                                        <View style={styles.taskDescriptionIcon}>
+                                            <Ionicons name={task.descriptionIcon as any} size={16} color="#3B82F6" />
+                                            <Text style={styles.taskDescriptionIconText}>Video instructions attached</Text>
+                                        </View>
+                                    )}
+
+                                    <View style={styles.taskFooter}>
+                                        <View style={styles.taskStatus}>
+                                            <Ionicons name={task.statusIcon as any} size={12} color="#9CA3AF" />
+                                            <Text style={styles.taskStatusText}>{task.status}</Text>
+                                        </View>
+                                        <View style={styles.taskActions}>
+                                            <TouchableOpacity style={styles.viewButton} onPress={() => handleViewTaskDetails(task.id)}>
+                                                <Ionicons name="eye" size={12} color="white" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.actionButton, { backgroundColor: task.actionButtonColor }]}
+                                                onPress={() => handleTaskAction(task.id, task.actionButton)}
+                                            >
+                                                <Text style={styles.actionButtonText}>{task.actionButtonText}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
                                 </View>
-                            </View>
-                        ))}
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            {/* Quick Actions */}
-            <View style={styles.quickActionsSection}>
-                <View style={styles.card}>
-                    <Text style={styles.quickActionsTitle}>Quick Actions</Text>
-                    <View style={styles.quickActionsGrid}>
-                        {quickActions.map(action => (
-                            <TouchableOpacity
-                                key={action.id}
-                                style={styles.quickActionButton}
-                                onPress={() => handleQuickAction(action.title)}
-                            >
-                                <LinearGradient
-                                    colors={action.colors}
-                                    style={styles.quickActionGradient}
+                {/* Quick Actions */}
+                <View style={styles.quickActionsSection}>
+                    <View style={styles.card}>
+                        <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+                        <View style={styles.quickActionsGrid}>
+                            {quickActions.map(action => (
+                                <TouchableOpacity
+                                    key={action.id}
+                                    style={styles.quickActionButton}
+                                    onPress={() => handleQuickAction(action.title)}
                                 >
-                                    <Ionicons name={action.icon as any} size={24} color="white" />
-                                    <Text style={styles.quickActionText}>{action.title}</Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        ))}
+                                    <LinearGradient
+                                        colors={action.colors}
+                                        style={styles.quickActionGradient}
+                                    >
+                                        <Ionicons name={action.icon as any} size={24} color="white" />
+                                        <Text style={styles.quickActionText}>{action.title}</Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            {/* Bottom spacing for navigation */}
-            <View style={styles.bottomSpacing} />
-        </ScrollView>
+                {/* Bottom spacing for navigation */}
+                <View style={styles.bottomSpacing} />
+            </ScrollView>
+        </Animated.View>
     );
 };
 
@@ -651,6 +738,44 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 80,
+    },
+    sectionActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    memberCardContent: {
+        alignItems: 'center',
+        padding: 8,
+    },
+    memberAvatarContainer: {
+        position: 'relative',
+    },
+    statusIndicator: {
+        position: 'absolute',
+        bottom: 2,
+        right: 2,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        borderWidth: 2,
+        borderColor: 'white',
+    },
+    memberStats: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 4,
+    },
+    memberPoints: {
+        fontSize: 10,
+        color: '#6B7280',
+        fontWeight: '500',
+    },
+    memberStreak: {
+        fontSize: 10,
+        color: '#F59E0B',
+        fontWeight: '500',
     },
 });
 

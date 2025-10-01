@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationSettingsModal from '../components/NotificationSettingsModal';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface DeviceToolsMainProps {
     navigation: any;
@@ -67,133 +69,202 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
     const [selectedAccentColor, setSelectedAccentColor] = useState('blue');
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [toggleAnimation] = useState(new Animated.Value(notificationsEnabled ? 1 : 0));
+    const [viewMode, setViewMode] = useState('grid'); // grid, list, compact
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
-    const familyMembers: FamilyMember[] = [
-        { id: '1', name: 'Dad', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', isOnline: true, status: 'Online' },
-        { id: '2', name: 'Mom', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', isOnline: true, status: 'Online' },
-        { id: '3', name: 'Ariella', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', age: 12, isOnline: true, status: '12 years' },
-        { id: '4', name: 'Noah', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', age: 8, isOnline: false, status: '8 years' },
-    ];
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const cardsAnim = useRef(new Animated.Value(0)).current;
+    const pulseAnim = useRef(new Animated.Value(1)).current;
 
-    const accentColors = [
-        { name: 'blue', color: '#3B82F6' },
-        { name: 'green', color: '#10B981' },
-        { name: 'purple', color: '#8B5CF6' },
-        { name: 'pink', color: '#EC4899' },
-        { name: 'orange', color: '#F59E0B' },
-    ];
-
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
-    const handleSettings = () => {
-        Alert.alert('Settings', 'Advanced settings coming soon!');
-    };
-
-    const handleMuteAlerts = () => {
-        setMuteAlerts(!muteAlerts);
-        Alert.alert('Alerts', muteAlerts ? 'Alerts enabled' : 'Alerts muted');
-    };
-
-    const handlePanicAlert = () => {
-        Alert.alert('🚨 Panic Alert', 'Emergency notification sent to all family members!');
-    };
-
-    const handleRingAll = () => {
-        Alert.alert('🔊 Ring All', 'Ringing all family devices...');
-    };
-
-    const handleFlashAlert = () => {
-        Alert.alert('⚡ Flash Alert', 'Flashing all device torches...');
-    };
-
-    const handleRingMember = (memberName: string) => {
-        Alert.alert('📱 Ring Device', `Ringing ${memberName}'s device...`);
-    };
-
-    const handleFamilyManagement = () => {
-        Alert.alert('Family Management', 'Family management screen coming soon!');
-    };
-
-    const handleNotificationSettings = () => {
-        setShowNotificationModal(true);
-    };
-
-    const handleNotificationToggle = () => {
-        setNotificationsEnabled(prevState => {
-            const newState = !prevState;
-
-            // Animate the toggle
-            Animated.timing(toggleAnimation, {
-                toValue: newState ? 1 : 0,
-                duration: 200,
+    useEffect(() => {
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
                 useNativeDriver: true,
-            }).start();
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
 
-            return newState;
-        });
+        // Cards animation with delay
+        Animated.timing(cardsAnim, {
+            toValue: 1,
+            duration: 1200,
+            delay: 300,
+            useNativeDriver: true,
+        }).start();
 
-        // Show alert
-        Alert.alert(
-            'Notifications',
-            !notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled',
-            [
-                { text: 'OK', style: 'default' },
-                {
-                    text: 'Advanced Settings',
-                    onPress: () => setShowNotificationModal(true),
-                    style: 'default'
-                }
-            ]
+        // Pulse animation for emergency buttons
+        const pulseAnimation = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.05,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
         );
-    };
+        pulseAnimation.start();
 
-    const handleWidgets = () => {
-        navigation.navigate('AndroidWidgets');
-    };
+        return () => {
+            pulseAnimation.stop();
+        };
+    }, []);
+    { id: '1', name: 'Dad', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', isOnline: true, status: 'Online' },
+    { id: '2', name: 'Mom', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', isOnline: true, status: 'Online' },
+    { id: '3', name: 'Ariella', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', age: 12, isOnline: true, status: '12 years' },
+    { id: '4', name: 'Noah', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', age: 8, isOnline: false, status: '8 years' },
+    ];
 
-    const handleWidgetDemo = () => {
-        navigation.navigate('WidgetDemo');
-    };
+const accentColors = [
+    { name: 'blue', color: '#3B82F6' },
+    { name: 'green', color: '#10B981' },
+    { name: 'purple', color: '#8B5CF6' },
+    { name: 'pink', color: '#EC4899' },
+    { name: 'orange', color: '#F59E0B' },
+];
 
-    const handleEmergencyTools = () => {
-        Alert.alert('Emergency Tools', 'Emergency tools configuration coming soon!');
-    };
+const handleBack = () => {
+    navigation.goBack();
+};
 
-    const handleAppSettings = () => {
-        Alert.alert('App Settings', 'App settings screen coming soon!');
-    };
+const handleSettings = () => {
+    Alert.alert('Settings', 'Advanced settings coming soon!');
+};
 
-    const handleDataBackup = () => {
-        Alert.alert('Data & Backup', 'Backup and data management coming soon!');
-    };
+const handleMuteAlerts = () => {
+    setMuteAlerts(!muteAlerts);
+    Alert.alert('Alerts', muteAlerts ? 'Alerts enabled' : 'Alerts muted');
+};
 
-    const handleBackupToCloud = () => {
-        Alert.alert('☁️ Backup', 'Backing up data to cloud...');
-    };
+const handlePanicAlert = () => {
+    Alert.alert('🚨 Panic Alert', 'Emergency notification sent to all family members!');
+};
 
-    const handleExportData = () => {
-        Alert.alert('📄 Export', 'Exporting data as PDF...');
-    };
+const handleRingAll = () => {
+    Alert.alert('🔊 Ring All', 'Ringing all family devices...');
+};
 
-    const getStatusColor = (member: FamilyMember) => {
-        if (member.isOnline) return '#10B981';
-        return '#6B7280';
-    };
+const handleFlashAlert = () => {
+    Alert.alert('⚡ Flash Alert', 'Flashing all device torches...');
+};
 
-    const getMemberCardColor = (index: number) => {
-        const colors = ['#F0FDF4', '#FDF2F8', '#FAF5FF', '#EFF6FF'];
-        return colors[index % colors.length];
-    };
+const handleRingMember = (memberName: string) => {
+    Alert.alert('📱 Ring Device', `Ringing ${memberName}'s device...`);
+};
 
-    const getMemberBorderColor = (index: number) => {
-        const colors = ['#10B981', '#EC4899', '#8B5CF6', '#3B82F6'];
-        return colors[index % colors.length];
-    };
+const handleFamilyManagement = () => {
+    Alert.alert('Family Management', 'Family management screen coming soon!');
+};
 
-    return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+const handleNotificationSettings = () => {
+    setShowNotificationModal(true);
+};
+
+const handleNotificationToggle = () => {
+    setNotificationsEnabled(prevState => {
+        const newState = !prevState;
+
+        // Animate the toggle
+        Animated.timing(toggleAnimation, {
+            toValue: newState ? 1 : 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start();
+
+        return newState;
+    });
+
+    // Show alert
+    Alert.alert(
+        'Notifications',
+        !notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled',
+        [
+            { text: 'OK', style: 'default' },
+            {
+                text: 'Advanced Settings',
+                onPress: () => setShowNotificationModal(true),
+                style: 'default'
+            }
+        ]
+    );
+};
+
+const handleWidgets = () => {
+    navigation.navigate('AndroidWidgets');
+};
+
+const handleWidgetDemo = () => {
+    navigation.navigate('WidgetDemo');
+};
+
+const handleEmergencyTools = () => {
+    Alert.alert('Emergency Tools', 'Emergency tools configuration coming soon!');
+};
+
+const handleAppSettings = () => {
+    navigation.navigate('AppSettings');
+};
+
+const handleDataBackup = () => {
+    Alert.alert('Data & Backup', 'Backup and data management coming soon!');
+};
+
+const handleBackupToCloud = () => {
+    Alert.alert('☁️ Backup', 'Backing up data to cloud...');
+};
+
+const handleExportData = () => {
+    Alert.alert('📄 Export', 'Exporting data as PDF...');
+};
+
+const getStatusColor = (member: FamilyMember) => {
+    if (member.isOnline) return '#10B981';
+    return '#6B7280';
+};
+
+const getMemberCardColor = (index: number) => {
+    const colors = ['#F0FDF4', '#FDF2F8', '#FAF5FF', '#EFF6FF'];
+    return colors[index % colors.length];
+};
+
+const getMemberBorderColor = (index: number) => {
+    const colors = ['#10B981', '#EC4899', '#8B5CF6', '#3B82F6'];
+    return colors[index % colors.length];
+};
+
+return (
+    <Animated.View
+        style={[
+            styles.container,
+            {
+                opacity: fadeAnim,
+                transform: [
+                    { translateY: slideAnim },
+                    { scale: scaleAnim }
+                ]
+            }
+        ]}
+    >
+        <ScrollView showsVerticalScrollIndicator={false}>
             {/* Header */}
             <LinearGradient
                 colors={['#8B5CF6', '#7C3AED']}
@@ -216,7 +287,20 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
             </LinearGradient>
 
             {/* Quick Actions */}
-            <View style={styles.quickActionsSection}>
+            <Animated.View
+                style={[
+                    styles.quickActionsSection,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <View style={styles.quickActionsGrid}>
                     <QuickActionButton
                         title="Mute Alerts"
@@ -257,10 +341,23 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                         rightElement={<View style={styles.pingDot} />}
                     />
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Family Management */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="Family Management"
                     subtitle="Manage members, roles, and devices"
@@ -270,7 +367,22 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                 />
                 <View style={styles.familyGrid}>
                     {familyMembers.map((member, index) => (
-                        <View key={member.id} style={[styles.memberCard, { backgroundColor: getMemberCardColor(index), borderColor: getMemberBorderColor(index) }]}>
+                        <Animated.View
+                            key={member.id}
+                            style={[
+                                styles.memberCard,
+                                {
+                                    backgroundColor: getMemberCardColor(index),
+                                    borderColor: getMemberBorderColor(index),
+                                    transform: [{
+                                        translateY: cardsAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [20, 0]
+                                        })
+                                    }]
+                                }
+                            ]}
+                        >
                             <View style={styles.memberHeader}>
                                 <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
                                 <View style={[styles.statusDot, { backgroundColor: getStatusColor(member) }]} />
@@ -283,13 +395,26 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                             >
                                 <Text style={styles.ringButtonText}>{member.isOnline ? 'Ring' : 'Offline'}</Text>
                             </TouchableOpacity>
-                        </View>
+                        </Animated.View>
                     ))}
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Notification Settings */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="Notification Settings"
                     subtitle="Push alerts, quiet hours, emergency bypass"
@@ -325,10 +450,23 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                     </View>
                     <Text style={styles.quietHoursTime}>10:00 PM – 07:00 AM</Text>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Widgets */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="Widgets"
                     subtitle="Home screen widgets"
@@ -354,10 +492,23 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                         <Text style={styles.addWidgetButtonText}>Try Widget Demo</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Emergency Tools */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="Emergency Tools"
                     subtitle="Alerts and device tools"
@@ -366,27 +517,46 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                     color="#EF4444"
                 />
                 <View style={styles.emergencyGrid}>
-                    <TouchableOpacity style={styles.emergencyButton} onPress={handlePanicAlert}>
-                        <Ionicons name="warning" size={20} color="#EF4444" />
-                        <Text style={styles.emergencyButtonText}>Panic</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.emergencyButton} onPress={handleRingAll}>
-                        <Ionicons name="notifications" size={20} color="#3B82F6" />
-                        <Text style={styles.emergencyButtonText}>Ring All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.emergencyButton}>
-                        <Ionicons name="chatbubble" size={20} color="#10B981" />
-                        <Text style={styles.emergencyButtonText}>Quick SMS</Text>
-                    </TouchableOpacity>
+                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                        <TouchableOpacity style={styles.emergencyButton} onPress={handlePanicAlert}>
+                            <Ionicons name="warning" size={20} color="#EF4444" />
+                            <Text style={styles.emergencyButtonText}>Panic</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                        <TouchableOpacity style={styles.emergencyButton} onPress={handleRingAll}>
+                            <Ionicons name="notifications" size={20} color="#3B82F6" />
+                            <Text style={styles.emergencyButtonText}>Ring All</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
+                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                        <TouchableOpacity style={styles.emergencyButton}>
+                            <Ionicons name="chatbubble" size={20} color="#10B981" />
+                            <Text style={styles.emergencyButtonText}>Quick SMS</Text>
+                        </TouchableOpacity>
+                    </Animated.View>
                 </View>
                 <View style={styles.quickMessageCard}>
                     <Text style={styles.quickMessageLabel}>Quick Message:</Text>
                     <Text style={styles.quickMessageText}>"Come to living room"</Text>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* App Settings */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="App Settings"
                     subtitle="Theme, language, parental PIN"
@@ -421,10 +591,23 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Data & Backup */}
-            <View style={styles.section}>
+            <Animated.View
+                style={[
+                    styles.section,
+                    {
+                        opacity: cardsAnim,
+                        transform: [{
+                            translateY: cardsAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [30, 0]
+                            })
+                        }]
+                    }
+                ]}
+            >
                 <SettingCard
                     title="Data & Backup"
                     subtitle="Backup, export, restore"
@@ -450,18 +633,19 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
                         <Text style={styles.lastBackupTime}>2 hours ago</Text>
                     </View>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Bottom spacing for navigation */}
             <View style={styles.bottomSpacing} />
         </ScrollView>
 
-        {/* Notification Settings Modal */ }
-    <NotificationSettingsModal
-        visible={showNotificationModal}
-        onClose={() => setShowNotificationModal(false)}
-    />
-    );
+        {/* Notification Settings Modal */}
+        <NotificationSettingsModal
+            visible={showNotificationModal}
+            onClose={() => setShowNotificationModal(false)}
+        />
+    </Animated.View>
+);
 };
 
 const styles = StyleSheet.create({

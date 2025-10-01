@@ -17,6 +17,7 @@ import SafeRoomTabs from '../modules/safeRoom/screens/SafeRoomTabs';
 // Import Device Tools module screens
 import DeviceToolsMain from '../modules/deviceTools/screens/DeviceToolsMain';
 import AndroidWidgets from '../modules/deviceTools/screens/AndroidWidgets';
+import AppSettingsScreen from '../modules/deviceTools/screens/AppSettingsScreen';
 import NotificationsScreen from '../modules/notifications/screens/NotificationsScreen';
 
 // Import Penalties module screens
@@ -206,6 +207,7 @@ const DeviceToolsStack = () => {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="DeviceToolsMain" component={DeviceToolsMain} />
             <Stack.Screen name="AndroidWidgets" component={AndroidWidgets} />
+            <Stack.Screen name="AppSettings" component={AppSettingsScreen} />
         </Stack.Navigator>
     );
 };

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
 import NotificationsModal from '../components/NotificationsModal';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface DashboardScreenProps {
     navigation: any;
@@ -15,11 +17,69 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
     const [showNotificationsModal, setShowNotificationsModal] = useState(false);
 
+    // Animation refs
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+    const rotateAnim = useRef(new Animated.Value(0)).current;
+
     useEffect(() => {
         const penaltyTimer = setInterval(() => {
             setPenaltyTime(prevTime => (prevTime > 0 ? prevTime - 1 : 0));
         }, 1000);
-        return () => clearInterval(penaltyTimer);
+
+        // Entrance animations
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
+        // Pulse animation for notification badge
+        const pulseAnimation = Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, {
+                    toValue: 1.1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(pulseAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+        pulseAnimation.start();
+
+        // Rotation animation for loading elements
+        const rotateAnimation = Animated.loop(
+            Animated.timing(rotateAnim, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            })
+        );
+        rotateAnimation.start();
+
+        return () => {
+            clearInterval(penaltyTimer);
+            pulseAnimation.stop();
+            rotateAnimation.stop();
+        };
     }, []);
 
     const formatTime = (totalSeconds: number) => {
@@ -75,21 +135,142 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     };
 
     const familyMembers = [
-        { id: '1', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', badge: { type: 'count', value: 3, color: '#10B981' }, borderColor: '#3B82F6' },
-        { id: '2', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', badge: { type: 'count', value: 2, color: '#10B981' }, borderColor: '#EC4899' },
-        { id: '3', name: 'Emma', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', badge: { type: 'count', value: 1, color: '#F59E0B' }, borderColor: '#8B5CF6' },
-        { id: '4', name: 'Jake', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', badge: { type: 'icon', value: 'exclamation', color: '#EF4444' }, borderColor: '#F59E0B' },
+        {
+            id: '1',
+            name: 'Dad',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
+            badge: { type: 'count', value: 3, color: '#10B981' },
+            borderColor: '#3B82F6',
+            status: 'online',
+            lastSeen: '2 min ago',
+            points: 1250,
+            streak: 7
+        },
+        {
+            id: '2',
+            name: 'Mom',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg',
+            badge: { type: 'count', value: 2, color: '#10B981' },
+            borderColor: '#EC4899',
+            status: 'online',
+            lastSeen: '1 min ago',
+            points: 1180,
+            streak: 5
+        },
+        {
+            id: '3',
+            name: 'Emma',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
+            badge: { type: 'count', value: 1, color: '#F59E0B' },
+            borderColor: '#8B5CF6',
+            status: 'away',
+            lastSeen: '15 min ago',
+            points: 890,
+            streak: 3
+        },
+        {
+            id: '4',
+            name: 'Jake',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
+            badge: { type: 'icon', value: 'exclamation', color: '#EF4444' },
+            borderColor: '#F59E0B',
+            status: 'offline',
+            lastSeen: '1 hour ago',
+            points: 650,
+            streak: 1
+        },
     ];
 
     const todaysTasks = [
-        { id: '1', title: 'Clean bedroom', assignedTo: 'Emma', status: 'completed', time: '2h ago', rewards: ['⭐', '🎉'], avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', priorityColor: '#10B981', bgColor: '#F0FDF4', icon: 'checkmark' },
-        { id: '2', title: 'Homework - Math', assignedTo: 'Jake', status: 'pending', time: '3h', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', priorityColor: '#F59E0B', bgColor: '#FFFBEB', icon: 'play' },
-        { id: '3', title: 'Fix kitchen sink', assignedTo: 'Dad', status: 'overdue', time: '1d', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', priorityColor: '#EF4444', bgColor: '#FEF2F2', icon: 'time' },
+        {
+            id: '1',
+            title: 'Clean bedroom',
+            assignedTo: 'Emma',
+            status: 'completed',
+            time: '2h ago',
+            rewards: ['⭐', '🎉'],
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
+            priorityColor: '#10B981',
+            bgColor: '#F0FDF4',
+            icon: 'checkmark',
+            points: 50,
+            category: 'Chores',
+            difficulty: 'Easy',
+            progress: 100,
+            estimatedTime: '30 min',
+            actualTime: '25 min'
+        },
+        {
+            id: '2',
+            title: 'Homework - Math',
+            assignedTo: 'Jake',
+            status: 'pending',
+            time: '3h',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
+            priorityColor: '#F59E0B',
+            bgColor: '#FFFBEB',
+            icon: 'play',
+            points: 75,
+            category: 'Education',
+            difficulty: 'Medium',
+            progress: 0,
+            estimatedTime: '45 min',
+            actualTime: null
+        },
+        {
+            id: '3',
+            title: 'Fix kitchen sink',
+            assignedTo: 'Dad',
+            status: 'overdue',
+            time: '1d',
+            avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
+            priorityColor: '#EF4444',
+            bgColor: '#FEF2F2',
+            icon: 'time',
+            points: 100,
+            category: 'Maintenance',
+            difficulty: 'Hard',
+            progress: 30,
+            estimatedTime: '2 hours',
+            actualTime: null
+        },
     ];
 
     const thisWeekActivities = [
-        { id: '1', title: 'Movie Night', time: 'Friday 7:00 PM', details: 'Family vote needed', action: 'Vote', icon: 'film', color: '#3B82F6', bgColor: '#EBF8FF' },
-        { id: '2', title: "Emma's Birthday Party", time: 'Saturday 2:00 PM', details: 'Mom organizing', action: 'Done', icon: 'gift', color: '#8B5CF6', bgColor: '#F3E8FF' },
+        {
+            id: '1',
+            title: 'Movie Night',
+            time: 'Friday 7:00 PM',
+            details: 'Family vote needed',
+            action: 'Vote',
+            icon: 'film',
+            color: '#3B82F6',
+            bgColor: '#EBF8FF',
+            participants: 4,
+            votes: 3,
+            totalVotes: 4,
+            location: 'Living Room',
+            organizer: 'Mom',
+            status: 'voting',
+            options: ['Action Movie', 'Comedy', 'Horror']
+        },
+        {
+            id: '2',
+            title: "Emma's Birthday Party",
+            time: 'Saturday 2:00 PM',
+            details: 'Mom organizing',
+            action: 'Done',
+            icon: 'gift',
+            color: '#8B5CF6',
+            bgColor: '#F3E8FF',
+            participants: 6,
+            votes: 6,
+            totalVotes: 6,
+            location: 'Backyard',
+            organizer: 'Mom',
+            status: 'confirmed',
+            options: ['Pizza', 'Cake', 'Games']
+        },
     ];
 
     const familyGoal = {
@@ -98,288 +279,327 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         target: 20,
         progress: 60,
         timeRemaining: '2 weeks to go',
+        description: 'Read 20 books together as a family',
+        reward: 'Family trip to the zoo',
+        category: 'Education',
+        difficulty: 'Medium',
+        startDate: '2024-01-01',
+        endDate: '2024-03-31',
+        participants: ['Dad', 'Mom', 'Emma', 'Jake'],
         contributions: [
-            { member: 'Dad', books: 4, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg' },
-            { member: 'Mom', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' },
-            { member: 'Emma', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' },
-            { member: 'Jake', books: 2, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' },
+            { member: 'Dad', books: 4, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', points: 200 },
+            { member: 'Mom', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', points: 150 },
+            { member: 'Emma', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', points: 150 },
+            { member: 'Jake', books: 2, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', points: 100 }
+        ],
+        milestones: [
+            { target: 5, reward: 'Ice cream party', completed: true },
+            { target: 10, reward: 'Movie night', completed: true },
+            { target: 15, reward: 'Pizza dinner', completed: false },
+            { target: 20, reward: 'Zoo trip', completed: false }
         ]
     };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <LinearGradient
-                colors={['#4F46E5', '#7C3AED']}
-                style={styles.header}
-            >
-                <View style={styles.headerContent}>
-                    <View style={styles.headerLeft}>
-                        <View style={styles.headerIcon}>
-                            <Ionicons name="home" size={20} color="white" />
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Header */}
+                <LinearGradient
+                    colors={['#4F46E5', '#7C3AED']}
+                    style={styles.header}
+                >
+                    <View style={styles.headerContent}>
+                        <View style={styles.headerLeft}>
+                            <Animated.View style={[styles.headerIcon, { transform: [{ rotate: rotateAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}>
+                                <Ionicons name="home" size={20} color="white" />
+                            </Animated.View>
+                            <View>
+                                <Text style={styles.headerTitle}>Family Dashboard</Text>
+                                <Text style={styles.headerSubtitle}>Johnson Family</Text>
+                            </View>
                         </View>
-                        <View>
-                            <Text style={styles.headerTitle}>Family Dashboard</Text>
-                            <Text style={styles.headerSubtitle}>Johnson Family</Text>
+                        <View style={styles.headerRight}>
+                            <TouchableOpacity style={styles.headerIcon} onPress={handleNotifications}>
+                                <Ionicons name="notifications" size={16} color="white" />
+                                {/* Notification Badge */}
+                                <Animated.View style={[styles.notificationBadge, { transform: [{ scale: pulseAnim }] }]}>
+                                    <Text style={styles.notificationBadgeText}>3</Text>
+                                </Animated.View>
+                            </TouchableOpacity>
+                            <Image
+                                source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
+                                style={styles.profileImage}
+                            />
                         </View>
                     </View>
-                    <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerIcon} onPress={handleNotifications}>
-                            <Ionicons name="notifications" size={16} color="white" />
-                            {/* Notification Badge */}
-                            <View style={styles.notificationBadge}>
-                                <Text style={styles.notificationBadgeText}>3</Text>
+                </LinearGradient>
+
+                {/* Family Members */}
+                <View style={styles.familyMembersSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Family Members</Text>
+                            <View style={styles.sectionStats}>
+                                <Text style={styles.sectionSubtitle}>4 active</Text>
+                                <View style={styles.onlineIndicator}>
+                                    <View style={styles.onlineDot} />
+                                    <Text style={styles.onlineText}>2 online</Text>
+                                </View>
                             </View>
-                        </TouchableOpacity>
-                        <Image
-                            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
-                            style={styles.profileImage}
-                        />
+                        </View>
+                        <View style={styles.membersGrid}>
+                            {familyMembers.map((member, index) => (
+                                <Animated.View
+                                    key={member.id}
+                                    style={[
+                                        styles.memberItem,
+                                        {
+                                            transform: [{
+                                                translateX: slideAnim.interpolate({
+                                                    inputRange: [0, 50],
+                                                    outputRange: [0, index * 10],
+                                                })
+                                            }]
+                                        }
+                                    ]}
+                                >
+                                    <View style={styles.avatarContainer}>
+                                        <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
+                                        <View style={[styles.statusIndicator, { backgroundColor: member.status === 'online' ? '#10B981' : member.status === 'away' ? '#F59E0B' : '#6B7280' }]} />
+                                        {member.badge.type === 'count' ? (
+                                            <View style={[styles.badge, { backgroundColor: member.badge.color }]}>
+                                                <Text style={styles.badgeText}>{member.badge.value}</Text>
+                                            </View>
+                                        ) : (
+                                            <View style={[styles.badge, { backgroundColor: member.badge.color }]}>
+                                                <Ionicons name={member.badge.value as any} size={10} color="white" />
+                                            </View>
+                                        )}
+                                    </View>
+                                    <Text style={styles.memberName}>{member.name}</Text>
+                                    <View style={styles.memberStats}>
+                                        <Text style={styles.memberPoints}>{member.points} pts</Text>
+                                        <Text style={styles.memberStreak}>{member.streak} 🔥</Text>
+                                    </View>
+                                    <Text style={styles.memberStatus}>{member.lastSeen}</Text>
+                                    <TouchableOpacity style={styles.ringButton} onPress={() => handleRingDevice(member.name)}>
+                                        <Ionicons name="notifications" size={12} color="white" />
+                                        <Text style={styles.ringButtonText}>Ring</Text>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </LinearGradient>
 
-            {/* Family Members */}
-            <View style={styles.familyMembersSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Family Members</Text>
-                        <Text style={styles.sectionSubtitle}>4 active</Text>
+                {/* Quick Actions */}
+                <View style={styles.quickActionsSection}>
+                    <View style={styles.quickActionsGrid}>
+                        <TouchableOpacity style={styles.quickActionButton} onPress={handleAddTask}>
+                            <LinearGradient
+                                colors={['#10B981', '#059669']}
+                                style={styles.quickActionGradient}
+                            >
+                                <View style={styles.quickActionIconBg}>
+                                    <Ionicons name="add" size={22} color="white" />
+                                </View>
+                                <Text style={styles.quickActionText}>Add Task</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.quickActionButton} onPress={handleSafeRoom}>
+                            <LinearGradient
+                                colors={['#EC4899', '#DB2777']}
+                                style={styles.quickActionGradient}
+                            >
+                                <View style={styles.quickActionIconBg}>
+                                    <Ionicons name="heart" size={22} color="white" />
+                                </View>
+                                <Text style={styles.quickActionText}>Safe Room</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.membersGrid}>
-                        {familyMembers.map(member => (
-                            <View key={member.id} style={styles.memberItem}>
-                                <View style={styles.avatarContainer}>
-                                    <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
-                                    {member.badge.type === 'count' ? (
-                                        <View style={[styles.badge, { backgroundColor: member.badge.color }]}>
-                                            <Text style={styles.badgeText}>{member.badge.value}</Text>
+                </View>
+
+                {/* Device Tools */}
+                <View style={styles.deviceToolsSection}>
+                    <LinearGradient
+                        colors={['#7C3AED', '#6D28D9']}
+                        style={styles.deviceToolsCard}
+                    >
+                        <View style={styles.deviceToolsHeader}>
+                            <View style={styles.deviceToolsTitleContainer}>
+                                <Text style={styles.deviceToolsEmoji}>📱</Text>
+                                <Text style={styles.deviceToolsTitle}>Device Tools</Text>
+                            </View>
+                            <Ionicons name="phone-portrait" size={24} color="white" />
+                        </View>
+
+                        <TouchableOpacity style={styles.ringAllButton} onPress={handleRingAllDevices}>
+                            <View style={styles.ringAllIconBg}>
+                                <Ionicons name="notifications" size={20} color="#7C3AED" />
+                            </View>
+                            <Text style={styles.ringAllButtonText}>Ring All Devices</Text>
+                        </TouchableOpacity>
+
+                        <Text style={styles.lastRingText}>Last ring: {lastRingTime === 0 ? 'Just now' : `${lastRingTime} min ago`}</Text>
+                    </LinearGradient>
+                </View>
+
+                {/* Today's Tasks */}
+                <View style={styles.todaysTasksSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Today's Tasks</Text>
+                            <Text style={styles.tasksDoneText}>6 of 8 done</Text>
+                        </View>
+
+                        <View style={styles.tasksList}>
+                            {todaysTasks.map(task => (
+                                <View key={task.id} style={[styles.taskItem, { backgroundColor: task.bgColor, borderLeftColor: task.priorityColor }]}>
+                                    <View style={[styles.taskIconBg, { backgroundColor: task.priorityColor }]}>
+                                        <Ionicons name={task.icon as any} size={14} color="white" />
+                                    </View>
+                                    <Image source={{ uri: task.avatar }} style={styles.taskAvatar} />
+                                    <View style={styles.taskInfo}>
+                                        <Text style={styles.taskTitle}>{task.title}</Text>
+                                        <Text style={styles.taskSubtitle}>{task.assignedTo} • {task.status === 'completed' ? `Completed ${task.time}` : `Due in ${task.time}`}</Text>
+                                    </View>
+                                    {task.rewards ? (
+                                        <View style={styles.taskRewards}>
+                                            {task.rewards.map((reward, index) => (
+                                                <Text key={index} style={styles.taskRewardText}>{reward}</Text>
+                                            ))}
                                         </View>
                                     ) : (
-                                        <View style={[styles.badge, { backgroundColor: member.badge.color }]}>
-                                            <Ionicons name={member.badge.value as any} size={10} color="white" />
-                                        </View>
+                                        <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: task.priorityColor }]}>
+                                            <Ionicons name={task.icon as any} size={14} color="white" />
+                                        </TouchableOpacity>
                                     )}
-                                </View>
-                                <Text style={styles.memberName}>{member.name}</Text>
-                                <TouchableOpacity style={styles.ringButton} onPress={() => handleRingDevice(member.name)}>
-                                    <Ionicons name="notifications" size={12} color="white" />
-                                    <Text style={styles.ringButtonText}>Ring</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            </View>
-
-            {/* Quick Actions */}
-            <View style={styles.quickActionsSection}>
-                <View style={styles.quickActionsGrid}>
-                    <TouchableOpacity style={styles.quickActionButton} onPress={handleAddTask}>
-                        <LinearGradient
-                            colors={['#10B981', '#059669']}
-                            style={styles.quickActionGradient}
-                        >
-                            <View style={styles.quickActionIconBg}>
-                                <Ionicons name="add" size={22} color="white" />
-                            </View>
-                            <Text style={styles.quickActionText}>Add Task</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickActionButton} onPress={handleSafeRoom}>
-                        <LinearGradient
-                            colors={['#EC4899', '#DB2777']}
-                            style={styles.quickActionGradient}
-                        >
-                            <View style={styles.quickActionIconBg}>
-                                <Ionicons name="heart" size={22} color="white" />
-                            </View>
-                            <Text style={styles.quickActionText}>Safe Room</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Device Tools */}
-            <View style={styles.deviceToolsSection}>
-                <LinearGradient
-                    colors={['#7C3AED', '#6D28D9']}
-                    style={styles.deviceToolsCard}
-                >
-                    <View style={styles.deviceToolsHeader}>
-                        <View style={styles.deviceToolsTitleContainer}>
-                            <Text style={styles.deviceToolsEmoji}>📱</Text>
-                            <Text style={styles.deviceToolsTitle}>Device Tools</Text>
-                        </View>
-                        <Ionicons name="phone-portrait" size={24} color="white" />
-                    </View>
-
-                    <TouchableOpacity style={styles.ringAllButton} onPress={handleRingAllDevices}>
-                        <View style={styles.ringAllIconBg}>
-                            <Ionicons name="notifications" size={20} color="#7C3AED" />
-                        </View>
-                        <Text style={styles.ringAllButtonText}>Ring All Devices</Text>
-                    </TouchableOpacity>
-
-                    <Text style={styles.lastRingText}>Last ring: {lastRingTime === 0 ? 'Just now' : `${lastRingTime} min ago`}</Text>
-                </LinearGradient>
-            </View>
-
-            {/* Today's Tasks */}
-            <View style={styles.todaysTasksSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Today's Tasks</Text>
-                        <Text style={styles.tasksDoneText}>6 of 8 done</Text>
-                    </View>
-
-                    <View style={styles.tasksList}>
-                        {todaysTasks.map(task => (
-                            <View key={task.id} style={[styles.taskItem, { backgroundColor: task.bgColor, borderLeftColor: task.priorityColor }]}>
-                                <View style={[styles.taskIconBg, { backgroundColor: task.priorityColor }]}>
-                                    <Ionicons name={task.icon as any} size={14} color="white" />
-                                </View>
-                                <Image source={{ uri: task.avatar }} style={styles.taskAvatar} />
-                                <View style={styles.taskInfo}>
-                                    <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <Text style={styles.taskSubtitle}>{task.assignedTo} • {task.status === 'completed' ? `Completed ${task.time}` : `Due in ${task.time}`}</Text>
-                                </View>
-                                {task.rewards ? (
-                                    <View style={styles.taskRewards}>
-                                        {task.rewards.map((reward, index) => (
-                                            <Text key={index} style={styles.taskRewardText}>{reward}</Text>
-                                        ))}
-                                    </View>
-                                ) : (
-                                    <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: task.priorityColor }]}>
-                                        <Ionicons name={task.icon as any} size={14} color="white" />
-                                    </TouchableOpacity>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-
-                    <TouchableOpacity style={styles.viewAllTasksButton} onPress={handleViewAllTasks}>
-                        <Text style={styles.viewAllTasksButtonText}>View All Tasks</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Active Penalty */}
-            <View style={styles.activePenaltySection}>
-                <TouchableOpacity onPress={handleActivePenalty}>
-                    <LinearGradient
-                        colors={['#EF4444', '#DC2626']}
-                        style={styles.penaltyCard}
-                    >
-                        <View style={styles.penaltyHeader}>
-                            <Text style={styles.penaltyTitle}>Active Penalty</Text>
-                            <Ionicons name="hourglass" size={20} color="white" />
-                        </View>
-
-                        <View style={styles.penaltyMemberInfo}>
-                            <Image source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }} style={styles.penaltyAvatar} />
-                            <View>
-                                <Text style={styles.penaltyMemberName}>Jake</Text>
-                                <Text style={styles.penaltyDescription}>No tablet time</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.penaltyTimerContainer}>
-                            <View style={styles.penaltyTimerContent}>
-                                <Text style={styles.penaltyTimerLabel}>Time remaining</Text>
-                                <Text style={styles.penaltyTime}>{formatTime(penaltyTime)}</Text>
-                            </View>
-                            <View style={styles.penaltyProgressBar}>
-                                <View style={[styles.penaltyProgressFill, { width: `${(penaltyTime / (15 * 60 + 42)) * 100}%` }]} />
-                            </View>
-                        </View>
-                    </LinearGradient>
-                </TouchableOpacity>
-            </View>
-
-            {/* This Week Activities */}
-            <View style={styles.thisWeekSection}>
-                <View style={styles.card}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>This Week</Text>
-                        <TouchableOpacity onPress={handleViewCalendar}>
-                            <Text style={styles.viewCalendarText}>View Calendar</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.activitiesList}>
-                        {thisWeekActivities.map(activity => (
-                            <View key={activity.id} style={[styles.activityItem, { backgroundColor: activity.bgColor }]}>
-                                <View style={[styles.activityIconBg, { backgroundColor: activity.color }]}>
-                                    <Ionicons name={activity.icon as any} size={20} color="white" />
-                                </View>
-                                <View style={styles.activityInfo}>
-                                    <Text style={styles.activityTitle}>{activity.title}</Text>
-                                    <Text style={styles.activitySubtitle}>{activity.time} • {activity.details}</Text>
-                                </View>
-                                {activity.action === 'Vote' ? (
-                                    <TouchableOpacity style={[styles.activityActionButton, { backgroundColor: activity.color }]} onPress={handleVote}>
-                                        <Text style={styles.activityActionButtonText}>{activity.action}</Text>
-                                    </TouchableOpacity>
-                                ) : (
-                                    <View style={[styles.activityActionButton, { backgroundColor: activity.color }]}>
-                                        <Ionicons name="checkmark" size={14} color="white" />
-                                    </View>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            </View>
-
-            {/* Family Goal */}
-            <View style={styles.goalSection}>
-                <TouchableOpacity onPress={handleGoals}>
-                    <LinearGradient
-                        colors={['#F59E0B', '#EA580C']}
-                        style={styles.goalCard}
-                    >
-                        <View style={styles.goalHeader}>
-                            <Text style={styles.goalTitle}>Family Goal</Text>
-                            <Ionicons name="trophy" size={20} color="white" />
-                        </View>
-
-                        <View style={styles.goalContent}>
-                            <Text style={styles.goalName}>Family Reading Challenge</Text>
-                            <Text style={styles.goalAmount}>{familyGoal.completed} of {familyGoal.target} books read</Text>
-
-                            <View style={styles.goalProgressBar}>
-                                <View style={[styles.goalProgressFill, { width: `${familyGoal.progress}%` }]} />
-                            </View>
-                            <Text style={styles.goalProgressText}>{familyGoal.progress}% complete • {familyGoal.timeRemaining}</Text>
-                        </View>
-
-                        <View style={styles.contributionsGrid}>
-                            {familyGoal.contributions.map((contribution, index) => (
-                                <View key={index} style={styles.contributionItem}>
-                                    <Image
-                                        source={{ uri: contribution.avatar }}
-                                        style={styles.contributionAvatar}
-                                    />
-                                    <Text style={styles.contributionAmount}>{contribution.books} books</Text>
                                 </View>
                             ))}
                         </View>
-                    </LinearGradient>
-                </TouchableOpacity>
-            </View>
 
-            {/* Bottom spacing for navigation */}
-            <View style={styles.bottomSpacing} />
-        </ScrollView>
+                        <TouchableOpacity style={styles.viewAllTasksButton} onPress={handleViewAllTasks}>
+                            <Text style={styles.viewAllTasksButtonText}>View All Tasks</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
 
-        {/* Notifications Modal */ }
-    <NotificationsModal
-        visible={showNotificationsModal}
-        onClose={() => setShowNotificationsModal(false)}
-    />
-    </View >
+                {/* Active Penalty */}
+                <View style={styles.activePenaltySection}>
+                    <TouchableOpacity onPress={handleActivePenalty}>
+                        <LinearGradient
+                            colors={['#EF4444', '#DC2626']}
+                            style={styles.penaltyCard}
+                        >
+                            <View style={styles.penaltyHeader}>
+                                <Text style={styles.penaltyTitle}>Active Penalty</Text>
+                                <Ionicons name="hourglass" size={20} color="white" />
+                            </View>
+
+                            <View style={styles.penaltyMemberInfo}>
+                                <Image source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }} style={styles.penaltyAvatar} />
+                                <View>
+                                    <Text style={styles.penaltyMemberName}>Jake</Text>
+                                    <Text style={styles.penaltyDescription}>No tablet time</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.penaltyTimerContainer}>
+                                <View style={styles.penaltyTimerContent}>
+                                    <Text style={styles.penaltyTimerLabel}>Time remaining</Text>
+                                    <Text style={styles.penaltyTime}>{formatTime(penaltyTime)}</Text>
+                                </View>
+                                <View style={styles.penaltyProgressBar}>
+                                    <View style={[styles.penaltyProgressFill, { width: `${(penaltyTime / (15 * 60 + 42)) * 100}%` }]} />
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+
+                {/* This Week Activities */}
+                <View style={styles.thisWeekSection}>
+                    <View style={styles.card}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>This Week</Text>
+                            <TouchableOpacity onPress={handleViewCalendar}>
+                                <Text style={styles.viewCalendarText}>View Calendar</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.activitiesList}>
+                            {thisWeekActivities.map(activity => (
+                                <View key={activity.id} style={[styles.activityItem, { backgroundColor: activity.bgColor }]}>
+                                    <View style={[styles.activityIconBg, { backgroundColor: activity.color }]}>
+                                        <Ionicons name={activity.icon as any} size={20} color="white" />
+                                    </View>
+                                    <View style={styles.activityInfo}>
+                                        <Text style={styles.activityTitle}>{activity.title}</Text>
+                                        <Text style={styles.activitySubtitle}>{activity.time} • {activity.details}</Text>
+                                    </View>
+                                    {activity.action === 'Vote' ? (
+                                        <TouchableOpacity style={[styles.activityActionButton, { backgroundColor: activity.color }]} onPress={handleVote}>
+                                            <Text style={styles.activityActionButtonText}>{activity.action}</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <View style={[styles.activityActionButton, { backgroundColor: activity.color }]}>
+                                            <Ionicons name="checkmark" size={14} color="white" />
+                                        </View>
+                                    )}
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                </View>
+
+                {/* Family Goal */}
+                <View style={styles.goalSection}>
+                    <TouchableOpacity onPress={handleGoals}>
+                        <LinearGradient
+                            colors={['#F59E0B', '#EA580C']}
+                            style={styles.goalCard}
+                        >
+                            <View style={styles.goalHeader}>
+                                <Text style={styles.goalTitle}>Family Goal</Text>
+                                <Ionicons name="trophy" size={20} color="white" />
+                            </View>
+
+                            <View style={styles.goalContent}>
+                                <Text style={styles.goalName}>Family Reading Challenge</Text>
+                                <Text style={styles.goalAmount}>{familyGoal.completed} of {familyGoal.target} books read</Text>
+
+                                <View style={styles.goalProgressBar}>
+                                    <View style={[styles.goalProgressFill, { width: `${familyGoal.progress}%` }]} />
+                                </View>
+                                <Text style={styles.goalProgressText}>{familyGoal.progress}% complete • {familyGoal.timeRemaining}</Text>
+                            </View>
+
+                            <View style={styles.contributionsGrid}>
+                                {familyGoal.contributions.map((contribution, index) => (
+                                    <View key={index} style={styles.contributionItem}>
+                                        <Image
+                                            source={{ uri: contribution.avatar }}
+                                            style={styles.contributionAvatar}
+                                        />
+                                        <Text style={styles.contributionAmount}>{contribution.books} books</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Bottom spacing for navigation */}
+                <View style={styles.bottomSpacing} />
+            </ScrollView>
+
+            {/* Notifications Modal */}
+            <NotificationsModal
+                visible={showNotificationsModal}
+                onClose={() => setShowNotificationsModal(false)}
+            />
+        </Animated.View>
     );
 };
 
@@ -923,6 +1143,58 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 10,
         fontWeight: 'bold',
+    },
+    sectionStats: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    onlineIndicator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    onlineDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#10B981',
+    },
+    onlineText: {
+        fontSize: 12,
+        color: '#10B981',
+        fontWeight: '500',
+    },
+    statusIndicator: {
+        position: 'absolute',
+        bottom: 2,
+        right: 2,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        borderWidth: 2,
+        borderColor: 'white',
+    },
+    memberStats: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 4,
+    },
+    memberPoints: {
+        fontSize: 10,
+        color: '#6B7280',
+        fontWeight: '500',
+    },
+    memberStreak: {
+        fontSize: 10,
+        color: '#F59E0B',
+        fontWeight: '500',
+    },
+    memberStatus: {
+        fontSize: 9,
+        color: '#9CA3AF',
+        marginTop: 2,
     },
 });
 
