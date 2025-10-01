@@ -1,208 +1,212 @@
 import { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import {
-    mockSafeRoomMessages,
-    mockEmergencyContacts,
-    mockSafetyTips,
-    mockLocationShares,
-    mockFamilyMembers,
-    SafeRoomMessage,
-    EmergencyContact,
-    SafetyTip,
-    LocationShare
-} from '../mock/safeRoom';
+  mockFamilyMembers,
+  mockFeelings,
+  mockGuidedResources,
+  mockSolutionNotes,
+  moodEmojis,
+  moodColors,
+  Feeling,
+  GuidedResource,
+  SolutionNote,
+  Reaction
+} from '../mock/safeRoomData';
 
 export const useSafeRoom = () => {
-    const [messages, setMessages] = useState<SafeRoomMessage[]>(mockSafeRoomMessages);
-    const [emergencyContacts] = useState<EmergencyContact[]>(mockEmergencyContacts);
-    const [safetyTips] = useState<SafetyTip[]>(mockSafetyTips);
-    const [locationShares] = useState<LocationShare[]>(mockLocationShares);
-    const [familyMembers] = useState(mockFamilyMembers);
-    const [isEmergencyMode, setIsEmergencyMode] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
+  const [feelings, setFeelings] = useState<Feeling[]>(mockFeelings);
+  const [resources, setResources] = useState<GuidedResource[]>(mockGuidedResources);
+  const [solutionNotes, setSolutionNotes] = useState<SolutionNote[]>(mockSolutionNotes);
+  const [familyMembers] = useState(mockFamilyMembers);
+  const [activeTab, setActiveTab] = useState<'express' | 'reflections' | 'guided' | 'board'>('express');
+  const [selectedMood, setSelectedMood] = useState<'happy' | 'neutral' | 'sad' | 'angry' | 'worried' | 'excited'>('neutral');
+  const [newFeelingText, setNewFeelingText] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
 
-    useEffect(() => {
-        const unread = messages.filter(message => !message.isRead).length;
-        setUnreadCount(unread);
-    }, [messages]);
+  // Get feelings by mood filter
+  const getFeelingsByMood = (mood?: string) => {
+    if (!mood) return feelings;
+    return feelings.filter(feeling => feeling.mood === mood);
+  };
 
-    // Message functions
-    const sendMessage = (message: Omit<SafeRoomMessage, 'id' | 'timestamp'>) => {
-        const newMessage: SafeRoomMessage = {
-            ...message,
-            id: `message_${Date.now()}`,
-            timestamp: 'now'
-        };
-        setMessages(prev => [newMessage, ...prev]);
+  // Get recent feelings (last 7 days)
+  const getRecentFeelings = () => {
+    return feelings.slice(0, 5); // Mock: show first 5
+  };
+
+  // Get resources by category
+  const getResourcesByCategory = (category?: string) => {
+    if (!category) return resources;
+    return resources.filter(resource => resource.category === category);
+  };
+
+  // Get active solution notes
+  const getActiveSolutionNotes = () => {
+    return solutionNotes.filter(note => !note.isCompleted);
+  };
+
+  // Get completed solution notes
+  const getCompletedSolutionNotes = () => {
+    return solutionNotes.filter(note => note.isCompleted);
+  };
+
+  // Add new feeling
+  const addFeeling = (type: 'text' | 'audio' | 'video', content: string, mood: string) => {
+    const newFeeling: Feeling = {
+      id: Date.now().toString(),
+      memberId: 'mom', // Mock: current user is mom
+      memberName: 'Mom',
+      memberAvatar: '👩',
+      type,
+      content,
+      mood: mood as any,
+      createdAt: 'Just now',
+      reactions: [],
+      supportCount: 0
     };
 
-    const markMessageAsRead = (messageId: string) => {
-        setMessages(prev =>
-            prev.map(message =>
-                message.id === messageId ? { ...message, isRead: true } : message
-            )
-        );
+    setFeelings(prev => [newFeeling, ...prev]);
+    Alert.alert('Success', 'Your feeling has been shared with the family!');
+  };
+
+  // Add reaction to feeling
+  const addReaction = (feelingId: string, reactionType: 'heart' | 'clap' | 'star' | 'support') => {
+    const newReaction: Reaction = {
+      id: Date.now().toString(),
+      memberId: 'mom', // Mock: current user is mom
+      memberName: 'Mom',
+      type: reactionType
     };
 
-    const markAllMessagesAsRead = () => {
-        setMessages(prev =>
-            prev.map(message => ({ ...message, isRead: true }))
-        );
-    };
-
-    const deleteMessage = (messageId: string) => {
-        setMessages(prev => prev.filter(message => message.id !== messageId));
-    };
-
-    // Emergency functions
-    const triggerEmergencyMode = () => {
-        setIsEmergencyMode(true);
-        // In a real app, this would:
-        // 1. Send emergency alerts to all family members
-        // 2. Contact emergency services
-        // 3. Share location with emergency contacts
-        // 4. Record emergency details
-    };
-
-    const exitEmergencyMode = () => {
-        setIsEmergencyMode(false);
-    };
-
-    const sendEmergencyAlert = (message: string, priority: 'high' | 'emergency' = 'emergency') => {
-        const emergencyMessage: SafeRoomMessage = {
-            id: `emergency_${Date.now()}`,
-            author: 'Emergency System',
-            authorAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/emergency.jpg',
-            message: `🚨 EMERGENCY: ${message}`,
-            timestamp: 'now',
-            isEncrypted: false,
-            type: 'emergency',
-            isRead: false,
-            priority
-        };
-        setMessages(prev => [emergencyMessage, ...prev]);
-    };
-
-    // Contact functions
-    const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
-        const newContact: EmergencyContact = {
-            ...contact,
-            id: `contact_${Date.now()}`
-        };
-        // In a real app, this would update the contacts list
-        console.log('New emergency contact added:', newContact);
-    };
-
-    const callEmergencyContact = (contactId: string) => {
-        const contact = emergencyContacts.find(c => c.id === contactId);
-        if (contact) {
-            // In a real app, this would initiate a phone call
-            console.log(`Calling ${contact.name} at ${contact.phone}`);
-        }
-    };
-
-    // Location functions
-    const shareLocation = (memberId: string, location: string, coordinates?: { latitude: number; longitude: number }) => {
-        const member = familyMembers.find(m => m.id === memberId);
-        if (member) {
-            const newLocationShare: LocationShare = {
-                id: `location_${Date.now()}`,
-                memberName: member.name,
-                memberAvatar: member.avatar,
-                location,
-                timestamp: 'now',
-                isActive: true,
-                coordinates
-            };
-            // In a real app, this would update the location shares
-            console.log('Location shared:', newLocationShare);
-        }
-    };
-
-    const stopLocationShare = (locationId: string) => {
-        // In a real app, this would stop sharing location
-        console.log('Stopped sharing location:', locationId);
-    };
-
-    // Safety tip functions
-    const markSafetyTipAsRead = (tipId: string) => {
-        // In a real app, this would update the safety tip status
-        console.log('Safety tip marked as read:', tipId);
-    };
-
-    const getUnreadSafetyTips = () => {
-        return safetyTips.filter(tip => !tip.isRead);
-    };
-
-    // Family member functions
-    const updateFamilyMemberStatus = (memberId: string, isOnline: boolean) => {
-        // In a real app, this would update the family member's online status
-        console.log(`Family member ${memberId} is now ${isOnline ? 'online' : 'offline'}`);
-    };
-
-    // Get filtered messages
-    const getMessagesByPriority = (priority: 'low' | 'medium' | 'high' | 'emergency') => {
-        return messages.filter(message => message.priority === priority);
-    };
-
-    const getEmergencyMessages = () => {
-        return messages.filter(message => message.type === 'emergency' || message.priority === 'emergency');
-    };
-
-    const getUnreadMessages = () => {
-        return messages.filter(message => !message.isRead);
-    };
-
-    // Get active location shares
-    const getActiveLocationShares = () => {
-        return locationShares.filter(share => share.isActive);
-    };
-
-    // Get online family members
-    const getOnlineFamilyMembers = () => {
-        return familyMembers.filter(member => member.isOnline);
-    };
-
-    // Statistics
-    const getSafeRoomStats = () => {
+    setFeelings(prev => prev.map(feeling => {
+      if (feeling.id === feelingId) {
         return {
-            totalMessages: messages.length,
-            unreadMessages: unreadCount,
-            emergencyMessages: getEmergencyMessages().length,
-            activeLocationShares: getActiveLocationShares().length,
-            onlineMembers: getOnlineFamilyMembers().length,
-            totalMembers: familyMembers.length,
-            emergencyContacts: emergencyContacts.length,
-            unreadSafetyTips: getUnreadSafetyTips().length
+          ...feeling,
+          reactions: [...feeling.reactions, newReaction],
+          supportCount: feeling.supportCount + 1
         };
+      }
+      return feeling;
+    }));
+  };
+
+  // Add solution note
+  const addSolutionNote = (text: string, color: string) => {
+    const newNote: SolutionNote = {
+      id: Date.now().toString(),
+      memberId: 'mom', // Mock: current user is mom
+      memberName: 'Mom',
+      memberAvatar: '👩',
+      text,
+      color,
+      createdAt: 'Just now',
+      isCompleted: false
     };
+
+    setSolutionNotes(prev => [newNote, ...prev]);
+    Alert.alert('Success', 'New family agreement added!');
+  };
+
+  // Toggle solution note completion
+  const toggleSolutionNote = (noteId: string) => {
+    setSolutionNotes(prev => prev.map(note => {
+      if (note.id === noteId) {
+        return {
+          ...note,
+          isCompleted: !note.isCompleted,
+          completedAt: !note.isCompleted ? 'Just now' : undefined
+        };
+      }
+      return note;
+    }));
+  };
+
+  // Delete solution note
+  const deleteSolutionNote = (noteId: string) => {
+    Alert.alert(
+      'Delete Agreement',
+      'Are you sure you want to delete this family agreement?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setSolutionNotes(prev => prev.filter(note => note.id !== noteId));
+          }
+        }
+      ]
+    );
+  };
+
+  // Get statistics
+  const getStatistics = () => {
+    const totalFeelings = feelings.length;
+    const happyFeelings = feelings.filter(f => f.mood === 'happy' || f.mood === 'excited').length;
+    const sadFeelings = feelings.filter(f => f.mood === 'sad' || f.mood === 'angry' || f.mood === 'worried').length;
+    const totalSupport = feelings.reduce((sum, feeling) => sum + feeling.supportCount, 0);
+    const activeAgreements = solutionNotes.filter(note => !note.isCompleted).length;
+    const completedAgreements = solutionNotes.filter(note => note.isCompleted).length;
 
     return {
-        messages,
-        emergencyContacts,
-        safetyTips,
-        locationShares,
-        familyMembers,
-        isEmergencyMode,
-        unreadCount,
-        sendMessage,
-        markMessageAsRead,
-        markAllMessagesAsRead,
-        deleteMessage,
-        triggerEmergencyMode,
-        exitEmergencyMode,
-        sendEmergencyAlert,
-        addEmergencyContact,
-        callEmergencyContact,
-        shareLocation,
-        stopLocationShare,
-        markSafetyTipAsRead,
-        getUnreadSafetyTips,
-        updateFamilyMemberStatus,
-        getMessagesByPriority,
-        getEmergencyMessages,
-        getUnreadMessages,
-        getActiveLocationShares,
-        getOnlineFamilyMembers,
-        getSafeRoomStats
+      totalFeelings,
+      happyFeelings,
+      sadFeelings,
+      totalSupport,
+      activeAgreements,
+      completedAgreements
     };
+  };
+
+  // Handle recording
+  const startRecording = () => {
+    setIsRecording(true);
+    // Mock recording - in real app, this would start actual recording
+    setTimeout(() => {
+      setIsRecording(false);
+      Alert.alert('Recording Complete', 'Your voice message has been saved!');
+    }, 3000);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+  };
+
+  return {
+    // State
+    feelings,
+    resources,
+    solutionNotes,
+    familyMembers,
+    activeTab,
+    selectedMood,
+    newFeelingText,
+    isRecording,
+    
+    // Setters
+    setActiveTab,
+    setSelectedMood,
+    setNewFeelingText,
+    
+    // Getters
+    getFeelingsByMood,
+    getRecentFeelings,
+    getResourcesByCategory,
+    getActiveSolutionNotes,
+    getCompletedSolutionNotes,
+    getStatistics,
+    
+    // Actions
+    addFeeling,
+    addReaction,
+    addSolutionNote,
+    toggleSolutionNote,
+    deleteSolutionNote,
+    startRecording,
+    stopRecording,
+    
+    // Constants
+    moodEmojis,
+    moodColors
+  };
 };

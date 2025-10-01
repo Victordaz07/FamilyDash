@@ -341,12 +341,12 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
             <View style={styles.bottomSpacing} />
         </ScrollView>
 
-        {/* New Penalty Modal - Outside ScrollView */}
-        <NewPenaltyModal
-            visible={showNewPenaltyModal}
-            onClose={() => setShowNewPenaltyModal(false)}
-            onSubmit={handleNewPenaltySubmit}
-        />
+        {/* New Penalty Modal - Outside ScrollView */ }
+    <NewPenaltyModal
+        visible={showNewPenaltyModal}
+        onClose={() => setShowNewPenaltyModal(false)}
+        onSubmit={handleNewPenaltySubmit}
+    />
     );
 };
 

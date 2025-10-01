@@ -9,7 +9,9 @@ import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
 import GoalsScreen from '../modules/goals/screens/GoalsScreen';
-import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
+// Import Safe Room module screens
+import SafeRoomHome from '../modules/safeRoom/screens/SafeRoomHome';
+import SafeRoomTabs from '../modules/safeRoom/screens/SafeRoomTabs';
 import DeviceToolsScreen from '../modules/deviceTools/DeviceToolsScreen';
 
 // Import Penalties module screens
@@ -64,6 +66,16 @@ const CalendarStack = () => {
             <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} />
             <Stack.Screen name="Voting" component={VotingScreen} />
             <Stack.Screen name="History" component={HistoryScreen} />
+        </Stack.Navigator>
+    );
+};
+
+// Stack Navigator for Safe Room
+const SafeRoomStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SafeRoomHome" component={SafeRoomHome} />
+            <Stack.Screen name="SafeRoomTabs" component={SafeRoomTabs} />
         </Stack.Navigator>
     );
 };
@@ -162,7 +174,7 @@ const AppNavigator = () => {
                 />
                 <Tab.Screen
                     name="SafeRoom"
-                    component={SafeRoomScreen}
+                    component={SafeRoomStack}
                     options={{
                         title: 'Cuarto Seguro ❤️',
                         tabBarLabel: 'Cuarto Seguro',
