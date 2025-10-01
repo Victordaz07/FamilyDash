@@ -8,12 +8,19 @@ import { Ionicons } from '@expo/vector-icons';
 import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
-import PenaltiesScreen from '../modules/penalties/PenaltiesScreen';
-import PenaltyDetailsScreen from '../screens/PenaltyDetailsScreen';
-import ActivitiesScreen from '../modules/activities/ActivitiesScreen';
-import GoalsScreen from '../modules/goals/GoalsScreen';
-import SafeRoomScreen from '../modules/safeRoom/SafeRoomScreen';
+import GoalsScreen from '../modules/goals/screens/GoalsScreen';
+import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import DeviceToolsScreen from '../modules/deviceTools/DeviceToolsScreen';
+
+// Import Penalties module screens
+import PenaltiesOverview from '../modules/penalties/screens/PenaltiesOverview';
+import PenaltyDetails from '../modules/penalties/screens/PenaltyDetails';
+
+// Import Calendar module screens
+import CalendarHubScreen from '../modules/calendar/screens/CalendarHubScreen';
+import ActivityDetailScreen from '../modules/calendar/screens/ActivityDetailScreen';
+import VotingScreen from '../modules/calendar/screens/VotingScreen';
+import HistoryScreen from '../modules/calendar/screens/HistoryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -43,8 +50,20 @@ const TasksStack = () => {
 const PenaltiesStack = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="PenaltiesMain" component={PenaltiesScreen} />
-            <Stack.Screen name="PenaltyDetails" component={PenaltyDetailsScreen} />
+            <Stack.Screen name="PenaltiesOverview" component={PenaltiesOverview} />
+            <Stack.Screen name="PenaltyDetails" component={PenaltyDetails} />
+        </Stack.Navigator>
+    );
+};
+
+// Stack Navigator for Calendar
+const CalendarStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="CalendarHub" component={CalendarHubScreen} />
+            <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} />
+            <Stack.Screen name="Voting" component={VotingScreen} />
+            <Stack.Screen name="History" component={HistoryScreen} />
         </Stack.Navigator>
     );
 };
@@ -124,11 +143,11 @@ const AppNavigator = () => {
                     }}
                 />
                 <Tab.Screen
-                    name="Activities"
-                    component={ActivitiesScreen}
+                    name="Calendar"
+                    component={CalendarStack}
                     options={{
-                        title: 'Actividades',
-                        tabBarLabel: 'Actividades',
+                        title: 'Calendario',
+                        tabBarLabel: 'Calendario',
                         headerShown: false
                     }}
                 />
