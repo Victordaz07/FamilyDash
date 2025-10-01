@@ -172,7 +172,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             id: '4',
             name: 'Jake',
             avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
-            badge: { type: 'icon', value: 'exclamation', color: '#EF4444' },
+            badge: { type: 'icon', value: 'warning', color: '#EF4444' },
             borderColor: '#F59E0B',
             status: 'offline',
             lastSeen: '1 hour ago',

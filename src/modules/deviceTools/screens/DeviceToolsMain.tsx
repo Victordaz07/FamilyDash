@@ -128,524 +128,527 @@ const DeviceToolsMain: React.FC<DeviceToolsMainProps> = ({ navigation }) => {
             pulseAnimation.stop();
         };
     }, []);
-    { id: '1', name: 'Dad', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', isOnline: true, status: 'Online' },
-    { id: '2', name: 'Mom', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', isOnline: true, status: 'Online' },
-    { id: '3', name: 'Ariella', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', age: 12, isOnline: true, status: '12 years' },
-    { id: '4', name: 'Noah', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', age: 8, isOnline: false, status: '8 years' },
+
+    // Mock family members data
+    const familyMembers: FamilyMember[] = [
+        { id: '1', name: 'Dad', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', isOnline: true, status: 'Online' },
+        { id: '2', name: 'Mom', role: 'parent', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', isOnline: true, status: 'Online' },
+        { id: '3', name: 'Ariella', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', age: 12, isOnline: true, status: '12 years' },
+        { id: '4', name: 'Noah', role: 'child', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', age: 8, isOnline: false, status: '8 years' },
     ];
 
-const accentColors = [
-    { name: 'blue', color: '#3B82F6' },
-    { name: 'green', color: '#10B981' },
-    { name: 'purple', color: '#8B5CF6' },
-    { name: 'pink', color: '#EC4899' },
-    { name: 'orange', color: '#F59E0B' },
-];
+    const accentColors = [
+        { name: 'blue', color: '#3B82F6' },
+        { name: 'green', color: '#10B981' },
+        { name: 'purple', color: '#8B5CF6' },
+        { name: 'pink', color: '#EC4899' },
+        { name: 'orange', color: '#F59E0B' },
+    ];
 
-const handleBack = () => {
-    navigation.goBack();
-};
+    const handleBack = () => {
+        navigation.goBack();
+    };
 
-const handleSettings = () => {
-    Alert.alert('Settings', 'Advanced settings coming soon!');
-};
+    const handleSettings = () => {
+        Alert.alert('Settings', 'Advanced settings coming soon!');
+    };
 
-const handleMuteAlerts = () => {
-    setMuteAlerts(!muteAlerts);
-    Alert.alert('Alerts', muteAlerts ? 'Alerts enabled' : 'Alerts muted');
-};
+    const handleMuteAlerts = () => {
+        setMuteAlerts(!muteAlerts);
+        Alert.alert('Alerts', muteAlerts ? 'Alerts enabled' : 'Alerts muted');
+    };
 
-const handlePanicAlert = () => {
-    Alert.alert('🚨 Panic Alert', 'Emergency notification sent to all family members!');
-};
+    const handlePanicAlert = () => {
+        Alert.alert('🚨 Panic Alert', 'Emergency notification sent to all family members!');
+    };
 
-const handleRingAll = () => {
-    Alert.alert('🔊 Ring All', 'Ringing all family devices...');
-};
+    const handleRingAll = () => {
+        Alert.alert('🔊 Ring All', 'Ringing all family devices...');
+    };
 
-const handleFlashAlert = () => {
-    Alert.alert('⚡ Flash Alert', 'Flashing all device torches...');
-};
+    const handleFlashAlert = () => {
+        Alert.alert('⚡ Flash Alert', 'Flashing all device torches...');
+    };
 
-const handleRingMember = (memberName: string) => {
-    Alert.alert('📱 Ring Device', `Ringing ${memberName}'s device...`);
-};
+    const handleRingMember = (memberName: string) => {
+        Alert.alert('📱 Ring Device', `Ringing ${memberName}'s device...`);
+    };
 
-const handleFamilyManagement = () => {
-    Alert.alert('Family Management', 'Family management screen coming soon!');
-};
+    const handleFamilyManagement = () => {
+        Alert.alert('Family Management', 'Family management screen coming soon!');
+    };
 
-const handleNotificationSettings = () => {
-    setShowNotificationModal(true);
-};
+    const handleNotificationSettings = () => {
+        setShowNotificationModal(true);
+    };
 
-const handleNotificationToggle = () => {
-    setNotificationsEnabled(prevState => {
-        const newState = !prevState;
+    const handleNotificationToggle = () => {
+        setNotificationsEnabled(prevState => {
+            const newState = !prevState;
 
-        // Animate the toggle
-        Animated.timing(toggleAnimation, {
-            toValue: newState ? 1 : 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
+            // Animate the toggle
+            Animated.timing(toggleAnimation, {
+                toValue: newState ? 1 : 0,
+                duration: 200,
+                useNativeDriver: true,
+            }).start();
 
-        return newState;
-    });
+            return newState;
+        });
 
-    // Show alert
-    Alert.alert(
-        'Notifications',
-        !notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled',
-        [
-            { text: 'OK', style: 'default' },
-            {
-                text: 'Advanced Settings',
-                onPress: () => setShowNotificationModal(true),
-                style: 'default'
-            }
-        ]
-    );
-};
+        // Show alert
+        Alert.alert(
+            'Notifications',
+            !notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled',
+            [
+                { text: 'OK', style: 'default' },
+                {
+                    text: 'Advanced Settings',
+                    onPress: () => setShowNotificationModal(true),
+                    style: 'default'
+                }
+            ]
+        );
+    };
 
-const handleWidgets = () => {
-    navigation.navigate('AndroidWidgets');
-};
+    const handleWidgets = () => {
+        navigation.navigate('AndroidWidgets');
+    };
 
-const handleWidgetDemo = () => {
-    navigation.navigate('WidgetDemo');
-};
+    const handleWidgetDemo = () => {
+        navigation.navigate('WidgetDemo');
+    };
 
-const handleEmergencyTools = () => {
-    Alert.alert('Emergency Tools', 'Emergency tools configuration coming soon!');
-};
+    const handleEmergencyTools = () => {
+        Alert.alert('Emergency Tools', 'Emergency tools configuration coming soon!');
+    };
 
-const handleAppSettings = () => {
-    navigation.navigate('AppSettings');
-};
+    const handleAppSettings = () => {
+        navigation.navigate('AppSettings');
+    };
 
-const handleDataBackup = () => {
-    Alert.alert('Data & Backup', 'Backup and data management coming soon!');
-};
+    const handleDataBackup = () => {
+        Alert.alert('Data & Backup', 'Backup and data management coming soon!');
+    };
 
-const handleBackupToCloud = () => {
-    Alert.alert('☁️ Backup', 'Backing up data to cloud...');
-};
+    const handleBackupToCloud = () => {
+        Alert.alert('☁️ Backup', 'Backing up data to cloud...');
+    };
 
-const handleExportData = () => {
-    Alert.alert('📄 Export', 'Exporting data as PDF...');
-};
+    const handleExportData = () => {
+        Alert.alert('📄 Export', 'Exporting data as PDF...');
+    };
 
-const getStatusColor = (member: FamilyMember) => {
-    if (member.isOnline) return '#10B981';
-    return '#6B7280';
-};
+    const getStatusColor = (member: FamilyMember) => {
+        if (member.isOnline) return '#10B981';
+        return '#6B7280';
+    };
 
-const getMemberCardColor = (index: number) => {
-    const colors = ['#F0FDF4', '#FDF2F8', '#FAF5FF', '#EFF6FF'];
-    return colors[index % colors.length];
-};
+    const getMemberCardColor = (index: number) => {
+        const colors = ['#F0FDF4', '#FDF2F8', '#FAF5FF', '#EFF6FF'];
+        return colors[index % colors.length];
+    };
 
-const getMemberBorderColor = (index: number) => {
-    const colors = ['#10B981', '#EC4899', '#8B5CF6', '#3B82F6'];
-    return colors[index % colors.length];
-};
+    const getMemberBorderColor = (index: number) => {
+        const colors = ['#10B981', '#EC4899', '#8B5CF6', '#3B82F6'];
+        return colors[index % colors.length];
+    };
 
-return (
-    <Animated.View
-        style={[
-            styles.container,
-            {
-                opacity: fadeAnim,
-                transform: [
-                    { translateY: slideAnim },
-                    { scale: scaleAnim }
-                ]
-            }
-        ]}
-    >
-        <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
-                style={styles.header}
-            >
-                <View style={styles.headerContent}>
-                    <View style={styles.headerLeft}>
-                        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-                            <Ionicons name="arrow-back" size={20} color="white" />
-                        </TouchableOpacity>
-                        <View>
-                            <Text style={styles.headerTitle}>Device Tools 📱</Text>
-                            <Text style={styles.headerSubtitle}>Family Control Center</Text>
-                        </View>
-                    </View>
-                    <TouchableOpacity style={styles.headerButton} onPress={handleSettings}>
-                        <Ionicons name="settings" size={20} color="white" />
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
-
-            {/* Quick Actions */}
-            <Animated.View
-                style={[
-                    styles.quickActionsSection,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <View style={styles.quickActionsGrid}>
-                    <QuickActionButton
-                        title="Mute Alerts"
-                        icon="notifications-off"
-                        onPress={handleMuteAlerts}
-                        gradient={['#F59E0B', '#EA580C']}
-                        rightElement={
-                            <View style={styles.toggleSwitch}>
-                                <View style={[styles.toggleSlider, { transform: [{ translateX: muteAlerts ? 16 : 0 }] }]} />
-                            </View>
-                        }
-                    />
-                    <QuickActionButton
-                        title="Panic Alert"
-                        icon="warning"
-                        onPress={handlePanicAlert}
-                        gradient={['#EF4444', '#DC2626']}
-                        rightElement={<View style={styles.pulseDot} />}
-                    />
-                    <QuickActionButton
-                        title="Ring All"
-                        icon="volume-high"
-                        onPress={handleRingAll}
-                        gradient={['#3B82F6', '#2563EB']}
-                        rightElement={
-                            <View style={styles.dotsContainer}>
-                                <View style={styles.dot} />
-                                <View style={styles.dot} />
-                                <View style={styles.dot} />
-                            </View>
-                        }
-                    />
-                    <QuickActionButton
-                        title="Flash Alert"
-                        icon="flash"
-                        onPress={handleFlashAlert}
-                        gradient={['#8B5CF6', '#EC4899']}
-                        rightElement={<View style={styles.pingDot} />}
-                    />
-                </View>
-            </Animated.View>
-
-            {/* Family Management */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="Family Management"
-                    subtitle="Manage members, roles, and devices"
-                    icon="people"
-                    onPress={handleFamilyManagement}
-                    color="#3B82F6"
-                />
-                <View style={styles.familyGrid}>
-                    {familyMembers.map((member, index) => (
-                        <Animated.View
-                            key={member.id}
-                            style={[
-                                styles.memberCard,
-                                {
-                                    backgroundColor: getMemberCardColor(index),
-                                    borderColor: getMemberBorderColor(index),
-                                    transform: [{
-                                        translateY: cardsAnim.interpolate({
-                                            inputRange: [0, 1],
-                                            outputRange: [20, 0]
-                                        })
-                                    }]
-                                }
-                            ]}
-                        >
-                            <View style={styles.memberHeader}>
-                                <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
-                                <View style={[styles.statusDot, { backgroundColor: getStatusColor(member) }]} />
-                            </View>
-                            <Text style={styles.memberName}>{member.name}</Text>
-                            <Text style={styles.memberStatus}>{member.status}</Text>
-                            <TouchableOpacity
-                                style={[styles.ringButton, { backgroundColor: member.isOnline ? '#3B82F6' : '#6B7280' }]}
-                                onPress={() => handleRingMember(member.name)}
-                            >
-                                <Text style={styles.ringButtonText}>{member.isOnline ? 'Ring' : 'Offline'}</Text>
+    return (
+        <Animated.View
+            style={[
+                styles.container,
+                {
+                    opacity: fadeAnim,
+                    transform: [
+                        { translateY: slideAnim },
+                        { scale: scaleAnim }
+                    ]
+                }
+            ]}
+        >
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Header */}
+                <LinearGradient
+                    colors={['#8B5CF6', '#7C3AED']}
+                    style={styles.header}
+                >
+                    <View style={styles.headerContent}>
+                        <View style={styles.headerLeft}>
+                            <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
+                                <Ionicons name="arrow-back" size={20} color="white" />
                             </TouchableOpacity>
-                        </Animated.View>
-                    ))}
-                </View>
-            </Animated.View>
+                            <View>
+                                <Text style={styles.headerTitle}>Device Tools 📱</Text>
+                                <Text style={styles.headerSubtitle}>Family Control Center</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.headerButton} onPress={handleSettings}>
+                            <Ionicons name="settings" size={20} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                </LinearGradient>
 
-            {/* Notification Settings */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="Notification Settings"
-                    subtitle="Push alerts, quiet hours, emergency bypass"
-                    icon="notifications"
-                    onPress={handleNotificationSettings}
-                    color="#F59E0B"
-                    rightElement={
-                        <TouchableOpacity
-                            style={[styles.toggleSwitch, { backgroundColor: notificationsEnabled ? '#10B981' : '#6B7280' }]}
-                            onPress={handleNotificationToggle}
-                            activeOpacity={0.8}
-                        >
+                {/* Quick Actions */}
+                <Animated.View
+                    style={[
+                        styles.quickActionsSection,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <View style={styles.quickActionsGrid}>
+                        <QuickActionButton
+                            title="Mute Alerts"
+                            icon="notifications-off"
+                            onPress={handleMuteAlerts}
+                            gradient={['#F59E0B', '#EA580C']}
+                            rightElement={
+                                <View style={styles.toggleSwitch}>
+                                    <View style={[styles.toggleSlider, { transform: [{ translateX: muteAlerts ? 16 : 0 }] }]} />
+                                </View>
+                            }
+                        />
+                        <QuickActionButton
+                            title="Panic Alert"
+                            icon="warning"
+                            onPress={handlePanicAlert}
+                            gradient={['#EF4444', '#DC2626']}
+                            rightElement={<View style={styles.pulseDot} />}
+                        />
+                        <QuickActionButton
+                            title="Ring All"
+                            icon="volume-high"
+                            onPress={handleRingAll}
+                            gradient={['#3B82F6', '#2563EB']}
+                            rightElement={
+                                <View style={styles.dotsContainer}>
+                                    <View style={styles.dot} />
+                                    <View style={styles.dot} />
+                                    <View style={styles.dot} />
+                                </View>
+                            }
+                        />
+                        <QuickActionButton
+                            title="Flash Alert"
+                            icon="flash"
+                            onPress={handleFlashAlert}
+                            gradient={['#8B5CF6', '#EC4899']}
+                            rightElement={<View style={styles.pingDot} />}
+                        />
+                    </View>
+                </Animated.View>
+
+                {/* Family Management */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="Family Management"
+                        subtitle="Manage members, roles, and devices"
+                        icon="people"
+                        onPress={handleFamilyManagement}
+                        color="#3B82F6"
+                    />
+                    <View style={styles.familyGrid}>
+                        {familyMembers.map((member, index) => (
                             <Animated.View
+                                key={member.id}
                                 style={[
-                                    styles.toggleSlider,
+                                    styles.memberCard,
                                     {
+                                        backgroundColor: getMemberCardColor(index),
+                                        borderColor: getMemberBorderColor(index),
                                         transform: [{
-                                            translateX: toggleAnimation.interpolate({
+                                            translateY: cardsAnim.interpolate({
                                                 inputRange: [0, 1],
-                                                outputRange: [0, 24]
+                                                outputRange: [20, 0]
                                             })
                                         }]
                                     }
                                 ]}
-                            />
-                        </TouchableOpacity>
-                    }
-                />
-                <View style={styles.quietHoursCard}>
-                    <View style={styles.quietHoursContent}>
-                        <Ionicons name="moon" size={16} color="#8B5CF6" />
-                        <Text style={styles.quietHoursText}>Quiet Hours</Text>
-                    </View>
-                    <Text style={styles.quietHoursTime}>10:00 PM – 07:00 AM</Text>
-                </View>
-            </Animated.View>
-
-            {/* Widgets */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="Widgets"
-                    subtitle="Home screen widgets"
-                    icon="grid"
-                    onPress={handleWidgets}
-                    color="#10B981"
-                />
-                <View style={styles.widgetPreview}>
-                    <View style={styles.widgetHeader}>
-                        <Ionicons name="calendar" size={16} color="#10B981" />
-                        <Text style={styles.widgetTitle}>Family Calendar</Text>
-                        <View style={styles.widgetBadge}>
-                            <Text style={styles.widgetBadgeText}>4x2</Text>
-                        </View>
-                    </View>
-                    <View style={styles.widgetContent}>
-                        <View style={styles.widgetItem}>
-                            <View style={styles.widgetDot} />
-                            <Text style={styles.widgetItemText}>Movie Night • Tonight 7PM</Text>
-                        </View>
-                    </View>
-                    <TouchableOpacity style={styles.addWidgetButton} onPress={handleWidgetDemo}>
-                        <Text style={styles.addWidgetButtonText}>Try Widget Demo</Text>
-                    </TouchableOpacity>
-                </View>
-            </Animated.View>
-
-            {/* Emergency Tools */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="Emergency Tools"
-                    subtitle="Alerts and device tools"
-                    icon="warning"
-                    onPress={handleEmergencyTools}
-                    color="#EF4444"
-                />
-                <View style={styles.emergencyGrid}>
-                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                        <TouchableOpacity style={styles.emergencyButton} onPress={handlePanicAlert}>
-                            <Ionicons name="warning" size={20} color="#EF4444" />
-                            <Text style={styles.emergencyButtonText}>Panic</Text>
-                        </TouchableOpacity>
-                    </Animated.View>
-                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                        <TouchableOpacity style={styles.emergencyButton} onPress={handleRingAll}>
-                            <Ionicons name="notifications" size={20} color="#3B82F6" />
-                            <Text style={styles.emergencyButtonText}>Ring All</Text>
-                        </TouchableOpacity>
-                    </Animated.View>
-                    <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                        <TouchableOpacity style={styles.emergencyButton}>
-                            <Ionicons name="chatbubble" size={20} color="#10B981" />
-                            <Text style={styles.emergencyButtonText}>Quick SMS</Text>
-                        </TouchableOpacity>
-                    </Animated.View>
-                </View>
-                <View style={styles.quickMessageCard}>
-                    <Text style={styles.quickMessageLabel}>Quick Message:</Text>
-                    <Text style={styles.quickMessageText}>"Come to living room"</Text>
-                </View>
-            </Animated.View>
-
-            {/* App Settings */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="App Settings"
-                    subtitle="Theme, language, parental PIN"
-                    icon="settings"
-                    onPress={handleAppSettings}
-                    color="#6B7280"
-                />
-                <View style={styles.settingsContent}>
-                    <View style={styles.settingRow}>
-                        <View style={styles.settingRowLeft}>
-                            <Ionicons name="moon" size={16} color="#8B5CF6" />
-                            <Text style={styles.settingRowText}>Dark Mode</Text>
-                        </View>
-                        <View style={[styles.toggleSwitch, { backgroundColor: darkMode ? '#10B981' : '#6B7280' }]}>
-                            <View style={[styles.toggleSlider, { transform: [{ translateX: darkMode ? 16 : 0 }] }]} />
-                        </View>
-                    </View>
-                    <View style={styles.settingRow}>
-                        <Text style={styles.settingRowText}>Accent Color</Text>
-                        <View style={styles.colorPicker}>
-                            {accentColors.map((color) => (
+                            >
+                                <View style={styles.memberHeader}>
+                                    <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
+                                    <View style={[styles.statusDot, { backgroundColor: getStatusColor(member) }]} />
+                                </View>
+                                <Text style={styles.memberName}>{member.name}</Text>
+                                <Text style={styles.memberStatus}>{member.status}</Text>
                                 <TouchableOpacity
-                                    key={color.name}
+                                    style={[styles.ringButton, { backgroundColor: member.isOnline ? '#3B82F6' : '#6B7280' }]}
+                                    onPress={() => handleRingMember(member.name)}
+                                >
+                                    <Text style={styles.ringButtonText}>{member.isOnline ? 'Ring' : 'Offline'}</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        ))}
+                    </View>
+                </Animated.View>
+
+                {/* Notification Settings */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="Notification Settings"
+                        subtitle="Push alerts, quiet hours, emergency bypass"
+                        icon="notifications"
+                        onPress={handleNotificationSettings}
+                        color="#F59E0B"
+                        rightElement={
+                            <TouchableOpacity
+                                style={[styles.toggleSwitch, { backgroundColor: notificationsEnabled ? '#10B981' : '#6B7280' }]}
+                                onPress={handleNotificationToggle}
+                                activeOpacity={0.8}
+                            >
+                                <Animated.View
                                     style={[
-                                        styles.colorSwatch,
-                                        { backgroundColor: color.color },
-                                        selectedAccentColor === color.name && styles.selectedColorSwatch
+                                        styles.toggleSlider,
+                                        {
+                                            transform: [{
+                                                translateX: toggleAnimation.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [0, 24]
+                                                })
+                                            }]
+                                        }
                                     ]}
-                                    onPress={() => setSelectedAccentColor(color.name)}
                                 />
-                            ))}
+                            </TouchableOpacity>
+                        }
+                    />
+                    <View style={styles.quietHoursCard}>
+                        <View style={styles.quietHoursContent}>
+                            <Ionicons name="moon" size={16} color="#8B5CF6" />
+                            <Text style={styles.quietHoursText}>Quiet Hours</Text>
+                        </View>
+                        <Text style={styles.quietHoursTime}>10:00 PM – 07:00 AM</Text>
+                    </View>
+                </Animated.View>
+
+                {/* Widgets */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="Widgets"
+                        subtitle="Home screen widgets"
+                        icon="grid"
+                        onPress={handleWidgets}
+                        color="#10B981"
+                    />
+                    <View style={styles.widgetPreview}>
+                        <View style={styles.widgetHeader}>
+                            <Ionicons name="calendar" size={16} color="#10B981" />
+                            <Text style={styles.widgetTitle}>Family Calendar</Text>
+                            <View style={styles.widgetBadge}>
+                                <Text style={styles.widgetBadgeText}>4x2</Text>
+                            </View>
+                        </View>
+                        <View style={styles.widgetContent}>
+                            <View style={styles.widgetItem}>
+                                <View style={styles.widgetDot} />
+                                <Text style={styles.widgetItemText}>Movie Night • Tonight 7PM</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.addWidgetButton} onPress={handleWidgetDemo}>
+                            <Text style={styles.addWidgetButtonText}>Try Widget Demo</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Animated.View>
+
+                {/* Emergency Tools */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="Emergency Tools"
+                        subtitle="Alerts and device tools"
+                        icon="warning"
+                        onPress={handleEmergencyTools}
+                        color="#EF4444"
+                    />
+                    <View style={styles.emergencyGrid}>
+                        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                            <TouchableOpacity style={styles.emergencyButton} onPress={handlePanicAlert}>
+                                <Ionicons name="warning" size={20} color="#EF4444" />
+                                <Text style={styles.emergencyButtonText}>Panic</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                            <TouchableOpacity style={styles.emergencyButton} onPress={handleRingAll}>
+                                <Ionicons name="notifications" size={20} color="#3B82F6" />
+                                <Text style={styles.emergencyButtonText}>Ring All</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                            <TouchableOpacity style={styles.emergencyButton}>
+                                <Ionicons name="chatbubble" size={20} color="#10B981" />
+                                <Text style={styles.emergencyButtonText}>Quick SMS</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </View>
+                    <View style={styles.quickMessageCard}>
+                        <Text style={styles.quickMessageLabel}>Quick Message:</Text>
+                        <Text style={styles.quickMessageText}>"Come to living room"</Text>
+                    </View>
+                </Animated.View>
+
+                {/* App Settings */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="App Settings"
+                        subtitle="Theme, language, parental PIN"
+                        icon="settings"
+                        onPress={handleAppSettings}
+                        color="#6B7280"
+                    />
+                    <View style={styles.settingsContent}>
+                        <View style={styles.settingRow}>
+                            <View style={styles.settingRowLeft}>
+                                <Ionicons name="moon" size={16} color="#8B5CF6" />
+                                <Text style={styles.settingRowText}>Dark Mode</Text>
+                            </View>
+                            <View style={[styles.toggleSwitch, { backgroundColor: darkMode ? '#10B981' : '#6B7280' }]}>
+                                <View style={[styles.toggleSlider, { transform: [{ translateX: darkMode ? 16 : 0 }] }]} />
+                            </View>
+                        </View>
+                        <View style={styles.settingRow}>
+                            <Text style={styles.settingRowText}>Accent Color</Text>
+                            <View style={styles.colorPicker}>
+                                {accentColors.map((color) => (
+                                    <TouchableOpacity
+                                        key={color.name}
+                                        style={[
+                                            styles.colorSwatch,
+                                            { backgroundColor: color.color },
+                                            selectedAccentColor === color.name && styles.selectedColorSwatch
+                                        ]}
+                                        onPress={() => setSelectedAccentColor(color.name)}
+                                    />
+                                ))}
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Animated.View>
+                </Animated.View>
 
-            {/* Data & Backup */}
-            <Animated.View
-                style={[
-                    styles.section,
-                    {
-                        opacity: cardsAnim,
-                        transform: [{
-                            translateY: cardsAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [30, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <SettingCard
-                    title="Data & Backup"
-                    subtitle="Backup, export, restore"
-                    icon="cloud"
-                    onPress={handleDataBackup}
-                    color="#6366F1"
-                />
-                <View style={styles.backupContent}>
-                    <TouchableOpacity style={styles.backupButton} onPress={handleBackupToCloud}>
-                        <LinearGradient colors={['#3B82F6', '#6366F1']} style={styles.backupButtonGradient}>
-                            <Ionicons name="cloud-upload" size={20} color="white" />
-                            <Text style={styles.backupButtonText}>Backup to Cloud</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.backupButton} onPress={handleExportData}>
-                        <LinearGradient colors={['#10B981', '#059669']} style={styles.backupButtonGradient}>
-                            <Ionicons name="document-text" size={20} color="white" />
-                            <Text style={styles.backupButtonText}>Export Data (PDF)</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                    <View style={styles.lastBackupCard}>
-                        <Text style={styles.lastBackupLabel}>Last backup:</Text>
-                        <Text style={styles.lastBackupTime}>2 hours ago</Text>
+                {/* Data & Backup */}
+                <Animated.View
+                    style={[
+                        styles.section,
+                        {
+                            opacity: cardsAnim,
+                            transform: [{
+                                translateY: cardsAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [30, 0]
+                                })
+                            }]
+                        }
+                    ]}
+                >
+                    <SettingCard
+                        title="Data & Backup"
+                        subtitle="Backup, export, restore"
+                        icon="cloud"
+                        onPress={handleDataBackup}
+                        color="#6366F1"
+                    />
+                    <View style={styles.backupContent}>
+                        <TouchableOpacity style={styles.backupButton} onPress={handleBackupToCloud}>
+                            <LinearGradient colors={['#3B82F6', '#6366F1']} style={styles.backupButtonGradient}>
+                                <Ionicons name="cloud-upload" size={20} color="white" />
+                                <Text style={styles.backupButtonText}>Backup to Cloud</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.backupButton} onPress={handleExportData}>
+                            <LinearGradient colors={['#10B981', '#059669']} style={styles.backupButtonGradient}>
+                                <Ionicons name="document-text" size={20} color="white" />
+                                <Text style={styles.backupButtonText}>Export Data (PDF)</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        <View style={styles.lastBackupCard}>
+                            <Text style={styles.lastBackupLabel}>Last backup:</Text>
+                            <Text style={styles.lastBackupTime}>2 hours ago</Text>
+                        </View>
                     </View>
-                </View>
-            </Animated.View>
+                </Animated.View>
 
-            {/* Bottom spacing for navigation */}
-            <View style={styles.bottomSpacing} />
-        </ScrollView>
+                {/* Bottom spacing for navigation */}
+                <View style={styles.bottomSpacing} />
+            </ScrollView>
 
-        {/* Notification Settings Modal */}
-        <NotificationSettingsModal
-            visible={showNotificationModal}
-            onClose={() => setShowNotificationModal(false)}
-        />
-    </Animated.View>
-);
+            {/* Notification Settings Modal */}
+            <NotificationSettingsModal
+                visible={showNotificationModal}
+                onClose={() => setShowNotificationModal(false)}
+            />
+        </Animated.View>
+    );
 };
 
 const styles = StyleSheet.create({
