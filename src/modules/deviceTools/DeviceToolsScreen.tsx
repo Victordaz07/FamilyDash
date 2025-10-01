@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../../state/store';
 
 interface DeviceToolsScreenProps {
-  navigation: any;
+    navigation: any;
 }
 
 const DeviceToolsScreen: React.FC<DeviceToolsScreenProps> = ({ navigation }) => {

@@ -82,6 +82,16 @@ const DeviceToolsStack = () => {
     );
 };
 
+// Stack Navigator for Safe Room
+const SafeRoomStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SafeRoomHome" component={SafeRoomHome} />
+            <Stack.Screen name="SafeRoomTabs" component={SafeRoomTabs} />
+        </Stack.Navigator>
+    );
+};
+
 const AppNavigator = () => {
     return (
         <NavigationContainer>
