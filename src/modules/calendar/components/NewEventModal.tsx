@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface NewEventModalProps {
   visible: boolean;
@@ -20,6 +21,8 @@ interface EventData {
 }
 
 const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmit }) => {
+  const insets = useSafeAreaInsets();
+  
   const [formData, setFormData] = useState<EventData>({
     title: '',
     date: '',
@@ -113,7 +116,7 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
       onRequestClose={handleClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, { paddingBottom: Math.max(insets.bottom, 20) }]}>
           <LinearGradient
             colors={['#3B82F6', '#2563EB']}
             style={styles.modalHeader}
@@ -127,7 +130,12 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
             </TouchableOpacity>
           </LinearGradient>
 
-          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            style={styles.modalContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 20 }}
+          >
             {/* Event Title */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Event Title *</Text>
@@ -282,7 +290,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '90%',
+    maxHeight: '85%',
+    paddingBottom: 0,
   },
   modalHeader: {
     flexDirection: 'row',
