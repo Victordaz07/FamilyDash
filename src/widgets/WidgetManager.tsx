@@ -98,9 +98,9 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({ module }) => {
                             {widget.id === 'tasks_today' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        {data.completedCount}/{data.totalCount} tareas completadas
+                                        {(data as any).completedCount}/{(data as any).totalCount} tareas completadas
                                     </Text>
-                                    {data.tasks.slice(0, 2).map((task: any) => (
+                                    {(data as any).tasks?.slice(0, 2).map((task: any) => (
                                         <Text key={task.id} style={styles.previewTask}>
                                             {task.completed ? '✅' : '⏳'} {task.title}
                                         </Text>
@@ -111,18 +111,18 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({ module }) => {
                             {widget.id === 'penalty_active' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        {data.isActive ? `${data.timeRemaining} min restantes` : 'Sin penalizaciones'}
+                                        {(data as any).isActive ? `${(data as any).timeRemaining} min restantes` : 'Sin penalizaciones'}
                                     </Text>
-                                    <Text style={styles.previewSubtext}>{data.reason}</Text>
+                                    <Text style={styles.previewSubtext}>{(data as any).reason}</Text>
                                 </View>
                             )}
 
                             {widget.id === 'activities_weekly' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        {data.upcomingCount} actividades próximas
+                                        {(data as any).upcomingCount} actividades próximas
                                     </Text>
-                                    {data.activities.slice(0, 1).map((activity: any) => (
+                                    {(data as any).activities?.slice(0, 1).map((activity: any) => (
                                         <Text key={activity.id} style={styles.previewTask}>
                                             📅 {activity.title}
                                         </Text>
@@ -133,9 +133,9 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({ module }) => {
                             {widget.id === 'goals_progress' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        Progreso promedio: {data.averageProgress}%
+                                        Progreso promedio: {(data as any).averageProgress}%
                                     </Text>
-                                    {data.goals.slice(0, 1).map((goal: any) => (
+                                    {(data as any).goals?.slice(0, 1).map((goal: any) => (
                                         <Text key={goal.id} style={styles.previewTask}>
                                             🏆 {goal.title}: {goal.progress}%
                                         </Text>
@@ -146,10 +146,10 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({ module }) => {
                             {widget.id === 'safe_room_message' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        {data.isUnread ? 'Nuevo mensaje' : 'Sin mensajes nuevos'}
+                                        {(data as any).isUnread ? 'Nuevo mensaje' : 'Sin mensajes nuevos'}
                                     </Text>
                                     <Text style={styles.previewSubtext}>
-                                        {data.sender}: {data.message}
+                                        {(data as any).sender}: {(data as any).message}
                                     </Text>
                                 </View>
                             )}
@@ -157,10 +157,10 @@ const WidgetManager: React.FC<WidgetManagerProps> = ({ module }) => {
                             {widget.id === 'device_ring' && (
                                 <View>
                                     <Text style={styles.previewText}>
-                                        {data.connectedDevices}/{data.totalDevices} dispositivos conectados
+                                        {(data as any).connectedDevices}/{(data as any).totalDevices} dispositivos conectados
                                     </Text>
                                     <Text style={styles.previewSubtext}>
-                                        Última llamada: {data.lastRingTime}
+                                        Última llamada: {(data as any).lastRingTime}
                                     </Text>
                                 </View>
                             )}

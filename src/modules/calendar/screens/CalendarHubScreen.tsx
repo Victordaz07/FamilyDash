@@ -331,11 +331,14 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                         </View>
 
                         <View style={styles.activitiesList}>
-                            {todaysActivities.map(activity => (
+                            {todaysActivities.map((activity, index) => (
                                 <ActivityCard
-                                    key={activity.id}
-                                    activity={activity}
-                                    onPress={() => handleActivityPress(activity.id)}
+                                    key={activity.id || `activity-${index}`}
+                                    activity={{
+                                        ...activity,
+                                        id: activity.id || `activity-${index}`
+                                    }}
+                                    onPress={() => handleActivityPress(activity.id || `activity-${index}`)}
                                     onActionPress={() => handleReminderPress(activity.title)}
                                 />
                             ))}
@@ -354,11 +357,14 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                         </View>
 
                         <View style={styles.upcomingEventsList}>
-                            {upcomingActivities.map(activity => (
+                            {upcomingActivities.map((activity, index) => (
                                 <ActivityCard
-                                    key={activity.id}
-                                    activity={activity}
-                                    onPress={() => handleActivityPress(activity.id)}
+                                    key={activity.id || `activity-${index}`}
+                                    activity={{
+                                        ...activity,
+                                        id: activity.id || `activity-${index}`
+                                    }}
+                                    onPress={() => handleActivityPress(activity.id || `activity-${index}`)}
                                     onActionPress={() => {
                                         if (activity.action === 'vote') {
                                             handleVotePress();

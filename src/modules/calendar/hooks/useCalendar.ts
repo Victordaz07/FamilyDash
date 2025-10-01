@@ -60,8 +60,9 @@ export const useCalendar = () => {
         setIsLoading(true);
         try {
             if (useFirebase) {
-                const firebaseActivity: Omit<FirebaseActivity, 'id' | 'createdAt' | 'updatedAt'> = {
+                const firebaseActivity: FirebaseActivity = {
                     ...activityData,
+                    id: '', // Will be set by Firebase
                     createdAt: new Date(),
                     updatedAt: new Date()
                 };

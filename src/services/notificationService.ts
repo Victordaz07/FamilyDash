@@ -9,6 +9,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -79,9 +81,7 @@ class NotificationService {
           data: notificationData.data || {},
           sound: 'default',
         },
-        trigger: {
-          date: notificationData.scheduledTime,
-        },
+        trigger: notificationData.scheduledTime as any,
       });
 
       console.log('Notification scheduled:', notificationId);
