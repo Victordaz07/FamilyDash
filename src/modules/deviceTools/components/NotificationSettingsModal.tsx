@@ -220,7 +220,7 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ v
 
                             <TouchableOpacity style={styles.actionButton}>
                                 <View style={styles.actionButtonContent}>
-                                    <Ionicons name="vibrate" size={20} color="#8B5CF6" />
+                                    <Ionicons name="phone-portrait" size={20} color="#8B5CF6" />
                                     <Text style={styles.actionButtonText}>Vibration Patterns</Text>
                                 </View>
                                 <Ionicons name="chevron-forward" size={20} color="#6B7280" />

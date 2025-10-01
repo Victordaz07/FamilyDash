@@ -89,7 +89,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
                 return (
                     <View style={styles.widgetContent}>
                         <View style={styles.widgetHeader}>
-                            <Ionicons name={config.icon} size={16} color="white" />
+                            <Ionicons name={config.icon as any} size={16} color="white" />
                             <Text style={styles.widgetTitle}>Tasks</Text>
                         </View>
                         <View style={styles.taskList}>
@@ -116,7 +116,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
                 return (
                     <Animated.View style={[styles.widgetContent, { transform: [{ scale: pulseAnim }] }]}>
                         <View style={styles.widgetHeader}>
-                            <Ionicons name={config.icon} size={16} color="white" />
+                            <Ionicons name={config.icon as any} size={16} color="white" />
                             <Text style={styles.widgetTitle}>Penalty</Text>
                         </View>
                         <View style={styles.penaltyContent}>
@@ -136,7 +136,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
                 return (
                     <View style={styles.widgetContent}>
                         <View style={styles.widgetHeader}>
-                            <Ionicons name={config.icon} size={16} color="white" />
+                            <Ionicons name={config.icon as any} size={16} color="white" />
                             <Text style={styles.widgetTitle}>Events</Text>
                         </View>
                         <View style={styles.activityList}>
@@ -158,7 +158,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
                 return (
                     <View style={styles.widgetContent}>
                         <View style={styles.widgetHeader}>
-                            <Ionicons name={config.icon} size={16} color="white" />
+                            <Ionicons name={config.icon as any} size={16} color="white" />
                             <Text style={styles.widgetTitle}>Goals</Text>
                         </View>
                         <View style={styles.goalContent}>
@@ -175,7 +175,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
                 return (
                     <View style={styles.widgetContent}>
                         <View style={styles.widgetHeader}>
-                            <Ionicons name={config.icon} size={16} color="white" />
+                            <Ionicons name={config.icon as any} size={16} color="white" />
                             <Text style={styles.widgetTitle}>Safe Room</Text>
                         </View>
                         <View style={styles.safeRoomContent}>
@@ -208,7 +208,7 @@ const InteractiveWidget: React.FC<InteractiveWidgetProps> = ({ type, size = 'med
     return (
         <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
             <Animated.View style={[styles.widgetContainer, { width: config.size, height: config.size }]}>
-                <LinearGradient colors={config.gradient} style={styles.widgetGradient}>
+                <LinearGradient colors={config.gradient as [string, string]} style={styles.widgetGradient}>
                     {renderWidgetContent()}
                 </LinearGradient>
             </Animated.View>

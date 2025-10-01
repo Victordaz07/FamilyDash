@@ -68,7 +68,7 @@ const AppSettingsScreen: React.FC<AppSettingsScreenProps> = ({ navigation }) => 
                                 { text: 'Cancelar', style: 'cancel' },
                                 {
                                     text: 'Guardar',
-                                    onPress: (pin) => {
+                                    onPress: (pin?: string) => {
                                         if (pin && pin.length === 4) {
                                             setParentalPIN(true);
                                             Alert.alert('✅ PIN Configurado', 'El PIN parental ha sido configurado exitosamente');

@@ -198,7 +198,7 @@ const WidgetDemo: React.FC<WidgetDemoProps> = ({ navigation }) => {
             <View style={styles.androidInstructionsSection}>
                 <View style={styles.androidInstructionsCard}>
                     <View style={styles.androidInstructionsHeader}>
-                        <Ionicons name="android" size={24} color="#10B981" />
+                        <Ionicons name="phone-portrait" size={24} color="#10B981" />
                         <Text style={styles.androidInstructionsTitle}>Real Android Setup</Text>
                     </View>
                     <Text style={styles.androidInstructionsDescription}>

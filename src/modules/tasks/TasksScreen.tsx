@@ -371,7 +371,7 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
                                     onPress={() => handleQuickAction(action.title)}
                                 >
                                     <LinearGradient
-                                        colors={action.colors}
+                                        colors={action.colors as [string, string]}
                                         style={styles.quickActionGradient}
                                     >
                                         <Ionicons name={action.icon as any} size={24} color="white" />
