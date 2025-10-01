@@ -35,6 +35,11 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) =>
       icon: 'calendar'
     },
     {
+      name: 'Goals',
+      label: 'Metas',
+      icon: 'trophy'
+    },
+    {
       name: 'SafeRoom',
       label: 'SafeRoom',
       icon: 'shield-checkmark'

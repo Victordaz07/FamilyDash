@@ -47,6 +47,12 @@ const CalendarStack = () => (
   </Stack.Navigator>
 );
 
+const GoalsStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="GoalsMain" component={GoalsScreen} />
+  </Stack.Navigator>
+);
+
 const SafeRoomStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen} />
@@ -77,6 +83,9 @@ const CustomTabBar = (props: any) => {
         break;
       case 'Calendar':
         navigation.navigate('Calendar');
+        break;
+      case 'Goals':
+        navigation.navigate('Goals');
         break;
       case 'SafeRoom':
         navigation.navigate('SafeRoom');
@@ -119,6 +128,11 @@ const AppNavigator = () => {
           name="Calendar" 
           component={CalendarStack}
           options={{ tabBarLabel: 'Calendario' }}
+        />
+        <Tab.Screen 
+          name="Goals" 
+          component={GoalsStack}
+          options={{ tabBarLabel: 'Metas' }}
         />
         <Tab.Screen 
           name="SafeRoom" 
