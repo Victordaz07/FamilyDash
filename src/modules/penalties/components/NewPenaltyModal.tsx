@@ -19,7 +19,6 @@ interface NewPenaltyData {
 }
 
 const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onSubmit }) => {
-    console.log('NewPenaltyModal rendered, visible:', visible);
 
     const [formData, setFormData] = useState<NewPenaltyData>({
         memberId: '',
@@ -301,7 +300,22 @@ const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onS
                                 <Text style={styles.quickActionText}>1 hour</Text>
                             </TouchableOpacity>
                         </View>
+
+                        {/* Bottom spacing for fixed button */}
+                        <View style={styles.bottomSpacing} />
                     </ScrollView>
+
+                    {/* Fixed Create Button */}
+                    <View style={styles.fixedButtonContainer}>
+                        <LinearGradient
+                            colors={['#EF4444', '#DC2626']}
+                            style={styles.fixedCreateButton}
+                        >
+                            <TouchableOpacity style={styles.fixedCreateButtonTouch} onPress={handleSubmit}>
+                                <Text style={styles.fixedCreateButtonText}>Create Penalty</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -312,13 +326,16 @@ const styles = StyleSheet.create({
     overlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
     modalContainer: {
         backgroundColor: 'white',
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        borderRadius: 24,
+        width: '100%',
         maxHeight: '90%',
+        maxWidth: 400,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -328,6 +345,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
+        backgroundColor: '#EF4444',
     },
     closeButton: {
         width: 40,
@@ -353,6 +371,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         padding: 20,
+        paddingBottom: 30,
     },
     inputGroup: {
         marginBottom: 20,
@@ -524,6 +543,29 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
         color: '#EF4444',
+    },
+    bottomSpacing: {
+        height: 80,
+    },
+    fixedButtonContainer: {
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        backgroundColor: 'white',
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
+    },
+    fixedCreateButton: {
+        borderRadius: 12,
+        paddingVertical: 16,
+    },
+    fixedCreateButtonTouch: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    fixedCreateButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: 'white',
     },
 });
 

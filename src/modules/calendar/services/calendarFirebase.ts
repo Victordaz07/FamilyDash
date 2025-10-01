@@ -152,7 +152,7 @@ class CalendarFirebaseService {
   // Real-time listeners
   subscribeToActivities(callback: (activities: FirebaseActivity[]) => void): () => void {
     const q = query(collection(db, this.activitiesCollection), orderBy('createdAt', 'desc'));
-    
+
     return onSnapshot(q, (querySnapshot) => {
       const activities = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -160,7 +160,7 @@ class CalendarFirebaseService {
         createdAt: doc.data().createdAt?.toDate() || new Date(),
         updatedAt: doc.data().updatedAt?.toDate() || new Date()
       })) as FirebaseActivity[];
-      
+
       callback(activities);
     }, (error) => {
       console.error('Error in activities subscription:', error);
@@ -173,7 +173,7 @@ class CalendarFirebaseService {
       where('date', '==', date),
       orderBy('time', 'asc')
     );
-    
+
     return onSnapshot(q, (querySnapshot) => {
       const activities = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -181,7 +181,7 @@ class CalendarFirebaseService {
         createdAt: doc.data().createdAt?.toDate() || new Date(),
         updatedAt: doc.data().updatedAt?.toDate() || new Date()
       })) as FirebaseActivity[];
-      
+
       callback(activities);
     }, (error) => {
       console.error('Error in activities by date subscription:', error);
@@ -303,14 +303,14 @@ class CalendarFirebaseService {
       where('activityId', '==', activityId),
       orderBy('createdAt', 'asc')
     );
-    
+
     return onSnapshot(q, (querySnapshot) => {
       const messages = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate() || new Date()
       })) as FirebaseChatMessage[];
-      
+
       callback(messages);
     }, (error) => {
       console.error('Error in chat messages subscription:', error);
