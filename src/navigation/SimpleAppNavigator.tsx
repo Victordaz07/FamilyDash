@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -63,6 +64,8 @@ const ProfileStack = () => (
 );
 
 const AppNavigator = () => {
+  const insets = useSafeAreaInsets();
+  
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -95,9 +98,9 @@ const AppNavigator = () => {
             backgroundColor: '#ffffff',
             borderTopWidth: 1,
             borderTopColor: '#e5e7eb',
-            paddingBottom: 8,
+            paddingBottom: Math.max(insets.bottom, 20),
             paddingTop: 8,
-            height: 60,
+            height: 80 + Math.max(insets.bottom, 0),
           },
           tabBarLabelStyle: {
             fontSize: 12,
