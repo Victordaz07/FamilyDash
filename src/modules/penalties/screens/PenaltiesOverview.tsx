@@ -29,7 +29,7 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
         createPenalty
     } = usePenalties();
 
-  const [showNewPenaltyModal, setShowNewPenaltyModal] = useState(false);
+    const [showNewPenaltyModal, setShowNewPenaltyModal] = useState(false);
 
     const activePenalties = getActivePenalties();
     const recentlyCompleted = getRecentlyCompletedPenalties();
@@ -40,6 +40,7 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
     };
 
   const handleAddPenalty = () => {
+    console.log('Setting showNewPenaltyModal to true');
     setShowNewPenaltyModal(true);
   };
 
@@ -338,14 +339,14 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
 
             {/* Bottom spacing */}
             <View style={styles.bottomSpacing} />
-
-      {/* New Penalty Modal */}
-      <NewPenaltyModal
-                visible={showNewPenaltyModal}
-        onClose={() => setShowNewPenaltyModal(false)}
-                onSubmit={handleNewPenaltySubmit}
-            />
         </ScrollView>
+
+        {/* New Penalty Modal - Outside ScrollView */}
+        <NewPenaltyModal
+            visible={showNewPenaltyModal}
+            onClose={() => setShowNewPenaltyModal(false)}
+            onSubmit={handleNewPenaltySubmit}
+        />
     );
 };
 
