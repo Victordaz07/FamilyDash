@@ -20,7 +20,7 @@ interface NewPenaltyData {
 
 const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onSubmit }) => {
     console.log('NewPenaltyModal render - visible:', visible);
-    
+
     if (!visible) {
         console.log('Modal not visible, returning null');
         return null;

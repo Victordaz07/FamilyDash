@@ -39,10 +39,10 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
         navigation.goBack();
     };
 
-  const handleAddPenalty = () => {
-    console.log('Setting showNewPenaltyModal to true');
-    setShowNewPenaltyModal(true);
-  };
+    const handleAddPenalty = () => {
+        console.log('Setting showNewPenaltyModal to true');
+        setShowNewPenaltyModal(true);
+    };
 
     const handleNewPenaltySubmit = (penaltyData: any) => {
         const member = familyMembers.find(m => m.id === penaltyData.memberId);
