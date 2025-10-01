@@ -19,15 +19,15 @@ interface NewPenaltyData {
 }
 
 const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onSubmit }) => {
-  console.log('NewPenaltyModal rendered, visible:', visible);
-  
-  const [formData, setFormData] = useState<NewPenaltyData>({
-    memberId: '',
-    penaltyType: '',
-    reason: '',
-    duration: 15,
-    description: ''
-  });
+    console.log('NewPenaltyModal rendered, visible:', visible);
+
+    const [formData, setFormData] = useState<NewPenaltyData>({
+        memberId: '',
+        penaltyType: '',
+        reason: '',
+        duration: 15,
+        description: ''
+    });
 
     const [selectedMember, setSelectedMember] = useState<string>('');
     const [selectedType, setSelectedType] = useState<string>('');

@@ -30,8 +30,8 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
     } = usePenalties();
 
     const [showNewPenaltyModal, setShowNewPenaltyModal] = useState(false);
-  
-  console.log('PenaltiesOverview rendered, showNewPenaltyModal:', showNewPenaltyModal);
+
+    console.log('PenaltiesOverview rendered, showNewPenaltyModal:', showNewPenaltyModal);
 
     const activePenalties = getActivePenalties();
     const recentlyCompleted = getRecentlyCompletedPenalties();
@@ -41,11 +41,11 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
         navigation.goBack();
     };
 
-  const handleAddPenalty = () => {
-    console.log('Add penalty button pressed!');
-    Alert.alert('Debug', 'Add penalty button pressed!');
-    setShowNewPenaltyModal(true);
-  };
+    const handleAddPenalty = () => {
+        console.log('Add penalty button pressed!');
+        Alert.alert('Debug', 'Add penalty button pressed!');
+        setShowNewPenaltyModal(true);
+    };
 
     const handleNewPenaltySubmit = (penaltyData: any) => {
         const member = familyMembers.find(m => m.id === penaltyData.memberId);
@@ -141,8 +141,8 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
                         <Text style={styles.headerSubtitle}>Family accountability</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity 
-                            style={[styles.headerButton, { backgroundColor: 'rgba(255, 255, 255, 0.4)' }]} 
+                        <TouchableOpacity
+                            style={[styles.headerButton, { backgroundColor: 'rgba(255, 255, 255, 0.4)' }]}
                             onPress={handleAddPenalty}
                         >
                             <Ionicons name="add" size={20} color="white" />
@@ -343,58 +343,58 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
             {/* Bottom spacing */}
             <View style={styles.bottomSpacing} />
 
-      {/* New Penalty Modal */}
-      {showNewPenaltyModal && (
-        <View style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <View style={{
-            backgroundColor: 'white',
-            padding: 20,
-            borderRadius: 16,
-            width: '80%',
-            alignItems: 'center'
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 20 }}>
-              New Penalty Modal
-            </Text>
-            <Text style={{ marginBottom: 20 }}>
-              Modal is working! This is a test.
-            </Text>
-            <TouchableOpacity 
-              style={{
-                backgroundColor: '#EF4444',
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                borderRadius: 8
-              }}
-              onPress={() => {
-                console.log('Test modal closing...');
-                setShowNewPenaltyModal(false);
-              }}
-            >
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-      
-      <NewPenaltyModal
-        visible={showNewPenaltyModal}
-        onClose={() => {
-          console.log('Modal closing...');
-          setShowNewPenaltyModal(false);
-        }}
-        onSubmit={handleNewPenaltySubmit}
-      />
+            {/* New Penalty Modal */}
+            {showNewPenaltyModal && (
+                <View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 20,
+                        borderRadius: 16,
+                        width: '80%',
+                        alignItems: 'center'
+                    }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 20 }}>
+                            New Penalty Modal
+                        </Text>
+                        <Text style={{ marginBottom: 20 }}>
+                            Modal is working! This is a test.
+                        </Text>
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: '#EF4444',
+                                paddingHorizontal: 20,
+                                paddingVertical: 10,
+                                borderRadius: 8
+                            }}
+                            onPress={() => {
+                                console.log('Test modal closing...');
+                                setShowNewPenaltyModal(false);
+                            }}
+                        >
+                            <Text style={{ color: 'white', fontWeight: 'bold' }}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            <NewPenaltyModal
+                visible={showNewPenaltyModal}
+                onClose={() => {
+                    console.log('Modal closing...');
+                    setShowNewPenaltyModal(false);
+                }}
+                onSubmit={handleNewPenaltySubmit}
+            />
         </ScrollView>
     );
 };

@@ -1,5 +1,5 @@
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../../services/firebase';
+import { db } from '../../../services/firebase';
 
 export interface FirebaseActivity {
   id?: string;
