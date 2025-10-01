@@ -10,25 +10,94 @@ interface SafeRoomScreenProps {
 
 const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
     const {
-        messages,
-        emergencyContacts,
-        safetyTips,
-        locationShares,
+        feelings,
+        resources,
+        solutionNotes,
         familyMembers,
-        isEmergencyMode,
-        unreadCount,
-        sendEmergencyAlert,
-        callEmergencyContact,
-        markMessageAsRead,
-        markAllMessagesAsRead,
-        triggerEmergencyMode,
-        exitEmergencyMode,
-        getSafeRoomStats,
-        getUnreadMessages,
-        getActiveLocationShares,
-        getOnlineFamilyMembers,
-        getUnreadSafetyTips
+        activeTab: safeRoomTab,
+        selectedMood,
+        newFeelingText,
+        isRecording,
+        setActiveTab: setSafeRoomTab,
+        setSelectedMood,
+        setNewFeelingText,
+        getFeelingsByMood,
+        getRecentFeelings,
+        getResourcesByCategory,
+        getActiveSolutionNotes,
+        getCompletedSolutionNotes,
+        getStatistics,
+        addFeeling,
+        addReaction,
+        addSolutionNote,
+        toggleSolutionNote,
+        deleteSolutionNote,
+        startRecording,
+        stopRecording,
+        moodEmojis,
+        moodColors
     } = useSafeRoom();
+
+    // Mock data for emergency features (to be implemented later)
+    const messages: any[] = [];
+    const emergencyContacts: any[] = [];
+    const safetyTips: any[] = [];
+    const locationShares: any[] = [];
+    const isEmergencyMode = false;
+    const unreadCount = 0;
+
+    // Mock functions for emergency features (to be implemented later)
+    const sendEmergencyAlert = () => {
+        Alert.alert('Emergency Alert', 'Emergency alert functionality will be implemented soon');
+    };
+
+    const callEmergencyContact = (contact: any) => {
+        Alert.alert('Call Emergency Contact', `Calling ${contact?.name || 'emergency contact'}...`);
+    };
+
+    const markMessageAsRead = (message: any) => {
+        console.log('Mark message as read:', message);
+    };
+
+    const markAllMessagesAsRead = () => {
+        console.log('Mark all messages as read');
+    };
+
+    const triggerEmergencyMode = () => {
+        Alert.alert('Emergency Mode', 'Emergency mode will be implemented soon');
+    };
+
+    const exitEmergencyMode = () => {
+        Alert.alert('Exit Emergency Mode', 'Exiting emergency mode');
+    };
+
+    const getSafeRoomStats = () => {
+        return { 
+            totalMessages: 0, 
+            unreadCount: 0, 
+            activeContacts: 0,
+            onlineMembers: getOnlineFamilyMembers().length,
+            activeLocationShares: locationShares.length,
+            unreadMessages: messages.filter((m: any) => !m.isRead).length,
+            emergencyContacts: emergencyContacts.length
+        };
+    };
+
+    const getUnreadMessages = () => {
+        return [];
+    };
+
+    const getActiveLocationShares = () => {
+        return [];
+    };
+
+    const getOnlineFamilyMembers = () => {
+        return familyMembers.filter((member: any) => member.isOnline || true); // Mock: assume all online
+    };
+
+    const getUnreadSafetyTips = () => {
+        return [];
+    };
 
     const [activeTab, setActiveTab] = useState<'messages' | 'contacts' | 'tips' | 'locations'>('messages');
 
@@ -47,7 +116,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                     style: 'destructive',
                     onPress: () => {
                         Linking.openURL('tel:911');
-                        sendEmergencyAlert('Emergency services called');
+                        sendEmergencyAlert();
                     }
                 }
             ]
@@ -287,7 +356,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                             </View>
                         ) : (
                             <View style={styles.messagesList}>
-                                {messages.map(message => (
+                                {messages.map((message: any) => (
                                     <TouchableOpacity
                                         key={message.id}
                                         style={[
@@ -337,7 +406,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                     <View style={styles.card}>
                         <Text style={styles.sectionTitle}>Emergency Contacts</Text>
                         <View style={styles.contactsList}>
-                            {emergencyContacts.map(contact => (
+                            {emergencyContacts.map((contact: any) => (
                                 <TouchableOpacity
                                     key={contact.id}
                                     style={styles.contactItem}
@@ -375,7 +444,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                     <View style={styles.card}>
                         <Text style={styles.sectionTitle}>Safety Tips</Text>
                         <View style={styles.tipsList}>
-                            {safetyTips.map(tip => (
+                            {safetyTips.map((tip: any) => (
                                 <View key={tip.id} style={styles.tipItem}>
                                     <View style={[styles.tipIcon, { backgroundColor: tip.color }]}>
                                         <Ionicons name={tip.icon as any} size={20} color="white" />
@@ -399,7 +468,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                     <View style={styles.card}>
                         <Text style={styles.sectionTitle}>Family Locations</Text>
                         <View style={styles.locationsList}>
-                            {activeLocationShares.map(share => (
+                            {locationShares.map((share: any) => (
                                 <View key={share.id} style={styles.locationItem}>
                                     <View style={styles.locationAvatar}>
                                         <Text style={styles.locationInitial}>
