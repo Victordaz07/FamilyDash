@@ -113,8 +113,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     }, [navigation]);
 
     const handleNotifications = useCallback(() => {
-        navigation.navigate('Notifications');
-    }, [navigation]);
+        Alert.alert('Notifications', 'Notifications feature coming soon!');
+    }, []);
 
     const handleViewAllTasks = useCallback(() => {
         navigation.navigate('Tasks');
@@ -125,7 +125,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     }, [navigation]);
 
     const handleVote = useCallback(() => {
-        navigation.navigate('Calendar', { screen: 'Voting' });
+        navigation.navigate('Voting');
     }, [navigation]);
 
     const handleGoals = useCallback(() => {
@@ -133,8 +133,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     }, [navigation]);
 
     const handleActivePenalty = useCallback(() => {
-        navigation.navigate('Penalties');
-    }, [navigation]);
+        Alert.alert('Penalties', 'Penalties feature coming soon!');
+    }, []);
 
     const familyMembers = useMemo(() => [
         {

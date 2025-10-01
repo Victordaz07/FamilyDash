@@ -14,6 +14,7 @@ import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import VotingScreen from '../modules/voting/screens/VotingScreen';
+import ButtonTestScreen from '../screens/ButtonTestScreen';
 
 // Import Calendar module screens
 import CalendarHubScreen from '../modules/calendar/screens/CalendarHubScreen';
@@ -63,6 +64,12 @@ const VotingStack = () => (
   </Stack.Navigator>
 );
 
+const TestStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="TestMain" component={ButtonTestScreen} />
+  </Stack.Navigator>
+);
+
 const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ProfileMain" component={ProfileScreen} />
@@ -91,6 +98,8 @@ const AppNavigator = () => {
               iconName = focused ? 'trophy' : 'trophy-outline';
             } else if (route.name === 'Voting') {
               iconName = focused ? 'list' : 'list-outline';
+            } else if (route.name === 'Test') {
+              iconName = focused ? 'bug' : 'bug-outline';
             } else if (route.name === 'SafeRoom') {
               iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
             } else if (route.name === 'Profile') {
@@ -142,6 +151,11 @@ const AppNavigator = () => {
           name="Voting" 
           component={VotingStack}
           options={{ tabBarLabel: 'Votaciones' }}
+        />
+        <Tab.Screen 
+          name="Test" 
+          component={TestStack}
+          options={{ tabBarLabel: 'Test' }}
         />
         <Tab.Screen 
           name="SafeRoom" 
