@@ -12,7 +12,9 @@ import GoalsScreen from '../modules/goals/screens/GoalsScreen';
 // Import Safe Room module screens
 import SafeRoomHome from '../modules/safeRoom/screens/SafeRoomHome';
 import SafeRoomTabs from '../modules/safeRoom/screens/SafeRoomTabs';
+// Import Device Tools module screens
 import DeviceToolsScreen from '../modules/deviceTools/DeviceToolsScreen';
+import AndroidWidgets from '../modules/deviceTools/screens/AndroidWidgets';
 
 // Import Penalties module screens
 import PenaltiesOverview from '../modules/penalties/screens/PenaltiesOverview';
@@ -70,12 +72,12 @@ const CalendarStack = () => {
     );
 };
 
-// Stack Navigator for Safe Room
-const SafeRoomStack = () => {
+// Stack Navigator for Device Tools
+const DeviceToolsStack = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="SafeRoomHome" component={SafeRoomHome} />
-            <Stack.Screen name="SafeRoomTabs" component={SafeRoomTabs} />
+            <Stack.Screen name="DeviceToolsMain" component={DeviceToolsScreen} />
+            <Stack.Screen name="AndroidWidgets" component={AndroidWidgets} />
         </Stack.Navigator>
     );
 };
@@ -183,7 +185,7 @@ const AppNavigator = () => {
                 />
                 <Tab.Screen
                     name="DeviceTools"
-                    component={DeviceToolsScreen}
+                    component={DeviceToolsStack}
                     options={{
                         title: 'Herramientas 📱',
                         tabBarLabel: 'Dispositivos',

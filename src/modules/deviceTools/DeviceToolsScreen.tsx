@@ -4,7 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../../state/store';
 
-const DeviceToolsScreen = () => {
+interface DeviceToolsScreenProps {
+  navigation: any;
+}
+
+const DeviceToolsScreen: React.FC<DeviceToolsScreenProps> = ({ navigation }) => {
     const { user } = useFamilyDashStore();
     const [isRinging, setIsRinging] = useState(false);
 
@@ -50,6 +54,10 @@ const DeviceToolsScreen = () => {
                 }
             ]
         );
+    };
+
+    const handleAndroidWidgets = () => {
+        navigation.navigate('AndroidWidgets');
     };
 
     const handleEmergencyAlert = () => {
@@ -121,6 +129,28 @@ const DeviceToolsScreen = () => {
                         <Ionicons name="warning" size={24} color="white" />
                         <Text style={styles.actionButtonText}>🚨 Emergencia</Text>
                     </TouchableOpacity>
+                </View>
+
+                {/* Android Widgets Card */}
+                <View style={styles.widgetCard}>
+                    <View style={styles.widgetHeader}>
+                        <View style={styles.widgetIcon}>
+                            <Ionicons name="grid" size={24} color="white" />
+                        </View>
+                        <View style={styles.widgetInfo}>
+                            <Text style={styles.widgetTitle}>Android Widgets</Text>
+                            <Text style={styles.widgetSubtitle}>Configurar widgets del home screen</Text>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.widgetButton}
+                            onPress={handleAndroidWidgets}
+                        >
+                            <Ionicons name="arrow-forward" size={20} color="#8B5CF6" />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={styles.widgetDescription}>
+                        Agrega widgets de FamilyDash a tu pantalla de inicio para acceso rápido a tareas, penalidades y más.
+                    </Text>
                 </View>
 
                 <Text style={styles.sectionTitle}>Dispositivos Conectados</Text>
@@ -279,6 +309,57 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 8,
+    },
+    widgetCard: {
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    widgetHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    widgetIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#8B5CF6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    widgetInfo: {
+        flex: 1,
+    },
+    widgetTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#1F2937',
+        marginBottom: 4,
+    },
+    widgetSubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+    },
+    widgetButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    widgetDescription: {
+        fontSize: 14,
+        color: '#6B7280',
+        lineHeight: 20,
     },
     deviceCard: {
         backgroundColor: 'white',
