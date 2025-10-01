@@ -123,7 +123,8 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
     };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             {/* Header */}
             <LinearGradient
                 colors={['#EF4444', '#DC2626']}
@@ -341,12 +342,13 @@ const PenaltiesOverview: React.FC<PenaltiesOverviewProps> = ({ navigation }) => 
             <View style={styles.bottomSpacing} />
         </ScrollView>
 
-        {/* New Penalty Modal - Outside ScrollView */ }
-    <NewPenaltyModal
-        visible={showNewPenaltyModal}
-        onClose={() => setShowNewPenaltyModal(false)}
-        onSubmit={handleNewPenaltySubmit}
-    />
+        {/* New Penalty Modal - Outside ScrollView */}
+        <NewPenaltyModal
+            visible={showNewPenaltyModal}
+            onClose={() => setShowNewPenaltyModal(false)}
+            onSubmit={handleNewPenaltySubmit}
+        />
+        </View>
     );
 };
 
@@ -354,6 +356,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F9FAFB',
+    },
+    scrollView: {
+        flex: 1,
     },
     header: {
         paddingTop: 60,
