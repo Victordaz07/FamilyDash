@@ -15,8 +15,6 @@ interface TabItem {
   name: string;
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
-  badge?: string | number;
-  badgeColor?: string;
 }
 
 const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) => {
@@ -24,16 +22,12 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) =>
     {
       name: 'Dashboard',
       label: 'Dashboard',
-      icon: 'home',
-      badge: 3,
-      badgeColor: '#ef4444'
+      icon: 'home'
     },
     {
       name: 'Tasks',
       label: 'Tareas',
-      icon: 'checkmark-circle',
-      badge: 12,
-      badgeColor: '#ef4444'
+      icon: 'checkmark-circle'
     },
     {
       name: 'Calendar',
@@ -73,23 +67,11 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) =>
         onPress={() => handleTabPress(tab.name)}
         activeOpacity={0.7}
       >
-        <View style={styles.tabIconContainer}>
-          <Ionicons 
-            name={tab.icon} 
-            size={24} 
-            color={iconColor} 
-          />
-          {tab.badge && (
-            <View style={[
-              styles.badge, 
-              { backgroundColor: tab.badgeColor || '#ef4444' }
-            ]}>
-              <Text style={styles.badgeText}>
-                {tab.badge}
-              </Text>
-            </View>
-          )}
-        </View>
+        <Ionicons 
+          name={tab.icon} 
+          size={24} 
+          color={iconColor} 
+        />
         <Text style={[styles.tabLabel, { color: textColor }]}>
           {tab.label}
         </Text>
@@ -128,30 +110,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     minHeight: 60,
   },
-  tabIconContainer: {
-    position: 'relative',
-    marginBottom: 4,
-  },
   tabLabel: {
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
-  },
-  badge: {
-    position: 'absolute',
-    top: -6,
-    right: -8,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: {
-    color: '#ffffff',
-    fontSize: 10,
-    fontWeight: 'bold',
+    marginTop: 4,
   },
 });
 
