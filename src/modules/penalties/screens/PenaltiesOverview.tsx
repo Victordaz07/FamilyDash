@@ -361,8 +361,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 24,
+        paddingTop: 50,
+        paddingBottom: 32,
         paddingHorizontal: 16,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,

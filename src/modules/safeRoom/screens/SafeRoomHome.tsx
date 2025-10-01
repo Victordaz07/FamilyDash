@@ -20,6 +20,11 @@ const SafeRoomHome: React.FC<SafeRoomHomeProps> = ({ navigation }) => {
         navigation.navigate('SafeRoomTabs', { initialTab: tab });
     };
 
+    const handleHeartButton = () => {
+        // Quick access to Express Feelings
+        navigation.navigate('SafeRoomTabs', { initialTab: 'express' });
+    };
+
     const mainCards = [
         {
             id: 'express',
@@ -71,7 +76,7 @@ const SafeRoomHome: React.FC<SafeRoomHomeProps> = ({ navigation }) => {
                         <Text style={styles.headerSubtitle}>A space to share feelings without judgment</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerButton}>
+                        <TouchableOpacity style={styles.headerButton} onPress={handleHeartButton}>
                             <Ionicons name="heart" size={20} color="white" />
                         </TouchableOpacity>
                     </View>
@@ -120,7 +125,7 @@ const SafeRoomHome: React.FC<SafeRoomHomeProps> = ({ navigation }) => {
                             onPress={() => handleNavigateToTab(card.id as any)}
                         >
                             <LinearGradient
-                                colors={card.gradient}
+                                colors={card.gradient as [string, string]}
                                 style={styles.card}
                             >
                                 <View style={styles.cardIcon}>
@@ -211,8 +216,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 24,
+        paddingTop: 50,
+        paddingBottom: 32,
         paddingHorizontal: 20,
     },
     headerContent: {

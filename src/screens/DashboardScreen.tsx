@@ -3,11 +3,17 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
+import NotificationsModal from '../components/NotificationsModal';
 
-const DashboardScreen = () => {
+interface DashboardScreenProps {
+    navigation: any;
+}
+
+const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { tasks, penalties, activities, goals } = useFamilyDashStore();
     const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
+    const [showNotificationsModal, setShowNotificationsModal] = useState(false);
 
     useEffect(() => {
         const penaltyTimer = setInterval(() => {
@@ -35,6 +41,39 @@ const DashboardScreen = () => {
         return () => clearTimeout(timer);
     };
 
+    // Navigation handlers
+    const handleAddTask = () => {
+        navigation.navigate('Tasks');
+    };
+
+    const handleSafeRoom = () => {
+        navigation.navigate('SafeRoom');
+    };
+
+    const handleNotifications = () => {
+        navigation.navigate('Notifications');
+    };
+
+    const handleViewAllTasks = () => {
+        navigation.navigate('Tasks');
+    };
+
+    const handleViewCalendar = () => {
+        navigation.navigate('Calendar');
+    };
+
+    const handleVote = () => {
+        navigation.navigate('Calendar', { screen: 'Voting' });
+    };
+
+    const handleGoals = () => {
+        navigation.navigate('Goals');
+    };
+
+    const handleActivePenalty = () => {
+        navigation.navigate('Penalties');
+    };
+
     const familyMembers = [
         { id: '1', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', badge: { type: 'count', value: 3, color: '#10B981' }, borderColor: '#3B82F6' },
         { id: '2', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', badge: { type: 'count', value: 2, color: '#10B981' }, borderColor: '#EC4899' },
@@ -54,16 +93,16 @@ const DashboardScreen = () => {
     ];
 
     const familyGoal = {
-        name: 'Save for Disney World Trip',
-        saved: 2400,
-        target: 5000,
-        progress: 48,
-        timeRemaining: '4 months to go',
+        name: 'Family Reading Challenge',
+        completed: 12,
+        target: 20,
+        progress: 60,
+        timeRemaining: '2 weeks to go',
         contributions: [
-            { member: 'Dad', amount: 600, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg' },
-            { member: 'Mom', amount: 800, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' },
-            { member: 'Emma', amount: 500, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' },
-            { member: 'Jake', amount: 500, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' },
+            { member: 'Dad', books: 4, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg' },
+            { member: 'Mom', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' },
+            { member: 'Emma', books: 3, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' },
+            { member: 'Jake', books: 2, avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' },
         ]
     };
 
@@ -85,9 +124,13 @@ const DashboardScreen = () => {
                         </View>
                     </View>
                     <View style={styles.headerRight}>
-                        <View style={styles.headerIcon}>
+                        <TouchableOpacity style={styles.headerIcon} onPress={handleNotifications}>
                             <Ionicons name="notifications" size={16} color="white" />
-                        </View>
+                            {/* Notification Badge */}
+                            <View style={styles.notificationBadge}>
+                                <Text style={styles.notificationBadgeText}>3</Text>
+                            </View>
+                        </TouchableOpacity>
                         <Image
                             source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
                             style={styles.profileImage}
@@ -132,24 +175,24 @@ const DashboardScreen = () => {
             {/* Quick Actions */}
             <View style={styles.quickActionsSection}>
                 <View style={styles.quickActionsGrid}>
-                    <TouchableOpacity style={styles.quickActionButton}>
+                    <TouchableOpacity style={styles.quickActionButton} onPress={handleAddTask}>
                         <LinearGradient
                             colors={['#10B981', '#059669']}
                             style={styles.quickActionGradient}
                         >
                             <View style={styles.quickActionIconBg}>
-                                <Ionicons name="add" size={20} color="#10B981" />
+                                <Ionicons name="add" size={22} color="white" />
                             </View>
                             <Text style={styles.quickActionText}>Add Task</Text>
                         </LinearGradient>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickActionButton}>
+                    <TouchableOpacity style={styles.quickActionButton} onPress={handleSafeRoom}>
                         <LinearGradient
                             colors={['#EC4899', '#DB2777']}
                             style={styles.quickActionGradient}
                         >
                             <View style={styles.quickActionIconBg}>
-                                <Ionicons name="heart" size={20} color="#EC4899" />
+                                <Ionicons name="heart" size={22} color="white" />
                             </View>
                             <Text style={styles.quickActionText}>Safe Room</Text>
                         </LinearGradient>
@@ -216,7 +259,7 @@ const DashboardScreen = () => {
                         ))}
                     </View>
 
-                    <TouchableOpacity style={styles.viewAllTasksButton}>
+                    <TouchableOpacity style={styles.viewAllTasksButton} onPress={handleViewAllTasks}>
                         <Text style={styles.viewAllTasksButtonText}>View All Tasks</Text>
                     </TouchableOpacity>
                 </View>
@@ -224,33 +267,35 @@ const DashboardScreen = () => {
 
             {/* Active Penalty */}
             <View style={styles.activePenaltySection}>
-                <LinearGradient
-                    colors={['#EF4444', '#DC2626']}
-                    style={styles.penaltyCard}
-                >
-                    <View style={styles.penaltyHeader}>
-                        <Text style={styles.penaltyTitle}>Active Penalty</Text>
-                        <Ionicons name="hourglass" size={20} color="white" />
-                    </View>
+                <TouchableOpacity onPress={handleActivePenalty}>
+                    <LinearGradient
+                        colors={['#EF4444', '#DC2626']}
+                        style={styles.penaltyCard}
+                    >
+                        <View style={styles.penaltyHeader}>
+                            <Text style={styles.penaltyTitle}>Active Penalty</Text>
+                            <Ionicons name="hourglass" size={20} color="white" />
+                        </View>
 
-                    <View style={styles.penaltyMemberInfo}>
-                        <Image source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }} style={styles.penaltyAvatar} />
-                        <View>
-                            <Text style={styles.penaltyMemberName}>Jake</Text>
-                            <Text style={styles.penaltyDescription}>No tablet time</Text>
+                        <View style={styles.penaltyMemberInfo}>
+                            <Image source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }} style={styles.penaltyAvatar} />
+                            <View>
+                                <Text style={styles.penaltyMemberName}>Jake</Text>
+                                <Text style={styles.penaltyDescription}>No tablet time</Text>
+                            </View>
                         </View>
-                    </View>
 
-                    <View style={styles.penaltyTimerContainer}>
-                        <View style={styles.penaltyTimerContent}>
-                            <Text style={styles.penaltyTimerLabel}>Time remaining</Text>
-                            <Text style={styles.penaltyTime}>{formatTime(penaltyTime)}</Text>
+                        <View style={styles.penaltyTimerContainer}>
+                            <View style={styles.penaltyTimerContent}>
+                                <Text style={styles.penaltyTimerLabel}>Time remaining</Text>
+                                <Text style={styles.penaltyTime}>{formatTime(penaltyTime)}</Text>
+                            </View>
+                            <View style={styles.penaltyProgressBar}>
+                                <View style={[styles.penaltyProgressFill, { width: `${(penaltyTime / (15 * 60 + 42)) * 100}%` }]} />
+                            </View>
                         </View>
-                        <View style={styles.penaltyProgressBar}>
-                            <View style={[styles.penaltyProgressFill, { width: `${(penaltyTime / (15 * 60 + 42)) * 100}%` }]} />
-                        </View>
-                    </View>
-                </LinearGradient>
+                    </LinearGradient>
+                </TouchableOpacity>
             </View>
 
             {/* This Week Activities */}
@@ -258,7 +303,7 @@ const DashboardScreen = () => {
                 <View style={styles.card}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>This Week</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={handleViewCalendar}>
                             <Text style={styles.viewCalendarText}>View Calendar</Text>
                         </TouchableOpacity>
                     </View>
@@ -274,7 +319,7 @@ const DashboardScreen = () => {
                                     <Text style={styles.activitySubtitle}>{activity.time} • {activity.details}</Text>
                                 </View>
                                 {activity.action === 'Vote' ? (
-                                    <TouchableOpacity style={[styles.activityActionButton, { backgroundColor: activity.color }]}>
+                                    <TouchableOpacity style={[styles.activityActionButton, { backgroundColor: activity.color }]} onPress={handleVote}>
                                         <Text style={styles.activityActionButtonText}>{activity.action}</Text>
                                     </TouchableOpacity>
                                 ) : (
@@ -290,42 +335,51 @@ const DashboardScreen = () => {
 
             {/* Family Goal */}
             <View style={styles.goalSection}>
-                <LinearGradient
-                    colors={['#F59E0B', '#EA580C']}
-                    style={styles.goalCard}
-                >
-                    <View style={styles.goalHeader}>
-                        <Text style={styles.goalTitle}>Family Goal</Text>
-                        <Ionicons name="trophy" size={20} color="white" />
-                    </View>
-
-                    <View style={styles.goalContent}>
-                        <Text style={styles.goalName}>Save for Disney World Trip</Text>
-                        <Text style={styles.goalAmount}>${familyGoal.saved} of ${familyGoal.target} saved</Text>
-
-                        <View style={styles.goalProgressBar}>
-                            <View style={[styles.goalProgressFill, { width: `${familyGoal.progress}%` }]} />
+                <TouchableOpacity onPress={handleGoals}>
+                    <LinearGradient
+                        colors={['#F59E0B', '#EA580C']}
+                        style={styles.goalCard}
+                    >
+                        <View style={styles.goalHeader}>
+                            <Text style={styles.goalTitle}>Family Goal</Text>
+                            <Ionicons name="trophy" size={20} color="white" />
                         </View>
-                        <Text style={styles.goalProgressText}>{familyGoal.progress}% complete • {familyGoal.timeRemaining}</Text>
-                    </View>
 
-                    <View style={styles.contributionsGrid}>
-                        {familyGoal.contributions.map((contribution, index) => (
-                            <View key={index} style={styles.contributionItem}>
-                                <Image
-                                    source={{ uri: contribution.avatar }}
-                                    style={styles.contributionAvatar}
-                                />
-                                <Text style={styles.contributionAmount}>${contribution.amount}</Text>
+                        <View style={styles.goalContent}>
+                            <Text style={styles.goalName}>Family Reading Challenge</Text>
+                            <Text style={styles.goalAmount}>{familyGoal.completed} of {familyGoal.target} books read</Text>
+
+                            <View style={styles.goalProgressBar}>
+                                <View style={[styles.goalProgressFill, { width: `${familyGoal.progress}%` }]} />
                             </View>
-                        ))}
-                    </View>
-                </LinearGradient>
+                            <Text style={styles.goalProgressText}>{familyGoal.progress}% complete • {familyGoal.timeRemaining}</Text>
+                        </View>
+
+                        <View style={styles.contributionsGrid}>
+                            {familyGoal.contributions.map((contribution, index) => (
+                                <View key={index} style={styles.contributionItem}>
+                                    <Image
+                                        source={{ uri: contribution.avatar }}
+                                        style={styles.contributionAvatar}
+                                    />
+                                    <Text style={styles.contributionAmount}>{contribution.books} books</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </LinearGradient>
+                </TouchableOpacity>
             </View>
 
             {/* Bottom spacing for navigation */}
             <View style={styles.bottomSpacing} />
         </ScrollView>
+
+        {/* Notifications Modal */ }
+    <NotificationsModal
+        visible={showNotificationsModal}
+        onClose={() => setShowNotificationsModal(false)}
+    />
+    </View >
     );
 };
 
@@ -335,8 +389,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
     header: {
-        paddingTop: 60, // Adjusted for hidden status bar
-        paddingBottom: 24,
+        paddingTop: 50, // Adjusted for hidden status bar
+        paddingBottom: 32,
         paddingHorizontal: 16,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
@@ -387,7 +441,8 @@ const styles = StyleSheet.create({
     },
     familyMembersSection: {
         paddingHorizontal: 16,
-        marginTop: -24, // Overlap with header
+        marginTop: -16, // Overlap with header
+        marginBottom: 8,
     },
     card: {
         backgroundColor: 'white',
@@ -494,11 +549,18 @@ const styles = StyleSheet.create({
     quickActionIconBg: {
         width: 40,
         height: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.4)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 3,
     },
     quickActionText: {
         fontSize: 16,
@@ -843,6 +905,24 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 80,
+    },
+    notificationBadge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        backgroundColor: '#EF4444',
+        borderRadius: 8,
+        minWidth: 16,
+        height: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: 'white',
+    },
+    notificationBadgeText: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
 });
 

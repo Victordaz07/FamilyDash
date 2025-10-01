@@ -3,7 +3,11 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-const TasksScreen = () => {
+interface TasksScreenProps {
+    navigation: any;
+}
+
+const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     const [selectedMember, setSelectedMember] = useState('Dad');
     const [selectedTab, setSelectedTab] = useState('Pending');
 
@@ -95,6 +99,19 @@ const TasksScreen = () => {
         Alert.alert('Quick Action', `Selected: ${actionTitle}`);
     };
 
+    // Navigation handlers
+    const handleBack = () => {
+        navigation.goBack();
+    };
+
+    const handleAddTask = () => {
+        Alert.alert('Add Task', 'New task creation coming soon!');
+    };
+
+    const handleViewTaskDetails = (taskId: string) => {
+        navigation.navigate('TaskDetails', { taskId });
+    };
+
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Header */}
@@ -104,7 +121,7 @@ const TasksScreen = () => {
             >
                 <View style={styles.headerContent}>
                     <View style={styles.headerLeft}>
-                        <TouchableOpacity style={styles.headerButton}>
+                        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
                             <Ionicons name="arrow-back" size={20} color="white" />
                         </TouchableOpacity>
                         <View>
@@ -113,7 +130,7 @@ const TasksScreen = () => {
                         </View>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerButton}>
+                        <TouchableOpacity style={styles.headerButton} onPress={handleAddTask}>
                             <Ionicons name="add" size={16} color="white" />
                         </TouchableOpacity>
                         <Image
@@ -239,7 +256,7 @@ const TasksScreen = () => {
                                         <Text style={styles.taskStatusText}>{task.status}</Text>
                                     </View>
                                     <View style={styles.taskActions}>
-                                        <TouchableOpacity style={styles.viewButton}>
+                                        <TouchableOpacity style={styles.viewButton} onPress={() => handleViewTaskDetails(task.id)}>
                                             <Ionicons name="eye" size={12} color="white" />
                                         </TouchableOpacity>
                                         <TouchableOpacity
@@ -292,8 +309,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 24,
+        paddingTop: 50,
+        paddingBottom: 32,
         paddingHorizontal: 16,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,

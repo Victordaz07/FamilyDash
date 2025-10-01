@@ -11,17 +11,17 @@ interface CalendarHubScreenProps {
 }
 
 const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => {
-  const {
-    selectedDay,
-    currentWeek,
-    getTodaysActivities,
-    getUpcomingActivities,
-    navigateWeek,
-    selectDay,
-    updateActivity
-  } = useCalendar();
+    const {
+        selectedDay,
+        currentWeek,
+        getTodaysActivities,
+        getUpcomingActivities,
+        navigateWeek,
+        selectDay,
+        updateActivity
+    } = useCalendar();
 
-  const [showNewEventModal, setShowNewEventModal] = useState(false);
+    const [showNewEventModal, setShowNewEventModal] = useState(false);
 
     const handleBack = () => {
         navigation.goBack();
@@ -39,30 +39,30 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         Alert.alert('Schedule', 'Schedule new activity functionality would go here');
     };
 
-  const handleNewEventPress = () => {
-    setShowNewEventModal(true);
-  };
-
-  const handleNewEventSubmit = (eventData: any) => {
-    // Create new activity with unique ID
-    const newActivity = {
-      id: `activity_${Date.now()}`,
-      title: eventData.title,
-      date: eventData.date,
-      time: eventData.time,
-      location: eventData.location,
-      organizer: 'Mom', // Default organizer
-      organizerAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg',
-      type: eventData.type,
-      participants: eventData.participants,
-      status: 'planning',
-      description: eventData.description
+    const handleNewEventPress = () => {
+        setShowNewEventModal(true);
     };
 
-    // Add to activities list
-    Alert.alert('Success', `Event "${eventData.title}" created successfully!`);
-    console.log('New event created:', newActivity);
-  };
+    const handleNewEventSubmit = (eventData: any) => {
+        // Create new activity with unique ID
+        const newActivity = {
+            id: `activity_${Date.now()}`,
+            title: eventData.title,
+            date: eventData.date,
+            time: eventData.time,
+            location: eventData.location,
+            organizer: 'Mom', // Default organizer
+            organizerAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg',
+            type: eventData.type,
+            participants: eventData.participants,
+            status: 'planning',
+            description: eventData.description
+        };
+
+        // Add to activities list
+        Alert.alert('Success', `Event "${eventData.title}" created successfully!`);
+        console.log('New event created:', newActivity);
+    };
 
     const handleHistoryPress = () => {
         navigation.navigate('History');
@@ -367,17 +367,17 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                 </LinearGradient>
             </View>
 
-      {/* Bottom spacing for navigation */}
-      <View style={styles.bottomSpacing} />
+            {/* Bottom spacing for navigation */}
+            <View style={styles.bottomSpacing} />
 
-      {/* New Event Modal */}
-      <NewEventModal
-        visible={showNewEventModal}
-        onClose={() => setShowNewEventModal(false)}
-        onSubmit={handleNewEventSubmit}
-      />
-    </ScrollView>
-  );
+            {/* New Event Modal */}
+            <NewEventModal
+                visible={showNewEventModal}
+                onClose={() => setShowNewEventModal(false)}
+                onSubmit={handleNewEventSubmit}
+            />
+        </ScrollView>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -386,8 +386,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 24,
+        paddingTop: 50,
+        paddingBottom: 32,
         paddingHorizontal: 16,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,

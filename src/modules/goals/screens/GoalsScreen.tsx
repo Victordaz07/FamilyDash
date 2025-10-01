@@ -49,8 +49,8 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
       'Are you sure you want to delete this goal?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
+        {
+          text: 'Delete',
           style: 'destructive',
           onPress: () => {
             deleteGoal(goalId);
@@ -149,10 +149,10 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
                 ]}
                 onPress={() => handleCategoryPress(category.id)}
               >
-                <Ionicons 
-                  name={category.icon as any} 
-                  size={20} 
-                  color={selectedCategory === category.id ? 'white' : category.color} 
+                <Ionicons
+                  name={category.icon as any}
+                  size={20}
+                  color={selectedCategory === category.id ? 'white' : category.color}
                 />
                 <Text style={[
                   styles.categoryText,
@@ -214,8 +214,8 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
         <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>
-              {activeTab === 'all' ? 'All Goals' : 
-               activeTab === 'active' ? 'Active Goals' : 'Completed Goals'}
+              {activeTab === 'all' ? 'All Goals' :
+                activeTab === 'active' ? 'Active Goals' : 'Completed Goals'}
             </Text>
             <Text style={styles.goalsCount}>
               {getFilteredGoals().length} goal{getFilteredGoals().length !== 1 ? 's' : ''}
@@ -228,7 +228,7 @@ const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
               <Text style={styles.emptyStateText}>No goals found</Text>
               <Text style={styles.emptyStateSubtext}>
                 {activeTab === 'all' ? 'Create your first family goal!' :
-                 activeTab === 'active' ? 'No active goals at the moment' : 'No completed goals yet'}
+                  activeTab === 'active' ? 'No active goals at the moment' : 'No completed goals yet'}
               </Text>
             </View>
           ) : (
@@ -318,8 +318,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 24,
+    paddingTop: 50,
+    paddingBottom: 32,
     paddingHorizontal: 16,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
