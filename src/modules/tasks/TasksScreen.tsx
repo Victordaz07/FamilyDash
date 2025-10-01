@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import OptimizedList from '../../components/OptimizedList';
+import TaskItem from './components/TaskItem';
+import { usePerformanceOptimizations } from '../../hooks/usePerformance';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -16,32 +19,13 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     const [sortBy, setSortBy] = useState('dueDate');
     const [viewMode, setViewMode] = useState('grid'); // grid or list
 
-    // Animation refs
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(50)).current;
-    const scaleAnim = useRef(new Animated.Value(0.9)).current;
+    // Usar hook de optimización de performance
+    const { animateIn, animatedStyles } = usePerformanceOptimizations();
     const filterAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Entrance animations
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, []);
+        animateIn();
+    }, [animateIn]);
 
     useEffect(() => {
         // Filter panel animation
@@ -138,37 +122,37 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
         { id: '4', title: 'Add Reward', icon: 'star', colors: ['#F59E0B', '#EA580C'] },
     ];
 
-    const handleMemberSelect = (memberName: string) => {
+    const handleMemberSelect = useCallback((memberName: string) => {
         setSelectedMember(memberName);
-    };
+    }, []);
 
-    const handleTabSelect = (tabId: string) => {
+    const handleTabSelect = useCallback((tabId: string) => {
         setSelectedTab(tabId);
-    };
+    }, []);
 
-    const handleTaskAction = (taskId: string, action: string) => {
+    const handleTaskAction = useCallback((taskId: string, action: string) => {
         Alert.alert('Task Action', `${action} task: ${taskId}`);
-    };
+    }, []);
 
-    const handleQuickAction = (actionTitle: string) => {
+    const handleQuickAction = useCallback((actionTitle: string) => {
         Alert.alert('Quick Action', `Selected: ${actionTitle}`);
-    };
+    }, []);
 
     // Navigation handlers
-    const handleBack = () => {
+    const handleBack = useCallback(() => {
         navigation.goBack();
-    };
+    }, [navigation]);
 
-    const handleAddTask = () => {
+    const handleAddTask = useCallback(() => {
         Alert.alert('Add Task', 'New task creation coming soon!');
-    };
+    }, []);
 
-    const handleViewTaskDetails = (taskId: string) => {
+    const handleViewTaskDetails = useCallback((taskId: string) => {
         navigation.navigate('TaskDetails', { taskId });
-    };
+    }, [navigation]);
 
     return (
-        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
+        <Animated.View style={[styles.container, animatedStyles]}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Header */}
                 <LinearGradient
@@ -226,8 +210,8 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
                                         selectedMember === member.name && styles.memberCardSelected,
                                         {
                                             transform: [{
-                                                translateX: slideAnim.interpolate({
-                                                    inputRange: [0, 50],
+                                                translateX: filterAnim.interpolate({
+                                                    inputRange: [0, 1],
                                                     outputRange: [0, index * 15],
                                                 })
                                             }]

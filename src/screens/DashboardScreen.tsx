@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -82,59 +82,59 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         };
     }, []);
 
-    const formatTime = (totalSeconds: number) => {
+    const formatTime = useCallback((totalSeconds: number) => {
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    };
+    }, []);
 
-    const handleRingDevice = (memberName: string) => {
+    const handleRingDevice = useCallback((memberName: string) => {
         Alert.alert('🔔 Ringing Device', `Ringing ${memberName}'s device...`);
-    };
+    }, []);
 
-    const handleRingAllDevices = () => {
+    const handleRingAllDevices = useCallback(() => {
         Alert.alert('🔔 Ring All Devices', 'Ringing all family devices...');
         setLastRingTime(0); // Reset last ring time to "Just now"
         const timer = setTimeout(() => {
             setLastRingTime(5); // Reset to 5 min ago after a short while for demo
         }, 3000);
         return () => clearTimeout(timer);
-    };
+    }, []);
 
     // Navigation handlers
-    const handleAddTask = () => {
+    const handleAddTask = useCallback(() => {
         navigation.navigate('Tasks');
-    };
+    }, [navigation]);
 
-    const handleSafeRoom = () => {
+    const handleSafeRoom = useCallback(() => {
         navigation.navigate('SafeRoom');
-    };
+    }, [navigation]);
 
-    const handleNotifications = () => {
+    const handleNotifications = useCallback(() => {
         navigation.navigate('Notifications');
-    };
+    }, [navigation]);
 
-    const handleViewAllTasks = () => {
+    const handleViewAllTasks = useCallback(() => {
         navigation.navigate('Tasks');
-    };
+    }, [navigation]);
 
-    const handleViewCalendar = () => {
+    const handleViewCalendar = useCallback(() => {
         navigation.navigate('Calendar');
-    };
+    }, [navigation]);
 
-    const handleVote = () => {
+    const handleVote = useCallback(() => {
         navigation.navigate('Calendar', { screen: 'Voting' });
-    };
+    }, [navigation]);
 
-    const handleGoals = () => {
+    const handleGoals = useCallback(() => {
         navigation.navigate('Goals');
-    };
+    }, [navigation]);
 
-    const handleActivePenalty = () => {
+    const handleActivePenalty = useCallback(() => {
         navigation.navigate('Penalties');
-    };
+    }, [navigation]);
 
-    const familyMembers = [
+    const familyMembers = useMemo(() => [
         {
             id: '1',
             name: 'Dad',
@@ -179,9 +179,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             points: 650,
             streak: 1
         },
-    ];
+    ], []);
 
-    const todaysTasks = [
+    const todaysTasks = useMemo(() => [
         {
             id: '1',
             title: 'Clean bedroom',
@@ -234,9 +234,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             estimatedTime: '2 hours',
             actualTime: null
         },
-    ];
+    ], []);
 
-    const thisWeekActivities = [
+    const thisWeekActivities = useMemo(() => [
         {
             id: '1',
             title: 'Movie Night',
@@ -271,9 +271,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             status: 'confirmed',
             options: ['Pizza', 'Cake', 'Games']
         },
-    ];
+    ], []);
 
-    const familyGoal = {
+    const familyGoal = useMemo(() => ({
         name: 'Family Reading Challenge',
         completed: 12,
         target: 20,
@@ -298,7 +298,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             { target: 15, reward: 'Pizza dinner', completed: false },
             { target: 20, reward: 'Zoo trip', completed: false }
         ]
-    };
+    }), []);
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }]}>
