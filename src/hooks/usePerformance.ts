@@ -119,7 +119,7 @@ export const useDebounce = <T extends (...args: any[]) => any>(
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
-        
+
         timeoutRef.current = setTimeout(() => {
             callback(...args);
         }, delay);
@@ -163,7 +163,7 @@ export const useImageOptimization = (uri: string, options?: {
 }) => {
     const optimizedUri = useMemo(() => {
         if (!uri) return uri;
-        
+
         // Si es una URL externa, añadir parámetros de optimización
         if (uri.startsWith('http')) {
             const url = new URL(uri);
@@ -172,7 +172,7 @@ export const useImageOptimization = (uri: string, options?: {
             if (options?.quality) url.searchParams.set('q', options.quality.toString());
             return url.toString();
         }
-        
+
         return uri;
     }, [uri, options?.width, options?.height, options?.quality]);
 

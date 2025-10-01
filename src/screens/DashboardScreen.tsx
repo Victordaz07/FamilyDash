@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
 import NotificationsModal from '../components/NotificationsModal';
+import { theme } from '../styles/simpleTheme';
+import { Button, Card, Badge, Avatar } from '../components/ui/WorkingComponents';
 
 const { width: screenWidth } = Dimensions.get('window');
 

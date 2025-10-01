@@ -5,11 +5,11 @@ import { useMemo, useCallback, useRef, useEffect, useState } from 'react';
  */
 export const useDeepMemo = <T>(factory: () => T, deps: React.DependencyList): T => {
     const ref = useRef<{ deps: React.DependencyList; value: T } | undefined>(undefined);
-    
+
     if (!ref.current || !areEqual(ref.current.deps, deps)) {
         ref.current = { deps, value: factory() };
     }
-    
+
     return ref.current.value;
 };
 
@@ -21,11 +21,11 @@ export const useDeepCallback = <T extends (...args: any[]) => any>(
     deps: React.DependencyList
 ): T => {
     const ref = useRef<{ deps: React.DependencyList; callback: T } | undefined>(undefined);
-    
+
     if (!ref.current || !areEqual(ref.current.deps, deps)) {
         ref.current = { deps, callback };
     }
-    
+
     return ref.current.callback;
 };
 
@@ -55,7 +55,7 @@ export const useFilteredData = <T>(
     deps: React.DependencyList
 ): T[] => {
     const memoizedFilterFn = useCallback(filterFn, deps);
-    
+
     return useMemo(() => {
         return data.filter(memoizedFilterFn);
     }, [data, memoizedFilterFn]);
@@ -70,7 +70,7 @@ export const useSortedData = <T>(
     deps: React.DependencyList
 ): T[] => {
     const memoizedSortFn = useCallback(sortFn, deps);
-    
+
     return useMemo(() => {
         return [...data].sort(memoizedSortFn);
     }, [data, memoizedSortFn]);
@@ -86,7 +86,7 @@ export const useSearchData = <T>(
     deps: React.DependencyList
 ): T[] => {
     const memoizedSearchFn = useCallback(searchFn, deps);
-    
+
     return useMemo(() => {
         if (!searchTerm.trim()) return data;
         return data.filter(item => memoizedSearchFn(item, searchTerm));
@@ -102,7 +102,7 @@ export const useGroupedData = <T, K extends string | number>(
     deps: React.DependencyList
 ): Record<K, T[]> => {
     const memoizedGroupBy = useCallback(groupBy, deps);
-    
+
     return useMemo(() => {
         return data.reduce((groups, item) => {
             const key = memoizedGroupBy(item);
@@ -129,7 +129,7 @@ export const usePaginatedData = <T>(
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         const paginatedData = data.slice(startIndex, endIndex);
-        
+
         return {
             paginatedData,
             totalPages,
@@ -148,7 +148,7 @@ export const useTransformedData = <T, R>(
     deps: React.DependencyList
 ): R[] => {
     const memoizedTransformFn = useCallback(transformFn, deps);
-    
+
     return useMemo(() => {
         return data.map(memoizedTransformFn);
     }, [data, memoizedTransformFn]);
@@ -164,7 +164,7 @@ export const useReducedData = <T, R>(
     deps: React.DependencyList
 ): R => {
     const memoizedReduceFn = useCallback(reduceFn, deps);
-    
+
     return useMemo(() => {
         return data.reduce(memoizedReduceFn, initialValue);
     }, [data, memoizedReduceFn, initialValue]);
@@ -185,18 +185,18 @@ export const useStatistics = <T>(
     count: number;
 } => {
     const memoizedValueFn = useCallback(valueFn, deps);
-    
+
     return useMemo(() => {
         if (data.length === 0) {
             return { sum: 0, average: 0, min: 0, max: 0, count: 0 };
         }
-        
+
         const values = data.map(memoizedValueFn);
         const sum = values.reduce((acc, val) => acc + val, 0);
         const average = sum / values.length;
         const min = Math.min(...values);
         const max = Math.max(...values);
-        
+
         return { sum, average, min, max, count: data.length };
     }, [data, memoizedValueFn]);
 };
@@ -214,19 +214,19 @@ export const useCachedData = <T>(
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const cacheRef = useRef<Map<string, { data: T; timestamp: number }>>(new Map());
-    
+
     const fetchData = useCallback(async () => {
         const cached = cacheRef.current.get(key);
         const now = Date.now();
-        
+
         if (cached && (now - cached.timestamp) < expirationTime) {
             setData(cached.data);
             return;
         }
-        
+
         setLoading(true);
         setError(null);
-        
+
         try {
             const result = await fetchFn();
             cacheRef.current.set(key, { data: result, timestamp: now });
@@ -237,11 +237,11 @@ export const useCachedData = <T>(
             setLoading(false);
         }
     }, [key, fetchFn, expirationTime, ...deps]);
-    
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-    
+
     return { data, loading, error, refetch: fetchData };
 };
 
@@ -250,10 +250,10 @@ export const useCachedData = <T>(
  */
 const areEqual = (a: React.DependencyList, b: React.DependencyList): boolean => {
     if (a.length !== b.length) return false;
-    
+
     for (let i = 0; i < a.length; i++) {
         if (a[i] !== b[i]) return false;
     }
-    
+
     return true;
 };

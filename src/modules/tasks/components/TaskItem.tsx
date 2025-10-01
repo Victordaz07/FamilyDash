@@ -82,7 +82,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, onPress, onAction, viewM
                     <View style={styles.gridContent}>
                         <Text style={styles.gridTitle} numberOfLines={2}>{task.title}</Text>
                         <Text style={styles.gridAssignee}>Assigned to {task.assignedTo}</Text>
-                        
+
                         <View style={styles.gridProgressContainer}>
                             <View style={styles.gridProgressBar}>
                                 <View style={[styles.gridProgressFill, { width: `${task.progress}%` }]} />
@@ -135,7 +135,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, onPress, onAction, viewM
                         <Image source={{ uri: task.avatar }} style={styles.listAvatar} />
                         <View style={[styles.listStatusDot, { backgroundColor: getStatusColor(task.status) }]} />
                     </View>
-                    
+
                     <View style={styles.listContent}>
                         <View style={styles.listTitleRow}>
                             <Text style={styles.listTitle} numberOfLines={1}>{task.title}</Text>
@@ -144,9 +144,9 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, onPress, onAction, viewM
                                 <Text style={styles.listPriorityText}>{task.priority}</Text>
                             </View>
                         </View>
-                        
+
                         <Text style={styles.listAssignee}>Assigned to {task.assignedTo}</Text>
-                        
+
                         <View style={styles.listProgressContainer}>
                             <View style={styles.listProgressBar}>
                                 <View style={[styles.listProgressFill, { width: `${task.progress}%` }]} />
@@ -167,7 +167,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(({ task, onPress, onAction, viewM
                         <Text style={styles.listDueDate}>{task.dueDate}</Text>
                         <Text style={styles.listTime}>{task.estimatedTime}</Text>
                     </View>
-                    
+
                     <View style={styles.listActions}>
                         <TouchableOpacity
                             style={styles.listActionButton}

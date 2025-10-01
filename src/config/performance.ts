@@ -6,22 +6,22 @@
 export const FLATLIST_CONFIG = {
     // Renderizado inicial
     initialNumToRender: 10,
-    
+
     // Renderizado por lotes
     maxToRenderPerBatch: 10,
-    
+
     // Tamaño de ventana
     windowSize: 10,
-    
+
     // Eliminar vistas fuera de pantalla
     removeClippedSubviews: true,
-    
+
     // Período de actualización de celdas
     updateCellsBatchingPeriod: 50,
-    
+
     // Deshabilitar virtualización (solo si es necesario)
     disableVirtualization: false,
-    
+
     // Umbral de scroll para mantener elementos
     maintainVisibleContentPosition: {
         minIndexForVisible: 0,
@@ -33,7 +33,7 @@ export const FLATLIST_CONFIG = {
 export const IMAGE_CONFIG = {
     // Calidad por defecto
     defaultQuality: 80,
-    
+
     // Tamaños estándar
     sizes: {
         avatar: { width: 40, height: 40 },
@@ -41,10 +41,10 @@ export const IMAGE_CONFIG = {
         card: { width: 200, height: 150 },
         fullscreen: { width: 400, height: 300 },
     },
-    
+
     // Formatos soportados
     supportedFormats: ['jpg', 'jpeg', 'png', 'webp'],
-    
+
     // Caché
     cachePolicy: 'memory-disk',
 };
@@ -58,14 +58,14 @@ export const ANIMATION_CONFIG = {
         slow: 500,
         verySlow: 800,
     },
-    
+
     // Easing functions
     easing: {
         easeInOut: 'ease-in-out',
         easeOut: 'ease-out',
         easeIn: 'ease-in',
     },
-    
+
     // Usar native driver cuando sea posible
     useNativeDriver: true,
 };
@@ -74,13 +74,13 @@ export const ANIMATION_CONFIG = {
 export const TIMING_CONFIG = {
     // Debounce para búsquedas
     searchDebounce: 300,
-    
+
     // Throttle para scroll
     scrollThrottle: 16, // ~60fps
-    
+
     // Debounce para resize
     resizeDebounce: 100,
-    
+
     // Throttle para touch events
     touchThrottle: 16,
 };
@@ -89,13 +89,13 @@ export const TIMING_CONFIG = {
 export const MEMORY_CONFIG = {
     // Límite de caché de imágenes
     imageCacheLimit: 50,
-    
+
     // Límite de caché de datos
     dataCacheLimit: 100,
-    
+
     // Tiempo de expiración de caché (ms)
     cacheExpiration: 5 * 60 * 1000, // 5 minutos
-    
+
     // Limpiar caché automáticamente
     autoCleanup: true,
 };
@@ -104,16 +104,16 @@ export const MEMORY_CONFIG = {
 export const NETWORK_CONFIG = {
     // Timeout de requests
     timeout: 10000, // 10 segundos
-    
+
     // Reintentos
     retries: 3,
-    
+
     // Delay entre reintentos
     retryDelay: 1000,
-    
+
     // Compresión
     compression: true,
-    
+
     // Caché de requests
     cacheRequests: true,
 };
@@ -122,13 +122,13 @@ export const NETWORK_CONFIG = {
 export const LAZY_LOADING_CONFIG = {
     // Umbral para cargar componentes
     threshold: 0.1,
-    
+
     // Root margin para intersection observer
     rootMargin: '50px',
-    
+
     // Fallback para componentes que fallan
     fallbackToSync: true,
-    
+
     // Preload de componentes críticos
     preloadCritical: true,
 };
@@ -142,10 +142,10 @@ export const BUNDLE_CONFIG = {
         ui: ['expo-linear-gradient', '@expo/vector-icons'],
         utils: ['zustand', 'expo-async-storage'],
     },
-    
+
     // Preload de chunks críticos
     preloadChunks: ['core', 'navigation'],
-    
+
     // Lazy load de chunks no críticos
     lazyChunks: ['analytics', 'performance'],
 };
@@ -154,10 +154,10 @@ export const BUNDLE_CONFIG = {
 export const PROFILING_CONFIG = {
     // Habilitar profiling en desarrollo
     enableInDevelopment: true,
-    
+
     // Habilitar profiling en producción
     enableInProduction: false,
-    
+
     // Métricas a trackear
     metrics: [
         'render-time',
@@ -166,7 +166,7 @@ export const PROFILING_CONFIG = {
         'image-load-time',
         'animation-performance',
     ],
-    
+
     // Umbrales de performance
     thresholds: {
         renderTime: 16, // ms (60fps)
@@ -221,12 +221,12 @@ export const applyPerformanceOptimizations = () => {
         // En desarrollo, habilitar warnings de performance
         console.log('Performance optimizations enabled in development mode');
     }
-    
+
     // Configurar ImageLoader para mejor caché
     // ImageLoader.setImageCacheLimit(IMAGE_CONFIG.cacheLimit);
-    
+
     // Configurar Network para mejor performance
     // Network.setTimeout(NETWORK_CONFIG.timeout);
-    
+
     return true;
 };

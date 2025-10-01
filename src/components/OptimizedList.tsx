@@ -43,17 +43,17 @@ const OptimizedList = <T,>({
 }: OptimizedListProps<T>) => {
     // Memoizar la función renderItem para evitar re-renders innecesarios
     const memoizedRenderItem = useCallback(renderItem, []);
-    
+
     // Memoizar la función keyExtractor
     const memoizedKeyExtractor = useCallback(keyExtractor, []);
-    
+
     // Memoizar la función onEndReached
     const memoizedOnEndReached = useCallback(() => {
         if (onEndReached) {
             onEndReached();
         }
     }, [onEndReached]);
-    
+
     // Memoizar la función onRefresh
     const memoizedOnRefresh = useCallback(() => {
         if (onRefresh) {
@@ -120,7 +120,7 @@ const MemoizedOptimizedList = memo(OptimizedList) as <T>(
 ) => React.ReactElement;
 
 // Componente de placeholder para elementos vacíos
-export const EmptyListPlaceholder = memo(({ 
+export const EmptyListPlaceholder = memo(({
     message = "No items found",
     icon = "📭",
     onPress
@@ -139,7 +139,7 @@ export const EmptyListPlaceholder = memo(({
 ));
 
 // Componente de loading para el footer
-export const LoadingFooter = memo(({ 
+export const LoadingFooter = memo(({
     loading = false,
     message = "Loading more items..."
 }: {
@@ -147,7 +147,7 @@ export const LoadingFooter = memo(({
     message?: string;
 }) => {
     if (!loading) return null;
-    
+
     return (
         <View style={styles.loadingFooter}>
             <Text style={styles.loadingText}>{message}</Text>
@@ -156,7 +156,7 @@ export const LoadingFooter = memo(({
 });
 
 // Componente de header optimizado
-export const OptimizedHeader = memo(({ 
+export const OptimizedHeader = memo(({
     title,
     subtitle,
     action,
@@ -175,7 +175,7 @@ export const OptimizedHeader = memo(({
             )}
         </View>
         {action && onActionPress && (
-            <Text 
+            <Text
                 style={styles.headerAction}
                 onPress={onActionPress}
             >
