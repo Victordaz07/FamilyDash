@@ -208,8 +208,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     style={styles.familyCardGradient}
                                 >
                                     <View style={styles.familyCardHeader}>
-                                        <Avatar 
-                                            source={{ uri: member.avatar }} 
+                                        <Avatar
+                                            source={{ uri: member.avatar }}
                                             size={48}
                                             name={member.name}
                                         />
