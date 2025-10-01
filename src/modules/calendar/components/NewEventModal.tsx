@@ -22,7 +22,7 @@ interface EventData {
 
 const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmit }) => {
   const insets = useSafeAreaInsets();
-  
+
   const [formData, setFormData] = useState<EventData>({
     title: '',
     date: '',
@@ -91,8 +91,8 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
   };
 
   const toggleParticipant = (memberId: string) => {
-    setSelectedParticipants(prev => 
-      prev.includes(memberId) 
+    setSelectedParticipants(prev =>
+      prev.includes(memberId)
         ? prev.filter(id => id !== memberId)
         : [...prev, memberId]
     );
@@ -130,7 +130,7 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
             </TouchableOpacity>
           </LinearGradient>
 
-          <ScrollView 
+          <ScrollView
             style={styles.modalContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -160,10 +160,10 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
                     ]}
                     onPress={() => setFormData(prev => ({ ...prev, type: type.id }))}
                   >
-                    <Ionicons 
-                      name={type.icon as any} 
-                      size={20} 
-                      color={formData.type === type.id ? 'white' : '#6B7280'} 
+                    <Ionicons
+                      name={type.icon as any}
+                      size={20}
+                      color={formData.type === type.id ? 'white' : '#6B7280'}
                     />
                     <Text style={[
                       styles.typeOptionText,
@@ -251,21 +251,21 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
 
             {/* Quick Actions */}
             <View style={styles.quickActionsContainer}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.quickActionButton}
                 onPress={() => setFormData(prev => ({ ...prev, date: getCurrentDate() }))}
               >
                 <Ionicons name="today" size={16} color="#3B82F6" />
                 <Text style={styles.quickActionText}>Today</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.quickActionButton}
                 onPress={() => setFormData(prev => ({ ...prev, time: getCurrentTime() }))}
               >
                 <Ionicons name="time" size={16} color="#3B82F6" />
                 <Text style={styles.quickActionText}>Now</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.quickActionButton}
                 onPress={() => setSelectedParticipants(familyMembers.map(m => m.id))}
               >

@@ -13,11 +13,12 @@ import GoalsScreen from '../modules/goals/screens/GoalsScreen';
 import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import VotingScreen from '../modules/voting/screens/VotingScreen';
 
 // Import Calendar module screens
 import CalendarHubScreen from '../modules/calendar/screens/CalendarHubScreen';
 import ActivityDetailScreen from '../modules/calendar/screens/ActivityDetailScreen';
-import VotingScreen from '../modules/calendar/screens/VotingScreen';
+import CalendarVotingScreen from '../modules/calendar/screens/VotingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,7 +41,7 @@ const CalendarStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="CalendarMain" component={CalendarHubScreen} />
     <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen as any} />
-    <Stack.Screen name="Voting" component={VotingScreen as any} />
+    <Stack.Screen name="CalendarVoting" component={CalendarVotingScreen as any} />
   </Stack.Navigator>
 );
 
@@ -53,6 +54,12 @@ const GoalsStack = () => (
 const SafeRoomStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen} />
+  </Stack.Navigator>
+);
+
+const VotingStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="VotingMain" component={VotingScreen} />
   </Stack.Navigator>
 );
 
@@ -82,6 +89,8 @@ const AppNavigator = () => {
               iconName = focused ? 'calendar' : 'calendar-outline';
             } else if (route.name === 'Goals') {
               iconName = focused ? 'trophy' : 'trophy-outline';
+            } else if (route.name === 'Voting') {
+              iconName = focused ? 'list' : 'list-outline';
             } else if (route.name === 'SafeRoom') {
               iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
             } else if (route.name === 'Profile') {
@@ -128,6 +137,11 @@ const AppNavigator = () => {
           name="Goals" 
           component={GoalsStack}
           options={{ tabBarLabel: 'Metas' }}
+        />
+        <Tab.Screen 
+          name="Voting" 
+          component={VotingStack}
+          options={{ tabBarLabel: 'Votaciones' }}
         />
         <Tab.Screen 
           name="SafeRoom" 
