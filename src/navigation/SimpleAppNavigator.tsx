@@ -13,13 +13,19 @@ import GoalsScreen from '../modules/goals/screens/GoalsScreen';
 import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import VotingScreen from '../modules/voting/screens/VotingScreen';
-import ButtonTestScreen from '../screens/ButtonTestScreen';
+
+// Import Penalties module screens
+import PenaltiesMain from '../modules/penalties/screens/PenaltiesMain';
+import PenaltyDetails from '../modules/penalties/screens/PenaltyDetails';
+import PenaltyHistory from '../modules/penalties/screens/PenaltyHistory';
 
 // Import Calendar module screens
 import CalendarHubScreen from '../modules/calendar/screens/CalendarHubScreen';
 import ActivityDetailScreen from '../modules/calendar/screens/ActivityDetailScreen';
 import CalendarVotingScreen from '../modules/calendar/screens/VotingScreen';
+import VotingScreen from '../modules/calendar/voting/VotingScreen';
+import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
+import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -28,6 +34,9 @@ const Stack = createStackNavigator();
 const DashboardStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DashboardMain" component={DashboardScreen} />
+    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain} />
+    <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
+    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory} />
   </Stack.Navigator>
 );
 
@@ -41,8 +50,11 @@ const TasksStack = () => (
 const CalendarStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="CalendarMain" component={CalendarHubScreen} />
+    <Stack.Screen name="ExpandedCalendar" component={ExpandedCalendar} />
     <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen as any} />
     <Stack.Screen name="CalendarVoting" component={CalendarVotingScreen as any} />
+    <Stack.Screen name="Voting" component={VotingScreen} />
+    <Stack.Screen name="EventEditor" component={EventEditorScreen} />
   </Stack.Navigator>
 );
 
@@ -58,15 +70,11 @@ const SafeRoomStack = () => (
   </Stack.Navigator>
 );
 
-const VotingStack = () => (
+const PenaltiesStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="VotingMain" component={VotingScreen} />
-  </Stack.Navigator>
-);
-
-const TestStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="TestMain" component={ButtonTestScreen} />
+    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain} />
+    <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
+    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory} />
   </Stack.Navigator>
 );
 
@@ -79,7 +87,7 @@ const ProfileStack = () => (
 
 const AppNavigator = () => {
   const insets = useSafeAreaInsets();
-  
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -96,10 +104,8 @@ const AppNavigator = () => {
               iconName = focused ? 'calendar' : 'calendar-outline';
             } else if (route.name === 'Goals') {
               iconName = focused ? 'trophy' : 'trophy-outline';
-            } else if (route.name === 'Voting') {
-              iconName = focused ? 'list' : 'list-outline';
-            } else if (route.name === 'Test') {
-              iconName = focused ? 'bug' : 'bug-outline';
+            } else if (route.name === 'Penalties') {
+              iconName = focused ? 'warning' : 'warning-outline';
             } else if (route.name === 'SafeRoom') {
               iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
             } else if (route.name === 'Profile') {
@@ -127,43 +133,38 @@ const AppNavigator = () => {
           },
         })}
       >
-        <Tab.Screen 
-          name="Dashboard" 
+        <Tab.Screen
+          name="Dashboard"
           component={DashboardStack}
           options={{ tabBarLabel: 'Dashboard' }}
         />
-        <Tab.Screen 
-          name="Tasks" 
+        <Tab.Screen
+          name="Tasks"
           component={TasksStack}
           options={{ tabBarLabel: 'Tareas' }}
         />
-        <Tab.Screen 
-          name="Calendar" 
+        <Tab.Screen
+          name="Calendar"
           component={CalendarStack}
           options={{ tabBarLabel: 'Calendario' }}
         />
-        <Tab.Screen 
-          name="Goals" 
+        <Tab.Screen
+          name="Goals"
           component={GoalsStack}
           options={{ tabBarLabel: 'Metas' }}
         />
-        <Tab.Screen 
-          name="Voting" 
-          component={VotingStack}
-          options={{ tabBarLabel: 'Votaciones' }}
+        <Tab.Screen
+          name="Penalties"
+          component={PenaltiesStack}
+          options={{ tabBarLabel: 'Penalidades' }}
         />
-        <Tab.Screen 
-          name="Test" 
-          component={TestStack}
-          options={{ tabBarLabel: 'Test' }}
-        />
-        <Tab.Screen 
-          name="SafeRoom" 
+        <Tab.Screen
+          name="SafeRoom"
           component={SafeRoomStack}
           options={{ tabBarLabel: 'SafeRoom' }}
         />
-        <Tab.Screen 
-          name="Profile" 
+        <Tab.Screen
+          name="Profile"
           component={ProfileStack}
           options={{ tabBarLabel: 'Perfil' }}
         />

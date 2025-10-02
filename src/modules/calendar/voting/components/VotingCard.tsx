@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Card } from '../../../components/ui/WorkingComponents';
-import { theme } from '../../../styles/simpleTheme';
-import { VotingProposal, FamilyMember } from '../hooks/useVoting';
+import { Card } from '../../../../components/ui/WorkingComponents';
+import { theme } from '../../../../styles/simpleTheme';
+import { VotingProposal, FamilyMember } from '../useVoting';
 
 interface VotingCardProps {
   proposal: VotingProposal;
@@ -12,11 +12,11 @@ interface VotingCardProps {
   showResults?: boolean;
 }
 
-const VotingCard: React.FC<VotingCardProps> = ({ 
-  proposal, 
-  familyMembers, 
-  onVote, 
-  showResults = false 
+const VotingCard: React.FC<VotingCardProps> = ({
+  proposal,
+  familyMembers,
+  onVote,
+  showResults = false
 }) => {
   const getCategoryIcon = (category: string) => {
     const icons: { [key: string]: keyof typeof Ionicons.glyphMap } = {
@@ -56,19 +56,19 @@ const VotingCard: React.FC<VotingCardProps> = ({
     const now = new Date();
     const expires = new Date(proposal.expiresAt);
     const diff = expires.getTime() - now.getTime();
-    
+
     if (diff <= 0) return 'Expirada';
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
   };
 
   const getWinner = () => {
     if (!showResults) return null;
-    return proposal.options.reduce((prev, current) => 
+    return proposal.options.reduce((prev, current) =>
       prev.votes > current.votes ? prev : current
     );
   };
@@ -83,10 +83,10 @@ const VotingCard: React.FC<VotingCardProps> = ({
       <View style={styles.header}>
         <View style={styles.categoryContainer}>
           <View style={[styles.categoryIcon, { backgroundColor: categoryColor }]}>
-            <Ionicons 
-              name={getCategoryIcon(proposal.category)} 
-              size={16} 
-              color="#ffffff" 
+            <Ionicons
+              name={getCategoryIcon(proposal.category)}
+              size={16}
+              color="#ffffff"
             />
           </View>
           <Text style={styles.categoryText}>
@@ -109,8 +109,8 @@ const VotingCard: React.FC<VotingCardProps> = ({
       <View style={styles.optionsContainer}>
         {proposal.options.map((option, index) => {
           const isWinner = showResults && winner?.id === option.id;
-          const percentage = proposal.totalVotes > 0 
-            ? (option.votes / proposal.totalVotes) * 100 
+          const percentage = proposal.totalVotes > 0
+            ? (option.votes / proposal.totalVotes) * 100
             : 0;
 
           return (
@@ -137,14 +137,14 @@ const VotingCard: React.FC<VotingCardProps> = ({
                   </Text>
                 )}
               </View>
-              
+
               {showResults && (
                 <View style={styles.progressBar}>
-                  <View 
+                  <View
                     style={[
-                      styles.progressFill, 
+                      styles.progressFill,
                       { width: `${percentage}%`, backgroundColor: categoryColor }
-                    ]} 
+                    ]}
                   />
                 </View>
               )}

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { usePenalties } from '../hooks/usePenalties';
+import { usePenaltiesStore } from '../store/penaltiesStore';
+import PenaltyTimer from '../components/PenaltyTimer';
 
 interface PenaltyDetailsProps {
     navigation: any;
@@ -17,325 +18,225 @@ const PenaltyDetails: React.FC<PenaltyDetailsProps> = ({ navigation, route }) =>
     const { penaltyId } = route.params;
     const {
         getPenaltyById,
-        addTimeToPenalty,
-        subtractTimeFromPenalty,
-        endPenaltyEarly,
-        togglePenaltyPause,
-        formatTimeRemaining,
-        formatDuration,
-        addReflection
-    } = usePenalties();
+        adjustTime,
+        endPenalty,
+        addReflection,
+        updatePenaltyTimer
+    } = usePenaltiesStore();
 
-    const penalty = getPenaltyById(penaltyId);
     const [reflectionText, setReflectionText] = useState('');
-    const [learnedItems, setLearnedItems] = useState<string[]>([]);
-    const [parentNote, setParentNote] = useState('Jake showed good understanding about the importance of completing homework first. Consider reducing future penalties if behavior improves.');
-
-    const learnedOptions = [
-        'Do homework right after school',
-        'Ask for help when I don\'t understand',
-        'Set a timer for homework time',
-        'Take breaks between subjects',
-        'Ask parents to check my work',
-        'Use a quiet study space'
-    ];
+    const penalty = getPenaltyById(penaltyId);
 
     useEffect(() => {
-        if (!penalty) {
-            Alert.alert('Error', 'Penalty not found');
-            navigation.goBack();
+        if (penalty?.reflection) {
+            setReflectionText(penalty.reflection);
         }
-    }, [penalty, navigation]);
+    }, [penalty?.reflection]);
+
+    // Update timer every second for this penalty
+    useEffect(() => {
+        if (!penalty?.isActive) return;
+
+        const interval = setInterval(() => {
+            if (penalty.remaining > 0) {
+                updatePenaltyTimer(penalty.id);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [penalty, updatePenaltyTimer]);
 
     if (!penalty) {
-        return null;
+        return (
+            <View style={styles.container}>
+                <Text>Penalty not found</Text>
+            </View>
+        );
     }
 
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
-    const handleAddTime = () => {
-        addTimeToPenalty(penaltyId, 5);
-    };
-
-    const handleSubtractTime = () => {
-        subtractTimeFromPenalty(penaltyId, 5);
-    };
-
-    const handleEndEarly = () => {
+    const handleEndPenalty = () => {
         Alert.alert(
-            'End Penalty Early',
-            'Are you sure you want to end this penalty early?',
+            'End Penalty',
+            `Are you sure you want to end ${penalty.memberName}'s penalty?`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'End Early',
+                    text: 'End Penalty',
                     style: 'destructive',
                     onPress: () => {
-                        endPenaltyEarly(penaltyId);
-                        Alert.alert('Success', 'Penalty ended early');
+                        endPenalty(penalty.id, reflectionText || undefined);
+                        navigation.goBack();
                     }
                 }
             ]
         );
     };
 
-    const handleTogglePause = () => {
-        togglePenaltyPause(penaltyId);
-    };
-
     const handleSaveReflection = () => {
-        if (!reflectionText.trim()) {
-            Alert.alert('Error', 'Please enter your reflection');
-            return;
+        if (reflectionText.trim()) {
+            addReflection(penalty.id, reflectionText.trim());
+            Alert.alert('Saved', 'Reflection has been saved.');
         }
+    };
 
-        const reflectionData = {
-            penaltyId: penaltyId,
-            memberId: penalty.memberId,
-            memberName: penalty.memberName,
-            memberAvatar: penalty.memberAvatar,
-            penaltyTitle: penalty.penaltyType,
-            reflectionText: reflectionText.trim(),
-            learnedItems: learnedItems
+    const formatTime = (timestamp: number) => {
+        return new Date(timestamp).toLocaleString();
+    };
+
+    const getCategoryColor = () => {
+        const colors = {
+            behavior: '#EF4444',
+            chores: '#F59E0B',
+            screen_time: '#8B5CF6',
+            homework: '#3B82F6',
+            other: '#6B7280'
         };
-
-        addReflection(reflectionData);
-        Alert.alert('Success', 'Reflection saved successfully!');
-        setReflectionText('');
-        setLearnedItems([]);
+        return colors[penalty.category] || colors.other;
     };
-
-    const toggleLearnedItem = (item: string) => {
-        setLearnedItems(prev =>
-            prev.includes(item)
-                ? prev.filter(i => i !== item)
-                : [...prev, item]
-        );
-    };
-
-    const isPenaltyComplete = penalty.status === 'completed';
-    const isPenaltyActive = penalty.status === 'active';
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
             {/* Header */}
             <LinearGradient
-                colors={['#EF4444', '#DC2626']}
+                colors={[getCategoryColor(), getCategoryColor() + 'CC']}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
-                    <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-                        <Ionicons name="arrow-back" size={20} color="white" />
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="white" />
                     </TouchableOpacity>
+
                     <View style={styles.headerTitleContainer}>
-                        <Text style={styles.headerTitle}>Active Penalty</Text>
-                        <Text style={styles.headerSubtitle}>Penalty Details</Text>
+                        <Text style={styles.headerTitle}>{penalty.memberName}'s Penalty</Text>
+                        <Text style={styles.headerSubtitle}>
+                            {penalty.isActive ? 'Active' : 'Completed'}
+                        </Text>
                     </View>
-                    <TouchableOpacity style={styles.headerButton}>
-                        <Ionicons name="hourglass" size={16} color="white" />
-                    </TouchableOpacity>
+
+                    <View style={styles.placeholder} />
                 </View>
             </LinearGradient>
 
-            {/* Penalty Member Info */}
-            <View style={styles.memberSection}>
-                <View style={styles.memberCard}>
-                    <View style={styles.avatarContainer}>
-                        <View style={[styles.memberAvatar, { borderColor: penalty.color }]}>
-                            <Text style={styles.memberAvatarText}>
-                                {penalty.memberName.charAt(0)}
-                            </Text>
-                        </View>
-                        {isPenaltyActive && (
-                            <View style={styles.activeBadge}>
-                                <Ionicons name="ban" size={16} color="white" />
-                            </View>
-                        )}
-                    </View>
-                    <Text style={styles.memberName}>{penalty.memberName}</Text>
-                    <Text style={styles.memberAge}>{penalty.memberAge} years old</Text>
-                    <View style={styles.penaltyStatusBadge}>
-                        <Text style={styles.penaltyStatusText}>Currently serving penalty</Text>
-                    </View>
-                </View>
-            </View>
-
-            {/* Penalty Details */}
-            <View style={styles.detailsSection}>
-                <View style={styles.detailsCard}>
-                    <View style={styles.detailsHeader}>
-                        <Text style={styles.detailsTitle}>Penalty Details</Text>
-                        <View style={[styles.statusBadge, { backgroundColor: penalty.color }]}>
-                            <Text style={styles.statusBadgeText}>ACTIVE</Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.penaltyInfo}>
-                        <View style={styles.penaltyTypeRow}>
-                            <View style={[styles.penaltyIcon, { backgroundColor: penalty.color }]}>
-                                <Ionicons name={penalty.icon as any} size={20} color="white" />
-                            </View>
-                            <Text style={styles.penaltyType}>{penalty.penaltyType}</Text>
-                        </View>
-
-                        <Text style={styles.penaltyDescription}>{penalty.description}</Text>
-
-                        <View style={styles.penaltyDetails}>
-                            <Text style={styles.detailItem}>Reason: {penalty.reason}</Text>
-                            <Text style={styles.detailItem}>Started: {penalty.startedAt}</Text>
-                            <Text style={styles.detailItem}>Duration: {formatDuration(penalty.duration)}</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-
-            {/* Countdown Timer Section */}
-            {isPenaltyActive && (
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+                {/* Timer Section */}
                 <View style={styles.timerSection}>
-                    <View style={styles.timerCard}>
-                        <View style={styles.timerDisplay}>
-                            <Text style={[styles.timerText, { color: penalty.color }]}>
-                                {formatTimeRemaining(penalty.remainingTime)}
-                            </Text>
-                            <Text style={styles.timerLabel}>remaining</Text>
-                        </View>
+                    <PenaltyTimer
+                        remaining={penalty.remaining}
+                        duration={penalty.duration}
+                        size={200}
+                        strokeWidth={12}
+                    />
 
-                        <View style={styles.progressSection}>
-                            <View style={styles.progressHeader}>
-                                <Text style={styles.progressLabel}>Progress</Text>
-                                <Text style={styles.progressText}>{Math.round(penalty.progress)}% complete</Text>
-                            </View>
-                            <View style={styles.progressBar}>
-                                <View
-                                    style={[
-                                        styles.progressFill,
-                                        {
-                                            width: `${penalty.progress}%`,
-                                            backgroundColor: penalty.color
-                                        }
-                                    ]}
-                                />
-                            </View>
-                        </View>
-
-                        <View style={styles.timerActions}>
-                            <TouchableOpacity style={styles.pauseButton} onPress={handleTogglePause}>
-                                <Ionicons name="pause" size={16} color="white" />
-                                <Text style={styles.pauseButtonText}>Pause</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.infoButton}>
-                                <Ionicons name="information-circle" size={16} color="#3B82F6" />
-                                <Text style={styles.infoButtonText}>Info</Text>
-                            </TouchableOpacity>
-                        </View>
+                    <View style={styles.timerInfo}>
+                        <Text style={styles.reasonText}>{penalty.reason}</Text>
+                        <Text style={styles.categoryText}>
+                            {penalty.category.replace('_', ' ').toUpperCase()}
+                        </Text>
                     </View>
                 </View>
-            )}
 
-            {/* Penalty Complete Banner */}
-            {isPenaltyComplete && (
-                <View style={styles.completeBanner}>
-                    <Ionicons name="checkmark-circle" size={48} color="white" />
-                    <Text style={styles.completeTitle}>Penalty Complete!</Text>
-                    <Text style={styles.completeSubtitle}>
-                        {penalty.memberName} can now use his tablet again
-                    </Text>
+                {/* Details Card */}
+                <View style={styles.detailsCard}>
+                    <Text style={styles.cardTitle}>Penalty Details</Text>
+
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Started:</Text>
+                        <Text style={styles.detailValue}>{formatTime(penalty.startTime)}</Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Duration:</Text>
+                        <Text style={styles.detailValue}>{penalty.duration} minutes</Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Remaining:</Text>
+                        <Text style={[styles.detailValue, { color: getCategoryColor() }]}>
+                            {penalty.remaining} minutes
+                        </Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Assigned by:</Text>
+                        <Text style={styles.detailValue}>{penalty.createdBy}</Text>
+                    </View>
+
+                    {penalty.endTime && (
+                        <View style={styles.detailRow}>
+                            <Text style={styles.detailLabel}>Completed:</Text>
+                            <Text style={styles.detailValue}>{formatTime(penalty.endTime)}</Text>
+                        </View>
+                    )}
                 </View>
-            )}
 
-            {/* Reflection Section */}
-            <View style={styles.reflectionSection}>
+                {/* Action Buttons */}
+                {penalty.isActive && (
+                    <View style={styles.actionsCard}>
+                        <Text style={styles.cardTitle}>Actions</Text>
+
+                        <View style={styles.timeAdjustments}>
+                            <TouchableOpacity
+                                style={[styles.adjustButton, { borderColor: '#10B981' }]}
+                                onPress={() => adjustTime(penalty.id, -5)}
+                            >
+                                <Ionicons name="remove" size={20} color="#10B981" />
+                                <Text style={[styles.adjustText, { color: '#10B981' }]}>-5 min</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.adjustButton, { borderColor: '#EF4444' }]}
+                                onPress={() => adjustTime(penalty.id, 5)}
+                            >
+                                <Ionicons name="add" size={20} color="#EF4444" />
+                                <Text style={[styles.adjustText, { color: '#EF4444' }]}>+5 min</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.endButton}
+                            onPress={handleEndPenalty}
+                        >
+                            <LinearGradient
+                                colors={['#8B5CF6', '#7C3AED']}
+                                style={styles.endButtonGradient}
+                            >
+                                <Ionicons name="checkmark" size={20} color="white" />
+                                <Text style={styles.endButtonText}>End Penalty Early</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {/* Reflection Section */}
                 <View style={styles.reflectionCard}>
-                    <View style={styles.reflectionHeader}>
-                        <Ionicons name="bulb" size={24} color="#F59E0B" />
-                        <Text style={styles.reflectionTitle}>Reflection Time</Text>
-                    </View>
+                    <Text style={styles.cardTitle}>
+                        {penalty.isActive ? 'Add Reflection' : 'Reflection'}
+                    </Text>
 
-                    <View style={styles.reflectionInput}>
-                        <Text style={styles.inputLabel}>What did you learn from this?</Text>
-                        <TextInput
-                            style={styles.textArea}
-                            placeholder="I learned that I should..."
-                            value={reflectionText}
-                            onChangeText={setReflectionText}
-                            multiline
-                            numberOfLines={4}
-                        />
-                    </View>
+                    <TextInput
+                        style={styles.reflectionInput}
+                        placeholder="What did you learn from this experience?"
+                        multiline
+                        numberOfLines={4}
+                        value={reflectionText}
+                        onChangeText={setReflectionText}
+                        editable={penalty.isActive || !penalty.reflection}
+                    />
 
-                    <View style={styles.learnedItemsSection}>
-                        <Text style={styles.inputLabel}>How will you do better next time?</Text>
-                        <View style={styles.learnedItemsList}>
-                            {learnedOptions.map((option, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.learnedItem,
-                                        learnedItems.includes(option) && styles.learnedItemSelected
-                                    ]}
-                                    onPress={() => toggleLearnedItem(option)}
-                                >
-                                    <Ionicons
-                                        name={learnedItems.includes(option) ? "checkmark-circle" : "ellipse-outline"}
-                                        size={20}
-                                        color={learnedItems.includes(option) ? "#10B981" : "#6B7280"}
-                                    />
-                                    <Text style={[
-                                        styles.learnedItemText,
-                                        learnedItems.includes(option) && styles.learnedItemTextSelected
-                                    ]}>
-                                        {option}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.saveButton,
-                            reflectionText.trim() && styles.saveButtonActive
-                        ]}
-                        onPress={handleSaveReflection}
-                    >
-                        <Ionicons name="save" size={16} color="white" />
-                        <Text style={styles.saveButtonText}>Save Reflection</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Parent Actions */}
-            <View style={styles.parentActionsSection}>
-                <View style={styles.parentActionsCard}>
-                    <Text style={styles.parentActionsTitle}>Parent Actions</Text>
-
-                    <View style={styles.parentActionsButtons}>
-                        <TouchableOpacity style={styles.addTimeButton} onPress={handleAddTime}>
-                            <Ionicons name="add-circle" size={20} color="white" />
-                            <Text style={styles.addTimeButtonText}>Add Time</Text>
+                    {penalty.isActive && (
+                        <TouchableOpacity
+                            style={styles.saveReflectionButton}
+                            onPress={handleSaveReflection}
+                        >
+                            <Text style={styles.saveReflectionText}>Save Reflection</Text>
                         </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.endEarlyButton} onPress={handleEndEarly}>
-                            <Ionicons name="checkmark-circle" size={20} color="white" />
-                            <Text style={styles.endEarlyButtonText}>End Early</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.parentNoteCard}>
-                        <View style={styles.parentNoteHeader}>
-                            <Ionicons name="information-circle" size={20} color="#3B82F6" />
-                            <Text style={styles.parentNoteTitle}>Parent Note</Text>
-                        </View>
-                        <Text style={styles.parentNoteText}>{parentNote}</Text>
-                    </View>
+                    )}
                 </View>
-            </View>
-
-            {/* Bottom spacing */}
-            <View style={styles.bottomSpacing} />
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 };
 
@@ -345,457 +246,186 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9FAFB',
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 24,
-        paddingHorizontal: 16,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 8,
+        paddingTop: 50,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
     },
     headerContent: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        alignItems: 'center',
     },
-    headerButton: {
-        width: 40,
-        height: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
+    backButton: {
+        padding: 8,
     },
     headerTitleContainer: {
-        alignItems: 'center',
         flex: 1,
-        marginHorizontal: 16,
+        alignItems: 'center',
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    headerSubtitle: {
-        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.8)',
-    },
-    memberSection: {
-        paddingHorizontal: 16,
-        marginTop: -20,
-    },
-    memberCard: {
-        backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    avatarContainer: {
-        position: 'relative',
-        marginBottom: 12,
-    },
-    memberAvatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: '#3B82F6',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 4,
-    },
-    memberAvatarText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    activeBadge: {
-        position: 'absolute',
-        bottom: -4,
-        right: -4,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: '#EF4444',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    memberName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#374151',
-        marginBottom: 4,
-    },
-    memberAge: {
-        fontSize: 16,
-        color: '#6B7280',
-        marginBottom: 12,
-    },
-    penaltyStatusBadge: {
-        backgroundColor: '#FEF2F2',
-        borderWidth: 1,
-        borderColor: '#EF4444',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    penaltyStatusText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#EF4444',
-    },
-    detailsSection: {
-        paddingHorizontal: 16,
-        marginTop: 16,
-    },
-    detailsCard: {
-        backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    detailsHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    detailsTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#374151',
-    },
-    statusBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 12,
-    },
-    statusBadgeText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    penaltyInfo: {
-        gap: 12,
-    },
-    penaltyTypeRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-    },
-    penaltyIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    penaltyType: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#374151',
-    },
-    penaltyDescription: {
-        fontSize: 14,
-        color: '#6B7280',
-        lineHeight: 20,
-    },
-    penaltyDetails: {
-        backgroundColor: '#F3F4F6',
-        padding: 12,
-        borderRadius: 8,
-        gap: 4,
-    },
-    detailItem: {
-        fontSize: 14,
-        color: '#374151',
-    },
-    timerSection: {
-        paddingHorizontal: 16,
-        marginTop: 16,
-    },
-    timerCard: {
-        backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    timerDisplay: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    timerText: {
-        fontSize: 48,
-        fontWeight: 'bold',
-    },
-    timerLabel: {
-        fontSize: 16,
-        color: '#6B7280',
-    },
-    progressSection: {
-        width: '100%',
-        marginBottom: 20,
-    },
-    progressHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    progressLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    progressText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#EF4444',
-    },
-    progressBar: {
-        height: 8,
-        backgroundColor: '#E5E7EB',
-        borderRadius: 4,
-    },
-    progressFill: {
-        height: 8,
-        borderRadius: 4,
-    },
-    timerActions: {
-        flexDirection: 'row',
-        gap: 16,
-    },
-    pauseButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F59E0B',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        gap: 6,
-    },
-    pauseButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: 'white',
-    },
-    infoButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#EBF8FF',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        gap: 6,
-    },
-    infoButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#3B82F6',
-    },
-    completeBanner: {
-        backgroundColor: '#10B981',
-        marginHorizontal: 16,
-        marginTop: 16,
-        padding: 20,
-        borderRadius: 16,
-        alignItems: 'center',
-    },
-    completeTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         color: 'white',
-        marginTop: 12,
         marginBottom: 4,
     },
-    completeSubtitle: {
+    headerSubtitle: {
         fontSize: 14,
-        color: 'rgba(255, 255, 255, 0.9)',
-        textAlign: 'center',
+        color: 'rgba(255, 255, 255, 0.8)',
     },
-    reflectionSection: {
-        paddingHorizontal: 16,
+    placeholder: {
+        width: 40,
+    },
+    content: {
+        flex: 1,
+    },
+    timerSection: {
+        alignItems: 'center',
+        paddingVertical: 32,
+        backgroundColor: 'white',
+        marginHorizontal: 16,
         marginTop: 16,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    timerInfo: {
+        alignItems: 'center',
+        marginTop: 24,
+    },
+    reasonText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1F2937',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    categoryText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#6B7280',
+        letterSpacing: 1,
+    },
+    detailsCard: {
+        backgroundColor: 'white',
+        marginHorizontal: 16,
+        marginTop: 16,
+        borderRadius: 16,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 16,
+    },
+    detailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    detailLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+    },
+    detailValue: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+    },
+    actionsCard: {
+        backgroundColor: 'white',
+        marginHorizontal: 16,
+        marginTop: 16,
+        borderRadius: 16,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    timeAdjustments: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 16,
+    },
+    adjustButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        borderRadius: 8,
+        borderWidth: 2,
+        backgroundColor: 'white',
+    },
+    adjustText: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginLeft: 6,
+    },
+    endButton: {
+        borderRadius: 12,
+    },
+    endButtonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        borderRadius: 12,
+    },
+    endButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 8,
     },
     reflectionCard: {
         backgroundColor: 'white',
+        marginHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 32,
         borderRadius: 16,
-        padding: 16,
+        padding: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    reflectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
-        gap: 8,
-    },
-    reflectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#374151',
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     reflectionInput: {
-        marginBottom: 16,
-    },
-    inputLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: 8,
-    },
-    textArea: {
         borderWidth: 1,
-        borderColor: '#D1D5DB',
+        borderColor: '#E5E7EB',
         borderRadius: 8,
         padding: 12,
-        fontSize: 14,
-        color: '#374151',
-        textAlignVertical: 'top',
-        minHeight: 80,
-    },
-    learnedItemsSection: {
-        marginBottom: 16,
-    },
-    learnedItemsList: {
-        gap: 8,
-    },
-    learnedItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 8,
-        gap: 12,
-    },
-    learnedItemSelected: {
-        backgroundColor: '#F0FDF4',
-        borderRadius: 8,
-        paddingHorizontal: 8,
-    },
-    learnedItemText: {
-        fontSize: 14,
-        color: '#6B7280',
-        flex: 1,
-    },
-    learnedItemTextSelected: {
-        color: '#374151',
-        fontWeight: '500',
-    },
-    saveButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#F59E0B',
-        paddingVertical: 12,
-        borderRadius: 12,
-        gap: 8,
-    },
-    saveButtonActive: {
-        backgroundColor: '#10B981',
-    },
-    saveButtonText: {
         fontSize: 16,
-        fontWeight: '600',
-        color: 'white',
+        textAlignVertical: 'top',
+        minHeight: 100,
+        backgroundColor: '#F9FAFB',
     },
-    parentActionsSection: {
+    saveReflectionButton: {
+        marginTop: 12,
+        paddingVertical: 12,
         paddingHorizontal: 16,
-        marginTop: 16,
-    },
-    parentActionsCard: {
-        backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    parentActionsTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#374151',
-        marginBottom: 16,
-    },
-    parentActionsButtons: {
-        flexDirection: 'row',
-        gap: 12,
-        marginBottom: 16,
-    },
-    addTimeButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#F59E0B',
-        paddingVertical: 12,
-        borderRadius: 12,
-        gap: 8,
-    },
-    addTimeButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: 'white',
-    },
-    endEarlyButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#10B981',
-        paddingVertical: 12,
-        borderRadius: 12,
-        gap: 8,
-    },
-    endEarlyButtonText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: 'white',
-    },
-    parentNoteCard: {
-        backgroundColor: '#EBF8FF',
-        borderWidth: 1,
-        borderColor: '#3B82F6',
-        padding: 12,
+        backgroundColor: '#8B5CF6',
         borderRadius: 8,
-    },
-    parentNoteHeader: {
-        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
-        gap: 8,
     },
-    parentNoteTitle: {
+    saveReflectionText: {
+        color: 'white',
         fontSize: 14,
         fontWeight: '600',
-        color: '#3B82F6',
-    },
-    parentNoteText: {
-        fontSize: 14,
-        color: '#374151',
-        lineHeight: 20,
-    },
-    bottomSpacing: {
-        height: 80,
     },
 });
 

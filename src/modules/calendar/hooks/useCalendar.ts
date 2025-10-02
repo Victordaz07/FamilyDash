@@ -9,6 +9,7 @@ export const useCalendar = () => {
     const [recentDecisions] = useState(mockRecentDecisions);
     const [selectedDay, setSelectedDay] = useState('15'); // Monday selected by default
     const [currentWeek, setCurrentWeek] = useState('This Week');
+    const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [useFirebase, setUseFirebase] = useState(false); // Toggle between mock and Firebase
 
@@ -37,8 +38,8 @@ export const useCalendar = () => {
     // Get upcoming activities for the week
     const getUpcomingActivities = () => {
         const currentActivities = getCurrentActivities();
-        return currentActivities.filter(activity => 
-            activity.date !== 'Monday' && 
+        return currentActivities.filter(activity =>
+            activity.date !== 'Monday' &&
             ['Wednesday', 'Friday', 'Saturday'].includes(activity.date)
         );
     };
@@ -158,6 +159,64 @@ export const useCalendar = () => {
         }, 1000);
     };
 
+    // Navigate between months
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        const newMonth = new Date(currentMonth);
+        if (direction === 'prev') {
+            newMonth.setMonth(newMonth.getMonth() - 1);
+        } else {
+            newMonth.setMonth(newMonth.getMonth() + 1);
+        }
+        setCurrentMonth(newMonth);
+    };
+
+    // Get month name and year
+    const getMonthYear = () => {
+        return currentMonth.toLocaleDateString('es-ES', {
+            month: 'long',
+            year: 'numeric'
+        });
+    };
+
+    // Get calendar days for current month
+    const getCalendarDays = () => {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+
+        // First day of the month
+        const firstDay = new Date(year, month, 1);
+        // First day of the week (0 = Sunday)
+        const startDate = new Date(firstDay);
+        startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+        const days = [];
+        const currentDate = new Date(startDate);
+
+        // Generate 42 days (6 weeks)
+        for (let i = 0; i < 42; i++) {
+            days.push({
+                date: new Date(currentDate),
+                isCurrentMonth: currentDate.getMonth() === month,
+                isToday: currentDate.toDateString() === new Date().toDateString(),
+                dayNumber: currentDate.getDate()
+            });
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        return days;
+    };
+
+    // Get activities for a specific date
+    const getActivitiesForDate = (date: Date) => {
+        const currentActivities = getCurrentActivities();
+
+        // For now, return mock activities based on day of week
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = dayNames[date.getDay()];
+
+        return currentActivities.filter(activity => activity.date === dayName);
+    };
+
     // Day selection
     const selectDay = (day: string) => {
         setSelectedDay(day);
@@ -177,6 +236,7 @@ export const useCalendar = () => {
         recentDecisions,
         selectedDay,
         currentWeek,
+        currentMonth,
         isLoading,
         useFirebase,
         setUseFirebase,
@@ -191,6 +251,10 @@ export const useCalendar = () => {
         completeResponsibility,
         addChatMessage,
         navigateWeek,
+        navigateMonth,
+        getMonthYear,
+        getCalendarDays,
+        getActivitiesForDate,
         selectDay,
         getVotingProgress
     };

@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from '../../../components/ui/WorkingComponents';
 import { theme } from '../../../styles/simpleTheme';
-import useVoting, { VotingProposal } from '../hooks/useVoting';
-import VotingCard from '../components/VotingCard';
-import NewProposalModal from '../components/NewProposalModal';
+import useVoting, { VotingProposal } from './useVoting';
+import VotingCard from './components/VotingCard';
+import NewProposalModal from './components/NewProposalModal';
 
 interface VotingScreenProps {
   navigation: any;
@@ -69,9 +69,9 @@ const VotingScreen: React.FC<VotingScreenProps> = ({ navigation }) => {
           <Ionicons name="list" size={64} color={theme.colors.textSecondary} />
           <Text style={styles.emptyTitle}>No hay propuestas</Text>
           <Text style={styles.emptySubtitle}>
-            {activeTab === 'active' ? 'No hay votaciones activas' : 
-             activeTab === 'completed' ? 'No hay votaciones completadas' : 
-             'No hay votaciones expiradas'}
+            {activeTab === 'active' ? 'No hay votaciones activas' :
+              activeTab === 'completed' ? 'No hay votaciones completadas' :
+                'No hay votaciones expiradas'}
           </Text>
         </View>
       );
@@ -92,14 +92,14 @@ const VotingScreen: React.FC<VotingScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('CalendarMain')}
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Votaciones Familiares</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.newButton}
           onPress={() => setShowNewProposal(true)}
         >

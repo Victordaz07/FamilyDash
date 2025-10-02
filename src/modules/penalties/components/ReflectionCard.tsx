@@ -1,201 +1,143 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Reflection } from '../mock/penalties';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface ReflectionCardProps {
-    reflection: Reflection;
-    onPress?: () => void;
-    onReaction?: (reactionType: 'heart' | 'clap' | 'muscle' | 'star') => void;
+    reflection: string;
+    memberName: string;
+    memberAvatar: string;
+    timestamp: number;
+    onReaction?: (reaction: string) => void;
 }
 
-const ReflectionCard: React.FC<ReflectionCardProps> = ({ reflection, onPress, onReaction }) => {
-    const getReactionIcon = (type: string) => {
-        const icons = {
-            'heart': 'heart',
-            'clap': 'hand-left',
-            'muscle': 'fitness',
-            'star': 'star'
-        };
-        return icons[type as keyof typeof icons] || 'heart';
+const ReflectionCard: React.FC<ReflectionCardProps> = ({
+    reflection,
+    memberName,
+    timestamp,
+    onReaction
+}) => {
+    const formatDate = (timestamp: number) => {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - date.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) return 'Today';
+        if (diffDays === 2) return 'Yesterday';
+        if (diffDays <= 7) return `${diffDays - 1} days ago`;
+
+        return date.toLocaleDateString();
     };
 
-    const getReactionColor = (type: string) => {
-        const colors = {
-            'heart': '#EF4444',
-            'clap': '#3B82F6',
-            'muscle': '#10B981',
-            'star': '#F59E0B'
-        };
-        return colors[type as keyof typeof colors] || '#EF4444';
-    };
+    const reactions = [
+        { emoji: '❤️', name: 'heart' },
+        { emoji: '👏', name: 'clap' },
+        { emoji: '💪', name: 'strong' },
+        { emoji: '🤗', name: 'hug' }
+    ];
 
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress} disabled={!onPress}>
-            <View style={styles.cardHeader}>
-                <View style={styles.memberInfo}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>
-                            {reflection.memberName.charAt(0)}
-                        </Text>
-                    </View>
-                    <View style={styles.memberDetails}>
-                        <Text style={styles.memberName}>{reflection.memberName}'s Reflection</Text>
-                        <Text style={styles.penaltyTitle}>{reflection.penaltyTitle}</Text>
-                    </View>
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#F8FAFC', '#F1F5F9']}
+                style={styles.card}
+            >
+                {/* Quote Icon */}
+                <View style={styles.quoteIcon}>
+                    <Ionicons name="chatbubble-ellipses" size={24} color="#8B5CF6" />
                 </View>
-                <Text style={styles.timestamp}>{reflection.createdAt}</Text>
-            </View>
 
-            <View style={styles.reflectionContent}>
-                <Text style={styles.reflectionText}>{reflection.reflectionText}</Text>
-            </View>
+                {/* Reflection Text */}
+                <Text style={styles.reflectionText}>"{reflection}"</Text>
 
-            <View style={styles.learnedItems}>
-                {reflection.learnedItems.map((item, index) => (
-                    <View key={index} style={styles.learnedItem}>
-                        <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-                        <Text style={styles.learnedItemText}>{item}</Text>
+                {/* Member Info */}
+                <View style={styles.footer}>
+                    <View style={styles.memberInfo}>
+                        <Text style={styles.memberName}>— {memberName}</Text>
+                        <Text style={styles.timestamp}>{formatDate(timestamp)}</Text>
                     </View>
-                ))}
-            </View>
 
-            <View style={styles.reactionsSection}>
-                <View style={styles.reactions}>
-                    {Object.entries(reflection.reactions).map(([type, count]) => (
-                        count > 0 && (
+                    {/* Reaction Buttons */}
+                    <View style={styles.reactions}>
+                        {reactions.map((reaction) => (
                             <TouchableOpacity
-                                key={type}
+                                key={reaction.name}
                                 style={styles.reactionButton}
-                                onPress={() => onReaction?.(type as any)}
+                                onPress={() => onReaction?.(reaction.name)}
+                                activeOpacity={0.7}
                             >
-                                <Ionicons
-                                    name={getReactionIcon(type) as any}
-                                    size={16}
-                                    color={getReactionColor(type)}
-                                />
-                                <Text style={styles.reactionCount}>{count}</Text>
+                                <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
                             </TouchableOpacity>
-                        )
-                    ))}
+                        ))}
+                    </View>
                 </View>
-
-                <TouchableOpacity style={styles.addReactionButton}>
-                    <Ionicons name="add" size={16} color="#6B7280" />
-                </TouchableOpacity>
-            </View>
-        </TouchableOpacity>
+            </LinearGradient>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    card: {
-        backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+    container: {
+        marginHorizontal: 16,
+        marginVertical: 8,
     },
-    cardHeader: {
+    card: {
+        borderRadius: 16,
+        padding: 20,
+        borderLeftWidth: 4,
+        borderLeftColor: '#8B5CF6',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 3.84,
+        elevation: 2,
+    },
+    quoteIcon: {
+        alignSelf: 'flex-start',
+        marginBottom: 12,
+        opacity: 0.7,
+    },
+    reflectionText: {
+        fontSize: 16,
+        lineHeight: 24,
+        color: '#374151',
+        fontStyle: 'italic',
+        marginBottom: 16,
+    },
+    footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 12,
+        alignItems: 'flex-end',
     },
     memberInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#8B5CF6',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    avatarText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    memberDetails: {
         flex: 1,
     },
     memberName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#374151',
-        marginBottom: 2,
-    },
-    penaltyTitle: {
         fontSize: 14,
+        fontWeight: '600',
         color: '#6B7280',
+        marginBottom: 4,
     },
     timestamp: {
         fontSize: 12,
         color: '#9CA3AF',
     },
-    reflectionContent: {
-        marginBottom: 12,
-    },
-    reflectionText: {
-        fontSize: 14,
-        color: '#374151',
-        lineHeight: 20,
-    },
-    learnedItems: {
-        marginBottom: 12,
-    },
-    learnedItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    learnedItemText: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginLeft: 8,
-    },
-    reactionsSection: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
-    },
     reactions: {
         flexDirection: 'row',
-        gap: 12,
+        alignItems: 'center',
     },
     reactionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 16,
-        backgroundColor: '#F3F4F6',
-        gap: 4,
+        marginLeft: 8,
+        padding: 6,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
     },
-    reactionCount: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#374151',
-    },
-    addReactionButton: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#F3F4F6',
-        justifyContent: 'center',
-        alignItems: 'center',
+    reactionEmoji: {
+        fontSize: 18,
     },
 });
 

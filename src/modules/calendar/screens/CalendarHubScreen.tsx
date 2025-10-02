@@ -16,9 +16,14 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     const {
         selectedDay,
         currentWeek,
+        currentMonth,
         getTodaysActivities,
         getUpcomingActivities,
         navigateWeek,
+        navigateMonth,
+        getMonthYear,
+        getCalendarDays,
+        getActivitiesForDate,
         selectDay,
         updateActivity
     } = useCalendar();
@@ -247,12 +252,16 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                             <Ionicons name="arrow-back" size={20} color="white" />
                         </TouchableOpacity>
                         <View style={styles.headerTitleContainer}>
-                            <Text style={styles.headerTitle}>Weekly Calendar</Text>
-                            <Text style={styles.headerSubtitle}>Jan 15 - 21, 2024</Text>
+                            <Text style={styles.headerTitle}>
+                                {viewMode === 'week' ? 'Weekly Calendar' : 'Monthly Calendar'}
+                            </Text>
+                            <Text style={styles.headerSubtitle}>
+                                {viewMode === 'week' ? 'Jan 15 - 21, 2024' : getMonthYear()}
+                            </Text>
                         </View>
                         <View style={styles.headerRight}>
-                            <TouchableOpacity style={styles.headerButton} onPress={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}>
-                                <Ionicons name={viewMode === 'week' ? 'calendar' : 'grid'} size={16} color="white" />
+                            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('ExpandedCalendar')}>
+                                <Ionicons name="calendar" size={16} color="white" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.headerButton} onPress={() => setShowWeather(!showWeather)}>
                                 <Ionicons name={showWeather ? "sunny" : "cloudy"} size={16} color="white" />
@@ -271,54 +280,108 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                 {/* Week Navigation */}
                 <Animated.View style={[styles.weekNavigationSection, { opacity: calendarAnim }]}>
                     <View style={styles.card}>
-                        <View style={styles.weekNavigationHeader}>
-                            <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('prev')}>
-                                <Ionicons name="chevron-back" size={16} color="#6B7280" />
-                            </TouchableOpacity>
-                            <Text style={styles.weekTitle}>{currentWeek}</Text>
-                            <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('next')}>
-                                <Ionicons name="chevron-forward" size={16} color="#6B7280" />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.weekDaysGrid}>
-                            {weekDays.map((day, index) => (
-                                <Animated.View
-                                    key={index}
-                                    style={[
-                                        styles.dayItem,
-                                        {
-                                            transform: [{
-                                                translateY: calendarAnim.interpolate({
-                                                    inputRange: [0, 1],
-                                                    outputRange: [index * 8, 0],
-                                                })
-                                            }]
-                                        }
-                                    ]}
-                                >
-                                    <TouchableOpacity style={styles.dayButton} onPress={() => selectDay(day.date)}>
-                                        <Text style={styles.dayLabel}>{day.day}</Text>
-                                        <View style={[
-                                            styles.dayNumber,
-                                            selectedDay === day.date && styles.selectedDay,
-                                            !selectedDay && day.isSelected && styles.selectedDay
-                                        ]}>
-                                            <Text style={[
-                                                styles.dayNumberText,
-                                                selectedDay === day.date && styles.selectedDayText,
-                                                !selectedDay && day.isSelected && styles.selectedDayText
-                                            ]}>
-                                                {day.date}
-                                            </Text>
-                                            {day.hasEvent && (
-                                                <View style={[styles.eventDot, { backgroundColor: day.eventColor }]} />
-                                            )}
-                                        </View>
+                        {viewMode === 'week' ? (
+                            // Week View
+                            <>
+                                <View style={styles.weekNavigationHeader}>
+                                    <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('prev')}>
+                                        <Ionicons name="chevron-back" size={16} color="#6B7280" />
                                     </TouchableOpacity>
-                                </Animated.View>
-                            ))}
-                        </View>
+                                    <Text style={styles.weekTitle}>{currentWeek}</Text>
+                                    <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateWeek('next')}>
+                                        <Ionicons name="chevron-forward" size={16} color="#6B7280" />
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={styles.weekDaysGrid}>
+                                    {weekDays.map((day, index) => (
+                                        <Animated.View
+                                            key={index}
+                                            style={[
+                                                styles.dayItem,
+                                                {
+                                                    transform: [{
+                                                        translateY: calendarAnim.interpolate({
+                                                            inputRange: [0, 1],
+                                                            outputRange: [index * 8, 0],
+                                                        })
+                                                    }]
+                                                }
+                                            ]}
+                                        >
+                                            <TouchableOpacity style={styles.dayButton} onPress={() => selectDay(day.date)}>
+                                                <Text style={styles.dayLabel}>{day.day}</Text>
+                                                <View style={[
+                                                    styles.dayNumber,
+                                                    selectedDay === day.date && styles.selectedDay,
+                                                    !selectedDay && day.isSelected && styles.selectedDay
+                                                ]}>
+                                                    <Text style={[
+                                                        styles.dayNumberText,
+                                                        selectedDay === day.date && styles.selectedDayText,
+                                                        !selectedDay && day.isSelected && styles.selectedDayText
+                                                    ]}>
+                                                        {day.date}
+                                                    </Text>
+                                                    {day.hasEvent && (
+                                                        <View style={[styles.eventDot, { backgroundColor: day.eventColor }]} />
+                                                    )}
+                                                </View>
+                                            </TouchableOpacity>
+                                        </Animated.View>
+                                    ))}
+                                </View>
+                            </>
+                        ) : (
+                            // Month View
+                            <>
+                                <View style={styles.monthNavigationHeader}>
+                                    <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateMonth('prev')}>
+                                        <Ionicons name="chevron-back" size={16} color="#6B7280" />
+                                    </TouchableOpacity>
+                                    <Text style={styles.weekTitle}>{getMonthYear()}</Text>
+                                    <TouchableOpacity style={styles.weekNavButton} onPress={() => navigateMonth('next')}>
+                                        <Ionicons name="chevron-forward" size={16} color="#6B7280" />
+                                    </TouchableOpacity>
+                                </View>
+
+                                {/* Day headers */}
+                                <View style={styles.monthDayHeaders}>
+                                    {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
+                                        <Text key={day} style={styles.monthDayHeader}>{day}</Text>
+                                    ))}
+                                </View>
+
+                                {/* Calendar grid */}
+                                <View style={styles.monthGrid}>
+                                    {getCalendarDays().map((day, index) => {
+                                        const dayActivities = getActivitiesForDate(day.date);
+                                        return (
+                                            <TouchableOpacity
+                                                key={index}
+                                                style={[
+                                                    styles.monthDay,
+                                                    !day.isCurrentMonth && styles.monthDayInactive,
+                                                    day.isToday && styles.monthDayToday
+                                                ]}
+                                                onPress={() => selectDay(day.dayNumber.toString())}
+                                            >
+                                                <Text style={[
+                                                    styles.monthDayText,
+                                                    !day.isCurrentMonth && styles.monthDayTextInactive,
+                                                    day.isToday && styles.monthDayTextToday
+                                                ]}>
+                                                    {day.dayNumber}
+                                                </Text>
+                                                {dayActivities.length > 0 && (
+                                                    <View style={styles.monthActivityDot} />
+                                                )}
+                                            </TouchableOpacity>
+                                        );
+                                    })}
+                                </View>
+                            </>
+                        )}
                     </View>
                 </Animated.View>
 
@@ -757,6 +820,65 @@ const styles = StyleSheet.create({
     viewModeButtonTextActive: {
         color: '#1F2937',
         fontWeight: '600',
+    },
+    // Month View Styles
+    monthNavigationHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    monthDayHeaders: {
+        flexDirection: 'row',
+        marginBottom: 8,
+    },
+    monthDayHeader: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#6B7280',
+        paddingVertical: 8,
+    },
+    monthGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    monthDay: {
+        width: '14.28%', // 100% / 7 days
+        aspectRatio: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 0.5,
+        borderColor: '#E5E7EB',
+        position: 'relative',
+    },
+    monthDayInactive: {
+        backgroundColor: '#F9FAFB',
+    },
+    monthDayToday: {
+        backgroundColor: '#8B5CF6',
+        borderRadius: 8,
+    },
+    monthDayText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+    },
+    monthDayTextInactive: {
+        color: '#9CA3AF',
+    },
+    monthDayTextToday: {
+        color: 'white',
+        fontWeight: '600',
+    },
+    monthActivityDot: {
+        position: 'absolute',
+        bottom: 4,
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#8B5CF6',
     },
 });
 

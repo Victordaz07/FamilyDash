@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FamilyMember } from '../hooks/useVoting';
+import { FamilyMember } from '../useVoting';
 
 interface NewProposalModalProps {
   visible: boolean;
@@ -12,11 +12,11 @@ interface NewProposalModalProps {
   familyMembers: FamilyMember[];
 }
 
-const NewProposalModal: React.FC<NewProposalModalProps> = ({ 
-  visible, 
-  onClose, 
-  onSubmit, 
-  familyMembers 
+const NewProposalModal: React.FC<NewProposalModalProps> = ({
+  visible,
+  onClose,
+  onSubmit,
+  familyMembers
 }) => {
   const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState({
@@ -124,7 +124,7 @@ const NewProposalModal: React.FC<NewProposalModalProps> = ({
             </TouchableOpacity>
           </LinearGradient>
 
-          <ScrollView 
+          <ScrollView
             style={styles.modalContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -168,10 +168,10 @@ const NewProposalModal: React.FC<NewProposalModalProps> = ({
                     ]}
                     onPress={() => setFormData(prev => ({ ...prev, category: category.id }))}
                   >
-                    <Ionicons 
-                      name={category.icon as any} 
-                      size={20} 
-                      color={formData.category === category.id ? '#ffffff' : category.color} 
+                    <Ionicons
+                      name={category.icon as any}
+                      size={20}
+                      color={formData.category === category.id ? '#ffffff' : category.color}
                     />
                     <Text style={[
                       styles.categoryText,
