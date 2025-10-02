@@ -1,202 +1,193 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Goal } from '../mock/goals';
+import { Ionicons } from '@expo/vector-icons';
+import { Goal } from '../types/goalTypes';
+import { goalCategories } from '../mock/goalsData';
+import { theme } from '../../../styles/simpleTheme';
 
 interface GoalCardProps {
   goal: Goal;
-  onPress?: () => void;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  onPress: (goalId: string) => void;
+  onCompleteMilestone?: (goalId: string) => void;
 }
 
-const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onEdit, onDelete }) => {
-  const getStatusColor = () => {
-    const colors = {
-      'not_started': '#6B7280',
-      'in_progress': '#3B82F6',
-      'completed': '#10B981',
-      'paused': '#F59E0B'
-    };
-    return colors[goal.status] || '#6B7280';
+const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onCompleteMilestone }) => {
+  const categoryConfig = goalCategories.find(c => c.id === goal.category);
+  const categoryColor = categoryConfig?.color || theme.colors.primary;
+  const categoryEmoji = categoryConfig?.emoji || '🎯';
+  const categoryGradient = categoryConfig?.gradient || [theme.colors.primary, theme.colors.primaryDark];
+
+  const getPriorityColor = (priority?: string) => {
+    switch (priority) {
+      case 'high': return '#EF4444';
+      case 'medium': return '#F59E0B';
+      case 'low': return '#10B981';
+      default: return theme.colors.gray;
+    }
   };
 
-  const getStatusIcon = () => {
-    const icons = {
-      'not_started': 'play-circle-outline',
-      'in_progress': 'play-circle',
-      'completed': 'checkmark-circle',
-      'paused': 'pause-circle'
-    };
-    return icons[goal.status] || 'play-circle-outline';
+  const getPriorityText = (priority?: string) => {
+    switch (priority) {
+      case 'high': return 'High Priority';
+      case 'medium': return 'Medium';
+      case 'low': return 'Low';
+      default: return '';
+    }
   };
 
-  const getPriorityColor = () => {
-    const colors = {
-      'low': '#10B981',
-      'medium': '#F59E0B',
-      'high': '#EF4444'
-    };
-    return colors[goal.priority] || '#6B7280';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return '#10B981';
+      case 'overdue': return '#EF4444';
+      case 'active': return categoryColor;
+      default: return theme.colors.gray;
+    }
   };
 
-  const getCategoryIcon = () => {
-    const icons = {
-      'family': 'people',
-      'personal': 'person',
-      'health': 'fitness',
-      'education': 'school',
-      'financial': 'wallet',
-      'recreation': 'game-controller'
-    };
-    return icons[goal.category] || 'flag';
-  };
-
-  const getCategoryColor = () => {
-    const colors = {
-      'family': '#3B82F6',
-      'personal': '#EC4899',
-      'health': '#10B981',
-      'education': '#8B5CF6',
-      'financial': '#F59E0B',
-      'recreation': '#EF4444'
-    };
-    return colors[goal.category] || '#6B7280';
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
-    });
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed': return 'Completed';
+      case 'overdue': return 'Overdue';
+      case 'active': return 'Active';
+      default: return 'Unknown';
+    }
   };
 
   const getDaysRemaining = () => {
     const today = new Date();
-    const targetDate = new Date(goal.targetDate);
-    const diffTime = targetDate.getTime() - today.getTime();
+    const dueDate = new Date(goal.dueDate);
+    const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    
+    if (diffDays < 0) return 'Overdue';
+    if (diffDays === 0) return 'Due today';
+    if (diffDays === 1) return '1 day left';
+    return `${diffDays} days left`;
   };
 
-  const daysRemaining = getDaysRemaining();
-  const isOverdue = daysRemaining < 0 && goal.status !== 'completed';
+  const renderMilestones = () => {
+    const milestoneDots = [];
+    for (let i = 0; i < goal.milestones; i++) {
+      const isCompleted = i < goal.completedMilestones;
+      milestoneDots.push(
+        <View
+          key={i}
+          style={[
+            styles.milestoneDot,
+            {
+              backgroundColor: isCompleted ? categoryColor : theme.colors.border,
+            },
+          ]}
+        />
+      );
+    }
+    return milestoneDots;
+  };
+
+  const getActionButtonText = () => {
+    if (goal.status === 'completed') return 'Completed';
+    if (goal.progress === 100) return 'Mark Complete';
+    if (goal.completedMilestones < goal.milestones) return 'Mark Milestone';
+    return 'Update Progress';
+  };
+
+  const handleActionPress = () => {
+    if (goal.status === 'completed') return;
+    if (onCompleteMilestone) {
+      onCompleteMilestone(goal.id);
+    }
+  };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <View style={styles.cardHeader}>
-        <View style={styles.goalInfo}>
-          <View style={[styles.categoryIcon, { backgroundColor: getCategoryColor() }]}>
-            <Ionicons name={getCategoryIcon() as any} size={20} color="white" />
-          </View>
-          <View style={styles.goalDetails}>
-            <Text style={styles.goalTitle}>{goal.title}</Text>
-            <Text style={styles.goalDescription} numberOfLines={2}>
-              {goal.description}
+    <TouchableOpacity 
+      style={[styles.card, { borderLeftColor: categoryColor }]} 
+      onPress={() => onPress(goal.id)}
+      activeOpacity={0.8}
+    >
+      {/* Category Badge */}
+      <View style={[styles.categoryBadge, { backgroundColor: categoryColor + '20' }]}>
+        <Text style={styles.categoryEmoji}>{categoryEmoji}</Text>
+      </View>
+
+      {/* Main Content */}
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{goal.title}</Text>
+            <Text style={styles.category}>
+              {categoryConfig?.name} • {getDaysRemaining()}
             </Text>
           </View>
-        </View>
-        
-        <View style={styles.goalActions}>
-          <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor() }]}>
-            <Text style={styles.priorityText}>{goal.priority.toUpperCase()}</Text>
-          </View>
-          <View style={[styles.statusIcon, { backgroundColor: getStatusColor() }]}>
-            <Ionicons name={getStatusIcon() as any} size={16} color="white" />
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.progressSection}>
-        <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>Progress</Text>
-          <Text style={styles.progressText}>{goal.progress}%</Text>
-        </View>
-        <View style={styles.progressBar}>
-          <View 
-            style={[
-              styles.progressFill, 
-              { 
-                width: `${goal.progress}%`,
-                backgroundColor: getStatusColor()
-              }
-            ]} 
-          />
-        </View>
-      </View>
-
-      <View style={styles.cardFooter}>
-        <View style={styles.participantsContainer}>
-          {goal.assignedTo.slice(0, 3).map((participant, index) => {
-            const member = goal.assignedTo.find(m => m === participant);
-            return (
-              <View key={index} style={styles.participantAvatar}>
-                <Text style={styles.participantInitial}>
-                  {participant.charAt(0)}
-                </Text>
-              </View>
-            );
-          })}
-          {goal.assignedTo.length > 3 && (
-            <View style={styles.moreParticipants}>
-              <Text style={styles.moreText}>+{goal.assignedTo.length - 3}</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.dateInfo}>
-          <Text style={[
-            styles.dateText,
-            isOverdue && styles.overdueText
-          ]}>
-            {isOverdue ? `${Math.abs(daysRemaining)} days overdue` : `${daysRemaining} days left`}
-          </Text>
-          <Text style={styles.targetDateText}>
-            Due: {formatDate(goal.targetDate)}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.milestonesPreview}>
-        <Text style={styles.milestonesLabel}>Milestones</Text>
-        <View style={styles.milestonesList}>
-          {goal.milestones.slice(0, 2).map(milestone => (
-            <View key={milestone.id} style={styles.milestoneItem}>
-              <View style={[
-                styles.milestoneDot,
-                { backgroundColor: milestone.completed ? '#10B981' : '#E5E7EB' }
-              ]} />
-              <Text style={[
-                styles.milestoneText,
-                milestone.completed && styles.completedMilestoneText
-              ]}>
-                {milestone.title}
+          
+          {/* Status and Priority Badges */}
+          <View style={styles.badgesContainer}>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(goal.status) + '20' }]}>
+              <Text style={[styles.statusText, { color: getStatusColor(goal.status) }]}>
+                {getStatusText(goal.status)}
               </Text>
             </View>
-          ))}
-          {goal.milestones.length > 2 && (
-            <Text style={styles.moreMilestones}>
-              +{goal.milestones.length - 2} more
-            </Text>
-          )}
+            {goal.priority && (
+              <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(goal.priority) + '20' }]}>
+                <Text style={[styles.priorityText, { color: getPriorityColor(goal.priority) }]}>
+                  {getPriorityText(goal.priority)}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
 
-      {onEdit && onDelete && (
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.editButton} onPress={onEdit}>
-            <Ionicons name="create" size={16} color="#3B82F6" />
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-            <Ionicons name="trash" size={16} color="#EF4444" />
-            <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
+        {/* Progress Bar */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Progress</Text>
+            <Text style={[styles.progressText, { color: categoryColor }]}>
+              {goal.completedMilestones}/{goal.milestones} milestones
+            </Text>
+          </View>
+          <View style={styles.progressBar}>
+            <LinearGradient
+              colors={categoryGradient}
+              style={[styles.progressFill, { width: `${goal.progress}%` }]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <View style={styles.progressEnd} />
+            </LinearGradient>
+          </View>
         </View>
-      )}
+
+        {/* Milestones */}
+        <View style={styles.milestonesContainer}>
+          {renderMilestones()}
+        </View>
+
+        {/* Action Button */}
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={handleActionPress}
+          disabled={goal.status === 'completed'}
+        >
+          <LinearGradient
+            colors={goal.status === 'completed' ? ['#10B981', '#059669'] : categoryGradient}
+            style={styles.actionButtonGradient}
+          >
+            <Ionicons 
+              name={goal.status === 'completed' ? 'checkmark-circle' : 'add-circle'} 
+              size={16} 
+              color="white" 
+            />
+            <Text style={styles.actionButtonText}>{getActionButtonText()}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Reward */}
+        {goal.reward && (
+          <Text style={[styles.rewardText, { color: categoryColor }]}>
+            🎁 Reward: {goal.reward}
+          </Text>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -204,219 +195,146 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onEdit, onDelete }) 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    marginHorizontal: 16,
     marginBottom: 16,
+    borderLeftWidth: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 5,
+    overflow: 'hidden',
   },
-  cardHeader: {
+  categoryBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  categoryEmoji: {
+    fontSize: 16,
+  },
+  content: {
+    padding: 16,
+  },
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  goalInfo: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  titleContainer: {
     flex: 1,
-  },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 12,
   },
-  goalDetails: {
-    flex: 1,
-  },
-  goalTitle: {
-    fontSize: 16,
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#374151',
+    color: theme.colors.text,
     marginBottom: 4,
   },
-  goalDescription: {
-    fontSize: 14,
-    color: '#6B7280',
-    lineHeight: 20,
+  category: {
+    fontSize: 12,
+    color: theme.colors.gray,
   },
-  goalActions: {
-    alignItems: 'flex-end',
+  badgesContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   priorityBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    marginBottom: 8,
   },
   priorityText: {
     fontSize: 10,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '600',
   },
-  statusIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  progressSection: {
-    marginBottom: 12,
+  progressContainer: {
+    marginBottom: 16,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 8,
   },
   progressLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
+    color: theme.colors.gray,
   },
   progressText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#3B82F6',
+    fontWeight: '600',
   },
   progressBar: {
-    height: 8,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 4,
+    height: 12,
+    backgroundColor: theme.colors.border,
+    borderRadius: 6,
+    overflow: 'hidden',
   },
   progressFill: {
-    height: 8,
-    borderRadius: 4,
+    height: '100%',
+    borderRadius: 6,
+    position: 'relative',
   },
-  cardFooter: {
+  progressEnd: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  milestonesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  participantsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  participantAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#3B82F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: -4,
-  },
-  participantInitial: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  moreParticipants: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#E5E7EB',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 4,
-  },
-  moreText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#6B7280',
-  },
-  dateInfo: {
-    alignItems: 'flex-end',
-  },
-  dateText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6B7280',
-  },
-  overdueText: {
-    color: '#EF4444',
-  },
-  targetDateText: {
-    fontSize: 11,
-    color: '#9CA3AF',
-  },
-  milestonesPreview: {
-    marginBottom: 12,
-  },
-  milestonesLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 6,
-  },
-  milestonesList: {
+    marginBottom: 16,
     gap: 4,
   },
-  milestoneItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   milestoneDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    flex: 1,
   },
-  milestoneText: {
+  actionButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  actionButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'white',
+    marginLeft: 6,
+  },
+  rewardText: {
     fontSize: 12,
-    color: '#6B7280',
-  },
-  completedMilestoneText: {
-    textDecorationLine: 'line-through',
-    color: '#9CA3AF',
-  },
-  moreMilestones: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    fontStyle: 'italic',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  editButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#EBF8FF',
-    gap: 6,
-  },
-  editButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#3B82F6',
-  },
-  deleteButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#FEF2F2',
-    gap: 6,
-  },
-  deleteButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#EF4444',
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 
