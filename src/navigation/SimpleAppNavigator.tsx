@@ -34,54 +34,54 @@ const Stack = createStackNavigator();
 const DashboardStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DashboardMain" component={DashboardScreen} />
-    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain} />
+    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain as any} />
     <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
-    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory} />
+    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory as any} />
   </Stack.Navigator>
 );
 
 const TasksStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="TasksMain" component={TasksScreen} />
-    <Stack.Screen name="TaskDetails" component={TaskDetails} />
+    <Stack.Screen name="TasksMain" component={TasksScreen as any} />
+    <Stack.Screen name="TaskDetails" component={TaskDetails as any} />
   </Stack.Navigator>
 );
 
 const CalendarStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="CalendarMain" component={CalendarHubScreen} />
-    <Stack.Screen name="ExpandedCalendar" component={ExpandedCalendar} />
+    <Stack.Screen name="CalendarMain" component={CalendarHubScreen as any} />
+    <Stack.Screen name="ExpandedCalendar" component={ExpandedCalendar as any} />
     <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen as any} />
     <Stack.Screen name="CalendarVoting" component={CalendarVotingScreen as any} />
-    <Stack.Screen name="Voting" component={VotingScreen} />
-    <Stack.Screen name="EventEditor" component={EventEditorScreen} />
+    <Stack.Screen name="Voting" component={VotingScreen as any} />
+    <Stack.Screen name="EventEditor" component={EventEditorScreen as any} />
   </Stack.Navigator>
 );
 
 const GoalsStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="GoalsMain" component={GoalsScreen} />
+    <Stack.Screen name="GoalsMain" component={GoalsScreen as any} />
   </Stack.Navigator>
 );
 
 const SafeRoomStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen} />
+    <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen as any} />
   </Stack.Navigator>
 );
 
 const PenaltiesStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain} />
+    <Stack.Screen name="PenaltiesMain" component={PenaltiesMain as any} />
     <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
-    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory} />
+    <Stack.Screen name="PenaltyHistory" component={PenaltyHistory as any} />
   </Stack.Navigator>
 );
 
 const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-    <Stack.Screen name="Settings" component={SettingsScreen} />
+    <Stack.Screen name="ProfileMain" component={ProfileScreen as any} />
+    <Stack.Screen name="Settings" component={SettingsScreen as any} />
   </Stack.Navigator>
 );
 
