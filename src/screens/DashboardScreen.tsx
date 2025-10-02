@@ -12,7 +12,7 @@ interface DashboardScreenProps {
 }
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
-    const { tasks, penalties, activities, goals } = useFamilyDashStore();
+    const { tasks, penalties, activities } = useFamilyDashStore();
     const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
 
@@ -27,9 +27,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
 
     // Memoized data with safety checks
     const activeTasks = useMemo(() => (tasks || []).filter(task => !task.completed), [tasks]);
-    const activePenalties = useMemo(() => (penalties || []).filter(penalty => penalty.isActive), [penalties]);
+    const activePenalties = useMemo(() => (penalties || []).filter(penalty => penalty.active), [penalties]);
     const upcomingActivities = useMemo(() => (activities || []).slice(0, 3), [activities]);
-    const activeGoals = useMemo(() => (goals || []).filter(goal => !goal.completed), [goals]);
+    const activeGoals = useMemo(() => [], []);
 
     // Family members data
     const familyMembers = [

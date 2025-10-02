@@ -295,8 +295,8 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                         <GoalCard
                             key={goal.id}
                             goal={goal}
-                            onPress={handleGoalPress}
-                            onCompleteMilestone={handleCompleteMilestone}
+                            onPress={() => handleGoalPress(goal.id)}
+                            onMarkComplete={() => handleCompleteMilestone(goal.id)}
                         />
                     ))
                 )}

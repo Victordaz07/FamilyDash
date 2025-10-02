@@ -39,7 +39,7 @@ const PenaltyDetails: React.FC<PenaltyDetailsProps> = ({ navigation, route }) =>
 
         const interval = setInterval(() => {
             if (penalty.remaining > 0) {
-                updatePenaltyTimer(penalty.id);
+                updatePenaltyTimer();
             }
         }, 1000);
 
@@ -124,8 +124,8 @@ const PenaltyDetails: React.FC<PenaltyDetailsProps> = ({ navigation, route }) =>
                 {/* Timer Section */}
                 <View style={styles.timerSection}>
                     <PenaltyTimer
-                        remaining={penalty.remaining}
-                        duration={penalty.duration}
+                        remainingMinutes={penalty.remaining}
+                        totalMinutes={penalty.duration}
                         size={200}
                         strokeWidth={12}
                     />

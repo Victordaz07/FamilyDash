@@ -1,4 +1,4 @@
-import { Goal, GoalTemplate, FamilyMember, GoalStats } from '../types/goalTypes';
+import { Goal, GoalTemplate, FamilyMember, GoalStats, GoalCategory } from '../types/goalTypes';
 
 export const mockFamilyMembers: FamilyMember[] = [
     {
