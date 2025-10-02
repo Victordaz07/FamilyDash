@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
-import GoalsScreen from '../modules/goals/screens/GoalsScreen';
+import GoalsScreen from '../modules/goals/GoalsScreen';
 import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';

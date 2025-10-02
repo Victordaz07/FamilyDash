@@ -9,7 +9,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
-import GoalsScreen from '../modules/goals/screens/GoalsScreen';
+import GoalsScreen from '../modules/goals/GoalsScreen';
 import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
