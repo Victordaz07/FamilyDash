@@ -160,26 +160,26 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Text style={styles.sectionSubtitle}>4 active</Text>
                         </View>
                         <View style={styles.membersContainer}>
-                        {familyMembers.map((member) => (
-                            <View key={member.id} style={styles.memberCard}>
-                                <View style={styles.memberAvatarContainer}>
-                                    <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
-                                    <View style={[styles.memberBadge, { backgroundColor: member.status === 'offline' ? theme.colors.error : theme.colors.success }]}>
-                                        <Text style={styles.memberBadgeText}>
-                                            {member.status === 'offline' ? '!' : member.tasks}
-                                        </Text>
+                            {familyMembers.map((member) => (
+                                <View key={member.id} style={styles.memberCard}>
+                                    <View style={styles.memberAvatarContainer}>
+                                        <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
+                                        <View style={[styles.memberBadge, { backgroundColor: member.status === 'offline' ? theme.colors.error : theme.colors.success }]}>
+                                            <Text style={styles.memberBadgeText}>
+                                                {member.status === 'offline' ? '!' : member.tasks}
+                                            </Text>
+                                        </View>
                                     </View>
+                                    <Text style={styles.memberName}>{member.name}</Text>
+                                    <TouchableOpacity
+                                        style={styles.ringButton}
+                                        onPress={() => handleRingDevice(member.name)}
+                                    >
+                                        <Ionicons name="call" size={12} color="white" />
+                                        <Text style={styles.ringButtonText}>Ring</Text>
+                                    </TouchableOpacity>
                                 </View>
-                                <Text style={styles.memberName}>{member.name}</Text>
-                                <TouchableOpacity
-                                    style={styles.ringButton}
-                                    onPress={() => handleRingDevice(member.name)}
-                                >
-                                    <Ionicons name="call" size={12} color="white" />
-                                    <Text style={styles.ringButtonText}>Ring</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
+                            ))}
                         </View>
                     </View>
                 </View>

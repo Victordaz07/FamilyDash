@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
-import TaskDetailsScreen from '../screens/TaskDetailsScreen';
+import TaskDetails from '../modules/tasks/screens/TaskDetails';
 import GoalsScreen from '../modules/goals/screens/GoalsScreen';
 import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -43,7 +43,7 @@ const DashboardStack = () => (
 const TasksStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="TasksMain" component={TasksScreen} />
-    <Stack.Screen name="TaskDetails" component={TaskDetailsScreen} />
+    <Stack.Screen name="TaskDetails" component={TaskDetails} />
   </Stack.Navigator>
 );
 
