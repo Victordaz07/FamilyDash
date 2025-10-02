@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTasksStore } from '../store/tasksStore';
-import { mockTasks, mockFamilyMembers } from '../mock/tasksData';
+import { mockFamilyMembers } from '../mock/tasksData';
 import TaskFilter from '../components/TaskFilter';
 import TaskTabs from '../components/TaskTabs';
 import TaskCard from '../components/TaskCard';
@@ -21,6 +21,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
   const {
     tasks,
     filters,
+    isInitialized,
     setFilter,
     clearFilters,
     getFilteredTasks,
@@ -28,18 +29,17 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
     getMemberStats,
     completeTask,
     updateTask,
+    initializeWithMockData,
   } = useTasksStore();
 
   const [activeTab, setActiveTab] = useState<TaskStatus | 'all'>('all');
 
   // Initialize store with mock data
   useEffect(() => {
-    if (tasks.length === 0) {
-      mockTasks.forEach(task => {
-        useTasksStore.getState().addTask(task);
-      });
+    if (!isInitialized) {
+      initializeWithMockData();
     }
-  }, [tasks.length]);
+  }, [isInitialized, initializeWithMockData]);
 
   const stats = getTaskStats();
   const filteredTasks = getFilteredTasks();

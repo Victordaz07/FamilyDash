@@ -5,6 +5,7 @@ interface TasksState {
   tasks: Task[];
   selectedTask?: Task;
   filters: TaskFilter;
+  isInitialized: boolean;
   
   // Actions
   setSelectedTask: (id: string) => void;
@@ -13,6 +14,7 @@ interface TasksState {
   updateTask: (id: string, updates: Partial<Task>) => void;
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  initializeWithMockData: () => void;
   
   // Filters
   setFilter: (filter: Partial<TaskFilter>) => void;
@@ -48,6 +50,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   tasks: [],
   selectedTask: undefined,
   filters: {},
+  isInitialized: false,
 
   setSelectedTask: (id) => {
     const task = get().tasks.find((t) => t.id === id);
@@ -61,7 +64,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   addTask: (taskData) => {
     const newTask: Task = {
       ...taskData,
-      id: `task_${Date.now()}`,
+      id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -105,6 +108,19 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       tasks: state.tasks.filter((t) => t.id !== id),
       selectedTask: state.selectedTask?.id === id ? undefined : state.selectedTask,
     }));
+  },
+
+  initializeWithMockData: () => {
+    const { isInitialized } = get();
+    if (!isInitialized) {
+      // Import mock data dynamically to avoid circular imports
+      import('../mock/tasksData').then(({ mockTasks }) => {
+        set((state) => ({
+          tasks: mockTasks,
+          isInitialized: true,
+        }));
+      });
+    }
   },
 
   setFilter: (filter) => {
