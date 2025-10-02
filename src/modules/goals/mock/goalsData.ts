@@ -237,6 +237,15 @@ export const mockGoals: Goal[] = [
     }
 ];
 
+export const goalCategoryConfig: { [key in GoalCategory]: { color: string; icon: string; emoji: string } } = {
+    personal: { color: '#EC4899', icon: 'person', emoji: '💁‍♂️' },
+    recreation: { color: '#F59E0B', icon: 'game-controller', emoji: '🎮' },
+    spiritual: { color: '#7C3AED', icon: 'leaf', emoji: '🙏' },
+    health: { color: '#10B981', icon: 'heart', emoji: '🏃' },
+    education: { color: '#3B82F6', icon: 'book', emoji: '📚' },
+    family: { color: '#0D9488', icon: 'home', emoji: '👨‍👩‍👧‍👦' },
+};
+
 export const goalCategories = [
     {
         id: 'spiritual',
