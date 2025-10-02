@@ -18,8 +18,8 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
@@ -54,11 +54,11 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    paddingVertical: 8,
+    backgroundColor: 'transparent',
   },
   scrollContent: {
-    paddingRight: 16,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
   },
   memberCard: {
     alignItems: 'center',

@@ -157,7 +157,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
           <View style={styles.filterHeader}>
             <Text style={styles.filterTitle}>Filter by Member</Text>
             {filters.memberId && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.clearFilterButton}
                 onPress={() => setFilter({ memberId: undefined })}
               >
@@ -294,16 +294,27 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginTop: -12,
+    paddingTop: 8,
   },
   filterContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    marginHorizontal: 16,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   filterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   filterTitle: {
     fontSize: 16,
