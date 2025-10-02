@@ -1,68 +1,68 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 
 interface PenaltyTimerProps {
-    remaining: number; // in minutes
-    duration: number; // in minutes
+    remainingMinutes: number;
+    totalMinutes: number;
     size?: number;
     strokeWidth?: number;
-    showText?: boolean;
+    color?: string;
+    backgroundColor?: string;
+    showDays?: boolean; // Show days instead of time
 }
 
 const PenaltyTimer: React.FC<PenaltyTimerProps> = ({
-    remaining,
-    duration,
-    size = 120,
+    remainingMinutes,
+    totalMinutes,
+    size = 80,
     strokeWidth = 8,
-    showText = true
+    color = '#8B5CF6',
+    backgroundColor = '#E5E7EB',
+    showDays = false,
 }) => {
-    const [displayTime, setDisplayTime] = useState(remaining);
-
-    useEffect(() => {
-        setDisplayTime(remaining);
-    }, [remaining]);
-
     const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const progress = duration > 0 ? (duration - remaining) / duration : 0;
-    const strokeDashoffset = circumference - (progress * circumference);
+    const circumference = 2 * Math.PI * radius;
+    const progress = totalMinutes > 0 ? (remainingMinutes / totalMinutes) : 0;
+    const strokeDashoffset = circumference * (1 - progress);
 
-    const formatTime = (minutes: number) => {
-        const mins = Math.floor(minutes);
-        const secs = Math.floor((minutes - mins) * 60);
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+    const formatTime = () => {
+        if (showDays) {
+            const days = Math.floor(remainingMinutes / (24 * 60));
+            const hours = Math.floor((remainingMinutes % (24 * 60)) / 60);
 
-    const getProgressColor = () => {
-        if (remaining <= 0) return '#10B981'; // Green - completed
-        if (remaining / duration < 0.25) return '#EF4444'; // Red - almost done
-        if (remaining / duration < 0.5) return '#F59E0B'; // Orange - halfway
-        return '#3B82F6'; // Blue - plenty of time
+            if (days > 0) {
+                return `${days}d ${hours}h`;
+            } else {
+                return `${hours}h`;
+            }
+        } else {
+            const minutes = Math.floor(remainingMinutes);
+            const seconds = Math.round((remainingMinutes - minutes) * 60);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
     };
 
     return (
         <View style={[styles.container, { width: size, height: size }]}>
-            <Svg width={size} height={size} style={styles.svg}>
+            <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
                 {/* Background circle */}
                 <Circle
+                    stroke={backgroundColor}
+                    fill="none"
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
-                    stroke="#E5E7EB"
                     strokeWidth={strokeWidth}
-                    fill="transparent"
                 />
-
                 {/* Progress circle */}
                 <Circle
+                    stroke={color}
+                    fill="none"
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
-                    stroke={getProgressColor()}
                     strokeWidth={strokeWidth}
-                    fill="transparent"
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
                     strokeLinecap="round"
@@ -70,16 +70,12 @@ const PenaltyTimer: React.FC<PenaltyTimerProps> = ({
                 />
             </Svg>
 
-            {showText && (
-                <View style={styles.textContainer}>
-                    <Text style={[styles.timeText, { color: getProgressColor() }]}>
-                        {formatTime(displayTime)}
-                    </Text>
-                    <Text style={styles.labelText}>
-                        {remaining <= 0 ? 'Done!' : 'remaining'}
-                    </Text>
-                </View>
-            )}
+            {/* Text overlay */}
+            <View style={styles.textContainer}>
+                <Text style={[styles.timeText, { fontSize: size / (showDays ? 4 : 3.5) }]}>
+                    {formatTime()}
+                </Text>
+            </View>
         </View>
     );
 };
@@ -88,23 +84,15 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
-    },
-    svg: {
-        position: 'absolute',
     },
     textContainer: {
-        alignItems: 'center',
+        position: 'absolute',
         justifyContent: 'center',
+        alignItems: 'center',
     },
     timeText: {
-        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 2,
-    },
-    labelText: {
-        fontSize: 12,
-        color: '#6B7280',
+        color: '#1F2937',
         textAlign: 'center',
     },
 });

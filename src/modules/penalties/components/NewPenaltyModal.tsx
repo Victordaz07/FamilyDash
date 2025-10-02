@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Alert, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { penaltyTypes, commonReasons, mockFamilyMembers } from '../mock/penalties';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mockFamilyMembers, penaltyTypeConfigs, penaltySelectionMethods, penaltyCategories } from '../mock/penaltiesData';
+import PenaltyRoulette from './PenaltyRoulette';
+import { theme } from '../../../styles/simpleTheme';
 
 interface NewPenaltyModalProps {
     visible: boolean;
@@ -12,563 +15,534 @@ interface NewPenaltyModalProps {
 
 interface NewPenaltyData {
     memberId: string;
-    penaltyType: string;
+    memberName: string;
+    memberAvatar: string;
     reason: string;
     duration: number;
-    description: string;
+    category: 'behavior' | 'chores' | 'screen_time' | 'homework' | 'other';
+    penaltyType: 'yellow' | 'red';
+    selectionMethod: 'fixed' | 'random';
+    createdBy: string;
 }
 
 const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onSubmit }) => {
-    if (!visible) {
-        return null;
-    }
+    const insets = useSafeAreaInsets();
 
     const [formData, setFormData] = useState<NewPenaltyData>({
         memberId: '',
-        penaltyType: '',
+        memberName: '',
+        memberAvatar: '',
         reason: '',
-        duration: 15,
-        description: ''
+        duration: 3,
+        category: 'behavior',
+        penaltyType: 'yellow',
+        selectionMethod: 'fixed',
+        createdBy: 'mom',
     });
 
-    const [selectedMember, setSelectedMember] = useState<string>('');
-    const [selectedType, setSelectedType] = useState<string>('');
-    const [customReason, setCustomReason] = useState<string>('');
+    const [showRoulette, setShowRoulette] = useState(false);
 
     const handleSubmit = () => {
-        if (!selectedMember) {
-            Alert.alert('Error', 'Please select a family member');
+        if (!formData.memberId) {
+            Alert.alert('Error', 'Por favor selecciona un miembro de la familia');
             return;
         }
-        if (!selectedType) {
-            Alert.alert('Error', 'Please select a penalty type');
-            return;
-        }
-        if (!formData.reason.trim() && !customReason.trim()) {
-            Alert.alert('Error', 'Please enter a reason for the penalty');
+        if (!formData.reason.trim()) {
+            Alert.alert('Error', 'Por favor ingresa una razón para la penalidad');
             return;
         }
 
-        const penaltyData = {
-            ...formData,
-            memberId: selectedMember,
-            penaltyType: selectedType,
-            reason: customReason.trim() || formData.reason
-        };
-
-        onSubmit(penaltyData);
-        handleClose();
-    };
-
-    const handleClose = () => {
-        setFormData({
-            memberId: '',
-            penaltyType: '',
-            reason: '',
-            duration: 15,
-            description: ''
-        });
-        setSelectedMember('');
-        setSelectedType('');
-        setCustomReason('');
+        onSubmit(formData);
         onClose();
     };
 
-    const getSelectedMemberInfo = () => {
-        return mockFamilyMembers.find(member => member.id === selectedMember);
+    const selectMember = (member: any) => {
+        setFormData({
+            ...formData,
+            memberId: member.id,
+            memberName: member.name,
+            memberAvatar: member.avatar,
+        });
     };
 
-    const getSelectedTypeInfo = () => {
-        return penaltyTypes.find(type => type.id === selectedType);
+    const selectPenaltyType = (type: 'yellow' | 'red') => {
+        const config = penaltyTypeConfigs.find(c => c.type === type);
+        setFormData({
+            ...formData,
+            penaltyType: type,
+            duration: config?.minDays || 3,
+        });
     };
 
-    const durationOptions = [
-        { value: 5, label: '5 minutes' },
-        { value: 10, label: '10 minutes' },
-        { value: 15, label: '15 minutes' },
-        { value: 30, label: '30 minutes' },
-        { value: 60, label: '1 hour' },
-        { value: 120, label: '2 hours' },
-        { value: 180, label: '3 hours' }
-    ];
+    const selectSelectionMethod = (method: 'fixed' | 'random') => {
+        setFormData({
+            ...formData,
+            selectionMethod: method,
+        });
+
+        if (method === 'random') {
+            setShowRoulette(true);
+        }
+    };
+
+    const handleRouletteResult = (duration: number) => {
+        setFormData({
+            ...formData,
+            duration,
+        });
+        setShowRoulette(false);
+    };
+
+    const selectCategory = (category: NewPenaltyData['category']) => {
+        setFormData({
+            ...formData,
+            category,
+        });
+    };
+
+    const selectDuration = (duration: number) => {
+        setFormData({
+            ...formData,
+            duration,
+        });
+    };
+
+    const currentTypeConfig = penaltyTypeConfigs.find(c => c.type === formData.penaltyType);
+    const currentMethodConfig = penaltySelectionMethods.find(m => m.method === formData.selectionMethod);
+
+    if (!visible) return null;
 
     return (
-        <Modal
-            visible={visible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={handleClose}
-        >
-            <View style={styles.overlay}>
-                <View style={styles.modalContainer}>
-                    <LinearGradient
-                        colors={['#EF4444', '#DC2626']}
-                        style={styles.modalHeader}
+        <>
+            <Modal
+                visible={visible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalOverlay}>
+                    <ScrollView
+                        style={[styles.modalContent, { paddingBottom: insets.bottom + 24 }]}
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
                     >
-                        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                            <Ionicons name="close" size={24} color="white" />
-                        </TouchableOpacity>
-                        <Text style={styles.modalTitle}>New Penalty</Text>
-                        <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
-                            <Text style={styles.saveButtonText}>Create</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Nueva Penalidad</Text>
+                            <TouchableOpacity onPress={onClose}>
+                                <Ionicons name="close" size={24} color="#6B7280" />
+                            </TouchableOpacity>
+                        </View>
 
-                    <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-                        {/* Family Member Selection */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Family Member *</Text>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.membersScrollView}>
-                                {mockFamilyMembers.map(member => (
-                                    <TouchableOpacity
-                                        key={member.id}
-                                        style={[
-                                            styles.memberOption,
-                                            { backgroundColor: selectedMember === member.id ? '#EF4444' : '#F3F4F6' }
-                                        ]}
-                                        onPress={() => setSelectedMember(member.id)}
-                                    >
-                                        <View style={styles.memberAvatar}>
-                                            <Text style={styles.memberAvatarText}>
-                                                {member.name.charAt(0)}
+                        {/* Select Member */}
+                        <Text style={styles.sectionTitle}>Seleccionar Miembro</Text>
+                        <View style={styles.memberGrid}>
+                            {mockFamilyMembers.filter(m => m.role !== 'parent').map((member) => (
+                                <TouchableOpacity
+                                    key={member.id}
+                                    style={[
+                                        styles.memberOption,
+                                        formData.memberId === member.id && styles.memberSelected
+                                    ]}
+                                    onPress={() => selectMember(member)}
+                                >
+                                    <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
+                                    <Text style={styles.memberName}>{member.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {/* Select Penalty Type */}
+                        <Text style={styles.sectionTitle}>Tipo de Penalidad</Text>
+                        <View style={styles.typeGrid}>
+                            {penaltyTypeConfigs.map((config) => (
+                                <TouchableOpacity
+                                    key={config.type}
+                                    style={[
+                                        styles.typeOption,
+                                        { borderColor: config.color },
+                                        formData.penaltyType === config.type && {
+                                            backgroundColor: config.color,
+                                            borderColor: config.color
+                                        }
+                                    ]}
+                                    onPress={() => selectPenaltyType(config.type)}
+                                >
+                                    <Ionicons
+                                        name={config.icon as any}
+                                        size={24}
+                                        color={formData.penaltyType === config.type ? 'white' : config.color}
+                                    />
+                                    <Text style={[
+                                        styles.typeText,
+                                        { color: formData.penaltyType === config.type ? 'white' : config.color }
+                                    ]}>
+                                        {config.name}
+                                    </Text>
+                                    <Text style={[
+                                        styles.typeSubtext,
+                                        { color: formData.penaltyType === config.type ? 'white' : config.color }
+                                    ]}>
+                                        {config.minDays}-{config.maxDays} días
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {/* Select Selection Method */}
+                        <Text style={styles.sectionTitle}>Método de Selección</Text>
+                        <View style={styles.methodGrid}>
+                            {penaltySelectionMethods.map((method) => (
+                                <TouchableOpacity
+                                    key={method.method}
+                                    style={[
+                                        styles.methodOption,
+                                        formData.selectionMethod === method.method && styles.methodSelected
+                                    ]}
+                                    onPress={() => selectSelectionMethod(method.method)}
+                                >
+                                    <Ionicons
+                                        name={method.icon as any}
+                                        size={20}
+                                        color={formData.selectionMethod === method.method ? 'white' : theme.colors.text}
+                                    />
+                                    <Text style={[
+                                        styles.methodText,
+                                        { color: formData.selectionMethod === method.method ? 'white' : theme.colors.text }
+                                    ]}>
+                                        {method.name}
+                                    </Text>
+                                    <Text style={[
+                                        styles.methodSubtext,
+                                        { color: formData.selectionMethod === method.method ? 'white' : theme.colors.gray }
+                                    ]}>
+                                        {method.description}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {/* Duration Selection (only for fixed method) */}
+                        {formData.selectionMethod === 'fixed' && currentTypeConfig && (
+                            <>
+                                <Text style={styles.sectionTitle}>Duración (días)</Text>
+                                <View style={styles.durationGrid}>
+                                    {currentTypeConfig.durationOptions.map((duration) => (
+                                        <TouchableOpacity
+                                            key={duration}
+                                            style={[
+                                                styles.durationOption,
+                                                { borderColor: currentTypeConfig.color },
+                                                formData.duration === duration && {
+                                                    backgroundColor: currentTypeConfig.color,
+                                                    borderColor: currentTypeConfig.color
+                                                }
+                                            ]}
+                                            onPress={() => selectDuration(duration)}
+                                        >
+                                            <Text style={[
+                                                styles.durationText,
+                                                { color: formData.duration === duration ? 'white' : currentTypeConfig.color }
+                                            ]}>
+                                                {duration}d
                                             </Text>
-                                        </View>
-                                        <Text style={[
-                                            styles.memberName,
-                                            { color: selectedMember === member.id ? 'white' : '#374151' }
-                                        ]}>
-                                            {member.name}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </>
+                        )}
 
-                        {/* Penalty Type Selection */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Penalty Type *</Text>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typesScrollView}>
-                                {penaltyTypes.map(type => (
-                                    <TouchableOpacity
-                                        key={type.id}
-                                        style={[
-                                            styles.typeOption,
-                                            { backgroundColor: selectedType === type.id ? type.color : '#F3F4F6' }
-                                        ]}
-                                        onPress={() => setSelectedType(type.id)}
-                                    >
-                                        <Ionicons
-                                            name={type.icon as any}
-                                            size={20}
-                                            color={selectedType === type.id ? 'white' : type.color}
-                                        />
-                                        <Text style={[
-                                            styles.typeOptionText,
-                                            { color: selectedType === type.id ? 'white' : '#374151' }
-                                        ]}>
-                                            {type.name}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
-
-                        {/* Duration Selection */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Duration *</Text>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.durationScrollView}>
-                                {durationOptions.map(option => (
-                                    <TouchableOpacity
-                                        key={option.value}
-                                        style={[
-                                            styles.durationOption,
-                                            { backgroundColor: formData.duration === option.value ? '#EF4444' : '#F3F4F6' }
-                                        ]}
-                                        onPress={() => setFormData(prev => ({ ...prev, duration: option.value }))}
-                                    >
-                                        <Text style={[
-                                            styles.durationOptionText,
-                                            { color: formData.duration === option.value ? 'white' : '#374151' }
-                                        ]}>
-                                            {option.label}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
-
-                        {/* Reason Selection */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Reason *</Text>
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.reasonsScrollView}>
-                                {commonReasons.map((reason, index) => (
-                                    <TouchableOpacity
-                                        key={index}
-                                        style={[
-                                            styles.reasonOption,
-                                            { backgroundColor: formData.reason === reason ? '#F59E0B' : '#F3F4F6' }
-                                        ]}
-                                        onPress={() => setFormData(prev => ({ ...prev, reason }))}
-                                    >
-                                        <Text style={[
-                                            styles.reasonOptionText,
-                                            { color: formData.reason === reason ? 'white' : '#374151' }
-                                        ]}>
-                                            {reason}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
-
-                        {/* Custom Reason */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Custom Reason</Text>
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder="Enter custom reason..."
-                                value={customReason}
-                                onChangeText={setCustomReason}
-                                multiline
-                                numberOfLines={2}
-                            />
-                        </View>
-
-                        {/* Description */}
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.inputLabel}>Description</Text>
-                            <TextInput
-                                style={[styles.textInput, styles.textArea]}
-                                placeholder="Additional details about this penalty..."
-                                value={formData.description}
-                                onChangeText={(text) => setFormData(prev => ({ ...prev, description: text }))}
-                                multiline
-                                numberOfLines={3}
-                            />
-                        </View>
-
-                        {/* Preview */}
-                        {(selectedMember || selectedType) && (
-                            <View style={styles.previewSection}>
-                                <Text style={styles.previewTitle}>Preview</Text>
-                                <View style={styles.previewCard}>
-                                    <View style={styles.previewHeader}>
-                                        <View style={styles.previewAvatar}>
-                                            <Text style={styles.previewAvatarText}>
-                                                {getSelectedMemberInfo()?.name.charAt(0) || '?'}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.previewInfo}>
-                                            <Text style={styles.previewMemberName}>
-                                                {getSelectedMemberInfo()?.name || 'Select Member'}
-                                            </Text>
-                                            <Text style={styles.previewPenaltyType}>
-                                                {getSelectedTypeInfo()?.name || 'Select Type'}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.previewDuration}>
-                                            <Text style={styles.previewDurationText}>
-                                                {formData.duration}m
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.previewReason}>
-                                        Reason: {customReason.trim() || formData.reason || 'No reason specified'}
+                        {/* Selected Duration Display (for random method) */}
+                        {formData.selectionMethod === 'random' && (
+                            <View style={styles.selectedDurationContainer}>
+                                <Text style={styles.sectionTitle}>Duración Seleccionada</Text>
+                                <View style={[
+                                    styles.selectedDurationCard,
+                                    { backgroundColor: currentTypeConfig?.color + '20', borderColor: currentTypeConfig?.color }
+                                ]}>
+                                    <Ionicons
+                                        name={currentTypeConfig?.icon as any}
+                                        size={24}
+                                        color={currentTypeConfig?.color}
+                                    />
+                                    <Text style={[styles.selectedDurationText, { color: currentTypeConfig?.color }]}>
+                                        {formData.duration} días
                                     </Text>
                                 </View>
                             </View>
                         )}
 
-                        {/* Quick Actions */}
-                        <View style={styles.quickActionsContainer}>
-                            <TouchableOpacity
-                                style={styles.quickActionButton}
-                                onPress={() => setFormData(prev => ({ ...prev, duration: 15 }))}
-                            >
-                                <Ionicons name="time" size={16} color="#EF4444" />
-                                <Text style={styles.quickActionText}>15 min</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.quickActionButton}
-                                onPress={() => setFormData(prev => ({ ...prev, duration: 30 }))}
-                            >
-                                <Ionicons name="hourglass" size={16} color="#EF4444" />
-                                <Text style={styles.quickActionText}>30 min</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.quickActionButton}
-                                onPress={() => setFormData(prev => ({ ...prev, duration: 60 }))}
-                            >
-                                <Ionicons name="timer" size={16} color="#EF4444" />
-                                <Text style={styles.quickActionText}>1 hour</Text>
-                            </TouchableOpacity>
+                        {/* Select Category */}
+                        <Text style={styles.sectionTitle}>Categoría</Text>
+                        <View style={styles.categoryGrid}>
+                            {penaltyCategories.map((category) => (
+                                <TouchableOpacity
+                                    key={category.id}
+                                    style={[
+                                        styles.categoryOption,
+                                        { borderColor: category.color },
+                                        formData.category === category.id && {
+                                            backgroundColor: category.color,
+                                            borderColor: category.color
+                                        }
+                                    ]}
+                                    onPress={() => selectCategory(category.id as any)}
+                                >
+                                    <Ionicons
+                                        name={category.icon as any}
+                                        size={16}
+                                        color={formData.category === category.id ? 'white' : category.color}
+                                    />
+                                    <Text style={[
+                                        styles.categoryText,
+                                        { color: formData.category === category.id ? 'white' : category.color }
+                                    ]}>
+                                        {category.name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
 
-                        {/* Bottom spacing for fixed button */}
-                        <View style={styles.bottomSpacing} />
-                    </ScrollView>
+                        {/* Reason Input */}
+                        <Text style={styles.sectionTitle}>Razón</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Ej: No limpió su habitación"
+                            value={formData.reason}
+                            onChangeText={(text) => setFormData({ ...formData, reason: text })}
+                            multiline
+                            numberOfLines={3}
+                        />
 
-                    {/* Fixed Create Button */}
-                    <View style={styles.fixedButtonContainer}>
-                        <LinearGradient
-                            colors={['#EF4444', '#DC2626']}
-                            style={styles.fixedCreateButton}
+                        {/* Submit Button */}
+                        <TouchableOpacity
+                            style={styles.submitButton}
+                            onPress={handleSubmit}
                         >
-                            <TouchableOpacity style={styles.fixedCreateButtonTouch} onPress={handleSubmit}>
-                                <Text style={styles.fixedCreateButtonText}>Create Penalty</Text>
-                            </TouchableOpacity>
-                        </LinearGradient>
-                    </View>
+                            <LinearGradient
+                                colors={[theme.colors.primary, theme.colors.primaryDark]}
+                                style={styles.submitButtonGradient}
+                            >
+                                <Ionicons name="add-circle" size={20} color="white" />
+                                <Text style={styles.submitButtonText}>Crear Penalidad</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </View>
-            </View>
-        </Modal>
+            </Modal>
+
+            {/* Roulette Modal */}
+            {showRoulette && currentTypeConfig && (
+                <PenaltyRoulette
+                    durationOptions={currentTypeConfig.durationOptions}
+                    penaltyType={formData.penaltyType}
+                    onResult={handleRouletteResult}
+                    onClose={() => setShowRoulette(false)}
+                />
+            )}
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    overlay: {
+    modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 20,
+        justifyContent: 'flex-end',
     },
-    modalContainer: {
-        backgroundColor: 'white',
-        borderRadius: 24,
-        width: '100%',
+    modalContent: {
+        backgroundColor: theme.colors.cardBackground,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        padding: 24,
         maxHeight: '90%',
-        maxWidth: 400,
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        backgroundColor: '#EF4444',
-    },
-    closeButton: {
-        width: 40,
-        height: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
+        marginBottom: 24,
     },
     modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
+        fontSize: 20,
+        fontWeight: theme.typography.fontWeight.bold,
+        color: theme.colors.text,
     },
-    saveButton: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    saveButtonText: {
+    sectionTitle: {
         fontSize: 16,
-        fontWeight: '600',
-        color: 'white',
+        fontWeight: theme.typography.fontWeight.semibold,
+        color: theme.colors.text,
+        marginBottom: 12,
+        marginTop: 16,
     },
-    modalContent: {
-        padding: 20,
-        paddingBottom: 30,
-    },
-    inputGroup: {
-        marginBottom: 20,
-    },
-    inputLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: 8,
-    },
-    membersScrollView: {
-        marginTop: 8,
+    memberGrid: {
+        flexDirection: 'row',
+        gap: 12,
+        flexWrap: 'wrap',
+        marginBottom: 16,
     },
     memberOption: {
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 20,
-        marginRight: 12,
-        gap: 8,
+        padding: 12,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
+        minWidth: 80,
+    },
+    memberSelected: {
+        borderColor: theme.colors.primary,
+        backgroundColor: theme.colors.primaryLight,
     },
     memberAvatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#3B82F6',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    memberAvatarText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    memberName: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    typesScrollView: {
-        marginTop: 8,
-    },
-    typeOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 20,
-        marginRight: 12,
-        gap: 8,
-    },
-    typeOptionText: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    durationScrollView: {
-        marginTop: 8,
-    },
-    durationOption: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 20,
-        marginRight: 12,
-    },
-    durationOptionText: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    reasonsScrollView: {
-        marginTop: 8,
-    },
-    reasonOption: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 20,
-        marginRight: 12,
-    },
-    reasonOptionText: {
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    textInput: {
-        borderWidth: 1,
-        borderColor: '#D1D5DB',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        fontSize: 16,
-        backgroundColor: '#F9FAFB',
-    },
-    textArea: {
-        height: 80,
-        textAlignVertical: 'top',
-    },
-    previewSection: {
-        marginBottom: 20,
-    },
-    previewTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: 12,
-    },
-    previewCard: {
-        backgroundColor: '#F3F4F6',
-        borderRadius: 12,
-        padding: 16,
-    },
-    previewHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    previewAvatar: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#3B82F6',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
+        marginBottom: 8,
     },
-    previewAvatarText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'white',
+    memberName: {
+        fontSize: 14,
+        fontWeight: theme.typography.fontWeight.medium,
+        color: theme.colors.text,
     },
-    previewInfo: {
+    typeGrid: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 16,
+    },
+    typeOption: {
         flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
     },
-    previewMemberName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#374151',
-    },
-    previewPenaltyType: {
+    typeText: {
         fontSize: 14,
-        color: '#6B7280',
+        fontWeight: theme.typography.fontWeight.bold,
+        marginTop: 8,
+        textAlign: 'center',
     },
-    previewDuration: {
-        alignItems: 'flex-end',
+    typeSubtext: {
+        fontSize: 12,
+        marginTop: 4,
+        textAlign: 'center',
     },
-    previewDurationText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#EF4444',
-    },
-    previewReason: {
-        fontSize: 14,
-        color: '#6B7280',
-    },
-    quickActionsContainer: {
+    methodGrid: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 20,
-        paddingTop: 20,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
+        gap: 12,
+        marginBottom: 16,
     },
-    quickActionButton: {
+    methodOption: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 12,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
+    },
+    methodSelected: {
+        backgroundColor: theme.colors.primary,
+        borderColor: theme.colors.primary,
+    },
+    methodText: {
+        fontSize: 14,
+        fontWeight: theme.typography.fontWeight.medium,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    methodSubtext: {
+        fontSize: 12,
+        marginTop: 4,
+        textAlign: 'center',
+    },
+    durationGrid: {
+        flexDirection: 'row',
+        gap: 8,
+        flexWrap: 'wrap',
+        marginBottom: 16,
+    },
+    durationOption: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
+        minWidth: 60,
+    },
+    durationText: {
+        fontSize: 16,
+        fontWeight: theme.typography.fontWeight.bold,
+    },
+    selectedDurationContainer: {
+        marginBottom: 16,
+    },
+    selectedDurationCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
+        padding: 16,
+        borderRadius: 12,
+        borderWidth: 2,
+        backgroundColor: theme.colors.background,
+    },
+    selectedDurationText: {
+        fontSize: 18,
+        fontWeight: theme.typography.fontWeight.bold,
+        marginLeft: 12,
+    },
+    categoryGrid: {
+        flexDirection: 'row',
+        gap: 8,
+        flexWrap: 'wrap',
+        marginBottom: 16,
+    },
+    categoryOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#F3F4F6',
-        gap: 6,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        backgroundColor: theme.colors.background,
     },
-    quickActionText: {
+    categoryText: {
         fontSize: 14,
-        fontWeight: '500',
-        color: '#EF4444',
+        marginLeft: 6,
+        textTransform: 'capitalize',
     },
-    bottomSpacing: {
-        height: 80,
+    textInput: {
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: theme.borderRadius.small,
+        padding: 12,
+        fontSize: 16,
+        color: theme.colors.text,
+        backgroundColor: theme.colors.background,
+        marginBottom: 24,
+        textAlignVertical: 'top',
     },
-    fixedButtonContainer: {
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        backgroundColor: 'white',
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
-    },
-    fixedCreateButton: {
+    submitButton: {
         borderRadius: 12,
-        paddingVertical: 16,
+        overflow: 'hidden',
     },
-    fixedCreateButtonTouch: {
+    submitButtonGradient: {
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
     },
-    fixedCreateButtonText: {
+    submitButtonText: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: theme.typography.fontWeight.bold,
         color: 'white',
+        marginLeft: 8,
     },
 });
 

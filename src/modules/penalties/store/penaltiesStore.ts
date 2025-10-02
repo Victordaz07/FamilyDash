@@ -1,153 +1,157 @@
 import { create } from 'zustand';
 import { Penalty, FamilyMember, PenaltyStats } from '../types/penaltyTypes';
-import { mockPenalties, mockFamilyMembers } from '../mock/penaltiesData';
+import { mockPenalties, mockFamilyMembers, penaltyTypeConfigs } from '../mock/penaltiesData';
 
 interface PenaltiesStore {
     penalties: Penalty[];
     familyMembers: FamilyMember[];
+    penaltyTypeConfigs: typeof penaltyTypeConfigs;
+    isInitialized: boolean;
 
     // Actions
-    addPenalty: (penalty: Omit<Penalty, 'id' | 'startTime'>) => void;
+    addPenalty: (penalty: Omit<Penalty, 'id' | 'startTime' | 'remaining' | 'isActive' | 'endTime'>) => void;
     endPenalty: (id: string, reflection?: string) => void;
-    adjustTime: (id: string, minutes: number) => void;
+    adjustTime: (id: string, days: number) => void;
     addReflection: (id: string, text: string) => void;
-    updatePenaltyTimer: (id: string) => void;
+    updatePenaltyTimer: () => void;
+    initializeWithMockData: () => void;
 
     // Getters
     getActivePenalties: () => Penalty[];
     getCompletedPenalties: () => Penalty[];
     getPenaltyById: (id: string) => Penalty | undefined;
     getPenaltiesByMember: (memberId: string) => Penalty[];
-    getStats: () => PenaltyStats;
+    getPenaltiesByType: (type: 'yellow' | 'red') => Penalty[];
+    getPenaltiesByMethod: (method: 'fixed' | 'random') => Penalty[];
+    getStats: () => PenaltyStats & {
+        yellowCards: number;
+        redCards: number;
+    };
+    getMemberStats: (memberId: string) => {
+        completedCount: number;
+        timeServed: number;
+        averageDuration: number;
+        yellowCards: number;
+        redCards: number;
+    };
     getMemberById: (id: string) => FamilyMember | undefined;
 }
 
 export const usePenaltiesStore = create<PenaltiesStore>((set, get) => ({
-    penalties: mockPenalties,
+    penalties: [],
     familyMembers: mockFamilyMembers,
+    penaltyTypeConfigs: penaltyTypeConfigs,
+    isInitialized: false,
 
     addPenalty: (penaltyData) => {
         const newPenalty: Penalty = {
             ...penaltyData,
-            id: `p${Date.now()}`,
+            id: `penalty_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             startTime: Date.now(),
+            remaining: penaltyData.duration,
             isActive: true,
-            remaining: penaltyData.duration
         };
-
-        set((state) => ({
-            penalties: [newPenalty, ...state.penalties]
-        }));
+        set((state) => ({ penalties: [...state.penalties, newPenalty] }));
     },
 
     endPenalty: (id, reflection) => {
         set((state) => ({
-            penalties: state.penalties.map((penalty) =>
-                penalty.id === id
-                    ? {
-                        ...penalty,
-                        isActive: false,
-                        remaining: 0,
-                        endTime: Date.now(),
-                        reflection: reflection || penalty.reflection
-                    }
-                    : penalty
-            )
+            penalties: state.penalties.map((p) =>
+                p.id === id
+                    ? { ...p, isActive: false, remaining: 0, reflection, endTime: Date.now() }
+                    : p
+            ),
         }));
     },
 
-    adjustTime: (id, minutes) => {
+    adjustTime: (id, days) => {
         set((state) => ({
-            penalties: state.penalties.map((penalty) =>
-                penalty.id === id && penalty.isActive
-                    ? {
-                        ...penalty,
-                        remaining: Math.max(0, penalty.remaining + minutes),
-                        duration: penalty.duration + minutes
-                    }
-                    : penalty
-            )
+            penalties: state.penalties.map((p) =>
+                p.id === id && p.isActive
+                    ? { ...p, remaining: Math.max(0, p.remaining + days) }
+                    : p
+            ),
         }));
     },
 
     addReflection: (id, text) => {
         set((state) => ({
-            penalties: state.penalties.map((penalty) =>
-                penalty.id === id
-                    ? { ...penalty, reflection: text }
-                    : penalty
-            )
+            penalties: state.penalties.map((p) =>
+                p.id === id ? { ...p, reflection: text } : p
+            ),
         }));
     },
 
-    updatePenaltyTimer: (id) => {
+    updatePenaltyTimer: () => {
         set((state) => ({
-            penalties: state.penalties.map((penalty) => {
-                if (penalty.id === id && penalty.isActive && penalty.remaining > 0) {
-                    const newRemaining = penalty.remaining - 1;
-                    return {
-                        ...penalty,
-                        remaining: newRemaining,
-                        isActive: newRemaining > 0,
-                        endTime: newRemaining <= 0 ? Date.now() : penalty.endTime
-                    };
+            penalties: state.penalties.map((p) => {
+                if (p.isActive) {
+                    const elapsed = Math.floor((Date.now() - p.startTime) / (1000 * 60 * 60 * 24)); // days
+                    const newRemaining = Math.max(0, p.duration - elapsed);
+                    if (newRemaining === 0) {
+                        return { ...p, remaining: 0, isActive: false, endTime: Date.now() };
+                    }
+                    return { ...p, remaining: newRemaining };
                 }
-                return penalty;
-            })
+                return p;
+            }),
         }));
     },
 
-    // Getters
-    getActivePenalties: () => {
-        return get().penalties.filter(penalty => penalty.isActive);
+    initializeWithMockData: () => {
+        const { isInitialized } = get();
+        if (!isInitialized) {
+            set((state) => ({
+                penalties: mockPenalties,
+                isInitialized: true,
+            }));
+        }
     },
 
-    getCompletedPenalties: () => {
-        return get().penalties.filter(penalty => !penalty.isActive);
-    },
+    getActivePenalties: () => get().penalties.filter((p) => p.isActive),
+    getCompletedPenalties: () => get().penalties.filter((p) => !p.isActive),
+    getPenaltyById: (id) => get().penalties.find((p) => p.id === id),
+    getPenaltiesByMember: (memberId) => get().penalties.filter((p) => p.memberId === memberId),
 
-    getPenaltyById: (id) => {
-        return get().penalties.find(penalty => penalty.id === id);
-    },
-
-    getPenaltiesByMember: (memberId) => {
-        return get().penalties.filter(penalty => penalty.memberId === memberId);
-    },
+    getPenaltiesByType: (type) => get().penalties.filter((p) => p.penaltyType === type),
+    getPenaltiesByMethod: (method) => get().penalties.filter((p) => p.selectionMethod === method),
 
     getStats: () => {
         const penalties = get().penalties;
-        const activePenalties = penalties.filter(p => p.isActive);
-        const completedPenalties = penalties.filter(p => !p.isActive);
-
-        const totalTimeServed = completedPenalties.reduce((total, penalty) => {
-            return total + (penalty.duration - (penalty.remaining || 0));
-        }, 0);
-
-        const averageDuration = penalties.length > 0
-            ? penalties.reduce((total, penalty) => total + penalty.duration, 0) / penalties.length
-            : 0;
-
-        // Find most common reason
-        const reasonCounts: { [key: string]: number } = {};
-        penalties.forEach(penalty => {
-            reasonCounts[penalty.reason] = (reasonCounts[penalty.reason] || 0) + 1;
-        });
-
-        const mostCommonReason = Object.keys(reasonCounts).reduce((a, b) =>
-            reasonCounts[a] > reasonCounts[b] ? a : b, 'None'
-        );
+        const completed = penalties.filter((p) => !p.isActive);
+        const totalTimeServed = completed.reduce((sum, p) => sum + p.duration, 0);
+        const averageDuration = completed.length > 0 ? totalTimeServed / completed.length : 0;
+        const yellowCards = penalties.filter((p) => p.penaltyType === 'yellow').length;
+        const redCards = penalties.filter((p) => p.penaltyType === 'red').length;
 
         return {
             totalPenalties: penalties.length,
-            activePenalties: activePenalties.length,
-            completedPenalties: completedPenalties.length,
-            totalTimeServed,
-            averageDuration: Math.round(averageDuration),
-            mostCommonReason
+            activePenalties: penalties.filter((p) => p.isActive).length,
+            completedPenalties: completed.length,
+            totalTimeServed: totalTimeServed,
+            averageDuration: parseFloat(averageDuration.toFixed(1)),
+            mostCommonReason: 'behavior', // TODO: Calculate actual most common reason
+            yellowCards,
+            redCards,
         };
     },
 
-    getMemberById: (id) => {
-        return get().familyMembers.find(member => member.id === id);
-    }
+    getMemberStats: (memberId) => {
+        const memberPenalties = get().penalties.filter((p) => p.memberId === memberId);
+        const completed = memberPenalties.filter((p) => !p.isActive);
+        const timeServed = completed.reduce((sum, p) => sum + p.duration, 0);
+        const averageDuration = completed.length > 0 ? timeServed / completed.length : 0;
+        const yellowCards = memberPenalties.filter((p) => p.penaltyType === 'yellow').length;
+        const redCards = memberPenalties.filter((p) => p.penaltyType === 'red').length;
+
+        return {
+            completedCount: completed.length,
+            timeServed: timeServed,
+            averageDuration: parseFloat(averageDuration.toFixed(1)),
+            yellowCards,
+            redCards,
+        };
+    },
+
+    getMemberById: (id) => get().familyMembers.find((m) => m.id === id),
 }));

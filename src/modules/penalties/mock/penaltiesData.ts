@@ -1,4 +1,4 @@
-import { Penalty, FamilyMember } from '../types/penaltyTypes';
+import { Penalty, FamilyMember, PenaltyTypeConfig, PenaltySelectionMethod } from '../types/penaltyTypes';
 
 export const mockFamilyMembers: FamilyMember[] = [
     {
@@ -29,6 +29,42 @@ export const mockFamilyMembers: FamilyMember[] = [
     }
 ];
 
+export const penaltyTypeConfigs: PenaltyTypeConfig[] = [
+    {
+        type: 'yellow',
+        name: 'Tarjeta Amarilla',
+        color: '#F59E0B', // Amber
+        icon: 'warning',
+        minDays: 3,
+        maxDays: 10,
+        durationOptions: [3, 4, 5, 6, 7, 8, 9, 10], // 8 options
+    },
+    {
+        type: 'red',
+        name: 'Tarjeta Roja',
+        color: '#EF4444', // Red
+        icon: 'close-circle',
+        minDays: 7,
+        maxDays: 30,
+        durationOptions: [7, 10, 15, 20, 25, 30], // 6 options
+    },
+];
+
+export const penaltySelectionMethods: PenaltySelectionMethod[] = [
+    {
+        method: 'fixed',
+        name: 'Selección Fija',
+        description: 'Elige manualmente la duración',
+        icon: 'hand-left',
+    },
+    {
+        method: 'random',
+        name: 'Ruleta Aleatoria',
+        description: 'Deja que la suerte decida',
+        icon: 'refresh',
+    },
+];
+
 export const mockPenalties: Penalty[] = [
     {
         id: 'p1',
@@ -36,12 +72,14 @@ export const mockPenalties: Penalty[] = [
         memberName: 'Noah',
         memberAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
         reason: 'Did not clean his room',
-        duration: 30,
-        remaining: 25,
-        startTime: Date.now() - (5 * 60 * 1000), // Started 5 minutes ago
+        duration: 5, // 5 days
+        remaining: 4, // 4 days remaining
+        startTime: Date.now() - (24 * 60 * 60 * 1000), // Started 1 day ago
         isActive: true,
         createdBy: 'mom',
-        category: 'chores'
+        category: 'chores',
+        penaltyType: 'yellow',
+        selectionMethod: 'fixed'
     },
     {
         id: 'p2',
@@ -49,12 +87,14 @@ export const mockPenalties: Penalty[] = [
         memberName: 'Ariella',
         memberAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
         reason: 'Used phone too late at night',
-        duration: 20,
-        remaining: 12,
-        startTime: Date.now() - (8 * 60 * 1000), // Started 8 minutes ago
+        duration: 15, // 15 days
+        remaining: 12, // 12 days remaining
+        startTime: Date.now() - (3 * 24 * 60 * 60 * 1000), // Started 3 days ago
         isActive: true,
         createdBy: 'dad',
-        category: 'screen_time'
+        category: 'screen_time',
+        penaltyType: 'red',
+        selectionMethod: 'random'
     },
     {
         id: 'p3',
@@ -62,14 +102,16 @@ export const mockPenalties: Penalty[] = [
         memberName: 'Noah',
         memberAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
         reason: 'Did not do homework',
-        duration: 15,
-        remaining: 0,
-        startTime: Date.now() - (2 * 60 * 60 * 1000), // Started 2 hours ago
-        endTime: Date.now() - (1 * 60 * 60 * 1000), // Ended 1 hour ago
+        duration: 3, // 3 days
+        remaining: 0, // Completed
+        startTime: Date.now() - (5 * 24 * 60 * 60 * 1000), // Started 5 days ago
+        endTime: Date.now() - (2 * 24 * 60 * 60 * 1000), // Ended 2 days ago
         isActive: false,
         reflection: 'I learned that I need to do my homework right after school so I don\'t forget.',
         createdBy: 'mom',
-        category: 'homework'
+        category: 'homework',
+        penaltyType: 'yellow',
+        selectionMethod: 'fixed'
     },
     {
         id: 'p4',
@@ -77,14 +119,16 @@ export const mockPenalties: Penalty[] = [
         memberName: 'Ariella',
         memberAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
         reason: 'Was rude to her brother',
-        duration: 25,
-        remaining: 0,
-        startTime: Date.now() - (3 * 60 * 60 * 1000), // Started 3 hours ago
-        endTime: Date.now() - (2 * 60 * 60 * 1000), // Ended 2 hours ago
+        duration: 20, // 20 days
+        remaining: 0, // Completed
+        startTime: Date.now() - (25 * 24 * 60 * 60 * 1000), // Started 25 days ago
+        endTime: Date.now() - (5 * 24 * 60 * 60 * 1000), // Ended 5 days ago
         isActive: false,
         reflection: 'I understand that being mean to Noah hurts his feelings. I should be a better big sister.',
         createdBy: 'dad',
-        category: 'behavior'
+        category: 'behavior',
+        penaltyType: 'red',
+        selectionMethod: 'random'
     },
     {
         id: 'p5',
@@ -92,14 +136,16 @@ export const mockPenalties: Penalty[] = [
         memberName: 'Noah',
         memberAvatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
         reason: 'Broke a toy on purpose',
-        duration: 10,
-        remaining: 0,
-        startTime: Date.now() - (24 * 60 * 60 * 1000), // Started yesterday
-        endTime: Date.now() - (23 * 60 * 60 * 1000), // Ended yesterday
+        duration: 7, // 7 days
+        remaining: 0, // Completed
+        startTime: Date.now() - (10 * 24 * 60 * 60 * 1000), // Started 10 days ago
+        endTime: Date.now() - (3 * 24 * 60 * 60 * 1000), // Ended 3 days ago
         isActive: false,
         reflection: 'I was angry but breaking things is not okay. I will count to 10 next time.',
         createdBy: 'mom',
-        category: 'behavior'
+        category: 'behavior',
+        penaltyType: 'red',
+        selectionMethod: 'fixed'
     }
 ];
 
