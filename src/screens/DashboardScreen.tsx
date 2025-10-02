@@ -25,11 +25,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         return () => clearInterval(timer);
     }, []);
 
-    // Memoized data
-    const activeTasks = useMemo(() => tasks.filter(task => !task.completed), [tasks]);
-    const activePenalties = useMemo(() => penalties.filter(penalty => penalty.isActive), [penalties]);
-    const upcomingActivities = useMemo(() => activities.slice(0, 3), [activities]);
-    const activeGoals = useMemo(() => goals.filter(goal => !goal.completed), [goals]);
+    // Memoized data with safety checks
+    const activeTasks = useMemo(() => (tasks || []).filter(task => !task.completed), [tasks]);
+    const activePenalties = useMemo(() => (penalties || []).filter(penalty => penalty.isActive), [penalties]);
+    const upcomingActivities = useMemo(() => (activities || []).slice(0, 3), [activities]);
+    const activeGoals = useMemo(() => (goals || []).filter(goal => !goal.completed), [goals]);
 
     // Family members data
     const familyMembers = [
