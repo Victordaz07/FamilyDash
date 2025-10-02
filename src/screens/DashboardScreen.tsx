@@ -3,6 +3,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dim
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
+import { useTasksStore } from '../modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
+import { useGoalsStore } from '../modules/goals/store/goalsStore';
+import { useFamilyStore } from '../store/familyStore';
 import { theme } from '../styles/simpleTheme';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -12,7 +16,12 @@ interface DashboardScreenProps {
 }
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
-    const { tasks, penalties, activities } = useFamilyDashStore();
+    // Use specific module stores
+    const tasks = useTasksStore(state => state.tasks);
+    const penalties = usePenaltiesStore(state => state.penalties);
+    const goals = useGoalsStore(state => state.goals);
+    const familyMembersFromStore = useFamilyStore(state => state.familyMembers);
+    
     const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
 
@@ -26,18 +35,26 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     }, []);
 
     // Memoized data with safety checks
-    const activeTasks = useMemo(() => (tasks || []).filter(task => !task.completed), [tasks]);
-    const activePenalties = useMemo(() => (penalties || []).filter(penalty => penalty.active), [penalties]);
-    const upcomingActivities = useMemo(() => (activities || []).slice(0, 3), [activities]);
-    const activeGoals = useMemo(() => [], []);
+    const activeTasks = useMemo(() => (tasks || []).filter((task: any) => task.status !== 'completed'), [tasks]);
+    const activePenalties = useMemo(() => (penalties || []).filter((penalty: any) => penalty.isActive), [penalties]);
+    const upcomingActivities = useMemo(() => [], []); // Calendar activities will be handled by calendar module
+    const activeGoals = useMemo(() => (goals || []).filter((goal: any) => goal.status === 'active'), [goals]);
 
-    // Family members data
-    const familyMembers = [
-        { id: 'dad', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', tasks: 3, borderColor: '#3B82F6', points: 1250, streak: 7, status: 'online' },
-        { id: 'mom', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', tasks: 2, borderColor: '#EC4899', points: 1180, streak: 5, status: 'online' },
-        { id: 'emma', name: 'Emma', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', tasks: 4, borderColor: '#8B5CF6', points: 890, streak: 3, status: 'away' },
-        { id: 'jake', name: 'Jake', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', tasks: 1, borderColor: '#F59E0B', points: 650, streak: 1, status: 'offline' },
-    ];
+    // Family members data with additional UI properties
+    const familyMembers = useMemo(() => {
+        const baseMembers = familyMembersFromStore || [];
+        const colors = ['#3B82F6', '#EC4899', '#8B5CF6', '#F59E0B'];
+        const statuses = ['online', 'away', 'offline'];
+        
+        return baseMembers.map((member, index) => ({
+            ...member,
+            tasks: Math.floor(Math.random() * 5) + 1, // Mock task count
+            borderColor: colors[index % colors.length],
+            points: Math.floor(Math.random() * 1000) + 500, // Mock points
+            streak: Math.floor(Math.random() * 10) + 1, // Mock streak
+            status: statuses[index % statuses.length] as 'online' | 'away' | 'offline',
+        }));
+    }, [familyMembersFromStore]);
 
     // Mock tasks data
     const todaysTasks = [

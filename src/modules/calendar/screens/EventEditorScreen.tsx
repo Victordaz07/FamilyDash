@@ -343,7 +343,7 @@ const EventEditorScreen: React.FC<EventEditorScreenProps> = ({ navigation, route
                                         styles.reminderOption,
                                         formData.reminder === option.value && styles.reminderSelected
                                     ]}
-                                    onPress={() => setFormData(prev => ({ ...prev, reminder: option.value }))}
+                                    onPress={() => setFormData(prev => ({ ...prev, reminder: option.value as "1d" | "10m" | "1h" | undefined }))}
                                 >
                                     <Text style={[
                                         styles.reminderText,

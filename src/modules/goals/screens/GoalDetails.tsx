@@ -22,7 +22,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
     const [newNote, setNewNote] = useState('');
     const [showNoteInput, setShowNoteInput] = useState(false);
 
-    const categoryConfig = goalCategories.find(c => c.id === goal.category);
+    const categoryConfig = goal ? goalCategories.find(c => c.id === goal.category) : undefined;
     const categoryColor = categoryConfig?.color || theme.colors.primary;
     const categoryGradient = categoryConfig?.gradient || [theme.colors.primary, theme.colors.primaryDark];
 
@@ -68,7 +68,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Extend',
-                    onPress: (newDate) => {
+                    onPress: (newDate?: string) => {
                         if (newDate && newDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
                             extendDueDate(goalId, newDate);
                             Alert.alert('Due Date Extended', 'The due date has been updated!');

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 
-// Types for our family dashboard
+// Legacy types - these are now handled by specific module stores
+// Keeping for backward compatibility during transition
+
 export interface User {
     uid: string;
     email: string;
@@ -8,35 +10,12 @@ export interface User {
     photoURL?: string;
 }
 
-export interface Task {
-    id: string;
-    title: string;
-    description: string;
-    assignedTo: string;
-    dueDate: Date;
-    completed: boolean;
-    priority: 'low' | 'medium' | 'high';
-}
-
-export interface Penalty {
-    id: string;
-    userId: string;
-    reason: string;
-    duration: number; // in minutes
-    startTime: Date;
-    active: boolean;
-}
-
-export interface Activity {
-    id: string;
-    title: string;
-    description: string;
-    date: Date;
-    participants: string[];
-    completed: boolean;
-}
-
-// Goal interface moved to src/modules/goals/types/goalTypes.ts
+// Legacy interfaces - moved to specific modules:
+// - Task → src/modules/tasks/types/taskTypes.ts
+// - Penalty → src/modules/penalties/types/penaltyTypes.ts  
+// - Activity → src/modules/calendar/types/calendarTypes.ts
+// - Goal → src/modules/goals/types/goalTypes.ts
+// - FamilyMember → src/store/familyStore.ts
 
 export interface SafeRoomMessage {
     id: string;
@@ -46,31 +25,13 @@ export interface SafeRoomMessage {
     isRead: boolean;
 }
 
-// Store interface
+// Simplified main store - most functionality moved to module-specific stores
 interface FamilyDashStore {
     // User state
     user: User | null;
     setUser: (user: User | null) => void;
 
-    // Tasks state
-    tasks: Task[];
-    addTask: (task: Omit<Task, 'id'>) => void;
-    updateTask: (id: string, updates: Partial<Task>) => void;
-    deleteTask: (id: string) => void;
-
-    // Penalties state
-    penalties: Penalty[];
-    addPenalty: (penalty: Omit<Penalty, 'id'>) => void;
-    updatePenalty: (id: string, updates: Partial<Penalty>) => void;
-
-    // Activities state
-    activities: Activity[];
-    addActivity: (activity: Omit<Activity, 'id'>) => void;
-    updateActivity: (id: string, updates: Partial<Activity>) => void;
-
-    // Goals state moved to src/modules/goals/store/goalsStore.ts
-
-    // Safe Room state
+    // Safe Room state (keeping here as it's cross-module)
     safeRoomMessages: SafeRoomMessage[];
     addSafeRoomMessage: (message: Omit<SafeRoomMessage, 'id'>) => void;
     markMessageAsRead: (id: string) => void;
@@ -78,55 +39,14 @@ interface FamilyDashStore {
     // UI state
     isLoading: boolean;
     setLoading: (loading: boolean) => void;
+
+    // App state
+    isInitialized: boolean;
+    initializeApp: () => void;
 }
 
-// Generate mock data
+// Generate mock data for Safe Room messages
 const generateMockData = () => {
-    const mockTasks: Task[] = [
-        {
-            id: '1',
-            title: 'Limpiar la cocina',
-            description: 'Lavar platos y limpiar superficies',
-            assignedTo: 'demo-user-123',
-            dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
-            completed: false,
-            priority: 'medium'
-        },
-        {
-            id: '2',
-            title: 'Sacar la basura',
-            description: 'Llevar bolsas de basura al contenedor',
-            assignedTo: 'demo-user-123',
-            dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
-            completed: true,
-            priority: 'high'
-        }
-    ];
-
-    const mockPenalties: Penalty[] = [
-        {
-            id: '1',
-            userId: 'demo-user-123',
-            reason: 'No completó tarea asignada',
-            duration: 30,
-            startTime: new Date(Date.now() - 10 * 60 * 1000),
-            active: true
-        }
-    ];
-
-    const mockActivities: Activity[] = [
-        {
-            id: '1',
-            title: 'Noche de películas',
-            description: 'Ver película familiar en el salón',
-            date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            participants: ['demo-user-123'],
-            completed: false
-        }
-    ];
-
-    // Goals mock data moved to src/modules/goals/mock/goalsData.ts
-
     const mockSafeRoomMessages: SafeRoomMessage[] = [
         {
             id: '1',
@@ -134,18 +54,22 @@ const generateMockData = () => {
             sender: 'demo-user-123',
             timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
             isRead: false
+        },
+        {
+            id: '2',
+            content: 'Gracias por ser tan paciente conmigo',
+            sender: 'demo-user-456',
+            timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
+            isRead: true
         }
     ];
 
     return {
-        tasks: mockTasks,
-        penalties: mockPenalties,
-        activities: mockActivities,
         safeRoomMessages: mockSafeRoomMessages
     };
 };
 
-// Create the store
+// Create the simplified store
 export const useFamilyDashStore = create<FamilyDashStore>((set, get) => {
     const mockData = generateMockData();
 
@@ -154,48 +78,15 @@ export const useFamilyDashStore = create<FamilyDashStore>((set, get) => {
         user: null,
         setUser: (user) => set({ user }),
 
-        // Tasks state
-        tasks: mockData.tasks,
-        addTask: (task) => set((state) => ({
-            tasks: [...state.tasks, { ...task, id: Date.now().toString() }]
-        })),
-        updateTask: (id, updates) => set((state) => ({
-            tasks: state.tasks.map(task =>
-                task.id === id ? { ...task, ...updates } : task
-            )
-        })),
-        deleteTask: (id) => set((state) => ({
-            tasks: state.tasks.filter(task => task.id !== id)
-        })),
-
-        // Penalties state
-        penalties: mockData.penalties,
-        addPenalty: (penalty) => set((state) => ({
-            penalties: [...state.penalties, { ...penalty, id: Date.now().toString() }]
-        })),
-        updatePenalty: (id, updates) => set((state) => ({
-            penalties: state.penalties.map(penalty =>
-                penalty.id === id ? { ...penalty, ...updates } : penalty
-            )
-        })),
-
-        // Activities state
-        activities: mockData.activities,
-        addActivity: (activity) => set((state) => ({
-            activities: [...state.activities, { ...activity, id: Date.now().toString() }]
-        })),
-        updateActivity: (id, updates) => set((state) => ({
-            activities: state.activities.map(activity =>
-                activity.id === id ? { ...activity, ...updates } : activity
-            )
-        })),
-
-        // Goals state moved to src/modules/goals/store/goalsStore.ts
-
         // Safe Room state
         safeRoomMessages: mockData.safeRoomMessages,
         addSafeRoomMessage: (message) => set((state) => ({
-            safeRoomMessages: [...state.safeRoomMessages, { ...message, id: Date.now().toString() }]
+            safeRoomMessages: [...state.safeRoomMessages, { 
+                ...message, 
+                id: Date.now().toString(),
+                timestamp: new Date(),
+                isRead: false
+            }]
         })),
         markMessageAsRead: (id) => set((state) => ({
             safeRoomMessages: state.safeRoomMessages.map(message =>
@@ -205,6 +96,29 @@ export const useFamilyDashStore = create<FamilyDashStore>((set, get) => {
 
         // UI state
         isLoading: false,
-        setLoading: (loading) => set({ isLoading: loading })
+        setLoading: (loading) => set({ isLoading: loading }),
+
+        // App state
+        isInitialized: false,
+        initializeApp: () => {
+            const { isInitialized } = get();
+            if (!isInitialized) {
+                // Initialize all module stores
+                import('../modules/tasks/store/tasksStore').then(({ useTasksStore }) => {
+                    useTasksStore.getState().initializeWithMockData();
+                });
+                import('../modules/goals/store/goalsStore').then(({ useGoalsStore }) => {
+                    useGoalsStore.getState().initializeWithMockData();
+                });
+                import('../modules/penalties/store/penaltiesStore').then(({ usePenaltiesStore }) => {
+                    usePenaltiesStore.getState().initializeWithMockData();
+                });
+                import('../store/familyStore').then(({ useFamilyStore }) => {
+                    useFamilyStore.getState().initializeWithMockData();
+                });
+                
+                set({ isInitialized: true });
+            }
+        }
     };
 });
