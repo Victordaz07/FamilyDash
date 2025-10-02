@@ -6,7 +6,7 @@ import { theme } from '../../../styles/simpleTheme';
 interface TaskFilterProps {
   members: FamilyMember[];
   selectedMemberId?: string;
-  onMemberSelect: (memberId: string | undefined) => void;
+  onMemberSelect: (memberId: string) => void;
   taskCounts: { [key: string]: number };
 }
 
@@ -16,28 +16,13 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   onMemberSelect,
   taskCounts,
 }) => {
-  const totalTasks = Object.values(taskCounts).reduce((sum, count) => sum + count, 0);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Filter by Member</Text>
-      
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <TouchableOpacity
-          style={[
-            styles.memberCard,
-            !selectedMemberId && styles.memberCardSelected
-          ]}
-          onPress={() => onMemberSelect(undefined)}
-        >
-          <Text style={styles.allTasksText}>All Tasks</Text>
-          <Text style={styles.allTasksCount}>({totalTasks})</Text>
-        </TouchableOpacity>
-
         {members.map((member) => (
           <TouchableOpacity
             key={member.id}
@@ -70,21 +55,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: theme.typography.fontWeight.bold,
-    color: theme.colors.text,
-    marginBottom: 12,
+    paddingVertical: 8,
   },
   scrollContent: {
     paddingRight: 16,
@@ -124,16 +95,6 @@ const styles = StyleSheet.create({
   },
   taskCountSelected: {
     color: theme.colors.primary,
-  },
-  allTasksText: {
-    fontSize: 14,
-    fontWeight: theme.typography.fontWeight.bold,
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  allTasksCount: {
-    fontSize: 12,
-    color: theme.colors.gray,
   },
 });
 

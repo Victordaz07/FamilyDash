@@ -43,7 +43,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
 
   const stats = getTaskStats();
   const filteredTasks = getFilteredTasks();
-  
+
   // Filter tasks by active tab
   const tasksByTab = filteredTasks.filter(task => {
     if (activeTab === 'all') return true;
@@ -56,7 +56,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
     return acc;
   }, {} as { [key: string]: number });
 
-  const handleMemberSelect = useCallback((memberId: string | undefined) => {
+  const handleMemberSelect = useCallback((memberId: string) => {
     setFilter({ memberId });
   }, [setFilter]);
 
@@ -74,8 +74,8 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
       'Are you sure you want to mark this task as completed?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Complete', 
+        {
+          text: 'Complete',
           onPress: () => {
             completeTask(taskId);
             Alert.alert('Success', 'Task completed! 🎉');
@@ -134,31 +134,45 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Task Management</Text>
           <Text style={styles.headerSubtitle}>Assign & Complete Tasks</Text>
         </View>
-        
+
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
             <Ionicons name="add" size={24} color="white" />
           </TouchableOpacity>
-          <Image 
-            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }} 
-            style={styles.profileImage} 
+          <Image
+            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
+            style={styles.profileImage}
           />
         </View>
       </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Filter by Member */}
-        <TaskFilter
-          members={mockFamilyMembers}
-          selectedMemberId={filters.memberId}
-          onMemberSelect={handleMemberSelect}
-          taskCounts={memberTaskCounts}
-        />
+        <View style={styles.filterContainer}>
+          <View style={styles.filterHeader}>
+            <Text style={styles.filterTitle}>Filter by Member</Text>
+            {filters.memberId && (
+              <TouchableOpacity 
+                style={styles.clearFilterButton}
+                onPress={() => setFilter({ memberId: undefined })}
+              >
+                <Ionicons name="close-circle" size={20} color={theme.colors.gray} />
+                <Text style={styles.clearFilterText}>Clear</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <TaskFilter
+            members={mockFamilyMembers}
+            selectedMemberId={filters.memberId}
+            onMemberSelect={handleMemberSelect}
+            taskCounts={memberTaskCounts}
+          />
+        </View>
 
         {/* Task Status Tabs */}
         <TaskTabs
@@ -191,7 +205,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
               <Ionicons name="checkmark-circle-outline" size={80} color="#D1D5DB" />
               <Text style={styles.emptyTitle}>No Tasks Found</Text>
               <Text style={styles.emptySubtitle}>
-                {activeTab === 'all' 
+                {activeTab === 'all'
                   ? 'No tasks match your current filters.'
                   : `No ${activeTab} tasks found.`
                 }
@@ -280,6 +294,30 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginTop: -12,
+  },
+  filterContainer: {
+    marginBottom: 16,
+  },
+  filterHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  filterTitle: {
+    fontSize: 16,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  clearFilterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  clearFilterText: {
+    fontSize: 14,
+    color: theme.colors.gray,
   },
   section: {
     marginBottom: 16,

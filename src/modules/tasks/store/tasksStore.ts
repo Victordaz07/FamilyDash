@@ -6,7 +6,7 @@ interface TasksState {
   selectedTask?: Task;
   filters: TaskFilter;
   isInitialized: boolean;
-  
+
   // Actions
   setSelectedTask: (id: string) => void;
   clearSelectedTask: () => void;
@@ -15,17 +15,17 @@ interface TasksState {
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
   initializeWithMockData: () => void;
-  
+
   // Filters
   setFilter: (filter: Partial<TaskFilter>) => void;
   clearFilters: () => void;
-  
+
   // Getters
   getFilteredTasks: () => Task[];
   getTasksByMember: (memberId: string) => Task[];
   getTasksByStatus: (status: TaskStatus) => Task[];
   getTasksByPriority: (priority: TaskPriority) => Task[];
-  
+
   // Stats
   getTaskStats: () => {
     total: number;
@@ -35,7 +35,7 @@ interface TasksState {
     totalPoints: number;
     earnedPoints: number;
   };
-  
+
   getMemberStats: (memberId: string) => {
     total: number;
     pending: number;
@@ -74,12 +74,12 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   updateTask: (id, updates) => {
     set((state) => ({
       tasks: state.tasks.map((t) =>
-        t.id === id 
-          ? { ...t, ...updates, updatedAt: new Date().toISOString() } 
+        t.id === id
+          ? { ...t, ...updates, updatedAt: new Date().toISOString() }
           : t
       ),
     }));
-    
+
     // Update selected task if it's the one being updated
     const currentSelectedTask = get().selectedTask;
     if (currentSelectedTask?.id === id) {
@@ -91,13 +91,13 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   completeTask: (id) => {
     set((state) => ({
       tasks: state.tasks.map((t) =>
-        t.id === id 
-          ? { 
-              ...t, 
-              status: "completed" as TaskStatus, 
-              progress: 100,
-              updatedAt: new Date().toISOString()
-            } 
+        t.id === id
+          ? {
+            ...t,
+            status: "completed" as TaskStatus,
+            progress: 100,
+            updatedAt: new Date().toISOString()
+          }
           : t
       ),
     }));
@@ -160,7 +160,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     const completed = tasks.filter((t) => t.status === "completed");
     const pending = tasks.filter((t) => t.status === "pending");
     const overdue = tasks.filter((t) => t.status === "overdue");
-    
+
     return {
       total: tasks.length,
       pending: pending.length,
@@ -176,7 +176,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     const completed = memberTasks.filter((t) => t.status === "completed");
     const pending = memberTasks.filter((t) => t.status === "pending");
     const overdue = memberTasks.filter((t) => t.status === "overdue");
-    
+
     return {
       total: memberTasks.length,
       pending: pending.length,
