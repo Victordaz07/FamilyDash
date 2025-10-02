@@ -8,251 +8,334 @@ import { penaltyTypeConfigs } from '../mock/penaltiesData';
 import { theme } from '../../../styles/simpleTheme';
 
 interface PenaltyCardProps {
-    penalty: Penalty;
-    onAdjustTime: (id: string, days: number) => void;
-    onEndPenalty: (id: string) => void;
-    onViewDetails: (id: string) => void;
+  penalty: Penalty;
+  onAdjustTime: (id: string, days: number) => void;
+  onEndPenalty: (id: string) => void;
+  onViewDetails: (id: string) => void;
 }
 
 const PenaltyCard: React.FC<PenaltyCardProps> = ({
-    penalty,
-    onAdjustTime,
-    onEndPenalty,
-    onViewDetails,
+  penalty,
+  onAdjustTime,
+  onEndPenalty,
+  onViewDetails,
 }) => {
-    const penaltyTypeConfig = penaltyTypeConfigs.find(c => c.type === penalty.penaltyType);
-    const cardColor = penaltyTypeConfig?.color || theme.colors.gray;
-    const cardIcon = penaltyTypeConfig?.icon || 'alert-circle';
+  const penaltyTypeConfig = penaltyTypeConfigs.find(c => c.type === penalty.penaltyType);
+  const cardColor = penaltyTypeConfig?.color || theme.colors.gray;
+  const cardIcon = penaltyTypeConfig?.icon || 'alert-circle';
 
-    const formatDuration = (days: number) => {
-        if (days === 1) return '1 día';
-        return `${days} días`;
-    };
+  const formatDuration = (days: number) => {
+    if (days === 1) return '1 día';
+    return `${days} días`;
+  };
 
-    const getMethodIcon = (method: 'fixed' | 'random') => {
-        return method === 'random' ? 'refresh' : 'hand-left';
-    };
+  const getMethodIcon = (method: 'fixed' | 'random') => {
+    return method === 'random' ? 'refresh' : 'hand-left';
+  };
 
-    return (
-        <TouchableOpacity style={styles.card} onPress={() => onViewDetails(penalty.id)}>
-            {/* Card Type Indicator */}
-            <View style={[styles.typeIndicator, { backgroundColor: cardColor }]} />
+  const getMethodText = (method: 'fixed' | 'random') => {
+    return method === 'random' ? 'Ruleta' : 'Manual';
+  };
 
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Image source={{ uri: penalty.memberAvatar }} style={styles.avatar} />
-                    <View style={styles.headerText}>
-                        <Text style={styles.memberName}>{penalty.memberName}</Text>
-                        <View style={styles.typeBadge}>
-                            <Ionicons name={cardIcon as any} size={12} color="white" />
-                            <Text style={styles.typeText}>{penaltyTypeConfig?.name}</Text>
-                        </View>
-                    </View>
+  const getProgressPercentage = () => {
+    if (penalty.duration === 0) return 0;
+    return ((penalty.duration - penalty.remaining) / penalty.duration) * 100;
+  };
 
-          {/* Timer */}
-          <PenaltyTimer
-            remainingMinutes={penalty.remaining * 24 * 60} // Convert days to minutes for timer
-            totalMinutes={penalty.duration * 24 * 60}
-            size={50}
-            strokeWidth={4}
-            color={cardColor}
-            showDays={true}
-          />
-                </View>
+  return (
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={() => onViewDetails(penalty.id)}
+      activeOpacity={0.8}
+    >
+      {/* Card Header with Gradient */}
+      <LinearGradient
+        colors={[cardColor + '15', cardColor + '05']}
+        style={styles.cardHeader}
+      >
+        <View style={styles.memberInfo}>
+          <Image source={{ uri: penalty.memberAvatar }} style={styles.avatar} />
+          <View style={styles.memberDetails}>
+            <Text style={styles.memberName}>{penalty.memberName}</Text>
+            <View style={styles.typeBadge}>
+              <Ionicons name={cardIcon as any} size={14} color="white" />
+              <Text style={styles.typeText}>{penaltyTypeConfig?.name}</Text>
+            </View>
+          </View>
+        </View>
+        
+        {/* Timer */}
+        <PenaltyTimer
+          remainingMinutes={penalty.remaining * 24 * 60}
+          totalMinutes={penalty.duration * 24 * 60}
+          size={70}
+          strokeWidth={6}
+          color={cardColor}
+          showDays={true}
+        />
+      </LinearGradient>
 
-                <Text style={styles.reason}>{penalty.reason}</Text>
+      {/* Card Content */}
+      <View style={styles.cardContent}>
+        <Text style={styles.reason}>{penalty.reason}</Text>
+        
+        {/* Progress Bar */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBar}>
+            <View 
+              style={[
+                styles.progressFill, 
+                { 
+                  width: `${getProgressPercentage()}%`,
+                  backgroundColor: cardColor 
+                }
+              ]} 
+            />
+          </View>
+          <Text style={styles.progressText}>
+            {Math.round(getProgressPercentage())}% completado
+          </Text>
+        </View>
 
-                {/* Duration and Method Info */}
-                <View style={styles.infoRow}>
-                    <View style={styles.infoItem}>
-                        <Ionicons name="time" size={14} color={theme.colors.gray} />
-                        <Text style={styles.infoText}>{formatDuration(penalty.duration)}</Text>
-                    </View>
-                    <View style={styles.infoItem}>
-                        <Ionicons name={getMethodIcon(penalty.selectionMethod)} size={14} color={theme.colors.gray} />
-                        <Text style={styles.infoText}>
-                            {penalty.selectionMethod === 'random' ? 'Ruleta' : 'Fijo'}
-                        </Text>
-                    </View>
-                </View>
+        {/* Info Row */}
+        <View style={styles.infoRow}>
+          <View style={styles.infoItem}>
+            <Ionicons name="time" size={16} color={theme.colors.gray} />
+            <Text style={styles.infoText}>{formatDuration(penalty.duration)}</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Ionicons name={getMethodIcon(penalty.selectionMethod)} size={16} color={theme.colors.gray} />
+            <Text style={styles.infoText}>{getMethodText(penalty.selectionMethod)}</Text>
+          </View>
+          <View style={styles.infoItem}>
+            <Ionicons name="calendar" size={16} color={theme.colors.gray} />
+            <Text style={styles.infoText}>{penalty.remaining}d restantes</Text>
+          </View>
+        </View>
 
         {/* Actions for Active Penalties */}
         {penalty.isActive && (
           <View style={styles.actions}>
             <TouchableOpacity 
-              style={styles.actionButton} 
+              style={[styles.actionButton, styles.minusButton]} 
               onPress={() => onAdjustTime(penalty.id, -1)}
             >
-              <Ionicons name="remove" size={16} color={theme.colors.text} />
+              <Ionicons name="remove" size={18} color="#EF4444" />
               <Text style={styles.actionButtonText}>-1 día</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={styles.actionButton} 
+              style={[styles.actionButton, styles.plusButton]} 
               onPress={() => onAdjustTime(penalty.id, 1)}
             >
-              <Ionicons name="add" size={16} color={theme.colors.text} />
+              <Ionicons name="add" size={18} color="#10B981" />
               <Text style={styles.actionButtonText}>+1 día</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.endButton} onPress={() => onEndPenalty(penalty.id)}>
+            <TouchableOpacity 
+              style={styles.endButton} 
+              onPress={() => onEndPenalty(penalty.id)}
+            >
               <LinearGradient
                 colors={[theme.colors.primary, theme.colors.primaryDark]}
                 style={styles.endButtonGradient}
               >
-                <Ionicons name="stop-circle" size={16} color="white" />
-                <Text style={styles.endButtonText}>Terminar</Text>
+                <Ionicons name="checkmark-circle" size={18} color="white" />
+                <Text style={styles.endButtonText}>Completar</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         )}
 
-                {/* Completed Badge */}
-                {!penalty.isActive && penalty.reflection && (
-                    <View style={styles.completedBadge}>
-                        <Ionicons name="checkmark-circle" size={16} color={theme.colors.success} />
-                        <Text style={styles.completedText}>Completada</Text>
-                    </View>
-                )}
-            </View>
-        </TouchableOpacity>
-    );
+        {/* Completed Badge */}
+        {!penalty.isActive && penalty.reflection && (
+          <View style={styles.completedSection}>
+            <LinearGradient
+              colors={['#10B981', '#059669']}
+              style={styles.completedBadge}
+            >
+              <Ionicons name="checkmark-circle" size={20} color="white" />
+              <Text style={styles.completedText}>¡Completada!</Text>
+            </LinearGradient>
+            <Text style={styles.reflectionText}>"{penalty.reflection}"</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.cardBackground,
-    borderRadius: theme.borderRadius.medium,
-    marginHorizontal: theme.spacing.medium,
-    marginBottom: theme.spacing.small,
-    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginHorizontal: 16,
+    marginBottom: 16,
     overflow: 'hidden',
-    ...theme.shadows.small,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-    typeIndicator: {
-        width: 8,
-        backgroundColor: theme.colors.primary,
-    },
-  content: {
-    flex: 1,
-    padding: theme.spacing.small,
-  },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: theme.spacing.small,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: theme.spacing.small,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-    },
-    headerText: {
-        flex: 1,
-        marginRight: theme.spacing.small,
-    },
-    memberName: {
-        fontSize: theme.typography.fontSize.large,
-        fontWeight: theme.typography.fontWeight.bold as any,
-        color: theme.colors.text,
-    },
-    typeBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.1)',
-        borderRadius: theme.borderRadius.small,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        marginTop: 4,
-        alignSelf: 'flex-start',
-    },
-    typeText: {
-        fontSize: theme.typography.fontSize.small,
-        color: 'white',
-        marginLeft: 4,
-        fontWeight: theme.typography.fontWeight.medium as any,
-    },
-    reason: {
-        fontSize: theme.typography.fontSize.medium,
-        color: theme.colors.text,
-        marginBottom: theme.spacing.small,
-    },
-    infoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: theme.spacing.small,
-    },
-    infoItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    infoText: {
-        fontSize: theme.typography.fontSize.small,
-        color: theme.colors.gray,
-        marginLeft: 4,
-    },
-  actions: {
+  cardHeader: {
+    padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: theme.spacing.small,
-    gap: 8,
+    alignItems: 'center',
+  },
+  memberInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+    borderWidth: 3,
+    borderColor: 'white',
+  },
+  memberDetails: {
+    flex: 1,
+  },
+  memberName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.text,
+    marginBottom: 4,
+  },
+  typeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+  },
+  typeText: {
+    fontSize: 12,
+    color: 'white',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+  cardContent: {
+    padding: 16,
+  },
+  reason: {
+    fontSize: 16,
+    color: theme.colors.text,
+    marginBottom: 16,
+    lineHeight: 22,
+  },
+  progressContainer: {
+    marginBottom: 16,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  progressText: {
+    fontSize: 12,
+    color: theme.colors.gray,
+    textAlign: 'center',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  infoText: {
+    fontSize: 12,
+    color: theme.colors.gray,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: theme.borderRadius.small,
-    backgroundColor: theme.colors.background,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    minWidth: 80,
+    borderRadius: 12,
+    borderWidth: 2,
+    flex: 1,
     justifyContent: 'center',
   },
+  minusButton: {
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FECACA',
+  },
+  plusButton: {
+    backgroundColor: '#F0FDF4',
+    borderColor: '#BBF7D0',
+  },
   actionButtonText: {
-    marginLeft: 4,
-    fontSize: theme.typography.fontSize.small,
-    fontWeight: theme.typography.fontWeight.medium as any,
+    marginLeft: 6,
+    fontSize: 14,
+    fontWeight: '600',
     color: theme.colors.text,
   },
   endButton: {
-    flex: 1,
-    borderRadius: theme.borderRadius.small,
+    flex: 2,
+    borderRadius: 12,
     overflow: 'hidden',
-    minWidth: 100,
   },
   endButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
   },
   endButtonText: {
-    marginLeft: 4,
-    fontSize: theme.typography.fontSize.small,
-    fontWeight: theme.typography.fontWeight.medium as any,
-    color: theme.colors.white,
+    marginLeft: 6,
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'white',
   },
-    completedBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: theme.colors.successLight,
-        borderRadius: theme.borderRadius.small,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        alignSelf: 'flex-start',
-        marginTop: theme.spacing.small,
-    },
-    completedText: {
-        marginLeft: 4,
-        fontSize: theme.typography.fontSize.small,
-        fontWeight: theme.typography.fontWeight.medium as any,
-        color: theme.colors.success,
-    },
+  completedSection: {
+    alignItems: 'center',
+  },
+  completedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  completedText: {
+    marginLeft: 6,
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'white',
+  },
+  reflectionText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: theme.colors.gray,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });
 
 export default PenaltyCard;

@@ -117,118 +117,132 @@ const PenaltyRoulette: React.FC<PenaltyRouletteProps> = ({
         });
     };
 
-    return (
-        <View style={styles.overlay}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Ruleta de {config.name}</Text>
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                        <Ionicons name="close" size={24} color={theme.colors.gray} />
-                    </TouchableOpacity>
-                </View>
+  return (
+    <View style={styles.overlay}>
+      <View style={styles.container}>
+        <LinearGradient
+          colors={['#667eea', '#764ba2']}
+          style={styles.header}
+        >
+          <Text style={styles.title}>🎲 Ruleta de {config.name}</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={24} color="white" />
+          </TouchableOpacity>
+        </LinearGradient>
 
-                <View style={styles.rouletteContainer}>
-                    <View
-                        style={[
-                            styles.roulette,
-                            {
-                                width: rouletteSize,
-                                height: rouletteSize,
-                                borderRadius: rouletteSize / 2,
-                                transform: [{ rotate: `${spinAngle}deg` }],
-                            },
-                        ]}
-                    >
-                        {renderRouletteSegments()}
-                    </View>
+        <View style={styles.rouletteContainer}>
+          <View
+            style={[
+              styles.roulette,
+              {
+                width: rouletteSize,
+                height: rouletteSize,
+                borderRadius: rouletteSize / 2,
+                transform: [{ rotate: `${spinAngle}deg` }],
+              },
+            ]}
+          >
+            {renderRouletteSegments()}
+          </View>
 
-                    {/* Center pointer */}
-                    <View style={styles.pointer}>
-                        <Ionicons name="triangle" size={20} color={config.color} />
-                    </View>
-                </View>
-
-                {selectedDuration && (
-                    <View style={styles.resultContainer}>
-                        <LinearGradient
-                            colors={[config.color, config.color + '80']}
-                            style={styles.resultCard}
-                        >
-                            <Ionicons name={config.icon as any} size={32} color="white" />
-                            <Text style={styles.resultText}>
-                                ¡{selectedDuration} días de penalidad!
-                            </Text>
-                        </LinearGradient>
-                    </View>
-                )}
-
-                <TouchableOpacity
-                    style={[
-                        styles.spinButton,
-                        isSpinning && styles.spinButtonDisabled,
-                        { backgroundColor: config.color },
-                    ]}
-                    onPress={spinRoulette}
-                    disabled={isSpinning}
-                >
-                    <LinearGradient
-                        colors={[config.color, config.color + 'CC']}
-                        style={styles.spinButtonGradient}
-                    >
-                        <Ionicons
-                            name={isSpinning ? "refresh" : "play"}
-                            size={24}
-                            color="white"
-                        />
-                        <Text style={styles.spinButtonText}>
-                            {isSpinning ? 'Girando...' : 'Girar Ruleta'}
-                        </Text>
-                    </LinearGradient>
-                </TouchableOpacity>
-
-                <Text style={styles.instructions}>
-                    Toca el botón para girar la ruleta y ver cuántos días de penalidad tendrás
-                </Text>
-            </View>
+          {/* Center pointer */}
+          <View style={styles.pointer}>
+            <Ionicons name="triangle" size={24} color={config.color} />
+          </View>
         </View>
-    );
+
+        {selectedDuration && (
+          <View style={styles.resultContainer}>
+            <LinearGradient
+              colors={[config.color, config.color + 'CC']}
+              style={styles.resultCard}
+            >
+              <Ionicons name={config.icon as any} size={40} color="white" />
+              <Text style={styles.resultText}>
+                ¡{selectedDuration} días de penalidad!
+              </Text>
+              <Text style={styles.resultSubtext}>
+                La ruleta ha decidido
+              </Text>
+            </LinearGradient>
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={[
+            styles.spinButton,
+            isSpinning && styles.spinButtonDisabled,
+          ]}
+          onPress={spinRoulette}
+          disabled={isSpinning}
+        >
+          <LinearGradient
+            colors={[config.color, config.color + 'CC']}
+            style={styles.spinButtonGradient}
+          >
+            <Ionicons 
+              name={isSpinning ? "refresh" : "play"} 
+              size={28} 
+              color="white" 
+            />
+            <Text style={styles.spinButtonText}>
+              {isSpinning ? 'Girando...' : 'Girar Ruleta'}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <Text style={styles.instructions}>
+          Toca el botón para girar la ruleta y ver cuántos días de penalidad tendrás
+        </Text>
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-    container: {
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 24,
-        width: '90%',
-        maxWidth: 400,
-        alignItems: 'center',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: 24,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: theme.colors.text,
-    },
-    closeButton: {
-        padding: 8,
-    },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  container: {
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 0,
+    width: '90%',
+    maxWidth: 400,
+    alignItems: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  closeButton: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
     rouletteContainer: {
         position: 'relative',
         marginBottom: 24,
@@ -283,12 +297,18 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         justifyContent: 'center',
     },
-    resultText: {
-        fontSize: 18,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: 'white',
-        marginLeft: 12,
-    },
+  resultText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginTop: 8,
+  },
+  resultSubtext: {
+    fontSize: 14,
+    color: 'white',
+    marginTop: 4,
+    opacity: 0.9,
+  },
     spinButton: {
         borderRadius: 12,
         overflow: 'hidden',
