@@ -139,112 +139,7 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                 </View>
             </LinearGradient>
 
-            {/* Overview Stats */}
-            <View style={styles.statsContainer}>
-                <StatCard
-                    title="Total Goals"
-                    value={stats.totalGoals}
-                    icon="bullseye"
-                    color="#3B82F6"
-                />
-                <StatCard
-                    title="Active Now"
-                    value={stats.activeGoals}
-                    icon="rocket"
-                    color="#10B981"
-                />
-                <StatCard
-                    title="Completed"
-                    value={stats.completedGoals}
-                    icon="trophy"
-                    color="#7C3AED"
-                    subtitle="🎉"
-                />
-                <StatCard
-                    title="Avg Progress"
-                    value={`${stats.averageProgress}%`}
-                    icon="trending-up"
-                    color="#F59E0B"
-                />
-            </View>
-
-            {/* Tabs */}
-            <View style={styles.tabsContainer}>
-                <View style={styles.tabs}>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'all' && styles.tabActive]}
-                        onPress={() => setActiveTab('all')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}>
-                            All Goals
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'active' && styles.tabActive]}
-                        onPress={() => setActiveTab('active')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'active' && styles.tabTextActive]}>
-                            Active
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'completed' && styles.tabActive]}
-                        onPress={() => setActiveTab('completed')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'completed' && styles.tabTextActive]}>
-                            Completed
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {/* Category Filters */}
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.categoriesContainer}
-                contentContainerStyle={styles.categoriesContent}
-            >
-                <CategoryChip
-                    category={{ id: 'all', name: 'All' }}
-                    isSelected={selectedCategory === 'all'}
-                    onPress={() => setSelectedCategory('all')}
-                />
-                {goalCategories.map((category) => (
-                    <CategoryChip
-                        key={category.id}
-                        category={category}
-                        isSelected={selectedCategory === category.id}
-                        onPress={() => setSelectedCategory(category.id as GoalCategory)}
-                    />
-                ))}
-            </ScrollView>
-
-            {/* Spiritual & Family Highlight */}
-            {spiritualAndFamilyGoals.length > 0 && (
-                <View style={styles.highlightContainer}>
-                    <LinearGradient
-                        colors={['#7C3AED', '#A855F7', '#FBBF24']}
-                        style={styles.highlightCard}
-                    >
-                        <View style={styles.highlightContent}>
-                            <Text style={styles.highlightTitle}>🌟 Spiritual & Family Goals</Text>
-                            <Text style={styles.highlightSubtitle}>Building eternal bonds together</Text>
-                            <View style={styles.highlightStats}>
-                                <Text style={styles.highlightStatText}>
-                                    <Text style={styles.highlightStatBold}>{spiritualAndFamilyGoals.length} Active</Text>
-                                    <Text style={styles.highlightStatLight}> • 3 This Week</Text>
-                                </Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity style={styles.highlightButton}>
-                            <Text style={styles.highlightButtonText}>View All</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                </View>
-            )}
-
-            {/* Goals List */}
+            {/* Main ScrollView - Everything scrollable */}
             <ScrollView
                 style={styles.content}
                 showsVerticalScrollIndicator={false}
@@ -253,6 +148,110 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
+                {/* Overview Stats */}
+                <View style={styles.statsContainer}>
+                    <StatCard
+                        title="Total Goals"
+                        value={stats.totalGoals}
+                        icon="target"
+                        color="#3B82F6"
+                    />
+                    <StatCard
+                        title="Active Now"
+                        value={stats.activeGoals}
+                        icon="rocket"
+                        color="#10B981"
+                    />
+                    <StatCard
+                        title="Completed"
+                        value={stats.completedGoals}
+                        icon="trophy"
+                        color="#7C3AED"
+                        subtitle="🎉"
+                    />
+                    <StatCard
+                        title="Avg Progress"
+                        value={`${stats.averageProgress}%`}
+                        icon="trending-up"
+                        color="#F59E0B"
+                    />
+                </View>
+
+                {/* Tabs */}
+                <View style={styles.tabsContainer}>
+                    <View style={styles.tabs}>
+                        <TouchableOpacity
+                            style={[styles.tab, activeTab === 'all' && styles.tabActive]}
+                            onPress={() => setActiveTab('all')}
+                        >
+                            <Text style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}>
+                                All Goals
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.tab, activeTab === 'active' && styles.tabActive]}
+                            onPress={() => setActiveTab('active')}
+                        >
+                            <Text style={[styles.tabText, activeTab === 'active' && styles.tabTextActive]}>
+                                Active
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.tab, activeTab === 'completed' && styles.tabActive]}
+                            onPress={() => setActiveTab('completed')}
+                        >
+                            <Text style={[styles.tabText, activeTab === 'completed' && styles.tabTextActive]}>
+                                Completed
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Category Filters */}
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.categoriesContainer}
+                    contentContainerStyle={styles.categoriesContent}
+                >
+                    <CategoryChip
+                        category={{ id: 'all', name: 'All' }}
+                        isSelected={selectedCategory === 'all'}
+                        onPress={() => setSelectedCategory('all')}
+                    />
+                    {goalCategories.map((category) => (
+                        <CategoryChip
+                            key={category.id}
+                            category={category}
+                            isSelected={selectedCategory === category.id}
+                            onPress={() => setSelectedCategory(category.id as GoalCategory)}
+                        />
+                    ))}
+                </ScrollView>
+
+                {/* Spiritual & Family Highlight */}
+                {spiritualAndFamilyGoals.length > 0 && (
+                    <View style={styles.highlightContainer}>
+                        <LinearGradient
+                            colors={['#7C3AED', '#A855F7', '#FBBF24']}
+                            style={styles.highlightCard}
+                        >
+                            <View style={styles.highlightContent}>
+                                <Text style={styles.highlightTitle}>🌟 Spiritual & Family Goals</Text>
+                                <Text style={styles.highlightSubtitle}>Building eternal bonds together</Text>
+                                <View style={styles.highlightStats}>
+                                    <Text style={styles.highlightStatText}>
+                                        <Text style={styles.highlightStatBold}>{spiritualAndFamilyGoals.length} Active</Text>
+                                        <Text style={styles.highlightStatLight}> • 3 This Week</Text>
+                                    </Text>
+                                </View>
+                            </View>
+                            <TouchableOpacity style={styles.highlightButton}>
+                                <Text style={styles.highlightButtonText}>View All</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                    </View>
+                )}
                 <View style={styles.goalsHeader}>
                     <Text style={styles.goalsTitle}>
                         {activeTab === 'all' ? 'All Goals' :
