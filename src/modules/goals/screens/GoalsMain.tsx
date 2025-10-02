@@ -115,10 +115,10 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Beautiful Header */}
+            {/* Elegant Header - Less Colorful */}
             <LinearGradient
-                colors={['#F59E0B', '#FBBF24', '#F59E0B']}
-                style={[styles.header, { paddingTop: insets.top + 20 }]}
+                colors={['#6366F1', '#8B5CF6']}
+                style={[styles.header, { paddingTop: insets.top + 16 }]}
             >
                 <View style={styles.headerContent}>
                     <View style={styles.headerText}>
@@ -130,10 +130,10 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                         onPress={() => setShowAddModal(true)}
                     >
                         <LinearGradient
-                            colors={['white', '#FEF3C7']}
+                            colors={['white', '#F8FAFC']}
                             style={styles.addButtonGradient}
                         >
-                            <Ionicons name="add" size={24} color="#F59E0B" />
+                            <Ionicons name="add" size={20} color="#6366F1" />
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
@@ -148,32 +148,32 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                {/* Overview Stats */}
+                {/* Overview Stats - More Subtle Colors */}
                 <View style={styles.statsContainer}>
                     <StatCard
                         title="Total Goals"
                         value={stats.totalGoals}
                         icon="target"
-                        color="#3B82F6"
+                        color="#6366F1"
                     />
                     <StatCard
                         title="Active Now"
                         value={stats.activeGoals}
                         icon="rocket"
-                        color="#10B981"
+                        color="#059669"
                     />
                     <StatCard
                         title="Completed"
                         value={stats.completedGoals}
                         icon="trophy"
                         color="#7C3AED"
-                        subtitle="🎉"
+                        subtitle="✓"
                     />
                     <StatCard
                         title="Avg Progress"
                         value={`${stats.averageProgress}%`}
                         icon="trending-up"
-                        color="#F59E0B"
+                        color="#DC2626"
                     />
                 </View>
 
@@ -229,11 +229,11 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                     ))}
                 </ScrollView>
 
-                {/* Spiritual & Family Highlight */}
+                {/* Spiritual & Family Highlight - More Subtle */}
                 {spiritualAndFamilyGoals.length > 0 && (
                     <View style={styles.highlightContainer}>
                         <LinearGradient
-                            colors={['#7C3AED', '#A855F7', '#FBBF24']}
+                            colors={['#6366F1', '#8B5CF6']}
                             style={styles.highlightCard}
                         >
                             <View style={styles.highlightContent}>
@@ -318,17 +318,17 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FEF3C7',
+        backgroundColor: '#F8FAFC',
     },
     header: {
-        paddingBottom: 30,
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
+        paddingBottom: 20,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
     headerContent: {
         flexDirection: 'row',
@@ -340,26 +340,26 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headerTitle: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
         color: 'white',
-        marginBottom: 4,
+        marginBottom: 2,
     },
     headerSubtitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: 'rgba(255, 255, 255, 0.9)',
         fontWeight: '500',
     },
     addButton: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         overflow: 'hidden',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     addButtonGradient: {
         width: '100%',
@@ -370,32 +370,32 @@ const styles = StyleSheet.create({
     statsContainer: {
         flexDirection: 'row',
         paddingHorizontal: 16,
-        paddingVertical: 20,
-        gap: 12,
-        marginTop: -20,
+        paddingVertical: 16,
+        gap: 8,
+        marginTop: -16,
     },
     statCard: {
         flex: 1,
         backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 16,
+        borderRadius: 12,
+        padding: 12,
         alignItems: 'center',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
     },
     statIconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 8,
+        marginBottom: 6,
     },
     statValue: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: theme.colors.text,
         marginBottom: 4,
