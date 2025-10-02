@@ -2,11 +2,11 @@ import React from 'react';
 import GoalsMain from './screens/GoalsMain';
 
 interface GoalsScreenProps {
-  navigation: any;
+    navigation: any;
 }
 
 const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
-  return <GoalsMain navigation={navigation} />;
+    return <GoalsMain navigation={navigation} />;
 };
 
 export default GoalsScreen;

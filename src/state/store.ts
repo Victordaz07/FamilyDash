@@ -36,14 +36,7 @@ export interface Activity {
     completed: boolean;
 }
 
-export interface Goal {
-    id: string;
-    title: string;
-    description: string;
-    targetDate: Date;
-    progress: number; // 0-100
-    familyMember: string;
-}
+// Goal interface moved to src/modules/goals/types/goalTypes.ts
 
 export interface SafeRoomMessage {
     id: string;
@@ -75,10 +68,7 @@ interface FamilyDashStore {
     addActivity: (activity: Omit<Activity, 'id'>) => void;
     updateActivity: (id: string, updates: Partial<Activity>) => void;
 
-    // Goals state
-    goals: Goal[];
-    addGoal: (goal: Omit<Goal, 'id'>) => void;
-    updateGoal: (id: string, updates: Partial<Goal>) => void;
+    // Goals state moved to src/modules/goals/store/goalsStore.ts
 
     // Safe Room state
     safeRoomMessages: SafeRoomMessage[];
@@ -135,16 +125,7 @@ const generateMockData = () => {
         }
     ];
 
-    const mockGoals: Goal[] = [
-        {
-            id: '1',
-            title: 'Leer 10 libros este año',
-            description: 'Meta familiar de lectura',
-            targetDate: new Date('2024-12-31'),
-            progress: 60,
-            familyMember: 'demo-user-123'
-        }
-    ];
+    // Goals mock data moved to src/modules/goals/mock/goalsData.ts
 
     const mockSafeRoomMessages: SafeRoomMessage[] = [
         {
@@ -160,7 +141,6 @@ const generateMockData = () => {
         tasks: mockTasks,
         penalties: mockPenalties,
         activities: mockActivities,
-        goals: mockGoals,
         safeRoomMessages: mockSafeRoomMessages
     };
 };
@@ -210,16 +190,7 @@ export const useFamilyDashStore = create<FamilyDashStore>((set, get) => {
             )
         })),
 
-        // Goals state
-        goals: mockData.goals,
-        addGoal: (goal) => set((state) => ({
-            goals: [...state.goals, { ...goal, id: Date.now().toString() }]
-        })),
-        updateGoal: (id, updates) => set((state) => ({
-            goals: state.goals.map(goal =>
-                goal.id === id ? { ...goal, ...updates } : goal
-            )
-        })),
+        // Goals state moved to src/modules/goals/store/goalsStore.ts
 
         // Safe Room state
         safeRoomMessages: mockData.safeRoomMessages,
