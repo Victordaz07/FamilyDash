@@ -369,16 +369,16 @@ const styles = StyleSheet.create({
     },
     statsContainer: {
         flexDirection: 'row',
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        gap: 8,
-        marginTop: -16,
+        paddingHorizontal: 20,
+        paddingVertical: 24,
+        gap: 12,
+        marginTop: -20,
     },
     statCard: {
         flex: 1,
         backgroundColor: 'white',
         borderRadius: 12,
-        padding: 12,
+        padding: 16,
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -413,8 +413,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     tabsContainer: {
-        paddingHorizontal: 16,
-        marginBottom: 16,
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
     tabs: {
         flexDirection: 'row',
@@ -424,8 +424,8 @@ const styles = StyleSheet.create({
     },
     tab: {
         flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
         borderRadius: 12,
         alignItems: 'center',
     },
@@ -447,17 +447,17 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     categoriesContainer: {
-        marginBottom: 16,
+        marginBottom: 20,
     },
     categoriesContent: {
-        paddingHorizontal: 16,
-        gap: 8,
+        paddingHorizontal: 20,
+        gap: 12,
     },
     categoryChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingHorizontal: 18,
+        paddingVertical: 10,
         borderRadius: 20,
         borderWidth: 1,
         borderColor: theme.colors.border,
@@ -479,8 +479,8 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     highlightContainer: {
-        paddingHorizontal: 16,
-        marginBottom: 16,
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
     highlightCard: {
         borderRadius: 24,
@@ -536,13 +536,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 100,
+        paddingBottom: 120,
     },
     goalsHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        marginBottom: 16,
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
     goalsTitle: {
         fontSize: 20,
