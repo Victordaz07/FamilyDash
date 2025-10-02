@@ -143,9 +143,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         <TouchableOpacity style={styles.notificationButton} onPress={handleNotifications}>
                             <Ionicons name="notifications-outline" size={20} color="white" />
                         </TouchableOpacity>
-                        <Image 
-                            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }} 
-                            style={styles.profileImage} 
+                        <Image
+                            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
+                            style={styles.profileImage}
                         />
                     </View>
                 </View>
@@ -153,12 +153,13 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Family Members */}
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Family Members</Text>
-                        <Text style={styles.sectionSubtitle}>4 active</Text>
-                    </View>
-                    <View style={styles.membersContainer}>
+                <View style={styles.firstSection}>
+                    <View style={styles.familyMembersCard}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Family Members</Text>
+                            <Text style={styles.sectionSubtitle}>4 active</Text>
+                        </View>
+                        <View style={styles.membersContainer}>
                         {familyMembers.map((member) => (
                             <View key={member.id} style={styles.memberCard}>
                                 <View style={styles.memberAvatarContainer}>
@@ -170,7 +171,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     </View>
                                 </View>
                                 <Text style={styles.memberName}>{member.name}</Text>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={styles.ringButton}
                                     onPress={() => handleRingDevice(member.name)}
                                 >
@@ -179,6 +180,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 </TouchableOpacity>
                             </View>
                         ))}
+                        </View>
                     </View>
                 </View>
 
@@ -224,14 +226,14 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </View>
                             <Ionicons name="phone-portrait" size={24} color="white" />
                         </View>
-                        
+
                         <TouchableOpacity style={styles.ringAllButton} onPress={handleRingAllDevices}>
                             <View style={styles.ringAllIcon}>
                                 <Ionicons name="call" size={20} color="white" />
                             </View>
                             <Text style={styles.ringAllText}>Ring All Devices</Text>
                         </TouchableOpacity>
-                        
+
                         <Text style={styles.lastRingText}>
                             Last ring: {lastRingTime === 0 ? 'Just now' : `${lastRingTime} min ago`}
                         </Text>
@@ -254,17 +256,17 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 <View style={[styles.taskStatusIcon, { backgroundColor: getTaskStatusColor(task.status) }]}>
                                     <Ionicons name={getTaskStatusIcon(task.status) as any} size={12} color="white" />
                                 </View>
-                                <Image 
-                                    source={{ uri: familyMembers.find(m => m.name === task.assignedTo)?.avatar }} 
-                                    style={styles.taskAssigneeAvatar} 
+                                <Image
+                                    source={{ uri: familyMembers.find(m => m.name === task.assignedTo)?.avatar }}
+                                    style={styles.taskAssigneeAvatar}
                                 />
                                 <View style={styles.taskContent}>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
                                     <Text style={styles.taskMeta}>
                                         {task.assignedTo} • {
                                             task.status === 'completed' ? `Completed ${task.completedAt}` :
-                                            task.status === 'pending' ? `Due in ${task.dueIn}` :
-                                            `Overdue by ${task.overdueBy}`
+                                                task.status === 'pending' ? `Due in ${task.dueIn}` :
+                                                    `Overdue by ${task.overdueBy}`
                                         }
                                     </Text>
                                 </View>
@@ -305,11 +307,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 <Text style={styles.penaltyTitle}>Active Penalty</Text>
                                 <Ionicons name="hourglass" size={24} color="white" />
                             </View>
-                            
+
                             <View style={styles.penaltyContent}>
-                                <Image 
-                                    source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }} 
-                                    style={styles.penaltyAvatar} 
+                                <Image
+                                    source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' }}
+                                    style={styles.penaltyAvatar}
                                 />
                                 <View>
                                     <Text style={styles.penaltyMemberName}>Jake</Text>
@@ -346,10 +348,10 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 onPress={() => handleActivityPress(activity.id)}
                             >
                                 <View style={[styles.activityIcon, { backgroundColor: activity.id === '1' ? theme.colors.primary : '#8B5CF6' }]}>
-                                    <Ionicons 
-                                        name={activity.id === '1' ? 'film' : 'gift'} 
-                                        size={16} 
-                                        color="white" 
+                                    <Ionicons
+                                        name={activity.id === '1' ? 'film' : 'gift'}
+                                        size={16}
+                                        color="white"
                                     />
                                 </View>
                                 <View style={styles.activityContent}>
@@ -382,11 +384,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Text style={styles.goalTitle}>Family Goal</Text>
                             <Ionicons name="trophy" size={24} color="white" />
                         </View>
-                        
+
                         <View style={styles.goalContent}>
                             <Text style={styles.goalName}>Save for Disney World Trip</Text>
                             <Text style={styles.goalProgress}>$2,400 of $5,000 saved</Text>
-                            
+
                             <View style={styles.goalProgressBar}>
                                 <View style={styles.goalProgressFill} />
                             </View>
@@ -475,10 +477,24 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         paddingHorizontal: 16,
-        marginTop: -24,
+        marginTop: -12,
     },
     section: {
         marginBottom: 16,
+    },
+    firstSection: {
+        marginBottom: 16,
+        marginTop: 8,
+    },
+    familyMembersCard: {
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -507,14 +523,9 @@ const styles = StyleSheet.create({
     },
     memberCard: {
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: 'transparent',
         borderRadius: 16,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        padding: 8,
     },
     memberAvatarContainer: {
         position: 'relative',
