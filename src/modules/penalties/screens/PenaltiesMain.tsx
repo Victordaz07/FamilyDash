@@ -121,14 +121,14 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
       <View style={styles.statsContainer}>
         <StatCard
           title="Activas"
-          value={stats.activeCount}
+          value={stats.activePenalties}
           icon="play-circle"
           color="#3B82F6"
           subtitle="En curso"
         />
         <StatCard
           title="Completadas"
-          value={stats.completedCount}
+          value={stats.completedPenalties}
           icon="checkmark-circle"
           color="#10B981"
           subtitle="Finalizadas"
