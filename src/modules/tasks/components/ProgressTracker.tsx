@@ -45,7 +45,7 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({
         <View style={styles.progressBarContainer}>
           <View style={styles.progressBarBackground}>
             <LinearGradient
-              colors={progressColors}
+              colors={progressColors as [string, string]}
               style={[styles.progressBarFill, { width: `${progress}%` }]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}

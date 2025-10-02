@@ -60,7 +60,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
             onPress={action.onPress}
           >
             <LinearGradient
-              colors={action.colors}
+              colors={action.colors as [string, string]}
               style={styles.actionGradient}
             >
               <View style={styles.iconContainer}>

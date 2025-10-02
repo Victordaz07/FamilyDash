@@ -162,7 +162,7 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose, onSubmit 
                                             onPress={() => selectTemplate(template)}
                                         >
                                             <LinearGradient
-                                                colors={categoryConfig?.gradient || [theme.colors.primary, theme.colors.primaryDark]}
+                                                colors={categoryConfig?.gradient as [string, string] || [theme.colors.primary, theme.colors.primaryDark]}
                                                 style={styles.templateIcon}
                                             >
                                                 <Text style={styles.templateEmoji}>{template.emoji}</Text>

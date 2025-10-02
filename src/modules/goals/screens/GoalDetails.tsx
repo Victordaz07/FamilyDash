@@ -210,7 +210,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
         <View style={styles.container}>
             {/* Header */}
             <LinearGradient
-                colors={categoryGradient}
+                colors={categoryGradient as [string, string]}
                 style={[styles.header, { paddingTop: insets.top + 20 }]}
             >
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -268,7 +268,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
                             </View>
                             <View style={styles.progressBar}>
                                 <LinearGradient
-                                    colors={categoryGradient}
+                                    colors={categoryGradient as [string, string]}
                                     style={[styles.progressFill, { width: `${goal.progress}%` }]}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 0 }}
@@ -355,7 +355,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
                                 onPress={handleCompleteMilestone}
                             >
                                 <LinearGradient
-                                    colors={categoryGradient}
+                                    colors={categoryGradient as [string, string]}
                                     style={styles.actionButtonGradient}
                                 >
                                     <Ionicons name="checkmark-circle" size={20} color="white" />
@@ -370,7 +370,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
                                 onPress={handleCompleteGoal}
                             >
                                 <LinearGradient
-                                    colors={['#10B981', '#059669']}
+                                    colors={['#10B981', '#059669'] as [string, string]}
                                     style={styles.actionButtonGradient}
                                 >
                                     <Ionicons name="trophy" size={20} color="white" />
@@ -384,7 +384,7 @@ const GoalDetails: React.FC<GoalDetailsProps> = ({ navigation, route }) => {
                             onPress={handleExtendDueDate}
                         >
                             <LinearGradient
-                                colors={['#3B82F6', '#2563EB']}
+                                colors={['#3B82F6', '#2563EB'] as [string, string]}
                                 style={styles.actionButtonGradient}
                             >
                                 <Ionicons name="calendar" size={20} color="white" />
