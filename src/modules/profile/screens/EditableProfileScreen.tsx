@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView, 
-] from "react-native";
-
-import {
-    TouchableOpacity,
-    TextInput,
-    Alert,
-    Modal
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  TextInput,
+  Alert,
+  Modal 
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
