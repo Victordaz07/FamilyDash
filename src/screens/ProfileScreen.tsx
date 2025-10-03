@@ -34,6 +34,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     navigation.navigate('HomeManagement');
   };
 
+  const handleJoinHouse = () => {
+    navigation.navigate('JoinHouse');
+  };
+
   const handleAchievements = () => {
     Alert.alert('Achievements', 'Coming soon - Achievements screen');
   };
@@ -147,6 +151,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           subtitle="Manage family members"
           onPress={handleFamilyMembers}
           badge="4"
+        />
+        <ProfileItem
+          icon="home"
+          title="Join/Create House"
+          subtitle="Join with invitation code or create new house"
+          onPress={handleJoinHouse}
         />
         <ProfileItem
           icon="trophy"

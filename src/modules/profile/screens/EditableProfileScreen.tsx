@@ -262,47 +262,75 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                 )}
             </View>
 
-            {/* Family House Information */}
-            {familyHouse && (
-                <View style={styles.familySection}>
-                    <Text style={styles.sectionTitle}>Family House</Text>
-                    <View style={styles.familyCard}>
-                        <View style={styles.familyInfo}>
-                            <Text style={styles.familyName}>{familyHouse.houseName}</Text>
-                            <Text style={styles.familyDetails}>
-                                Joined: {new Date(familyHouse.createdAt).toLocaleDateString()}
-                            </Text>
-                            <Text style={styles.familyMemberCount}>
-                                {familyHouse.members.filter(m => m.isActive).length} active members
-                            </Text>
-                        </View>
-
-                        <View style={styles.roleInfo}>
-                            <LinearGradient
-                                colors={getRoleColor(currentUser.role)}
-                                style={styles.roleBadge}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                            >
-                                <Ionicons name={getRoleIcon(currentUser.role) as any} size={16} color="#ffffff" />
-                                <Text style={styles.roleText}>{getRoleLabel(currentUser.role)}</Text>
-                            </LinearGradient>
-
-                            {currentUser.isOnline !== undefined && (
-                                <View style={styles.onlineStatus}>
-                                    <View style={[
-                                        styles.statusIndicator,
-                                        { backgroundColor: currentUser.isOnline ? '#10B981' : '#6B7280' }
-                                    ]} />
-                                    <Text style={styles.statusText}>
-                                        {currentUser.isOnline ? 'Online' : 'Offline'}
-                                    </Text>
-                                </View>
-                            )}
-                        </View>
-                    </View>
+      {/* Family House Information */}
+      {familyHouse ? (
+        <View style={styles.familySection}>
+          <Text style={styles.sectionTitle}>Family House</Text>
+          <View style={styles.familyCard}>
+            <View style={styles.familyInfo}>
+              <Text style={styles.familyName}>{familyHouse.houseName}</Text>
+              <Text style={styles.familyDetails}>
+                Joined: {new Date(familyHouse.createdAt).toLocaleDateString()}
+              </Text>
+              <Text style={styles.familyMemberCount}>
+                {familyHouse.members.filter(m => m.isActive).length} active members
+              </Text>
+            </View>
+            
+            <View style={styles.roleInfo}>
+              <LinearGradient
+                colors={getRoleColor(currentUser.role)}
+                style={styles.roleBadge}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Ionicons name={getRoleIcon(currentUser.role) as any} size={16} color="#ffffff" />
+                <Text style={styles.roleText}>{getRoleLabel(currentUser.role)}</Text>
+              </LinearGradient>
+              
+              {currentUser.isOnline !== undefined && (
+                <View style={styles.onlineStatus}>
+                  <View style={[
+                    styles.statusIndicator,
+                    { backgroundColor: currentUser.isOnline ? '#10B981' : '#6B7280' }
+                  ]} />
+                  <Text style={styles.statusText}>
+                    {currentUser.isOnline ? 'Online' : 'Offline'}
+                  </Text>
                 </View>
-            )}
+              )}
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.familySection}>
+          <Text style={styles.sectionTitle}>Family House</Text>
+          <View style={[styles.familyCard, styles.emptyFamilyCard]}>
+            <View style={styles.emptyFamilyContent}>
+              <Ionicons name="home-outline" size={48} color="#9CA3AF" />
+              <Text style={styles.emptyFamilyTitle}>No Family House</Text>
+              <Text style={styles.emptyFamilyText}>
+                You're not part of any family house yet.{'\n'}
+                Join an existing house or create your own!
+              </Text>
+              <TouchableOpacity
+                style={styles.joinFamilyButton}
+                onPress={() => navigation.navigate('JoinHouse')}
+              >
+                <LinearGradient
+                  colors={['#10B981', '#059669']}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Ionicons name="home" size={16} color="#ffffff" />
+                  <Text style={styles.joinFamilyButtonText}>Join/Create House</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
 
             {/* Quick Actions */}
             <View style={styles.actionsSection}>
@@ -529,16 +557,48 @@ const styles = StyleSheet.create({
         color: '#1F2937',
         marginBottom: 12,
     },
-    familyCard: {
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
+  familyCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  emptyFamilyCard: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  emptyFamilyContent: {
+    alignItems: 'center',
+  },
+  emptyFamilyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  emptyFamilyText: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 20,
+  },
+  joinFamilyButton: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  joinFamilyButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 6,
+  },
     familyInfo: {
         marginBottom: 12,
     },

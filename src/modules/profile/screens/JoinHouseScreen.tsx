@@ -75,36 +75,57 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
         }
     };
 
-    const handleCreateHouse = () => {
-        Alert.alert(
-            'Create New House',
-            'Are you sure you want to create a new house and become the administrator?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Create',
-                    onPress: () => {
-                        const newAdmin: FamilyMember = {
-                            id: Math.random().toString(36).substr(2, 9),
-                            code: `NEW${Math.floor(Math.random() * 9000) + 1000}`,
-                            name: newMemberData.name || 'New Admin',
-                            role: 'admin',
-                            email: newMemberData.email || undefined,
-                            age: newMemberData.age ? parseInt(newMemberData.age) : undefined,
-                            avatar: newMemberData.avatar,
-                            permissions: ['tasks:manage', 'penalties:manage', 'calendar:manage', 'family:manage', 'members:invite', 'members:remove', 'settings:manage'],
-                            isActive: true,
-                            joinedAt: new Date(),
-                            isOnline: true,
-                        };
+  const handleCreateHouse = async () => {
+    if (!newMemberData.name.trim()) {
+      Alert.alert('Error', 'Please enter your name to create the house');
+      return;
+    }
 
-                        // TODO: Call createHouse action
-                        Alert.alert('Success', 'New house created! You are now the administrator.');
-                    }
-                }
-            ]
-        );
-    };
+    Alert.alert(
+      'Create New House',
+      'Are you sure you want to create a new house and become the administrator?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Create',
+          onPress: async () => {
+            try {
+              const age = newMemberData.age ? parseInt(newMemberData.age) : undefined;
+              const newAdmin: FamilyMember = {
+                id: useProfileStore.getState().generateUniqueId(),
+                code: `${String(Math.floor(Math.random() * 9000) + 1000)}NEW`,
+                name: newMemberData.name.trim(),
+                role: 'admin',
+                email: newMemberData.email.trim() || undefined,
+                age,
+                avatar: newMemberData.avatar,
+                permissions: ['tasks:manage', 'penalties:manage', 'calendar:manage', 'family:manage', 'members:manage', 'settings:manage'],
+                isActive: true,
+                joinedAt: new Date(),
+                isOnline: true,
+              };
+
+              const houseName = `${newAdmin.name}'s Family House`;
+              await useProfileStore.getState().createHouse(houseName, newAdmin);
+              
+              Alert.alert(
+                'Success', 
+                `Welcome ${newAdmin.name}! Your house "${houseName}" has been created. You are now the administrator.`,
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => navigation.navigate('HomeManagement')
+                  }
+                ]
+              );
+            } catch (error) {
+              Alert.alert('Error', 'Failed to create house. Please try again.');
+            }
+          }
+        }
+      ]
+    );
+  };
 
     return (
         <KeyboardAvoidingView
@@ -318,7 +339,10 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
                                     • Family houses help you organize tasks, goals, and activities{'\n'}
                                     • Each member has different permissions based on their role{'\n'}
                                     • Parents can manage the house and invite new members{'\n'}
-                                    • Children can complete tasks and track their progress
+                                    • Children can complete tasks and track their progress{'\n'}
+                                    • Admin: Full control, invitation codes, member management{'\n'}
+                                    • Sub-Admin: Invite members, assign tasks, limited access{'\n'}
+                                    • Child: Complete tasks, view family activities
                                 </Text>
                             </View>
                         </View>
