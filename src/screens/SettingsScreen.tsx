@@ -3,15 +3,19 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } f
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
+import { useTranslation } from 'react-i18next';
+import i18n from '../locales/i18n';
 
 interface SettingsScreenProps {
   navigation: any;
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
+  const { t, i18n: i18nInstance } = useTranslation();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [deviceRingEnabled, setDeviceRingEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(i18nInstance.language);
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(!notificationsEnabled);
@@ -21,11 +25,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleDeviceRingToggle = () => {
-    setDeviceRingEnabled(!deviceRingEnabled);
+  const handleLanguageChange = (language: string) => {
+    i18nInstance.changeLanguage(language);
+    setCurrentLanguage(language);
     Alert.alert(
-      'Ring de Dispositivos',
-      `Ring de dispositivos ${deviceRingEnabled ? 'desactivado' : 'activado'}`
+      t('settings.language'),
+      `${t('settings.languageDescription')} - ${language === 'en' ? t('settings.english') : t('settings.spanish')}`
     );
   };
 
@@ -80,13 +85,59 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Configuración</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.placeholder} />
       </View>
 
+      {/* Language Selection */}
+      <Card style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
+        <Text style={styles.sectionSubtitle}>{t('settings.languageDescription')}</Text>
+        
+        <View style={styles.languageContainer}>
+          <TouchableOpacity
+            style={[
+              styles.languageOption,
+              currentLanguage === 'en' && styles.languageOptionSelected
+            ]}
+            onPress={() => handleLanguageChange('en')}
+          >
+            <Text style={styles.languageFlag}>🇺🇸</Text>
+            <Text style={[
+              styles.languageText,
+              currentLanguage === 'en' && styles.languageTextSelected
+            ]}>
+              {t('settings.english')}
+            </Text>
+            {currentLanguage === 'en' && (
+              <Ionicons name="checkmark-circle" size={20} color={theme.colors.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.languageOption,
+              currentLanguage === 'es' && styles.languageOptionSelected
+            ]}
+            onPress={() => handleLanguageChange('es')}
+          >
+            <Text style={styles.languageFlag}>🇪🇸</Text>
+            <Text style={[
+              styles.languageText,
+              currentLanguage === 'es' && styles.languageTextSelected
+            ]}>
+              {t('settings.spanish')}
+            </Text>
+            {currentLanguage === 'es' && (
+              <Ionicons name="checkmark-circle" size={20} color={theme.colors.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
+      </Card>
+
       {/* Notificaciones */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Notificaciones</Text>
+        <Text style={styles.sectionTitle}>{t('settings.notifications')}</Text>
         <SettingItem
           icon="notifications"
           title="Notificaciones Push"
@@ -277,6 +328,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+  },
+  languageContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#f8f9fa',
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  languageOptionSelected: {
+    backgroundColor: '#e0e7ff',
+    borderColor: theme.colors.primary,
+  },
+  languageFlag: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  languageText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: theme.colors.text,
+  },
+  languageTextSelected: {
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
   settingItem: {
     flexDirection: 'row',

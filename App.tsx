@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/SimpleAppNavigator';
+import './src/locales/i18n'; // Initialize i18n
 
 export default function App() {
   return (

@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -87,6 +88,7 @@ const ProfileStack = () => (
 
 const AppNavigator = () => {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
     <NavigationContainer>
@@ -136,37 +138,37 @@ const AppNavigator = () => {
         <Tab.Screen
           name="Dashboard"
           component={DashboardStack}
-          options={{ tabBarLabel: 'Dashboard' }}
+          options={{ tabBarLabel: t('navigation.dashboard') }}
         />
         <Tab.Screen
           name="Tasks"
           component={TasksStack}
-          options={{ tabBarLabel: 'Tareas' }}
+          options={{ tabBarLabel: t('navigation.tasks') }}
         />
         <Tab.Screen
           name="Calendar"
           component={CalendarStack}
-          options={{ tabBarLabel: 'Calendario' }}
+          options={{ tabBarLabel: t('navigation.calendar') }}
         />
         <Tab.Screen
           name="Goals"
           component={GoalsStack}
-          options={{ tabBarLabel: 'Metas' }}
+          options={{ tabBarLabel: t('navigation.goals') }}
         />
         <Tab.Screen
           name="Penalties"
           component={PenaltiesStack}
-          options={{ tabBarLabel: 'Penalidades' }}
+          options={{ tabBarLabel: t('navigation.penalties') }}
         />
         <Tab.Screen
           name="SafeRoom"
           component={SafeRoomStack}
-          options={{ tabBarLabel: 'SafeRoom' }}
+          options={{ tabBarLabel: t('navigation.safeRoom') }}
         />
         <Tab.Screen
           name="Profile"
           component={ProfileStack}
-          options={{ tabBarLabel: 'Perfil' }}
+          options={{ tabBarLabel: t('navigation.profile') }}
         />
       </Tab.Navigator>
     </NavigationContainer>

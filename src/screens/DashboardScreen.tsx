@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
@@ -16,6 +17,8 @@ interface DashboardScreenProps {
 }
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
+    const { t } = useTranslation();
+    
     // Use specific module stores
     const tasks = useTasksStore(state => state.tasks);
     const penalties = usePenaltiesStore(state => state.penalties);
@@ -152,7 +155,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Ionicons name="home" size={20} color="white" />
                         </View>
                         <View>
-                            <Text style={styles.headerTitle}>Family Dashboard</Text>
+                            <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
                             <Text style={styles.headerSubtitle}>Johnson Family</Text>
                         </View>
                     </View>
@@ -173,8 +176,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                 <View style={styles.firstSection}>
                     <View style={styles.familyMembersCard}>
                         <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>Family Members</Text>
-                            <Text style={styles.sectionSubtitle}>4 active</Text>
+                            <Text style={styles.sectionTitle}>{t('dashboard.familyMembers')}</Text>
+                            <Text style={styles.sectionSubtitle}>4 {t('dashboard.activeMembers')}</Text>
                         </View>
                         <View style={styles.membersContainer}>
                             {familyMembers.map((member) => (
@@ -309,7 +312,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         ))}
                     </View>
                     <TouchableOpacity style={styles.viewAllButton} onPress={() => navigation.navigate('Tasks')}>
-                        <Text style={styles.viewAllButtonText}>View All Tasks</Text>
+                        <Text style={styles.viewAllButtonText}>{t('dashboard.viewAll')} {t('navigation.tasks')}</Text>
                     </TouchableOpacity>
                 </View>
 
