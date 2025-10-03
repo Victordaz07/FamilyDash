@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from '../locales/i18n';
+// import { useTranslation } from '../locales/i18n'; // TEMPORARILY COMMENTED FOR DEBUGGING
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -27,6 +27,12 @@ import CalendarVotingScreen from '../modules/calendar/screens/VotingScreen';
 import VotingScreen from '../modules/calendar/voting/VotingScreen';
 import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
 import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
+
+// Import Quick Actions module screens - TEMPORARILY COMMENTED FOR DEBUGGING
+// import FamilyMembersScreen from '../modules/quickActions/screens/FamilyMembersScreen';
+// import AchievementsScreen from '../modules/quickActions/screens/AchievementsScreen';
+// import RecentActivityScreen from '../modules/quickActions/screens/RecentActivityScreen';
+// import StatisticsScreen from '../modules/quickActions/screens/StatisticsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -83,12 +89,17 @@ const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ProfileMain" component={ProfileScreen as any} />
     <Stack.Screen name="Settings" component={SettingsScreen as any} />
+    {/* Quick Actions screens temporarily commented for debugging */}
+    {/* <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen as any} />
+    <Stack.Screen name="Achievements" component={AchievementsScreen as any} />
+    <Stack.Screen name="RecentActivity" component={RecentActivityScreen as any} />
+    <Stack.Screen name="Statistics" component={StatisticsScreen as any} /> */}
   </Stack.Navigator>
 );
 
 const AppNavigator = () => {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  // const { t } = useTranslation(); // TEMPORARILY COMMENTED FOR DEBUGGING
 
   return (
     <NavigationContainer>
@@ -138,37 +149,37 @@ const AppNavigator = () => {
         <Tab.Screen
           name="Dashboard"
           component={DashboardStack}
-          options={{ tabBarLabel: t('navigation.dashboard') }}
+          options={{ tabBarLabel: 'Dashboard' }}
         />
         <Tab.Screen
           name="Tasks"
           component={TasksStack}
-          options={{ tabBarLabel: t('navigation.tasks') }}
+          options={{ tabBarLabel: 'Tareas' }}
         />
         <Tab.Screen
           name="Calendar"
           component={CalendarStack}
-          options={{ tabBarLabel: t('navigation.calendar') }}
+          options={{ tabBarLabel: 'Calendario' }}
         />
         <Tab.Screen
           name="Goals"
           component={GoalsStack}
-          options={{ tabBarLabel: t('navigation.goals') }}
+          options={{ tabBarLabel: 'Metas' }}
         />
         <Tab.Screen
           name="Penalties"
           component={PenaltiesStack}
-          options={{ tabBarLabel: t('navigation.penalties') }}
+          options={{ tabBarLabel: 'Penas' }}
         />
         <Tab.Screen
           name="SafeRoom"
           component={SafeRoomStack}
-          options={{ tabBarLabel: t('navigation.safeRoom') }}
+          options={{ tabBarLabel: 'Cuarto Seguro' }}
         />
         <Tab.Screen
           name="Profile"
           component={ProfileStack}
-          options={{ tabBarLabel: t('navigation.profile') }}
+          options={{ tabBarLabel: 'Perfil' }}
         />
       </Tab.Navigator>
     </NavigationContainer>

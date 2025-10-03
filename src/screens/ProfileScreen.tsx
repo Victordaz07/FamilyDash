@@ -3,15 +3,15 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button, Avatar } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
-import { useTranslation } from '../locales/i18n';
+// import { useTranslation } from '../locales/i18n'; // TEMPORARILY COMMENTED FOR DEBUGGING
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
-  const { t } = useTranslation();
-  
+  // const { t } = useTranslation(); // TEMPORARILY COMMENTED FOR DEBUGGING
+
   const [user] = useState({
     name: 'Usuario Principal',
     email: 'usuario@familydash.com',
@@ -23,7 +23,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   });
 
   const handleEditProfile = () => {
-    Alert.alert(t('profile.editProfile'), 'Funcionalidad de edición de perfil');
+    Alert.alert('Editar Perfil', 'Funcionalidad de edición de perfil');
   };
 
   const handleSettings = () => {
@@ -31,27 +31,27 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   const handleFamilyMembers = () => {
-    Alert.alert(t('profile.familyMembers'), 'Lista de miembros de la familia');
+    Alert.alert('Miembros de Familia', 'Funcionalidad próximamente - Pantalla de Miembros de Familia');
   };
 
   const handleAchievements = () => {
-    Alert.alert(t('profile.achievements'), 'Ver logros y medallas');
+    Alert.alert('Logros', 'Funcionalidad próximamente - Pantalla de Logros');
   };
 
   const handleRecentActivity = () => {
-    Alert.alert(t('profile.recentActivity'), 'Ver historial de actividades');
+    Alert.alert('Actividad Reciente', 'Funcionalidad próximamente - Pantalla de Actividad Reciente');
   };
 
   const handleStatistics = () => {
-    Alert.alert(t('profile.statistics'), 'Ver progreso y métricas');
+    Alert.alert('Estadísticas', 'Funcionalidad próximamente - Pantalla de Estadísticas');
   };
 
-  const ProfileItem = ({ 
-    icon, 
-    title, 
-    subtitle, 
-    onPress, 
-    badge 
+  const ProfileItem = ({
+    icon,
+    title,
+    subtitle,
+    onPress,
+    badge
   }: {
     icon: keyof typeof Ionicons.glyphMap;
     title: string;
@@ -59,8 +59,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     onPress?: () => void;
     badge?: string | number;
   }) => (
-    <TouchableOpacity 
-      style={styles.profileItem} 
+    <TouchableOpacity
+      style={styles.profileItem}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -88,14 +88,14 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Perfil</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingsButton}
           onPress={handleSettings}
         >
@@ -106,8 +106,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
       {/* User Info Card */}
       <Card style={styles.userCard}>
         <View style={styles.userInfo}>
-          <Avatar 
-            source={{ uri: user.avatar }} 
+          <Avatar
+            source={{ uri: user.avatar }}
             size={80}
             name={user.name}
           />
@@ -140,31 +140,31 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
       {/* Quick Actions */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('profile.quickActions')}</Text>
+        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
         <ProfileItem
           icon="people"
-          title={t('profile.familyMembers')}
-          subtitle={t('profile.manageFamilyMembers')}
+          title="Miembros de Familia"
+          subtitle="Gestionar familiares"
           onPress={handleFamilyMembers}
           badge="4"
         />
         <ProfileItem
           icon="trophy"
-          title={t('profile.achievements')}
-          subtitle={t('profile.viewMedalsAndAchievements')}
+          title="Logros"
+          subtitle="Ver medallas y logros"
           onPress={handleAchievements}
           badge="12"
         />
         <ProfileItem
           icon="calendar"
-          title={t('profile.recentActivity')}
-          subtitle={t('profile.viewActivityHistory')}
+          title="Actividad Reciente"
+          subtitle="Ver historial de actividades"
           onPress={handleRecentActivity}
         />
         <ProfileItem
           icon="stats-chart"
-          title={t('profile.statistics')}
-          subtitle={t('profile.viewProgressAndMetrics')}
+          title="Estadísticas"
+          subtitle="Ver progreso y métricas"
           onPress={handleStatistics}
         />
       </Card>
