@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileStore } from '../store/profileStore';
+import { CompleteProfileEditModal } from '../components/CompleteProfileEditModal';
 
 interface EditableProfileScreenProps {
     navigation: any;
@@ -22,12 +23,14 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
 
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
-    const [editedData, setEditedData] = useState({
-        name: '',
-        email: '',
-        age: '',
-        bio: '',
-    });
+  const [editedData, setEditedData] = useState({
+    name: '',
+    email: '',
+    age: '',
+    bio: '',
+  });
+
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
     const avatarOptions = ['👤', '👩', '👨', '👧', '👦', '🧑', '👵', '👴', '🦸', '🦹', '🎭', '🎨', '🎪', '🎯', '🏆'];
 
@@ -255,7 +258,22 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                 end={{ x: 1, y: 0 }}
                             >
                                 <Ionicons name="pencil" size={20} color="#ffffff" />
-                                <Text style={styles.editButtonText}>Edit Profile</Text>
+                                <Text style={styles.editButtonText}>Quick Edit</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.editButton, styles.completeEditButton]}
+                            onPress={() => setShowCompleteModal(true)}
+                        >
+                            <LinearGradient
+                                colors={['#10B981', '#059669']}
+                                style={styles.buttonGradient}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                            >
+                                <Ionicons name="create" size={20} color="#ffffff" />
+                                <Text style={styles.editButtonText}>Complete Profile</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -398,10 +416,17 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                             <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
-            </Modal>
-        </ScrollView>
-    );
+        </View>
+      </Modal>
+
+      {/* Complete Profile Edit Modal */}
+      <CompleteProfileEditModal
+        visible={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        navigation={navigation}
+      />
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -537,16 +562,20 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         marginBottom: 16,
     },
-    editButton: {
-        borderRadius: 12,
-        overflow: 'hidden',
-    },
-    editButtonText: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: '600',
-        marginLeft: 8,
-    },
+  editButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  completeEditButton: {
+    marginTop: 12,
+  },
+  editButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
     familySection: {
         marginHorizontal: 20,
         marginBottom: 24,

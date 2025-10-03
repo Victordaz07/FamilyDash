@@ -1,16 +1,28 @@
 export interface FamilyMember {
-    id: string;              // UUID único
-    code: string;            // Código de invitación/identificación
-    name: string;            // Nombre visible
-    role: 'admin' | 'sub-admin' | 'child';
-    age?: number;
-    email?: string;
-    avatar: string;          // Imagen de perfil o avatar emoji
-    permissions: string[];   // Ej: ["tasks:view", "penalties:assign"]
-    isActive: boolean;       // Usuario activo en la casa
-    joinedAt: Date;
-    leftAt?: Date;           // Si salió de la casa
-    isOnline?: boolean;      // Estado en tiempo real
+  id: string;              // UUID único
+  code: string;            // Código de invitación/identificación
+  name: string;            // Nombre completo (registro name)
+  nickname?: string;       // Apodo o como quieren que los llamen
+  role: 'admin' | 'sub-admin' | 'child';
+  age?: number;
+  email?: string;
+  phone?: string;          // Número de teléfono
+  avatar: string;          // Avatar emoji (por defecto)
+  profileImage?: string;   // URL de foto desde galería/cámara
+  permissions: string[];   // Ej: ["tasks:view", "penalties:assign"]
+  isActive: boolean;       // Usuario activo en la casa
+  joinedAt: Date;
+  leftAt?: Date;           // Si salió de la casa
+  isOnline?: boolean;      // Estado en tiempo real
+  bio?: string;           // Biografía o descripción personal
+  birthday?: Date;         // Fecha de nacimiento
+  preferences: {
+    showName: boolean;     // Si mostrar nombre completo en público
+    showNickname: boolean;// Si mostrar apodo en público
+    showAge: boolean;     // Si mostrar edad en público
+    showEmail: boolean;   // Si mostrar email en público
+    showPhone: boolean;   // Si mostrar teléfono en público
+  };
 }
 
 export interface FamilyHouse {

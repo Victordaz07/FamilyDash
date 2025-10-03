@@ -88,13 +88,24 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 </View>
 
                 <View style={styles.detailsSection}>
-                    <Text style={styles.memberName}>{member.name}</Text>
+                    <Text style={styles.memberName}>
+                        {member.preferences?.showNickname && member.nickname ? member.nickname : member.name}
+                    </Text>
+                    {member.nickname && member.preferences?.showNickname && (
+                        <Text style={styles.memberRealName}>{member.name}</Text>
+                    )}
                     <Text style={styles.memberCode}>Code: {member.code}</Text>
-                    {member.age && (
+                    {member.age && member.preferences?.showAge && (
                         <Text style={styles.memberAge}>{member.age} years old</Text>
                     )}
-                    {member.email && (
+                    {member.email && member.preferences?.showEmail && (
                         <Text style={styles.memberEmail}>{member.email}</Text>
+                    )}
+                    {member.phone && member.preferences?.showPhone && (
+                        <Text style={styles.memberPhone}>{member.phone}</Text>
+                    )}
+                    {member.bio && (
+                        <Text style={styles.memberBio} numberOfLines={2}>{member.bio}</Text>
                     )}
 
                     <View style={styles.permissionsSection}>
@@ -214,11 +225,28 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         marginBottom: 2,
     },
-    memberEmail: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 8,
-    },
+  memberRealName: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontStyle: 'italic',
+    marginBottom: 2,
+  },
+  memberEmail: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 2,
+  },
+  memberPhone: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 2,
+  },
+  memberBio: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 8,
+    fontStyle: 'italic',
+  },
     permissionsSection: {
         marginTop: 8,
     },

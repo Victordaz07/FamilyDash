@@ -47,63 +47,110 @@ interface ProfileState {
 
 // Mock data for initial state
 const mockFamilyHouse: FamilyHouse = {
-    houseId: 'house-ruiz-001',
-    houseName: 'Casa de los Ruiz',
-    adminId: 'admin-001',
-    subAdminId: 'sub-admin-001',
-    createdAt: new Date('2024-01-01'),
-    invitationCodes: [],
-    members: [
-        {
-            id: 'admin-001',
-            code: 'RUZ001',
-            name: 'María Ruiz',
-            role: 'admin',
-            age: 38,
-            email: 'maria@ruizfamily.com',
-            avatar: '👩',
-            permissions: ROLE_PERMISSIONS.admin.map(p => `${p.scope}:${p.action}`),
-            isActive: true,
-            joinedAt: new Date('2024-01-01'),
-            isOnline: true,
-        },
-        {
-            id: 'sub-admin-001',
-            code: 'RUZ002',
-            name: 'Carlos Ruiz',
-            role: 'sub-admin',
-            age: 40,
-            email: 'carlos@ruizfamily.com',
-            avatar: '👨',
-            permissions: ROLE_PERMISSIONS['sub-admin'].map(p => `${p.scope}:${p.action}`),
-            isActive: true,
-            joinedAt: new Date('2024-01-01'),
-            isOnline: true,
-        },
-        {
-            id: 'child-001',
-            code: 'RUZ003',
-            name: 'Ana Ruiz',
-            role: 'child',
-            age: 10,
-            avatar: '👧',
-            permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
-            isActive: true,
-            joinedAt: new Date('2024-01-01'),
-            isOnline: true,
-        },
-        {
-            id: 'child-002',
-            code: 'RUZ004',
-            name: 'Diego Ruiz',
-            role: 'child',
-            age: 8,
-            avatar: '👦',
-            permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
-            isActive: true,
-            joinedAt: new Date('2024-01-02'),
-            isOnline: false,
-        },
+  houseId: 'house-ruiz-001',
+  houseName: 'Casa de los Ruiz',
+  adminId: 'admin-001',
+  subAdminId: 'sub-admin-001',
+  createdAt: new Date('2024-01-01'),
+  invitationCodes: [],
+  members: [
+    {
+      id: 'admin-001',
+      code: 'RUZ001',
+      name: 'María Ruiz González',
+      nickname: 'Mari',
+      role: 'admin',
+      age: 38,
+      email: 'maria@ruizfamily.com',
+      phone: '+52 555 123 4567',
+      avatar: '👩',
+      profileImage: undefined,
+      bio: 'Mamá orgullosa y administradora de la casa',
+      birthday: new Date('1986-03-15'),
+      permissions: ROLE_PERMISSIONS.admin.map(p => `${p.scope}:${p.action}`),
+      isActive: true,
+      joinedAt: new Date('2024-01-01'),
+      isOnline: true,
+      preferences: {
+        showName: true,
+        showNickname: true,
+        showAge: true,
+        showEmail: false,
+        showPhone: false,
+      },
+    },
+    {
+      id: 'sub-admin-001',
+      code: 'RUZ002',
+      name: 'Carlos Ruiz Hernández',
+      nickname: 'Carlitos',
+      role: 'sub-admin',
+      age: 40,
+      email: 'carlos@ruizfamily.com',
+      phone: '+52 555 123 4568',
+      avatar: '👨',
+      profileImage: undefined,
+      bio: 'Papá trabajador y compañero perfecto',
+      birthday: new Date('1984-07-22'),
+      permissions: ROLE_PERMISSIONS['sub-admin'].map(p => `${p.scope}:${p.action}`),
+      isActive: true,
+      joinedAt: new Date('2024-01-01'),
+      isOnline: true,
+      preferences: {
+        showName: true,
+        showNickname: true,
+        showAge: false,
+        showEmail: true,
+        showPhone: false,
+      },
+    },
+    {
+      id: 'child-001',
+      code: 'RUZ003',
+      name: 'Ana Sofia Ruiz Hernández',
+      nickname: 'Anita',
+      role: 'child',
+      age: 10,
+      email: 'ana@ruizfamily.com',
+      avatar: '👧',
+      profileImage: undefined,
+      bio: 'Estudiante brillante y hermana mayor',
+      birthday: new Date('2014-05-10'),
+      permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
+      isActive: true,
+      joinedAt: new Date('2024-01-01'),
+      isOnline: true,
+      preferences: {
+        showName: false,
+        showNickname: true,
+        showAge: true,
+        showEmail: false,
+        showPhone: false,
+      },
+    },
+    {
+      id: 'child-002',
+      code: 'RUZ004',
+      name: 'Diego Alejandro Ruiz Hernández',
+      nickname: 'Didi',
+      role: 'child',
+      age: 8,
+      avatar: '👦',
+      profileImage: undefined,
+      bio: 'Futuro astronauta y hermanito travieso',
+      birthday: new Date('2016-12-03'),
+      permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
+      isActive: true,
+      joinedAt: new Date('2024-01-02'),
+      isOnline: false,
+      preferences: {
+        showName: false,
+        showNickname: true,
+        showAge: true,
+        showEmail: false,
+        showPhone: false,
+      },
+    },
     ],
 };
 
@@ -287,21 +334,59 @@ export const useProfileStore = create<ProfileState>()(
                 return familyHouse.invitationCodes.filter(inv => !inv.isUsed);
             },
 
-            // Profile management
-            updateProfile: async (profileData) => {
-                const currentUser = get().currentUser;
-                if (!currentUser) return;
+      // Profile management
+      updateProfile: async (profileData) => {
+        const currentUser = get().currentUser;
+        if (!currentUser) return;
+        
+        await get().updateMember(currentUser.id, profileData);
+        
+        set({
+          userProfile: profileData as ProfileData,
+        });
+      },
+      
+      updateAvatar: async (avatar) => {
+        await get().updateProfile({ avatar });
+      },
 
-                await get().updateMember(currentUser.id, profileData);
+      // New enhanced profile functions
+      updateNickname: async (nickname: string) => {
+        await get().updateProfile({ nickname });
+      },
 
-                set({
-                    userProfile: profileData as ProfileData,
-                });
-            },
+      updateProfileImage: async (profileImageUrl: string) => {
+        await get().updateProfile({ profileImage: profileImageUrl });
+      },
 
-            updateAvatar: async (avatar) => {
-                await get().updateProfile({ avatar });
-            },
+      updateBio: async (bio: string) => {
+        await get().updateProfile({ bio });
+      },
+
+      updatePhone: async (phone: string) => {
+        await get().updateProfile({ phone });
+      },
+
+      updateBirthday: async (birthday: Date) => {
+        await get().updateProfile({ birthday });
+      },
+
+      updatePreferences: async (preferences: Partial<FamilyMember['preferences']>) => {
+        const currentUser = get().currentUser;
+        if (!currentUser) return;
+
+        const updatedPreferences = {
+          ...currentUser.preferences,
+          ...preferences,
+        };
+
+        await get().updateProfile({ preferences: updatedPreferences });
+      },
+
+      // Complete profile update
+      updateCompleteProfile: async (profileUpdates: Partial<FamilyMember>) => {
+        await get().updateProfile(profileUpdates);
+      },
 
             // Permission checks
             hasPermission: (scope: string, action: string) => {
