@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Goal, GoalStats, FamilyMember, GoalTemplate } from '../types/goalTypes';
 import { mockGoals, mockFamilyMembers, goalTemplates, getGoalStats } from '../mock/goalsData';
+import { scheduleGoalNotification } from '../../../services/notificationService';
 
 interface GoalsStore {
     goals: Goal[];
@@ -44,6 +45,14 @@ export const useGoalsStore = create<GoalsStore>((set, get) => ({
             history: []
         };
         set((state) => ({ goals: [...state.goals, newGoal] }));
+
+        // Programar notificación para la nueva meta
+        scheduleGoalNotification({
+            id: newGoal.id,
+            title: newGoal.title,
+            assignedTo: newGoal.assignedTo,
+            category: newGoal.category,
+        });
     },
 
     updateGoal: (id, updates) => {

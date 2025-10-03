@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
+import { scheduleTaskNotification } from '../../../services/notificationService';
 
 interface TasksState {
   tasks: Task[];
@@ -69,6 +70,14 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       updatedAt: new Date().toISOString(),
     };
     set((state) => ({ tasks: [...state.tasks, newTask] }));
+
+    // Programar notificación para la nueva tarea
+    scheduleTaskNotification({
+      id: newTask.id,
+      title: newTask.title,
+      assignedTo: newTask.assignedTo,
+      dueDate: newTask.dueDate,
+    });
   },
 
   updateTask: (id, updates) => {

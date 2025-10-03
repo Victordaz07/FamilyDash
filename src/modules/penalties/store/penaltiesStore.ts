@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Penalty, FamilyMember, PenaltyStats } from '../types/penaltyTypes';
 import { mockPenalties, mockFamilyMembers, penaltyTypeConfigs } from '../mock/penaltiesData';
+import { schedulePenaltyNotification } from '../../../services/notificationService';
 
 interface PenaltiesStore {
     penalties: Penalty[];
@@ -52,6 +53,15 @@ export const usePenaltiesStore = create<PenaltiesStore>((set, get) => ({
             isActive: true,
         };
         set((state) => ({ penalties: [...state.penalties, newPenalty] }));
+
+        // Programar notificación para la nueva pena
+        schedulePenaltyNotification({
+            id: newPenalty.id,
+            title: `${newPenalty.penaltyType === 'yellow' ? 'Tarjeta Amarilla' : 'Tarjeta Roja'}: ${newPenalty.reason}`,
+            assignedTo: newPenalty.memberName,
+            duration: `${newPenalty.duration} días`,
+            reason: newPenalty.reason,
+        });
     },
 
     endPenalty: (id, reflection) => {
