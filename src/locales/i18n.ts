@@ -17,12 +17,16 @@ class I18nManager {
     en,
     es,
   };
+  private initialized: boolean = false;
 
   constructor() {
-    this.initializeLanguage();
+    // Initialize synchronously with default language
+    this.currentLanguage = 'en';
   }
 
-  private async initializeLanguage() {
+  public async initialize(): Promise<void> {
+    if (this.initialized) return;
+    
     try {
       // Try to get saved language from AsyncStorage
       const savedLanguage = await AsyncStorage.getItem('app_language');
@@ -30,13 +34,15 @@ class I18nManager {
         this.currentLanguage = savedLanguage as Language;
       } else {
         // Detect system language
-        const locale = Localization.locale;
+        const locale = Localization.locale || 'en';
         this.currentLanguage = locale.startsWith('es') ? 'es' : 'en';
         await this.saveLanguage(this.currentLanguage);
       }
+      this.initialized = true;
     } catch (error) {
       console.log('Error initializing language:', error);
       this.currentLanguage = 'en';
+      this.initialized = true;
     }
   }
 
@@ -92,6 +98,16 @@ export const i18n = new I18nManager();
 // Hook for React components
 export const useTranslation = () => {
   const [language, setLanguage] = React.useState<Language>(i18n.getCurrentLanguage());
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
+  React.useEffect(() => {
+    const init = async () => {
+      await i18n.initialize();
+      setLanguage(i18n.getCurrentLanguage());
+      setIsInitialized(true);
+    };
+    init();
+  }, []);
 
   const changeLanguage = async (newLanguage: Language) => {
     await i18n.changeLanguage(newLanguage);
@@ -104,6 +120,7 @@ export const useTranslation = () => {
     t,
     language,
     changeLanguage,
+    isInitialized,
     i18n: {
       changeLanguage,
       language: i18n.getCurrentLanguage(),

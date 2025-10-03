@@ -153,7 +153,7 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
                     <StatCard
                         title="Total Goals"
                         value={stats.totalGoals}
-                        icon="target"
+                        icon="trophy"
                         color="#6366F1"
                     />
                     <StatCard
