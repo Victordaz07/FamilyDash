@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// Simple date picker implementation for Expo Go compatibility
 import { useProfileStore } from '../store/profileStore';
 import { ImageService, ImagePickerResult } from '../services/imageService';
 import { FamilyMember } from '../types';
@@ -30,14 +30,14 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
   navigation,
 }) => {
   const { currentUser, updateCompleteProfile } = useProfileStore();
-  
+
   const [profileData, setProfileData] = useState({
     name: '',
     nickname: '',
     email: '',
     phone: '',
     bio: '',
-    birthday: new Date(),
+    age: '',
   });
 
   const [preferences, setPreferences] = useState({
@@ -48,7 +48,6 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
     showPhone: false,
   });
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
         email: currentUser.email || '',
         phone: currentUser.phone || '',
         bio: currentUser.bio || '',
-        birthday: currentUser.birthday || new Date(2000, 0, 1),
+        age: currentUser.age?.toString() || '',
       });
 
       setPreferences({
@@ -81,10 +80,10 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
         email: profileData.email.trim() || undefined,
         phone: profileData.phone.trim() || undefined,
         bio: profileData.bio.trim() || undefined,
-        birthday: profileData.birthday,
+        age: profileData.age ? parseInt(profileData.age) : undefined,
         preferences,
       });
-      
+
       Alert.alert('Success', 'Profile updated successfully!');
       onClose();
     } catch (error) {
@@ -221,29 +220,29 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
             </View>
 
             {/* Quick Avatar Selection */}
-            <View style={styles.avatarQuickSection}>
-              <Text style={styles.quickAvatarTitle}>Quick Avatars:</Text>
-              <View style={styles.avatarGrid}>
-                {['👤', '👩', '👨', '👧', '👦', '🧑', '👵', '👴'].map((avatar, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.quickAvatar,
-                      currentUser?.avatar === avatar && styles.selectedQuickAvatar
-                    ]}
-                    onPress={() => handleAvatarSelect(avatar)}
-                  >
-                    <Text style={styles.quickAvatarText}>{avatar}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+          <View style={styles.avatarQuickSection}>
+            <Text style={styles.quickAvatarTitle}>Quick Avatars:</Text>
+            <View style={styles.avatarGrid}>
+              {['👤', '👩', '👨', '👧', '👦', '🧑', '👵', '👴'].map((avatar, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.quickAvatar,
+                    currentUser?.avatar === avatar && styles.selectedQuickAvatar
+                  ]}
+                  onPress={() => handleAvatarSelect(avatar)}
+                >
+                  <Text style={styles.quickAvatarText}>{avatar}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
+        </View>
 
           {/* Basic Information */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Basic Information</Text>
-            
+
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Full Name *</Text>
               <TextInput
@@ -292,16 +291,17 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Birthday</Text>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  {profileData.birthday.toLocaleDateString()}
-                </Text>
-                <Ionicons name="calendar" size={16} color="#6B7280" />
-              </TouchableOpacity>
+              <Text style={styles.inputLabel}>Age</Text>
+              <View style={styles.ageContainer}>
+                <TextInput
+                  style={styles.ageInput}
+                  value={profileData.age || ''}
+                  onChangeText={(text) => setProfileData(prev => ({ ...prev, age: text }))}
+                  placeholder="Enter your age"
+                  keyboardType="numeric"
+                />
+                <Text style={styles.ageText}>years old</Text>
+              </View>
             </View>
 
             <View style={styles.inputGroup}>
@@ -375,21 +375,6 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
           </View>
         </ScrollView>
 
-        {/* Date Picker */}
-        {showDatePicker && (
-          <DateTimePicker
-            value={profileData.birthday}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                setProfileData(prev => ({ ...prev, birthday: selectedDate }));
-              }
-            }}
-            maximumDate={new Date()}
-          />
-        )}
       </View>
     </Modal>
   );
@@ -551,6 +536,27 @@ const styles = StyleSheet.create({
   },
   bioInput: {
     height: 80,
+  },
+  ageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  ageInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1F2937',
+    textAlign: 'center',
+  },
+  ageText: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginLeft: 8,
   },
   dateButton: {
     flexDirection: 'row',
