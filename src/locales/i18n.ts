@@ -20,8 +20,8 @@ class I18nManager {
   private initialized: boolean = false;
 
   constructor() {
-    // Initialize synchronously with default language
-    this.currentLanguage = 'en';
+    // Initialize synchronously with Spanish as default
+    this.currentLanguage = 'es';
   }
 
   public async initialize(): Promise<void> {
@@ -33,15 +33,47 @@ class I18nManager {
       if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
         this.currentLanguage = savedLanguage as Language;
       } else {
-        // Detect system language
-        const locale = Localization.locale || 'en';
-        this.currentLanguage = locale.startsWith('es') ? 'es' : 'en';
+        // Detect system language - prioritize Spanish
+        const locale = Localization.locale || 'es';
+        console.log('Detected locale:', locale);
+        
+        // More comprehensive Spanish detection
+        if (locale.startsWith('es') || 
+            locale.includes('Spanish') || 
+            locale.includes('Español') ||
+            locale === 'es' ||
+            locale === 'es-ES' ||
+            locale === 'es-MX' ||
+            locale === 'es-AR' ||
+            locale === 'es-CO' ||
+            locale === 'es-PE' ||
+            locale === 'es-VE' ||
+            locale === 'es-CL' ||
+            locale === 'es-UY' ||
+            locale === 'es-PY' ||
+            locale === 'es-BO' ||
+            locale === 'es-EC' ||
+            locale === 'es-GT' ||
+            locale === 'es-CU' ||
+            locale === 'es-HN' ||
+            locale === 'es-NI' ||
+            locale === 'es-SV' ||
+            locale === 'es-CR' ||
+            locale === 'es-PA' ||
+            locale === 'es-DO' ||
+            locale === 'es-PR') {
+          this.currentLanguage = 'es';
+        } else {
+          this.currentLanguage = 'en';
+        }
+        
         await this.saveLanguage(this.currentLanguage);
       }
       this.initialized = true;
+      console.log('Language initialized to:', this.currentLanguage);
     } catch (error) {
       console.log('Error initializing language:', error);
-      this.currentLanguage = 'en';
+      this.currentLanguage = 'es'; // Default to Spanish
       this.initialized = true;
     }
   }
@@ -54,9 +86,16 @@ class I18nManager {
     }
   }
 
-  public async changeLanguage(language: Language) {
-    this.currentLanguage = language;
-    await this.saveLanguage(language);
+  public async forceSpanish(): Promise<void> {
+    this.currentLanguage = 'es';
+    await this.saveLanguage('es');
+    console.log('Language forced to Spanish');
+  }
+
+  public async forceEnglish(): Promise<void> {
+    this.currentLanguage = 'en';
+    await this.saveLanguage('en');
+    console.log('Language forced to English');
   }
 
   public getCurrentLanguage(): Language {

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useTranslation, Language } from '../locales/i18n';
+import i18n from '../locales/i18n';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -37,6 +38,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       t('settings.language'),
       `${t('settings.languageDescription')} - ${newLanguage === 'en' ? t('settings.english') : t('settings.spanish')}`
     );
+  };
+
+  const handleForceSpanish = async () => {
+    await i18n.forceSpanish();
+    Alert.alert('Idioma Forzado', 'Se ha forzado el idioma a Español');
   };
 
   const handleDarkModeToggle = () => {
@@ -138,6 +144,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             )}
           </TouchableOpacity>
         </View>
+        
+        {/* Temporary Force Spanish Button */}
+        <TouchableOpacity
+          style={styles.forceButton}
+          onPress={handleForceSpanish}
+        >
+          <Text style={styles.forceButtonText}>🔧 Forzar Español (Debug)</Text>
+        </TouchableOpacity>
       </Card>
 
       {/* Notificaciones */}
@@ -372,6 +386,22 @@ const styles = StyleSheet.create({
   languageTextSelected: {
     color: theme.colors.primary,
     fontWeight: '600',
+  },
+  forceButton: {
+    backgroundColor: '#fef3c7',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+  },
+  forceButtonText: {
+    fontSize: 12,
+    color: '#92400e',
+    textAlign: 'center',
+    fontWeight: '500',
   },
   settingItem: {
     flexDirection: 'row',
