@@ -23,7 +23,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   });
 
   const handleEditProfile = () => {
-    Alert.alert('Edit Profile', 'Profile editing functionality');
+    navigation.navigate('EditableProfile');
   };
 
   const handleSettings = () => {
@@ -31,7 +31,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   const handleFamilyMembers = () => {
-    Alert.alert('Family Members', 'Coming soon - Family Members screen');
+    navigation.navigate('HomeManagement');
   };
 
   const handleAchievements = () => {

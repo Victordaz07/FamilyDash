@@ -28,6 +28,9 @@ import ActivityDetailScreen from '../modules/calendar/screens/ActivityDetailScre
 import CalendarVotingScreen from '../modules/calendar/screens/VotingScreen';
 import VotingScreen from '../modules/calendar/voting/VotingScreen';
 import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
+
+// Import Profile module screens
+import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '../modules/profile/screens';
 import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
 
 // Import Quick Actions module screens - TEMPORARILY COMMENTED FOR DEBUGGING
@@ -93,6 +96,9 @@ const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ProfileMain" component={ProfileScreen as any} />
     <Stack.Screen name="Settings" component={SettingsScreen as any} />
+    <Stack.Screen name="HomeManagement" component={HomeManagementScreen as any} />
+    <Stack.Screen name="JoinHouse" component={JoinHouseScreen as any} />
+    <Stack.Screen name="EditableProfile" component={EditableProfileScreen as any} />
     {/* Quick Actions screens temporarily commented for debugging */}
     {/* <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen as any} />
     <Stack.Screen name="Achievements" component={AchievementsScreen as any} />
