@@ -20,60 +20,60 @@ class I18nManager {
   private initialized: boolean = false;
 
   constructor() {
-    // Initialize synchronously with Spanish as default
-    this.currentLanguage = 'es';
+    // Initialize synchronously with English as default
+    this.currentLanguage = 'en';
   }
 
   public async initialize(): Promise<void> {
     if (this.initialized) return;
-    
+
     try {
       // Try to get saved language from AsyncStorage
       const savedLanguage = await AsyncStorage.getItem('app_language');
       if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
         this.currentLanguage = savedLanguage as Language;
       } else {
-        // Detect system language - prioritize Spanish
-        const locale = Localization.locale || 'es';
+        // Detect system language - prioritize English
+        const locale = Localization.locale || 'en';
         console.log('Detected locale:', locale);
-        
+
         // More comprehensive Spanish detection
-        if (locale.startsWith('es') || 
-            locale.includes('Spanish') || 
-            locale.includes('Español') ||
-            locale === 'es' ||
-            locale === 'es-ES' ||
-            locale === 'es-MX' ||
-            locale === 'es-AR' ||
-            locale === 'es-CO' ||
-            locale === 'es-PE' ||
-            locale === 'es-VE' ||
-            locale === 'es-CL' ||
-            locale === 'es-UY' ||
-            locale === 'es-PY' ||
-            locale === 'es-BO' ||
-            locale === 'es-EC' ||
-            locale === 'es-GT' ||
-            locale === 'es-CU' ||
-            locale === 'es-HN' ||
-            locale === 'es-NI' ||
-            locale === 'es-SV' ||
-            locale === 'es-CR' ||
-            locale === 'es-PA' ||
-            locale === 'es-DO' ||
-            locale === 'es-PR') {
+        if (locale.startsWith('es') ||
+          locale.includes('Spanish') ||
+          locale.includes('Español') ||
+          locale === 'es' ||
+          locale === 'es-ES' ||
+          locale === 'es-MX' ||
+          locale === 'es-AR' ||
+          locale === 'es-CO' ||
+          locale === 'es-PE' ||
+          locale === 'es-VE' ||
+          locale === 'es-CL' ||
+          locale === 'es-UY' ||
+          locale === 'es-PY' ||
+          locale === 'es-BO' ||
+          locale === 'es-EC' ||
+          locale === 'es-GT' ||
+          locale === 'es-CU' ||
+          locale === 'es-HN' ||
+          locale === 'es-NI' ||
+          locale === 'es-SV' ||
+          locale === 'es-CR' ||
+          locale === 'es-PA' ||
+          locale === 'es-DO' ||
+          locale === 'es-PR') {
           this.currentLanguage = 'es';
         } else {
           this.currentLanguage = 'en';
         }
-        
+
         await this.saveLanguage(this.currentLanguage);
       }
       this.initialized = true;
       console.log('Language initialized to:', this.currentLanguage);
     } catch (error) {
       console.log('Error initializing language:', error);
-      this.currentLanguage = 'es'; // Default to Spanish
+      this.currentLanguage = 'en'; // Default to English
       this.initialized = true;
     }
   }
@@ -96,6 +96,15 @@ class I18nManager {
     this.currentLanguage = 'en';
     await this.saveLanguage('en');
     console.log('Language forced to English');
+  }
+
+  public async clearLanguagePreference(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem('app_language');
+      console.log('Language preference cleared');
+    } catch (error) {
+      console.log('Error clearing language preference:', error);
+    }
   }
 
   public getCurrentLanguage(): Language {
@@ -136,24 +145,44 @@ export const i18n = new I18nManager();
 
 // Hook for React components
 export const useTranslation = () => {
-  const [language, setLanguage] = React.useState<Language>(i18n.getCurrentLanguage());
+  const [language, setLanguage] = React.useState<Language>('en');
   const [isInitialized, setIsInitialized] = React.useState(false);
 
   React.useEffect(() => {
     const init = async () => {
-      await i18n.initialize();
-      setLanguage(i18n.getCurrentLanguage());
-      setIsInitialized(true);
+      try {
+        await i18n.initialize();
+        const currentLang = i18n.getCurrentLanguage();
+        setLanguage(currentLang);
+        setIsInitialized(true);
+        console.log('useTranslation initialized with language:', currentLang);
+      } catch (error) {
+        console.log('Error in useTranslation:', error);
+        setLanguage('en');
+        setIsInitialized(true);
+      }
     };
     init();
   }, []);
 
   const changeLanguage = async (newLanguage: Language) => {
-    await i18n.changeLanguage(newLanguage);
-    setLanguage(newLanguage);
+    try {
+      await i18n.changeLanguage(newLanguage);
+      setLanguage(newLanguage);
+      console.log('Language changed to:', newLanguage);
+    } catch (error) {
+      console.log('Error changing language:', error);
+    }
   };
 
-  const t = (key: string) => i18n.t(key);
+  const t = (key: string) => {
+    try {
+      return i18n.t(key);
+    } catch (error) {
+      console.log('Error translating key:', key, error);
+      return key;
+    }
+  };
 
   return {
     t,

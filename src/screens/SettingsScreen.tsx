@@ -53,12 +53,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     );
   };
 
-  const SettingItem = ({ 
-    icon, 
-    title, 
-    subtitle, 
-    onPress, 
-    rightComponent 
+  const SettingItem = ({
+    icon,
+    title,
+    subtitle,
+    onPress,
+    rightComponent
   }: {
     icon: keyof typeof Ionicons.glyphMap;
     title: string;
@@ -66,8 +66,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     onPress?: () => void;
     rightComponent?: React.ReactNode;
   }) => (
-    <TouchableOpacity 
-      style={styles.settingItem} 
+    <TouchableOpacity
+      style={styles.settingItem}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -90,7 +90,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -104,7 +104,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       <Card style={styles.section}>
         <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
         <Text style={styles.sectionSubtitle}>{t('settings.languageDescription')}</Text>
-        
+
         <View style={styles.languageContainer}>
           <TouchableOpacity
             style={[
@@ -144,13 +144,33 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             )}
           </TouchableOpacity>
         </View>
-        
-        {/* Temporary Force Spanish Button */}
+
+        {/* Temporary Debug Buttons */}
         <TouchableOpacity
           style={styles.forceButton}
           onPress={handleForceSpanish}
         >
           <Text style={styles.forceButtonText}>🔧 Forzar Español (Debug)</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.forceButton}
+          onPress={async () => {
+            await i18n.forceEnglish();
+            Alert.alert('Debug', 'Idioma forzado a Inglés');
+          }}
+        >
+          <Text style={styles.forceButtonText}>🔧 Forzar Inglés (Debug)</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.forceButton}
+          onPress={async () => {
+            await i18n.clearLanguagePreference();
+            Alert.alert('Debug', 'Preferencia de idioma limpiada');
+          }}
+        >
+          <Text style={styles.forceButtonText}>🔧 Limpiar Preferencia (Debug)</Text>
         </TouchableOpacity>
       </Card>
 

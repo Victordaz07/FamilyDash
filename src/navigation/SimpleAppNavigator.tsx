@@ -99,7 +99,67 @@ const ProfileStack = () => (
 
 const AppNavigator = () => {
   const insets = useSafeAreaInsets();
-  // const { t } = useTranslation(); // TEMPORARILY COMMENTED FOR DEBUGGING
+
+  // Fallback translations in case i18n fails
+  const fallbackTranslations = {
+    en: {
+      dashboard: 'Dashboard',
+      tasks: 'Tasks',
+      calendar: 'Calendar',
+      goals: 'Goals',
+      penalties: 'Penalties',
+      safeRoom: 'Safe Room',
+      profile: 'Profile'
+    },
+    es: {
+      dashboard: 'Tablero',
+      tasks: 'Tareas',
+      calendar: 'Calendario',
+      goals: 'Metas',
+      penalties: 'Penas',
+      safeRoom: 'Cuarto Seguro',
+      profile: 'Perfil'
+    }
+  };
+
+  // Try to use i18n, fallback to English if it fails
+  let t, language, isInitialized;
+  try {
+    const translationHook = useTranslation();
+    t = translationHook.t;
+    language = translationHook.language;
+    isInitialized = translationHook.isInitialized;
+  } catch (error) {
+    console.log('Error with useTranslation, using fallback:', error);
+    t = (key: string) => fallbackTranslations.en[key] || key;
+    language = 'en';
+    isInitialized = true;
+  }
+
+  // Get tab labels based on current language
+  const getTabLabel = (tabName: string) => {
+    const labels = {
+      Dashboard: language === 'es' ? 'Tablero' : 'Dashboard',
+      Tasks: language === 'es' ? 'Tareas' : 'Tasks',
+      Calendar: language === 'es' ? 'Calendario' : 'Calendar',
+      Goals: language === 'es' ? 'Metas' : 'Goals',
+      Penalties: language === 'es' ? 'Penas' : 'Penalties',
+      SafeRoom: language === 'es' ? 'Cuarto Seguro' : 'Safe Room',
+      Profile: language === 'es' ? 'Perfil' : 'Profile'
+    };
+    return labels[tabName] || tabName;
+  };
+
+  // Debug: Log current language
+  console.log('AppNavigator - Current language:', language);
+  console.log('AppNavigator - Is initialized:', isInitialized);
+  console.log('AppNavigator - Dashboard label:', getTabLabel('Dashboard'));
+  console.log('AppNavigator - Tasks label:', getTabLabel('Tasks'));
+
+  // Show loading while i18n initializes
+  if (!isInitialized) {
+    return null; // or a loading component
+  }
 
   return (
     <NavigationContainer>
@@ -149,37 +209,37 @@ const AppNavigator = () => {
         <Tab.Screen
           name="Dashboard"
           component={DashboardStack}
-          options={{ tabBarLabel: 'Dashboard' }}
+          options={{ tabBarLabel: getTabLabel('Dashboard') }}
         />
         <Tab.Screen
           name="Tasks"
           component={TasksStack}
-          options={{ tabBarLabel: 'Tareas' }}
+          options={{ tabBarLabel: getTabLabel('Tasks') }}
         />
         <Tab.Screen
           name="Calendar"
           component={CalendarStack}
-          options={{ tabBarLabel: 'Calendario' }}
+          options={{ tabBarLabel: getTabLabel('Calendar') }}
         />
         <Tab.Screen
           name="Goals"
           component={GoalsStack}
-          options={{ tabBarLabel: 'Metas' }}
+          options={{ tabBarLabel: getTabLabel('Goals') }}
         />
         <Tab.Screen
           name="Penalties"
           component={PenaltiesStack}
-          options={{ tabBarLabel: 'Penas' }}
+          options={{ tabBarLabel: getTabLabel('Penalties') }}
         />
         <Tab.Screen
           name="SafeRoom"
           component={SafeRoomStack}
-          options={{ tabBarLabel: 'Cuarto Seguro' }}
+          options={{ tabBarLabel: getTabLabel('SafeRoom') }}
         />
         <Tab.Screen
           name="Profile"
           component={ProfileStack}
-          options={{ tabBarLabel: 'Perfil' }}
+          options={{ tabBarLabel: getTabLabel('Profile') }}
         />
       </Tab.Navigator>
     </NavigationContainer>

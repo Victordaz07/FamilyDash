@@ -14,6 +14,30 @@ interface PenaltiesMainProps {
 
 const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+
+  // Force English for now until i18n is fully working
+  const language = 'en'; // Force English
+
+  console.log('PenaltiesMain - Using language:', language);
+
+  // Direct English translations
+  const translations = {
+    title: 'Penalties System',
+    subtitle: 'Yellow and Red Cards',
+    activePenalties: 'Active',
+    completedPenalties: 'Completed',
+    yellowCards: 'Yellow',
+    redCards: 'Red',
+    penaltyActive: 'In progress',
+    penaltyCompleted: 'Finished',
+    yellowCard: 'Minor',
+    redCard: 'Major',
+    noPenalties: 'Great Job!',
+    noPenaltiesDescription: 'No active penalties at the moment.\nEveryone is fulfilling their responsibilities.',
+    addPenalty: 'Create New Penalty',
+    activePenaltiesTitle: 'Active Penalties'
+  };
+
   const {
     penalties,
     isInitialized,
@@ -101,15 +125,15 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Beautiful Header */}
+      {/* Beautiful Header (FIXED) */}
       <LinearGradient
         colors={['#667eea', '#764ba2']}
         style={[styles.header, { paddingTop: insets.top + 20 }]}
       >
         <View style={styles.headerContent}>
           <View style={styles.headerText}>
-            <Text style={styles.headerTitle}>Sistema de Penalidades</Text>
-            <Text style={styles.headerSubtitle}>Tarjetas Amarillas y Rojas</Text>
+            <Text style={styles.headerTitle}>{translations.title}</Text>
+            <Text style={styles.headerSubtitle}>{translations.subtitle}</Text>
           </View>
           <TouchableOpacity style={styles.historyButton} onPress={handleViewHistory}>
             <Ionicons name="time-outline" size={24} color="white" />
@@ -117,47 +141,48 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
         </View>
       </LinearGradient>
 
-      {/* Beautiful Stats */}
-      <View style={styles.statsContainer}>
-        <StatCard
-          title="Activas"
-          value={stats.activePenalties}
-          icon="play-circle"
-          color="#3B82F6"
-          subtitle="En curso"
-        />
-        <StatCard
-          title="Completadas"
-          value={stats.completedPenalties}
-          icon="checkmark-circle"
-          color="#10B981"
-          subtitle="Finalizadas"
-        />
-        <StatCard
-          title="Amarillas"
-          value={stats.yellowCards}
-          icon="warning"
-          color="#F59E0B"
-          subtitle="Menores"
-        />
-        <StatCard
-          title="Rojas"
-          value={stats.redCards}
-          icon="close-circle"
-          color="#EF4444"
-          subtitle="Mayores"
-        />
-      </View>
-
-      {/* Content with Pull to Refresh */}
-      <ScrollView 
-        style={styles.content} 
+      {/* Scrollable content starts here */}
+      <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Beautiful Stats */}
+        <View style={styles.statsContainer}>
+          <StatCard
+            title={translations.activePenalties}
+            value={stats.activePenalties}
+            icon="play-circle"
+            color="#3B82F6"
+            subtitle={translations.penaltyActive}
+          />
+          <StatCard
+            title={translations.completedPenalties}
+            value={stats.completedPenalties}
+            icon="checkmark-circle"
+            color="#10B981"
+            subtitle={translations.penaltyCompleted}
+          />
+          <StatCard
+            title={translations.yellowCards}
+            value={stats.yellowCards}
+            icon="warning"
+            color="#F59E0B"
+            subtitle={translations.yellowCard}
+          />
+          <StatCard
+            title={translations.redCards}
+            value={stats.redCards}
+            icon="close-circle"
+            color="#EF4444"
+            subtitle={translations.redCard}
+          />
+        </View>
+
+        {/* Content */}
         {activePenalties.length === 0 ? (
           <View style={styles.emptyState}>
             <LinearGradient
@@ -166,12 +191,11 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
             >
               <Ionicons name="checkmark-circle" size={60} color="white" />
             </LinearGradient>
-            <Text style={styles.emptyTitle}>¡Excelente Trabajo!</Text>
+            <Text style={styles.emptyTitle}>{translations.noPenalties}</Text>
             <Text style={styles.emptySubtitle}>
-              No hay penalidades activas en este momento.{'\n'}
-              Todos están cumpliendo con sus responsabilidades.
+              {translations.noPenaltiesDescription}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.emptyButton}
               onPress={() => setShowAddModal(true)}
             >
@@ -180,16 +204,16 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
                 style={styles.emptyButtonGradient}
               >
                 <Ionicons name="add" size={20} color="white" />
-                <Text style={styles.emptyButtonText}>Crear Nueva Penalidad</Text>
+                <Text style={styles.emptyButtonText}>{translations.addPenalty}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
           <>
             <View style={styles.activePenaltiesHeader}>
-              <Text style={styles.activePenaltiesTitle}>Penalidades Activas</Text>
+              <Text style={styles.activePenaltiesTitle}>{translations.activePenaltiesTitle}</Text>
               <Text style={styles.activePenaltiesSubtitle}>
-                {activePenalties.length} penalidad{activePenalties.length !== 1 ? 'es' : ''} en curso
+                {activePenalties.length} penalty{activePenalties.length !== 1 ? 'ies' : ''} in progress
               </Text>
             </View>
             {activePenalties.map((penalty) => (
@@ -207,8 +231,8 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
 
       {/* Beautiful Floating Action Button */}
       {activePenalties.length > 0 && (
-        <TouchableOpacity 
-          style={[styles.fab, { bottom: insets.bottom + 20 }]} 
+        <TouchableOpacity
+          style={[styles.fab, { bottom: insets.bottom + 20 }]}
           onPress={() => setShowAddModal(true)}
         >
           <LinearGradient
@@ -234,6 +258,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
     paddingBottom: 30,
@@ -275,7 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     gap: 12,
-    marginTop: -20,
+    marginTop: 0, // Removed negative margin since header is now fixed
   },
   statCard: {
     flex: 1,
@@ -319,7 +346,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 120, // Extra space for FAB
   },
   activePenaltiesHeader: {
     paddingHorizontal: 20,

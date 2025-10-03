@@ -32,7 +32,7 @@ export const mockFamilyMembers: FamilyMember[] = [
 export const penaltyTypeConfigs: PenaltyTypeConfig[] = [
     {
         type: 'yellow',
-        name: 'Tarjeta Amarilla',
+        name: 'Yellow Card',
         color: '#F59E0B', // Amber
         icon: 'warning',
         minDays: 3,
@@ -41,7 +41,7 @@ export const penaltyTypeConfigs: PenaltyTypeConfig[] = [
     },
     {
         type: 'red',
-        name: 'Tarjeta Roja',
+        name: 'Red Card',
         color: '#EF4444', // Red
         icon: 'close-circle',
         minDays: 7,
@@ -53,15 +53,9 @@ export const penaltyTypeConfigs: PenaltyTypeConfig[] = [
 export const penaltySelectionMethods: PenaltySelectionMethod[] = [
     {
         method: 'fixed',
-        name: 'Selección Fija',
-        description: 'Elige manualmente la duración',
+        name: 'Manual Selection',
+        description: 'Choose duration manually',
         icon: 'hand-left',
-    },
-    {
-        method: 'random',
-        name: 'Ruleta Aleatoria',
-        description: 'Deja que la suerte decida',
-        icon: 'refresh',
     },
 ];
 
@@ -94,7 +88,7 @@ export const mockPenalties: Penalty[] = [
         createdBy: 'dad',
         category: 'screen_time',
         penaltyType: 'red',
-        selectionMethod: 'random'
+        selectionMethod: 'fixed'
     },
     {
         id: 'p3',
@@ -128,7 +122,7 @@ export const mockPenalties: Penalty[] = [
         createdBy: 'dad',
         category: 'behavior',
         penaltyType: 'red',
-        selectionMethod: 'random'
+        selectionMethod: 'fixed'
     },
     {
         id: 'p5',

@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { mockFamilyMembers, penaltyTypeConfigs, penaltySelectionMethods, penaltyCategories } from '../mock/penaltiesData';
-import PenaltyRoulette from './PenaltyRoulette';
+import { mockFamilyMembers, penaltyTypeConfigs, penaltyCategories } from '../mock/penaltiesData';
 import { theme } from '../../../styles/simpleTheme';
 
 interface NewPenaltyModalProps {
@@ -21,34 +20,55 @@ interface NewPenaltyData {
   duration: number;
   category: 'behavior' | 'chores' | 'screen_time' | 'homework' | 'other';
   penaltyType: 'yellow' | 'red';
-  selectionMethod: 'fixed' | 'random';
+  selectionMethod: 'fixed';
   createdBy: string;
 }
 
 const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onSubmit }) => {
   const insets = useSafeAreaInsets();
-  
+
+  // Force English for now until i18n is fully working
+  const language = 'en';
+
+  // Direct English translations
+  const translations = {
+    title: 'New Penalty',
+    selectMember: 'Select Member',
+    penaltyType: 'Penalty Type',
+    duration: 'Duration (days)',
+    category: 'Category',
+    reason: 'Reason',
+    createPenalty: 'Create Penalty',
+    errorSelectMember: 'Please select a family member',
+    errorEnterReason: 'Please enter a reason for the penalty',
+    errorSelectDuration: 'Please select a duration',
+    days: 'days',
+    placeholderReason: 'Ex: Did not clean his room'
+  };
+
   const [formData, setFormData] = useState<NewPenaltyData>({
     memberId: '',
     memberName: '',
     memberAvatar: '',
     reason: '',
-    duration: 3,
+    duration: 0,
     category: 'behavior',
     penaltyType: 'yellow',
     selectionMethod: 'fixed',
     createdBy: 'mom',
   });
 
-  const [showRoulette, setShowRoulette] = useState(false);
-
   const handleSubmit = () => {
     if (!formData.memberId) {
-      Alert.alert('Error', 'Por favor selecciona un miembro de la familia');
+      Alert.alert('Error', translations.errorSelectMember);
       return;
     }
     if (!formData.reason.trim()) {
-      Alert.alert('Error', 'Por favor ingresa una razón para la penalidad');
+      Alert.alert('Error', translations.errorEnterReason);
+      return;
+    }
+    if (formData.duration === 0) {
+      Alert.alert('Error', translations.errorSelectDuration);
       return;
     }
 
@@ -67,30 +87,11 @@ const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onS
 
   const selectPenaltyType = (type: 'yellow' | 'red') => {
     const config = penaltyTypeConfigs.find(c => c.type === type);
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       penaltyType: type,
       duration: config?.minDays || 3,
-    });
-  };
-
-  const selectSelectionMethod = (method: 'fixed' | 'random') => {
-    setFormData({
-      ...formData,
-      selectionMethod: method,
-    });
-
-    if (method === 'random') {
-      setShowRoulette(true);
-    }
-  };
-
-  const handleRouletteResult = (duration: number) => {
-    setFormData({
-      ...formData,
-      duration,
-    });
-    setShowRoulette(false);
+    }));
   };
 
   const selectCategory = (category: NewPenaltyData['category']) => {
@@ -108,264 +109,188 @@ const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onS
   };
 
   const currentTypeConfig = penaltyTypeConfigs.find(c => c.type === formData.penaltyType);
-  const currentMethodConfig = penaltySelectionMethods.find(m => m.method === formData.selectionMethod);
 
   if (!visible) return null;
 
   return (
-    <>
-      <Modal
-        visible={visible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={onClose}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { paddingBottom: insets.bottom }]}>
-            {/* Header */}
-            <LinearGradient
-              colors={['#667eea', '#764ba2']}
-              style={styles.modalHeader}
-            >
-              <Text style={styles.modalTitle}>Nueva Penalidad</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Ionicons name="close" size={24} color="white" />
-              </TouchableOpacity>
-            </LinearGradient>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={[styles.modalContainer, { paddingBottom: insets.bottom }]}>
+          {/* Header */}
+          <LinearGradient
+            colors={['#667eea', '#764ba2']}
+            style={styles.modalHeader}
+          >
+            <Text style={styles.modalTitle}>{translations.title}</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </LinearGradient>
 
-            <ScrollView
-              style={styles.modalContent}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
-              {/* Select Member */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>👤 Seleccionar Miembro</Text>
-                <View style={styles.memberGrid}>
-                  {mockFamilyMembers.filter(m => m.role !== 'parent').map((member) => (
-                    <TouchableOpacity
-                      key={member.id}
-                      style={[
-                        styles.memberOption,
-                        formData.memberId === member.id && styles.memberSelected
-                      ]}
-                      onPress={() => selectMember(member)}
-                    >
-                      <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
-                      <Text style={styles.memberName}>{member.name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+          <ScrollView
+            style={styles.modalContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Select Member */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>👤 {translations.selectMember}</Text>
+              <View style={styles.memberGrid}>
+                {mockFamilyMembers.filter(m => m.role !== 'parent').map((member) => (
+                  <TouchableOpacity
+                    key={member.id}
+                    style={[
+                      styles.memberOption,
+                      formData.memberId === member.id && styles.memberSelected
+                    ]}
+                    onPress={() => selectMember(member)}
+                  >
+                    <Image source={{ uri: member.avatar }} style={styles.memberAvatar} />
+                    <Text style={styles.memberName}>{member.name}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
+            </View>
 
-              {/* Select Penalty Type */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>🎯 Tipo de Penalidad</Text>
-                <View style={styles.typeGrid}>
-                  {penaltyTypeConfigs.map((config) => (
-                    <TouchableOpacity
-                      key={config.type}
-                      style={[
-                        styles.typeOption,
-                        { borderColor: config.color },
-                        formData.penaltyType === config.type && { 
-                          backgroundColor: config.color,
-                          borderColor: config.color 
-                        }
-                      ]}
-                      onPress={() => selectPenaltyType(config.type)}
-                    >
-                      <View style={[styles.typeIconContainer, { backgroundColor: config.color + '20' }]}>
-                        <Ionicons 
-                          name={config.icon as any} 
-                          size={28} 
-                          color={config.color} 
-                        />
-                      </View>
-                      <Text style={[
-                        styles.typeText,
-                        { color: formData.penaltyType === config.type ? 'white' : config.color }
-                      ]}>
-                        {config.name}
-                      </Text>
-                      <Text style={[
-                        styles.typeSubtext,
-                        { color: formData.penaltyType === config.type ? 'white' : config.color }
-                      ]}>
-                        {config.minDays}-{config.maxDays} días
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              {/* Select Selection Method */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>🎲 Método de Selección</Text>
-                <View style={styles.methodGrid}>
-                  {penaltySelectionMethods.map((method) => (
-                    <TouchableOpacity
-                      key={method.method}
-                      style={[
-                        styles.methodOption,
-                        formData.selectionMethod === method.method && styles.methodSelected
-                      ]}
-                      onPress={() => selectSelectionMethod(method.method)}
-                    >
-                      <View style={[
-                        styles.methodIconContainer,
-                        formData.selectionMethod === method.method && styles.methodIconSelected
-                      ]}>
-                        <Ionicons 
-                          name={method.icon as any} 
-                          size={24} 
-                          color={formData.selectionMethod === method.method ? 'white' : theme.colors.primary} 
-                        />
-                      </View>
-                      <Text style={[
-                        styles.methodText,
-                        { color: formData.selectionMethod === method.method ? 'white' : theme.colors.text }
-                      ]}>
-                        {method.name}
-                      </Text>
-                      <Text style={[
-                        styles.methodSubtext,
-                        { color: formData.selectionMethod === method.method ? 'white' : theme.colors.gray }
-                      ]}>
-                        {method.description}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              {/* Duration Selection (only for fixed method) */}
-              {formData.selectionMethod === 'fixed' && currentTypeConfig && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>⏰ Duración (días)</Text>
-                  <View style={styles.durationGrid}>
-                    {currentTypeConfig.durationOptions.map((duration) => (
-                      <TouchableOpacity
-                        key={duration}
-                        style={[
-                          styles.durationOption,
-                          { borderColor: currentTypeConfig.color },
-                          formData.duration === duration && { 
-                            backgroundColor: currentTypeConfig.color,
-                            borderColor: currentTypeConfig.color 
-                          }
-                        ]}
-                        onPress={() => selectDuration(duration)}
-                      >
-                        <Text style={[
-                          styles.durationText,
-                          { color: formData.duration === duration ? 'white' : currentTypeConfig.color }
-                        ]}>
-                          {duration}d
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-              )}
-
-              {/* Selected Duration Display (for random method) */}
-              {formData.selectionMethod === 'random' && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>🎯 Duración Seleccionada</Text>
-                  <View style={[
-                    styles.selectedDurationCard,
-                    { backgroundColor: currentTypeConfig?.color + '20', borderColor: currentTypeConfig?.color }
-                  ]}>
-                    <Ionicons 
-                      name={currentTypeConfig?.icon as any} 
-                      size={32} 
-                      color={currentTypeConfig?.color} 
-                    />
-                    <Text style={[styles.selectedDurationText, { color: currentTypeConfig?.color }]}>
-                      {formData.duration} días
-                    </Text>
-                    <Text style={styles.selectedDurationSubtext}>
-                      Seleccionado por la ruleta
-                    </Text>
-                  </View>
-                </View>
-              )}
-
-              {/* Select Category */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📂 Categoría</Text>
-                <View style={styles.categoryGrid}>
-                  {penaltyCategories.map((category) => (
-                    <TouchableOpacity
-                      key={category.id}
-                      style={[
-                        styles.categoryOption,
-                        { borderColor: category.color },
-                        formData.category === category.id && { 
-                          backgroundColor: category.color,
-                          borderColor: category.color 
-                        }
-                      ]}
-                      onPress={() => selectCategory(category.id as any)}
-                    >
-                      <Ionicons 
-                        name={category.icon as any} 
-                        size={16} 
-                        color={formData.category === category.id ? 'white' : category.color} 
+            {/* Select Penalty Type */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>🎯 {translations.penaltyType}</Text>
+              <View style={styles.typeGrid}>
+                {penaltyTypeConfigs.map((config) => (
+                  <TouchableOpacity
+                    key={config.type}
+                    style={[
+                      styles.typeOption,
+                      { borderColor: config.color },
+                      formData.penaltyType === config.type && {
+                        backgroundColor: config.color,
+                        borderColor: config.color
+                      }
+                    ]}
+                    onPress={() => selectPenaltyType(config.type)}
+                  >
+                    <View style={[styles.typeIconContainer, { backgroundColor: config.color + '20' }]}>
+                      <Ionicons
+                        name={config.icon as any}
+                        size={28}
+                        color={config.color}
                       />
+                    </View>
+                    <Text style={[
+                      styles.typeText,
+                      { color: formData.penaltyType === config.type ? 'white' : config.color }
+                    ]}>
+                      {config.name}
+                    </Text>
+                    <Text style={[
+                      styles.typeSubtext,
+                      { color: formData.penaltyType === config.type ? 'white' : config.color }
+                    ]}>
+                      {config.minDays}-{config.maxDays} {translations.days}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Duration Selection */}
+            {currentTypeConfig && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>⏰ {translations.duration}</Text>
+                <View style={styles.durationGrid}>
+                  {currentTypeConfig.durationOptions.map((duration) => (
+                    <TouchableOpacity
+                      key={duration}
+                      style={[
+                        styles.durationOption,
+                        { borderColor: currentTypeConfig.color },
+                        formData.duration === duration && {
+                          backgroundColor: currentTypeConfig.color,
+                          borderColor: currentTypeConfig.color
+                        }
+                      ]}
+                      onPress={() => selectDuration(duration)}
+                    >
                       <Text style={[
-                        styles.categoryText,
-                        { color: formData.category === category.id ? 'white' : category.color }
+                        styles.durationText,
+                        { color: formData.duration === duration ? 'white' : currentTypeConfig.color }
                       ]}>
-                        {category.name}
+                        {duration}d
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
               </View>
+            )}
 
-              {/* Reason Input */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📝 Razón</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Ej: No limpió su habitación"
-                  value={formData.reason}
-                  onChangeText={(text) => setFormData({ ...formData, reason: text })}
-                  multiline
-                  numberOfLines={3}
-                />
+            {/* Select Category */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📂 {translations.category}</Text>
+              <View style={styles.categoryGrid}>
+                {penaltyCategories.map((category) => (
+                  <TouchableOpacity
+                    key={category.id}
+                    style={[
+                      styles.categoryOption,
+                      { borderColor: category.color },
+                      formData.category === category.id && {
+                        backgroundColor: category.color,
+                        borderColor: category.color
+                      }
+                    ]}
+                    onPress={() => selectCategory(category.id as any)}
+                  >
+                    <Ionicons
+                      name={category.icon as any}
+                      size={16}
+                      color={formData.category === category.id ? 'white' : category.color}
+                    />
+                    <Text style={[
+                      styles.categoryText,
+                      { color: formData.category === category.id ? 'white' : category.color }
+                    ]}>
+                      {category.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
+            </View>
 
-              {/* Submit Button */}
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmit}
+            {/* Reason Input */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📝 {translations.reason}</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder={translations.placeholderReason}
+                value={formData.reason}
+                onChangeText={(text) => setFormData({ ...formData, reason: text })}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
+
+            {/* Submit Button */}
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
+              <LinearGradient
+                colors={['#667eea', '#764ba2']}
+                style={styles.submitButtonGradient}
               >
-                <LinearGradient
-                  colors={['#667eea', '#764ba2']}
-                  style={styles.submitButtonGradient}
-                >
-                  <Ionicons name="add-circle" size={24} color="white" />
-                  <Text style={styles.submitButtonText}>Crear Penalidad</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
+                <Ionicons name="add-circle" size={24} color="white" />
+                <Text style={styles.submitButtonText}>{translations.createPenalty}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </Modal>
-
-      {/* Roulette Modal */}
-      {showRoulette && currentTypeConfig && (
-        <PenaltyRoulette
-          durationOptions={currentTypeConfig.durationOptions}
-          penaltyType={formData.penaltyType}
-          onResult={handleRouletteResult}
-          onClose={() => setShowRoulette(false)}
-        />
-      )}
-    </>
+      </View>
+    </Modal>
   );
 };
 
@@ -477,45 +402,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
   },
-  methodGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  methodOption: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.background,
-  },
-  methodSelected: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  methodIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.primaryLight,
-    marginBottom: 12,
-  },
-  methodIconSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  methodText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  methodSubtext: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
   durationGrid: {
     flexDirection: 'row',
     gap: 8,
@@ -535,23 +421,6 @@ const styles = StyleSheet.create({
   durationText: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  selectedDurationCard: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 16,
-    borderWidth: 2,
-    backgroundColor: theme.colors.background,
-  },
-  selectedDurationText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 12,
-  },
-  selectedDurationSubtext: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    marginTop: 4,
   },
   categoryGrid: {
     flexDirection: 'row',

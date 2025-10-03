@@ -6,6 +6,7 @@ import PenaltyTimer from './PenaltyTimer';
 import { Penalty } from '../types/penaltyTypes';
 import { penaltyTypeConfigs } from '../mock/penaltiesData';
 import { theme } from '../../../styles/simpleTheme';
+import { useTranslation } from '../../../locales/i18n';
 
 interface PenaltyCardProps {
   penalty: Penalty;
@@ -20,13 +21,30 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
   onEndPenalty,
   onViewDetails,
 }) => {
+  // Force English for now until i18n is fully working
+  const language = 'en';
+
+  // Direct English translations
+  const translations = {
+    day: 'day',
+    days: 'days',
+    completed: 'completed',
+    remaining: 'remaining',
+    roulette: 'Roulette',
+    manual: 'Manual',
+    complete: 'Complete',
+    completedBadge: 'Completed!',
+    minusDay: '-1 day',
+    plusDay: '+1 day'
+  };
+
   const penaltyTypeConfig = penaltyTypeConfigs.find(c => c.type === penalty.penaltyType);
   const cardColor = penaltyTypeConfig?.color || theme.colors.gray;
   const cardIcon = penaltyTypeConfig?.icon || 'alert-circle';
 
   const formatDuration = (days: number) => {
-    if (days === 1) return '1 día';
-    return `${days} días`;
+    if (days === 1) return `1 ${translations.day}`;
+    return `${days} ${translations.days}`;
   };
 
   const getMethodIcon = (method: 'fixed' | 'random') => {
@@ -34,7 +52,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
   };
 
   const getMethodText = (method: 'fixed' | 'random') => {
-    return method === 'random' ? 'Ruleta' : 'Manual';
+    return method === 'random' ? translations.roulette : translations.manual;
   };
 
   const getProgressPercentage = () => {
@@ -43,8 +61,8 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
   };
 
   return (
-    <TouchableOpacity 
-      style={styles.card} 
+    <TouchableOpacity
+      style={styles.card}
       onPress={() => onViewDetails(penalty.id)}
       activeOpacity={0.8}
     >
@@ -63,7 +81,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
             </View>
           </View>
         </View>
-        
+
         {/* Timer */}
         <PenaltyTimer
           remainingMinutes={penalty.remaining * 24 * 60}
@@ -78,22 +96,22 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
       {/* Card Content */}
       <View style={styles.cardContent}>
         <Text style={styles.reason}>{penalty.reason}</Text>
-        
+
         {/* Progress Bar */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
-                { 
+                styles.progressFill,
+                {
                   width: `${getProgressPercentage()}%`,
-                  backgroundColor: cardColor 
+                  backgroundColor: cardColor
                 }
-              ]} 
+              ]}
             />
           </View>
           <Text style={styles.progressText}>
-            {Math.round(getProgressPercentage())}% completado
+            {Math.round(getProgressPercentage())}% {translations.completed}
           </Text>
         </View>
 
@@ -109,31 +127,31 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
           </View>
           <View style={styles.infoItem}>
             <Ionicons name="calendar" size={16} color={theme.colors.gray} />
-            <Text style={styles.infoText}>{penalty.remaining}d restantes</Text>
+            <Text style={styles.infoText}>{penalty.remaining}d {translations.remaining}</Text>
           </View>
         </View>
 
         {/* Actions for Active Penalties */}
         {penalty.isActive && (
           <View style={styles.actions}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.minusButton]} 
+            <TouchableOpacity
+              style={[styles.actionButton, styles.minusButton]}
               onPress={() => onAdjustTime(penalty.id, -1)}
             >
               <Ionicons name="remove" size={18} color="#EF4444" />
-              <Text style={styles.actionButtonText}>-1 día</Text>
+              <Text style={styles.actionButtonText}>{translations.minusDay}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.plusButton]} 
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.plusButton]}
               onPress={() => onAdjustTime(penalty.id, 1)}
             >
               <Ionicons name="add" size={18} color="#10B981" />
-              <Text style={styles.actionButtonText}>+1 día</Text>
+              <Text style={styles.actionButtonText}>{translations.plusDay}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.endButton} 
+
+            <TouchableOpacity
+              style={styles.endButton}
               onPress={() => onEndPenalty(penalty.id)}
             >
               <LinearGradient
@@ -141,7 +159,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
                 style={styles.endButtonGradient}
               >
                 <Ionicons name="checkmark-circle" size={18} color="white" />
-                <Text style={styles.endButtonText}>Completar</Text>
+                <Text style={styles.endButtonText}>{translations.complete}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -155,7 +173,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
               style={styles.completedBadge}
             >
               <Ionicons name="checkmark-circle" size={20} color="white" />
-              <Text style={styles.completedText}>¡Completada!</Text>
+              <Text style={styles.completedText}>{translations.completedBadge}</Text>
             </LinearGradient>
             <Text style={styles.reflectionText}>"{penalty.reflection}"</Text>
           </View>

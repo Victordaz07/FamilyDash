@@ -1,0 +1,53 @@
+# FamilyDash Icon Configuration
+# Este archivo contiene la configuración para generar los íconos de FamilyDash
+
+ICON_CONFIG = {
+    "name": "FamilyDash",
+    "description": "Family management app icon",
+    "colors": {
+        "primary": "#ff6b35",
+        "secondary": "#ffffff",
+        "text": "#ffffff"
+    },
+    "elements": {
+        "background": {
+            "color": "#ff6b35",
+            "shape": "rounded_square",
+            "corner_radius": 0.18
+        },
+        "shield": {
+            "color": "#ffffff",
+            "position": "center_top",
+            "size": 0.35
+        },
+        "family": {
+            "color": "#ffffff",
+            "adults": 2,
+            "children": 1,
+            "position": "inside_shield"
+        },
+        "text": {
+            "content": "FamilyDash",
+            "color": "#ffffff",
+            "font": "Arial",
+            "weight": "bold",
+            "position": "bottom_center"
+        }
+    },
+    "sizes": {
+        "icon": "1024x1024",
+        "adaptive_icon": "1024x1024",
+        "splash": "1242x2436",
+        "favicon": "32x32"
+    }
+}
+
+# Instrucciones para generar los íconos:
+# 1. Abrir icon_generator.html en el navegador
+# 2. Hacer clic en "Descargar" para cada tamaño
+# 3. Guardar los archivos en la carpeta assets/
+# 4. Renombrar según corresponda:
+#    - icon.png (1024x1024)
+#    - adaptive-icon.png (1024x1024)
+#    - splash-icon.png (1242x2436)
+#    - favicon.png (32x32)

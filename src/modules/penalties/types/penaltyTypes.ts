@@ -13,7 +13,7 @@ export interface Penalty {
     createdBy: string; // who assigned the penalty
     category: 'behavior' | 'chores' | 'screen_time' | 'homework' | 'other';
     penaltyType: 'yellow' | 'red'; // Yellow card (minor) or Red card (major)
-    selectionMethod: 'fixed' | 'random'; // How the duration was selected
+    selectionMethod: 'fixed'; // How the duration was selected
 }
 
 export interface FamilyMember {
@@ -52,7 +52,7 @@ export interface PenaltyTypeConfig {
 }
 
 export interface PenaltySelectionMethod {
-    method: 'fixed' | 'random';
+    method: 'fixed';
     name: string;
     description: string;
     icon: string;

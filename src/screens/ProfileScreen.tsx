@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button, Avatar } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
-// import { useTranslation } from '../locales/i18n'; // TEMPORARILY COMMENTED FOR DEBUGGING
+import { useTranslation } from '../locales/i18n';
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
-  // const { t } = useTranslation(); // TEMPORARILY COMMENTED FOR DEBUGGING
+  const { t } = useTranslation();
 
   const [user] = useState({
     name: 'Usuario Principal',

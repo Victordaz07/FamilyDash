@@ -1,0 +1,32 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .family-icon { fill: #ffffff; }
+      .shield-icon { fill: #ffffff; }
+      .text-icon { fill: #ffffff; font-family: Arial, sans-serif; font-weight: bold; }
+      .bg-icon { fill: #ff6b35; }
+    </style>
+  </defs>
+  
+  <!-- Fondo naranja con esquinas redondeadas -->
+  <rect width="1024" height="1024" rx="180" ry="180" class="bg-icon"/>
+  
+  <!-- Escudo blanco -->
+  <path d="M512 200 L650 250 L650 450 L512 550 L374 450 L374 250 Z" class="shield-icon"/>
+  
+  <!-- Familia dentro del escudo -->
+  <!-- Adulto izquierdo -->
+  <circle cx="450" cy="350" r="25" class="family-icon"/>
+  <path d="M450 375 Q430 420 450 420 Q470 420 450 375" class="family-icon"/>
+  
+  <!-- Adulto derecho -->
+  <circle cx="574" cy="350" r="25" class="family-icon"/>
+  <path d="M574 375 Q554 420 574 420 Q594 420 574 375" class="family-icon"/>
+  
+  <!-- Niño en el centro -->
+  <circle cx="512" cy="400" r="18" class="family-icon"/>
+  <path d="M512 418 Q500 450 512 450 Q524 450 512 418" class="family-icon"/>
+  
+  <!-- Texto FamilyDash -->
+  <text x="512" y="650" text-anchor="middle" font-size="80" class="text-icon">FamilyDash</text>
+</svg>
