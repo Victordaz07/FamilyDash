@@ -237,144 +237,142 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
               ))}
             </View>
           </View>
-        </View>
 
           {/* Basic Information */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Basic Information</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Basic Information</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Full Name *</Text>
-              <TextInput
-                style={styles.textInput}
-                value={profileData.name}
-                onChangeText={(text) => setProfileData(prev => ({ ...prev, name: text }))}
-                placeholder="Enter your full name"
-                autoCorrect={false}
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Full Name *</Text>
+          <TextInput
+            style={styles.textInput}
+            value={profileData.name}
+            onChangeText={(text) => setProfileData(prev => ({ ...prev, name: text }))}
+            placeholder="Enter your full name"
+            autoCorrect={false}
+          />
+        </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Nickname (How you want to be called)</Text>
-              <TextInput
-                style={styles.textInput}
-                value={profileData.nickname}
-                onChangeText={(text) => setProfileData(prev => ({ ...prev, nickname: text }))}
-                placeholder="e.g., Mari, Carlitos, Anita"
-                autoCorrect={false}
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Nickname (How you want to be called)</Text>
+          <TextInput
+            style={styles.textInput}
+            value={profileData.nickname}
+            onChangeText={(text) => setProfileData(prev => ({ ...prev, nickname: text }))}
+            placeholder="e.g., Mari, Carlitos, Anita"
+            autoCorrect={false}
+          />
+        </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Email</Text>
-              <TextInput
-                style={styles.textInput}
-                value={profileData.email}
-                onChangeText={(text) => setProfileData(prev => ({ ...prev, email: text }))}
-                placeholder="your@email.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput
+            style={styles.textInput}
+            value={profileData.email}
+            onChangeText={(text) => setProfileData(prev => ({ ...prev, email: text }))}
+            placeholder="your@email.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Phone Number</Text>
-              <TextInput
-                style={styles.textInput}
-                value={profileData.phone}
-                onChangeText={(text) => setProfileData(prev => ({ ...prev, phone: text }))}
-                placeholder="+52 555 123 4567"
-                keyboardType="phone-pad"
-                autoCorrect={false}
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Phone Number</Text>
+          <TextInput
+            style={styles.textInput}
+            value={profileData.phone}
+            onChangeText={(text) => setProfileData(prev => ({ ...prev, phone: text }))}
+            placeholder="+52 555 123 4567"
+            keyboardType="phone-pad"
+            autoCorrect={false}
+          />
+        </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Age</Text>
-              <View style={styles.ageContainer}>
-                <TextInput
-                  style={styles.ageInput}
-                  value={profileData.age || ''}
-                  onChangeText={(text) => setProfileData(prev => ({ ...prev, age: text }))}
-                  placeholder="Enter your age"
-                  keyboardType="numeric"
-                />
-                <Text style={styles.ageText}>years old</Text>
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Bio (Tell us about yourself)</Text>
-              <TextInput
-                style={[styles.textInput, styles.bioInput]}
-                value={profileData.bio}
-                onChangeText={(text) => setProfileData(prev => ({ ...prev, bio: text }))}
-                placeholder="Write a short description about yourself..."
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-              />
-            </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Age</Text>
+          <View style={styles.ageContainer}>
+            <TextInput
+              style={styles.ageInput}
+              value={profileData.age || ''}
+              onChangeText={(text) => setProfileData(prev => ({ ...prev, age: text }))}
+              placeholder="Enter your age"
+              keyboardType="numeric"
+            />
+            <Text style={styles.ageText}>years old</Text>
           </View>
+        </View>
 
-          {/* Privacy Settings */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Privacy Settings</Text>
-            <Text style={styles.sectionSubtitle}>Choose what information others can see</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Bio (Tell us about yourself)</Text>
+          <TextInput
+            style={[styles.textInput, styles.bioInput]}
+            value={profileData.bio}
+            onChangeText={(text) => setProfileData(prev => ({ ...prev, bio: text }))}
+            placeholder="Write a short description about yourself..."
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+        </View>
+      </View>
 
-            <View style={styles.privacySwitchContainer}>
-              <Text style={styles.switchLabel}>Show my full name</Text>
-              <Switch
-                value={preferences.showName}
-                onValueChange={(value) => setPreferences(prev => ({ ...prev, showName: value }))}
-                trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-                thumbColor="#ffffff"
-              />
-            </View>
+      {/* Privacy Settings */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Privacy Settings</Text>
+        <Text style={styles.sectionSubtitle}>Choose what information others can see</Text>
 
-            <View style={styles.privacySwitchContainer}>
-              <Text style={styles.switchLabel}>Show my nickname</Text>
-              <Switch
-                value={preferences.showNickname}
-                onValueChange={(value) => setPreferences(prev => ({ ...prev, showNickname: value }))}
-                trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-                thumbColor="#ffffff"
-              />
-            </View>
+        <View style={styles.privacySwitchContainer}>
+          <Text style={styles.switchLabel}>Show my full name</Text>
+          <Switch
+            value={preferences.showName}
+            onValueChange={(value) => setPreferences(prev => ({ ...prev, showName: value }))}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#ffffff"
+          />
+        </View>
 
-            <View style={styles.privacySwitchContainer}>
-              <Text style={styles.switchLabel}>Show my age</Text>
-              <Switch
-                value={preferences.showAge}
-                onValueChange={(value) => setPreferences(prev => ({ ...prev, showAge: value }))}
-                trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-                thumbColor="#ffffff"
-              />
-            </View>
+        <View style={styles.privacySwitchContainer}>
+          <Text style={styles.switchLabel}>Show my nickname</Text>
+          <Switch
+            value={preferences.showNickname}
+            onValueChange={(value) => setPreferences(prev => ({ ...prev, showNickname: value }))}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#ffffff"
+          />
+        </View>
 
-            <View style={styles.privacySwitchContainer}>
-              <Text style={styles.switchLabel}>Show my email</Text>
-              <Switch
-                value={preferences.showEmail}
-                onValueChange={(value) => setPreferences(prev => ({ ...prev, showEmail: value }))}
-                trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-                thumbColor="#ffffff"
-              />
-            </View>
+        <View style={styles.privacySwitchContainer}>
+          <Text style={styles.switchLabel}>Show my age</Text>
+          <Switch
+            value={preferences.showAge}
+            onValueChange={(value) => setPreferences(prev => ({ ...prev, showAge: value }))}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#ffffff"
+          />
+        </View>
 
-            <View style={styles.privacySwitchContainer}>
-              <Text style={styles.switchLabel}>Show my phone number</Text>
-              <Switch
-                value={preferences.showPhone}
-                onValueChange={(value) => setPreferences(prev => ({ ...prev, showPhone: value }))}
-                trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-                thumbColor="#ffffff"
-              />
-            </View>
-          </View>
+        <View style={styles.privacySwitchContainer}>
+          <Text style={styles.switchLabel}>Show my email</Text>
+          <Switch
+            value={preferences.showEmail}
+            onValueChange={(value) => setPreferences(prev => ({ ...prev, showEmail: value }))}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#ffffff"
+          />
+        </View>
+
+        <View style={styles.privacySwitchContainer}>
+          <Text style={styles.switchLabel}>Show my phone number</Text>
+          <Switch
+            value={preferences.showPhone}
+            onValueChange={(value) => setPreferences(prev => ({ ...prev, showPhone: value }))}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#ffffff"
+          />
+        </View>
+      </View>
         </ScrollView>
-
       </View>
     </Modal>
   );
