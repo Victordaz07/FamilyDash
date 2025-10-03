@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  TextInput,
-  Alert,
-  Modal 
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView,
+    TextInput,
+    Image,
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,132 +19,69 @@ interface EditableProfileScreenProps {
 }
 
 export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ navigation }) => {
-    const { currentUser, familyHouse, updateProfile, updateAvatar } = useProfileStore();
-
+    const { currentUser, updateProfile } = useProfileStore();
+    
     const [isEditing, setIsEditing] = useState(false);
-    const [showAvatarModal, setShowAvatarModal] = useState(false);
-  const [editedData, setEditedData] = useState({
-    name: '',
-    email: '',
-    age: '',
-    bio: '',
-  });
-
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
-
-    const avatarOptions = ['👤', '👩', '👨', '👧', '👦', '🧑', '👵', '👴', '🦸', '🦹', '🎭', '🎨', '🎪', '🎯', '🏆'];
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [editedData, setEditedData] = useState({
+        name: '',
+        email: '',
+        age: '',
+    });
 
     useEffect(() => {
         if (currentUser) {
             setEditedData({
-                name: currentUser.name,
+                name: currentUser.name || '',
                 email: currentUser.email || '',
                 age: currentUser.age?.toString() || '',
-                bio: '', // Will be added to profile data later
             });
         }
     }, [currentUser]);
 
     const handleSaveProfile = async () => {
+        if (!editedData.name.trim()) {
+            Alert.alert('Error', 'Name is required');
+            return;
+        }
+
         try {
-            const profileUpdates: any = {
+            await updateProfile({
                 name: editedData.name.trim(),
-            };
-
-            if (editedData.email.trim()) {
-                profileUpdates.email = editedData.email.trim();
-            }
-
-            if (editedData.age.trim()) {
-                const age = parseInt(editedData.age);
-                if (!isNaN(age)) {
-                    profileUpdates.age = age;
-                }
-            }
-
-            await updateProfile(profileUpdates);
-            setIsEditing(false);
+                email: editedData.email.trim() || undefined,
+                age: editedData.age ? parseInt(editedData.age) : undefined,
+            });
 
             Alert.alert('Success', 'Profile updated successfully!');
+            setIsEditing(false);
         } catch (error) {
             Alert.alert('Error', 'Failed to update profile');
         }
     };
 
     const handleCancelEdit = () => {
-        if (currentUser) {
-            setEditedData({
-                name: currentUser.name,
-                email: currentUser.email || '',
-                age: currentUser.age?.toString() || '',
-                bio: '',
-            });
-        }
         setIsEditing(false);
-    };
-
-    const handleChangeAvatar = async (avatar: string) => {
-        try {
-            await updateAvatar(avatar);
-            setShowAvatarModal(false);
-            Alert.alert('Success', 'Avatar updated successfully!');
-        } catch (error) {
-            Alert.alert('Error', 'Failed to update avatar');
-        }
-    };
-
-    const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return ['#8B5CF6', '#7C3AED'];
-            case 'sub-admin':
-                return ['#3B82F6', '#2563EB'];
-            case 'child':
-                return ['#10B981', '#059669'];
-            default:
-                return ['#6B7280', '#4B5563'];
-        }
-    };
-
-    const getRoleIcon = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return 'crown';
-            case 'sub-admin':
-                return 'person-circle';
-            case 'child':
-                return 'happy-circle';
-            default:
-                return 'person';
-        }
-    };
-
-    const getRoleLabel = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return 'Administrator';
-            case 'sub-admin':
-                return 'Sub-Administrator';
-            case 'child':
-                return 'Family Member';
-            default:
-                return 'Member';
-        }
+        setEditedData({
+            name: currentUser?.name || '',
+            email: currentUser?.email || '',
+            age: currentUser?.age?.toString() || '',
+        });
     };
 
     if (!currentUser) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>No user data available</Text>
+            <View style={styles.errorContainer}>
+                <Ionicons name="person-outline" size={64} color="#9CA3AF" />
+                <Text style={styles.errorText}>No user data found</Text>
             </View>
         );
     }
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Header */}
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            {/* Modern Header */}
             <LinearGradient
-                colors={getRoleColor(currentUser.role)}
+                colors={getRoleColors(currentUser.role)}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -157,80 +94,162 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                 </TouchableOpacity>
 
                 <View style={styles.headerContent}>
+                    <Ionicons name="person-circle" size={32} color="#ffffff" />
                     <Text style={styles.headerTitle}>My Profile</Text>
-                    <Text style={styles.headerSubtitle}>
-                        Manage your personal information
-                    </Text>
+                    <Text style={styles.headerSubtitle}>Personal Information & Settings</Text>
                 </View>
-            </LinearGradient>
 
-            {/* Quick Access Button */}
-            <View style={styles.quickAccessSection}>
                 <TouchableOpacity
-                    style={styles.completeProfileButton}
+                    style={styles.headerButton}
                     onPress={() => setShowCompleteModal(true)}
                 >
-                    <LinearGradient
-                        colors={['#10B981', '#059669']}
-                        style={styles.buttonGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                    >
-                        <Ionicons name="create" size={20} color="#ffffff" />
-                        <Text style={styles.buttonText}>Complete Profile with Photo Upload</Text>
-                    </LinearGradient>
+                    <Ionicons name="add-circle" size={24} color="#ffffff" />
                 </TouchableOpacity>
-            </View>
+            </LinearGradient>
 
             {/* Profile Card */}
             <View style={styles.profileCard}>
-                <TouchableOpacity
-                    style={styles.avatarSection}
-                    onPress={() => setShowAvatarModal(true)}
-                >
-                    <Text style={styles.currentAvatar}>{currentUser.avatar}</Text>
-                    <View style={styles.avatarBadge}>
-                        <Ionicons name="camera" size={16} color="#ffffff" />
+                {/* Avatar Section */}
+                <View style={styles.avatarSection}>
+                    <View style={styles.avatarContainer}>
+                        {currentUser.profileImage ? (
+                            <Image source={{ uri: currentUser.profileImage }} style={styles.profileImage} />
+                        ) : (
+                            <Text style={styles.avatarText}>{currentUser.avatar}</Text>
+                        )}
+                        <TouchableOpacity
+                            style={styles.cameraButton}
+                            onPress={() => setShowCompleteModal(true)}
+                        >
+                            <Ionicons name="camera" size={16} color="#ffffff" />
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
+                    
+                    <View style={styles.userInfo}>
+                        <Text style={styles.userName}>
+                            {currentUser.preferences?.showNickname && currentUser.nickname 
+                                ? currentUser.nickname 
+                                : currentUser.name
+                            }
+                        </Text>
+                        <Text style={styles.userCode}>Code: {currentUser.code}</Text>
+                        
+                        {/* Status and Role */}
+                        <View style={styles.statusRow}>
+                            <View style={styles.roleBadge}>
+                                <LinearGradient
+                                    colors={getRoleColors(currentUser.role)}
+                                    style={styles.roleGradient}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                >
+                                    <Ionicons name={getRoleIcon(currentUser.role) as any} size={14} color="#ffffff" />
+                                    <Text style={styles.roleText}>{getRoleLabel(currentUser.role)}</Text>
+                                </LinearGradient>
+                            </View>
+                            
+                            <View style={styles.onlineStatus}>
+                                <View style={[
+                                    styles.statusDot,
+                                    { backgroundColor: currentUser.isOnline ? '#10B981' : '#6B7280' }
+                                ]} />
+                                <Text style={styles.statusText}>
+                                    {currentUser.isOnline ? 'Online' : 'Offline'}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
 
-                {isEditing ? (
-                    <View style={styles.editingForm}>
-                        <View style={styles.inputContainer}>
-                            <Ionicons name="person" size={20} color="#6B7280" />
+                {/* Basic Info Display */}
+                {!isEditing ? (
+                    <View style={styles.infoDisplay}>
+                        <View style={styles.infoRow}>
+                            <Ionicons name="mail-outline" size={20} color="#6B7280" />
+                            <Text style={styles.infoText}>{currentUser.email || 'No email'}</Text>
+                        </View>
+                        
+                        <View style={styles.infoRow}>
+                            <Ionicons name="calendar-outline" size={20} color="#6B7280" />
+                            <Text style={styles.infoText}>
+                                {currentUser.age ? `${currentUser.age} years old` : 'Age not set'}
+                            </Text>
+                        </View>
+
+                        {currentUser.bio && (
+                            <View style={styles.bioSection}>
+                                <Ionicons name="document-text-outline" size={20} color="#6B7280" />
+                                <Text style={styles.bioText}>{currentUser.bio}</Text>
+                            </View>
+                        )}
+                    </View>
+                ) : (
+                    <View style={styles.editForm}>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.inputLabel}>Full Name *</Text>
                             <TextInput
                                 style={styles.textInput}
-                                placeholder="Your name"
                                 value={editedData.name}
                                 onChangeText={(text) => setEditedData({ ...editedData, name: text })}
+                                placeholder="Enter your full name"
+                                autoCapitalize="words"
                             />
                         </View>
 
-                        <View style={styles.inputContainer}>
-                            <Ionicons name="mail" size={20} color="#6B7280" />
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.inputLabel}>Email</Text>
                             <TextInput
                                 style={styles.textInput}
-                                placeholder="Email (optional)"
                                 value={editedData.email}
                                 onChangeText={(text) => setEditedData({ ...editedData, email: text })}
+                                placeholder="Enter your email"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                autoComplete="email"
                             />
                         </View>
 
-                        <View style={styles.inputContainer}>
-                            <Ionicons name="calendar" size={20} color="#6B7280" />
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.inputLabel}>Age</Text>
                             <TextInput
                                 style={styles.textInput}
-                                placeholder="Age (optional)"
                                 value={editedData.age}
                                 onChangeText={(text) => setEditedData({ ...editedData, age: text })}
+                                placeholder="Enter your age"
                                 keyboardType="numeric"
                             />
                         </View>
+                    </View>
+                )}
 
-                        <View style={styles.editButtons}>
+                {/* Action Buttons */}
+                <View style={styles.actionsContainer}>
+                    {!isEditing ? (
+                        <>
+                            <TouchableOpacity
+                                style={styles.secondaryButton}
+                                onPress={() => setIsEditing(true)}
+                            >
+                                <Ionicons name="pencil-outline" size={18} color="#6366F1" />
+                                <Text style={styles.secondaryButtonText}>Edit Basic Info</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.primaryButton}
+                                onPress={() => setShowCompleteModal(true)}
+                            >
+                                <LinearGradient
+                                    colors={['#10B981', '#059669']}
+                                    style={styles.buttonGradient}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                >
+                                    <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
+                                    <Text style={styles.primaryButtonText}>Complete Profile</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </>
+                    ) : (
+                        <View style={styles.editActions}>
                             <TouchableOpacity
                                 style={styles.cancelButton}
                                 onPress={handleCancelEdit}
@@ -244,7 +263,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                 disabled={!editedData.name.trim()}
                             >
                                 <LinearGradient
-                                    colors={editedData.name.trim() ? ['#10B981', '#059669'] : ['#9CA3AF', '#6B7280']}
+                                    colors={['#10B981', '#059669']}
                                     style={styles.buttonGradient}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 0 }}
@@ -253,198 +272,81 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                 </LinearGradient>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                ) : (
-                    <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{currentUser.name}</Text>
-                        <Text style={styles.profileCode}>Code: {currentUser.code}</Text>
-                        {currentUser.email && (
-                            <Text style={styles.profileEmail}>{currentUser.email}</Text>
-                        )}
-                        {currentUser.age && (
-                            <Text style={styles.profileAge}>{currentUser.age} years old</Text>
-                        )}
-
-                        <TouchableOpacity
-                            style={styles.editButton}
-                            onPress={() => setIsEditing(true)}
-                        >
-                            <LinearGradient
-                                colors={['#8B5CF6', '#7C3AED']}
-                                style={styles.buttonGradient}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                            >
-                                <Ionicons name="pencil" size={20} color="#ffffff" />
-                                <Text style={styles.editButtonText}>Quick Edit</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.editButton, styles.completeEditButton]}
-                            onPress={() => setShowCompleteModal(true)}
-                        >
-                            <LinearGradient
-                                colors={['#10B981', '#059669']}
-                                style={styles.buttonGradient}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                            >
-                                <Ionicons name="create" size={20} color="#ffffff" />
-                                <Text style={styles.editButtonText}>Complete Profile</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </View>
-
-      {/* Family House Information */}
-      {familyHouse ? (
-        <View style={styles.familySection}>
-          <Text style={styles.sectionTitle}>Family House</Text>
-          <View style={styles.familyCard}>
-            <View style={styles.familyInfo}>
-              <Text style={styles.familyName}>{familyHouse.houseName}</Text>
-              <Text style={styles.familyDetails}>
-                Joined: {new Date(familyHouse.createdAt).toLocaleDateString()}
-              </Text>
-              <Text style={styles.familyMemberCount}>
-                {familyHouse.members.filter(m => m.isActive).length} active members
-              </Text>
-            </View>
-            
-            <View style={styles.roleInfo}>
-              <LinearGradient
-                colors={getRoleColor(currentUser.role)}
-                style={styles.roleBadge}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Ionicons name={getRoleIcon(currentUser.role) as any} size={16} color="#ffffff" />
-                <Text style={styles.roleText}>{getRoleLabel(currentUser.role)}</Text>
-              </LinearGradient>
-              
-              {currentUser.isOnline !== undefined && (
-                <View style={styles.onlineStatus}>
-                  <View style={[
-                    styles.statusIndicator,
-                    { backgroundColor: currentUser.isOnline ? '#10B981' : '#6B7280' }
-                  ]} />
-                  <Text style={styles.statusText}>
-                    {currentUser.isOnline ? 'Online' : 'Offline'}
-                  </Text>
+                    )}
                 </View>
-              )}
-            </View>
-          </View>
-        </View>
-      ) : (
-        <View style={styles.familySection}>
-          <Text style={styles.sectionTitle}>Family House</Text>
-          <View style={[styles.familyCard, styles.emptyFamilyCard]}>
-            <View style={styles.emptyFamilyContent}>
-              <Ionicons name="home-outline" size={48} color="#9CA3AF" />
-              <Text style={styles.emptyFamilyTitle}>No Family House</Text>
-              <Text style={styles.emptyFamilyText}>
-                You're not part of any family house yet.{'\n'}
-                Join an existing house or create your own!
-              </Text>
-              <TouchableOpacity
-                style={styles.joinFamilyButton}
-                onPress={() => navigation.navigate('JoinHouse')}
-              >
-                <LinearGradient
-                  colors={['#10B981', '#059669']}
-                  style={styles.buttonGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  <Ionicons name="home" size={16} color="#ffffff" />
-                  <Text style={styles.joinFamilyButtonText}>Join/Create House</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
 
-            {/* Quick Actions */}
-            <View style={styles.actionsSection}>
-                <Text style={styles.sectionTitle}>Quick Actions</Text>
-
-                <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => navigation.navigate('HomeManagement')}
-                >
-                    <View style={styles.actionContent}>
-                        <Ionicons name="people" size={24} color="#3B82F6" />
-                        <View style={styles.actionTextContainer}>
-                            <Text style={styles.actionTitle}>Manage Family</Text>
-                            <Text style={styles.actionSubtitle}>Invite members, manage roles</Text>
+                {/* Family House Info */}
+                <View style={styles.familySection}>
+                    <Text style={styles.sectionTitle}>Family House</Text>
+                    <View style={styles.familyCard}>
+                        <View style={styles.familyInfo}>
+                            <Ionicons name="home-outline" size={24} color="#8B5CF6" />
+                            <View style={styles.familyDetails}>
+                                <Text style={styles.familyName}>Casa de los Ruiz</Text>
+                                <Text style={styles.familyDate}>Joined: Jan 1, 2024</Text>
+                                <Text style={styles.memberCount}>4 active members</Text>
+                            </View>
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
                     </View>
-                </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => Alert.alert('Settings', 'Settings coming soon!')}
-                >
-                    <View style={styles.actionContent}>
-                        <Ionicons name="settings" size={24} color="#8B5CF6" />
-                        <View style={styles.actionTextContainer}>
-                            <Text style={styles.actionTitle}>App Settings</Text>
-                            <Text style={styles.actionSubtitle}>Notifications, privacy, etc.</Text>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </View>
-                </TouchableOpacity>
+                {/* Quick Tips */}
+                <View style={styles.tipsSection}>
+                    <Ionicons name="lightbulb-outline" size={20} color="#F59E0B" />
+                    <Text style={styles.tipsText}>
+                        Use "Complete Profile" to add photos, bio, nickname, and privacy settings
+                    </Text>
+                </View>
             </View>
 
-            {/* Avatar Selection Modal */}
-            <Modal
-                visible={showAvatarModal}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={() => setShowAvatarModal(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Choose Avatar</Text>
+            {/* Complete Profile Modal */}
+            <CompleteProfileEditModal
+                visible={showCompleteModal}
+                onClose={() => setShowCompleteModal(false)}
+                navigation={navigation}
+            />
+        </ScrollView>
+    );
+};
 
-                        <View style={styles.avatarGrid}>
-                            {avatarOptions.map((avatar, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.avatarOption,
-                                        currentUser.avatar === avatar && styles.selectedAvatar
-                                    ]}
-                                    onPress={() => handleChangeAvatar(avatar)}
-                                >
-                                    <Text style={styles.avatarText}>{avatar}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+// Helper functions
+const getRoleColors = (role: string) => {
+    switch (role) {
+        case 'admin':
+            return ['#EF4444', '#DC2626'];
+        case 'sub-admin':
+            return ['#3B82F6', '#2563EB'];
+        case 'child':
+            return ['#10B981', '#059669'];
+        default:
+            return ['#6B7280', '#4B5563'];
+    }
+};
 
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setShowAvatarModal(false)}
-                        >
-                            <Text style={styles.closeButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-        </View>
-      </Modal>
+const getRoleIcon = (role: string) => {
+    switch (role) {
+        case 'admin':
+            return 'crown';
+        case 'sub-admin':
+            return 'person-circle';
+        case 'child':
+            return 'happy-circle';
+        default:
+            return 'person';
+    }
+};
 
-      {/* Complete Profile Edit Modal */}
-      <CompleteProfileEditModal
-        visible={showCompleteModal}
-        onClose={() => setShowCompleteModal(false)}
-        navigation={navigation}
-      />
-    </ScrollView>
-  );
+const getRoleLabel = (role: string) => {
+    switch (role) {
+        case 'admin':
+            return 'Administrator';
+        case 'sub-admin':
+            return 'Sub-Administrator';
+        case 'child':
+            return 'Child';
+        default:
+            return 'Member';
+    }
 };
 
 const styles = StyleSheet.create({
@@ -452,21 +354,46 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F9FAFB',
     },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F9FAFB',
+    },
+    errorText: {
+        fontSize: 18,
+        color: '#6B7280',
+        marginTop: 16,
+    },
     header: {
         paddingTop: 60,
-        paddingBottom: 30,
+        paddingBottom: 20,
         paddingHorizontal: 20,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 8,
     },
     backButton: {
-        marginBottom: 16,
+        position: 'absolute',
+        top: 60,
+        left: 20,
+        padding: 8,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     headerContent: {
         alignItems: 'center',
+        paddingTop: 20,
     },
     headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 28,
+        fontWeight: '800',
         color: '#ffffff',
+        marginTop: 8,
         marginBottom: 4,
     },
     headerSubtitle: {
@@ -474,336 +401,274 @@ const styles = StyleSheet.create({
         color: '#E5E7EB',
         textAlign: 'center',
     },
-    quickAccessSection: {
-        padding: 20,
-        alignItems: 'center',
-    },
-    completeProfileButton: {
+    headerButton: {
+        position: 'absolute',
+        top: 60,
+        right: 20,
+        padding: 8,
         borderRadius: 12,
-        overflow: 'hidden',
-        width: '100%',
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: '600',
-        marginLeft: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     profileCard: {
         backgroundColor: '#ffffff',
         margin: 20,
-        borderRadius: 16,
+        borderRadius: 20,
         padding: 24,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-        alignItems: 'center',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 6,
     },
     avatarSection: {
+        alignItems: 'center',
+        marginBottom: 24,
+    },
+    avatarContainer: {
         position: 'relative',
-        marginBottom: 20,
+        marginBottom: 16,
     },
-    currentAvatar: {
-        fontSize: 64,
+    avatarText: {
+        fontSize: 80,
     },
-    avatarBadge: {
+    profileImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        resizeMode: 'cover',
+    },
+    cameraButton: {
         position: 'absolute',
         bottom: 0,
         right: 0,
         backgroundColor: '#8B5CF6',
-        borderRadius: 12,
-        width: 24,
-        height: 24,
-        justifyContent: 'center',
+        borderRadius: 14,
+        padding: 6,
+        borderWidth: 2,
+        borderColor: '#ffffff',
+    },
+    userInfo: {
         alignItems: 'center',
     },
-    editingForm: {
-        width: '100%',
+    userName: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginBottom: 4,
     },
-    inputContainer: {
+    userCode: {
+        fontSize: 16,
+        color: '#6B7280',
+        marginBottom: 12,
+    },
+    statusRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        gap: 12,
+    },
+    roleBadge: {
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    roleGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        gap: 4,
+    },
+    roleText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#ffffff',
+    },
+    onlineStatus: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    statusDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    statusText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#6B7280',
+    },
+    infoDisplay: {
         backgroundColor: '#F9FAFB',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 24,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+        gap: 12,
+    },
+    infoText: {
+        fontSize: 16,
+        color: '#374151',
+        flex: 1,
+    },
+    bioSection: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: 8,
+        gap: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
+        marginTop: 8,
+        paddingTop: 12,
+    },
+    bioText: {
+        fontSize: 16,
+        color: '#374151',
+        flex: 1,
+        lineHeight: 22,
+    },
+    editForm: {
+        backgroundColor: '#F9FAFB',
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 24,
+    },
+    inputGroup: {
+        marginBottom: 16,
+    },
+    inputLabel: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 8,
+    },
+    textInput: {
+        backgroundColor: '#ffffff',
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 12,
-        marginBottom: 12,
-    },
-    textInput: {
-        flex: 1,
         fontSize: 16,
         color: '#1F2937',
-        marginLeft: 12,
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
     },
-    editButtons: {
+    actionsContainer: {
+        gap: 12,
+    },
+    secondaryButton: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 12,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        gap: 8,
+    },
+    secondaryButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#6366F1',
+    },
+    primaryButton: {
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    buttonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        gap: 8,
+    },
+    primaryButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#ffffff',
+    },
+    editActions: {
+        flexDirection: 'row',
+        gap: 12,
     },
     cancelButton: {
         flex: 1,
         backgroundColor: '#F3F4F6',
-        borderRadius: 8,
-        paddingVertical: 12,
+        borderRadius: 12,
+        paddingVertical: 14,
         alignItems: 'center',
-        marginRight: 8,
     },
     cancelButtonText: {
-        color: '#6B7280',
         fontSize: 16,
         fontWeight: '600',
+        color: '#6B7280',
     },
     saveButton: {
         flex: 1,
-        borderRadius: 8,
+        borderRadius: 12,
         overflow: 'hidden',
-        marginLeft: 8,
-    },
-    buttonGradient: {
-        paddingVertical: 12,
-        alignItems: 'center',
     },
     saveButtonText: {
-        color: '#ffffff',
         fontSize: 16,
         fontWeight: '600',
+        color: '#ffffff',
     },
-    profileInfo: {
-        alignItems: 'center',
-        width: '100%',
-    },
-    profileName: {
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 4,
-    },
-    profileCode: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 4,
-    },
-    profileEmail: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 4,
-    },
-    profileAge: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 16,
-    },
-  editButton: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginTop: 8,
-  },
-  completeEditButton: {
-    marginTop: 12,
-  },
-  editButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
     familySection: {
-        marginHorizontal: 20,
-        marginBottom: 24,
+        marginTop: 24,
+        paddingTop: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '700',
         color: '#1F2937',
         marginBottom: 12,
     },
-  familyCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  emptyFamilyCard: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 120,
-  },
-  emptyFamilyContent: {
-    alignItems: 'center',
-  },
-  emptyFamilyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#374151',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  emptyFamilyText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  joinFamilyButton: {
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  joinFamilyButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 6,
-  },
+    familyCard: {
+        backgroundColor: '#F9FAFB',
+        borderRadius: 12,
+        padding: 16,
+    },
     familyInfo: {
-        marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    familyDetails: {
+        flex: 1,
     },
     familyName: {
         fontSize: 16,
         fontWeight: '600',
         color: '#1F2937',
-        marginBottom: 4,
+        marginBottom: 2,
     },
-    familyDetails: {
+    familyDate: {
         fontSize: 14,
         color: '#6B7280',
         marginBottom: 2,
     },
-    familyMemberCount: {
+    memberCount: {
         fontSize: 14,
         color: '#6B7280',
     },
-    roleInfo: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    roleBadge: {
+    tipsSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-    },
-    roleText: {
-        color: '#ffffff',
-        fontSize: 12,
-        fontWeight: '600',
-        marginLeft: 4,
-    },
-    onlineStatus: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    statusIndicator: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginRight: 6,
-    },
-    statusText: {
-        fontSize: 12,
-        color: '#6B7280',
-    },
-    actionsSection: {
-        marginHorizontal: 20,
-        marginBottom: 24,
-    },
-    actionButton: {
-        backgroundColor: '#ffffff',
+        backgroundColor: '#FEF3C7',
         borderRadius: 12,
         padding: 16,
-        marginBottom: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        marginTop: 20,
+        gap: 12,
     },
-    actionContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    actionTextContainer: {
+    tipsText: {
         flex: 1,
-        marginLeft: 16,
-    },
-    actionTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 2,
-    },
-    actionSubtitle: {
         fontSize: 14,
-        color: '#6B7280',
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    modalContent: {
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
-        padding: 24,
-        width: '100%',
-        maxWidth: 400,
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1F2937',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    avatarGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    avatarOption: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#F3F4F6',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 8,
-        borderWidth: 2,
-        borderColor: 'transparent',
-    },
-    selectedAvatar: {
-        borderColor: '#8B5CF6',
-        backgroundColor: '#EDE9FE',
-    },
-    avatarText: {
-        fontSize: 24,
-    },
-    closeButton: {
-        backgroundColor: '#F3F4F6',
-        borderRadius: 8,
-        paddingVertical: 12,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#6B7280',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    errorText: {
-        fontSize: 16,
-        color: '#EF4444',
-        textAlign: 'center',
-        marginTop: 50,
+        color: '#92400E',
+        lineHeight: 20,
     },
 });
