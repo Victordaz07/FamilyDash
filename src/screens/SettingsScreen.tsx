@@ -23,6 +23,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     );
   };
 
+  const handleDeviceRingToggle = () => {
+    setDeviceRingEnabled(!deviceRingEnabled);
+    Alert.alert(
+      'Ring de Dispositivos',
+      `Ring de dispositivos ${deviceRingEnabled ? 'desactivado' : 'activado'}`
+    );
+  };
+
   const handleLanguageChange = async (newLanguage: Language) => {
     await changeLanguage(newLanguage);
     Alert.alert(
