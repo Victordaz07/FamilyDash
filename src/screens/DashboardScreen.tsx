@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../locales/i18n';
 import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';

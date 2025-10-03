@@ -1,21 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
-import { useTranslation } from 'react-i18next';
-import i18n from '../locales/i18n';
+import { useTranslation, Language } from '../locales/i18n';
 
 interface SettingsScreenProps {
   navigation: any;
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
-  const { t, i18n: i18nInstance } = useTranslation();
+  const { t, language, changeLanguage } = useTranslation();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [deviceRingEnabled, setDeviceRingEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(i18nInstance.language);
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(!notificationsEnabled);
@@ -25,12 +23,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleLanguageChange = (language: string) => {
-    i18nInstance.changeLanguage(language);
-    setCurrentLanguage(language);
+  const handleLanguageChange = async (newLanguage: Language) => {
+    await changeLanguage(newLanguage);
     Alert.alert(
       t('settings.language'),
-      `${t('settings.languageDescription')} - ${language === 'en' ? t('settings.english') : t('settings.spanish')}`
+      `${t('settings.languageDescription')} - ${newLanguage === 'en' ? t('settings.english') : t('settings.spanish')}`
     );
   };
 
@@ -98,18 +95,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           <TouchableOpacity
             style={[
               styles.languageOption,
-              currentLanguage === 'en' && styles.languageOptionSelected
+              language === 'en' && styles.languageOptionSelected
             ]}
             onPress={() => handleLanguageChange('en')}
           >
             <Text style={styles.languageFlag}>🇺🇸</Text>
             <Text style={[
               styles.languageText,
-              currentLanguage === 'en' && styles.languageTextSelected
+              language === 'en' && styles.languageTextSelected
             ]}>
               {t('settings.english')}
             </Text>
-            {currentLanguage === 'en' && (
+            {language === 'en' && (
               <Ionicons name="checkmark-circle" size={20} color={theme.colors.primary} />
             )}
           </TouchableOpacity>
@@ -117,18 +114,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           <TouchableOpacity
             style={[
               styles.languageOption,
-              currentLanguage === 'es' && styles.languageOptionSelected
+              language === 'es' && styles.languageOptionSelected
             ]}
             onPress={() => handleLanguageChange('es')}
           >
             <Text style={styles.languageFlag}>🇪🇸</Text>
             <Text style={[
               styles.languageText,
-              currentLanguage === 'es' && styles.languageTextSelected
+              language === 'es' && styles.languageTextSelected
             ]}>
               {t('settings.spanish')}
             </Text>
-            {currentLanguage === 'es' && (
+            {language === 'es' && (
               <Ionicons name="checkmark-circle" size={20} color={theme.colors.primary} />
             )}
           </TouchableOpacity>
