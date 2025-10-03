@@ -4,14 +4,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import { useTranslation } from '../locales/i18n'; // TEMPORARILY COMMENTED FOR DEBUGGING
+import { useTranslation } from '../locales/i18n';
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
 import GoalsScreen from '../modules/goals/GoalsScreen';
-import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
+import EmotionalSafeRoom from '../modules/safeRoom/screens/EmotionalSafeRoom';
+import NewEmotionalEntry from '../modules/safeRoom/screens/NewEmotionalEntry';
+import PermissionTest from '../modules/safeRoom/screens/PermissionTest';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -73,7 +75,9 @@ const GoalsStack = () => (
 
 const SafeRoomStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen as any} />
+    <Stack.Screen name="SafeRoomMain" component={EmotionalSafeRoom as any} />
+    <Stack.Screen name="NewEmotionalEntry" component={NewEmotionalEntry as any} />
+    <Stack.Screen name="PermissionTest" component={PermissionTest as any} />
   </Stack.Navigator>
 );
 

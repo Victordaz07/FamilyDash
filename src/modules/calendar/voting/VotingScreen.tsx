@@ -98,7 +98,7 @@ const VotingScreen: React.FC<VotingScreenProps> = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Votaciones Familiares</Text>
+        <Text style={styles.headerTitle}>Family Voting</Text>
         <TouchableOpacity
           style={styles.newButton}
           onPress={() => setShowNewProposal(true)}
@@ -119,7 +119,7 @@ const VotingScreen: React.FC<VotingScreenProps> = ({ navigation }) => {
         </Card>
         <Card style={styles.statCard}>
           <Text style={styles.statNumber}>{familyMembers.length}</Text>
-          <Text style={styles.statLabel}>Miembros</Text>
+          <Text style={styles.statLabel}>Members</Text>
         </Card>
       </View>
 

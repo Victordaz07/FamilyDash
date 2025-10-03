@@ -54,7 +54,7 @@ export const usePenaltiesStore = create<PenaltiesStore>((set, get) => ({
         };
         set((state) => ({ penalties: [...state.penalties, newPenalty] }));
 
-        // Programar notificación para la nueva pena
+        // Schedule notification for the new penalty
         schedulePenaltyNotification({
             id: newPenalty.id,
             title: `${newPenalty.penaltyType === 'yellow' ? 'Tarjeta Amarilla' : 'Tarjeta Roja'}: ${newPenalty.reason}`,

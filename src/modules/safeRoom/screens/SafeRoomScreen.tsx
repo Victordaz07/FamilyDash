@@ -72,9 +72,9 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
     };
 
     const getSafeRoomStats = () => {
-        return { 
-            totalMessages: 0, 
-            unreadCount: 0, 
+        return {
+            totalMessages: 0,
+            unreadCount: 0,
             activeContacts: 0,
             onlineMembers: getOnlineFamilyMembers().length,
             activeLocationShares: locationShares.length,
@@ -220,8 +220,13 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                         </Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.headerButton} onPress={handleEmergencyCall}>
-                            <Ionicons name="call" size={16} color="white" />
+                        <TouchableOpacity
+                            style={styles.headerButton}
+                            onPress={() => {
+                                Alert.alert('New Message', 'Create new safe message functionality coming soon');
+                            }}
+                        >
+                            <Ionicons name="add" size={20} color="white" />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.headerButton, isEmergencyMode && styles.emergencyButton]}

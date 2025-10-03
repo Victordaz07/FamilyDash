@@ -17,7 +17,7 @@ const SafeRoomScreen = () => {
                 isRead: false
             });
             setNewMessage('');
-            Alert.alert('Mensaje enviado', 'Tu mensaje de amor ha sido enviado al Cuarto Seguro ❤️');
+            Alert.alert('Message sent', 'Your love message has been sent to the Safe Room ❤️');
         }
     };
 
@@ -35,28 +35,28 @@ const SafeRoomScreen = () => {
                 colors={['#EC4899', '#DB2777']}
                 style={styles.header}
             >
-                <Text style={styles.headerTitle}>❤️ Cuarto Seguro</Text>
+                <Text style={styles.headerTitle}>❤️ Safe Room</Text>
                 <Text style={styles.headerSubtitle}>
-                    {getUnreadCount()} mensajes sin leer
+                    {getUnreadCount()} unread messages
                 </Text>
             </LinearGradient>
 
             <View style={styles.content}>
                 <View style={styles.welcomeSection}>
                     <Ionicons name="heart" size={48} color="#EC4899" />
-                    <Text style={styles.welcomeTitle}>Espacio de Amor</Text>
+                    <Text style={styles.welcomeTitle}>Love Space</Text>
                     <Text style={styles.welcomeText}>
-                        Este es un lugar especial para compartir mensajes de amor,
-                        apoyo y cariño con tu familia.
+                        This is a special place to share love messages,
+                        support and love with your family.
                     </Text>
                 </View>
 
                 <View style={styles.messageInputSection}>
-                    <Text style={styles.inputLabel}>Escribe un mensaje de amor:</Text>
+                    <Text style={styles.inputLabel}>Write a love message:</Text>
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={styles.messageInput}
-                            placeholder="Escribe tu mensaje aquí..."
+                            placeholder="Write your message here..."
                             value={newMessage}
                             onChangeText={setNewMessage}
                             multiline
@@ -71,17 +71,17 @@ const SafeRoomScreen = () => {
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.characterCount}>
-                        {newMessage.length}/500 caracteres
+                        {newMessage.length}/500 characters
                     </Text>
                 </View>
 
-                <Text style={styles.sectionTitle}>Mensajes Recientes</Text>
+                <Text style={styles.sectionTitle}>Recent Messages</Text>
 
                 {safeRoomMessages.length === 0 ? (
                     <View style={styles.emptyState}>
                         <Ionicons name="heart-outline" size={64} color="#EC4899" />
-                        <Text style={styles.emptyText}>No hay mensajes aún</Text>
-                        <Text style={styles.emptySubtext}>¡Sé el primero en enviar un mensaje de amor!</Text>
+                        <Text style={styles.emptyText}>No messages yet</Text>
+                        <Text style={styles.emptySubtext}>Be the first to send a love message!</Text>
                     </View>
                 ) : (
                     safeRoomMessages
@@ -118,7 +118,7 @@ const SafeRoomScreen = () => {
                                 <View style={styles.messageFooter}>
                                     <Ionicons name="heart" size={16} color="#EC4899" />
                                     <Text style={styles.messageFooterText}>
-                                        {message.isRead ? 'Leído' : 'Nuevo'}
+                                        {message.isRead ? 'Read' : 'New'}
                                     </Text>
                                 </View>
                             </TouchableOpacity>
@@ -129,15 +129,29 @@ const SafeRoomScreen = () => {
                     <View style={styles.statCard}>
                         <Ionicons name="heart" size={24} color="#EC4899" />
                         <Text style={styles.statNumber}>{safeRoomMessages.length}</Text>
-                        <Text style={styles.statLabel}>Mensajes Totales</Text>
+                        <Text style={styles.statLabel}>Total Messages</Text>
                     </View>
                     <View style={styles.statCard}>
                         <Ionicons name="mail-unread" size={24} color="#EC4899" />
                         <Text style={styles.statNumber}>{getUnreadCount()}</Text>
-                        <Text style={styles.statLabel}>Sin Leer</Text>
+                        <Text style={styles.statLabel}>Unread</Text>
                     </View>
                 </View>
             </View>
+
+            {/* Floating Action Button */}
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => {
+                    if (newMessage.trim()) {
+                        handleSendMessage();
+                    } else {
+                        Alert.alert('Empty Message', 'Please write a message before sending');
+                    }
+                }}
+            >
+                <Ionicons name="add" size={24} color="#ffffff" />
+            </TouchableOpacity>
         </ScrollView>
     );
 };
@@ -335,6 +349,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#6B7280',
         marginTop: 4,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#EC4899',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
     },
 });
 

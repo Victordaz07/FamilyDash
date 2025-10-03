@@ -19,16 +19,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const handleNotificationToggle = () => {
     setNotificationsEnabled(!notificationsEnabled);
     Alert.alert(
-      'Notificaciones',
-      `Notificaciones ${notificationsEnabled ? 'desactivadas' : 'activadas'}`
+      'Notifications',
+      `Notifications ${notificationsEnabled ? 'disabled' : 'enabled'}`
     );
   };
 
   const handleDeviceRingToggle = () => {
     setDeviceRingEnabled(!deviceRingEnabled);
     Alert.alert(
-      'Ring de Dispositivos',
-      `Ring de dispositivos ${deviceRingEnabled ? 'desactivado' : 'activado'}`
+      'Device Ring',
+      `Device ring ${deviceRingEnabled ? 'disabled' : 'enabled'}`
     );
   };
 
@@ -40,16 +40,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleForceSpanish = async () => {
-    await i18n.forceSpanish();
-    Alert.alert('Idioma Forzado', 'Se ha forzado el idioma a Español');
-  };
 
   const handleDarkModeToggle = () => {
     setDarkModeEnabled(!darkModeEnabled);
     Alert.alert(
-      'Modo Oscuro',
-      `Modo oscuro ${darkModeEnabled ? 'desactivado' : 'activado'}`
+      'Dark Mode',
+      `Dark mode ${darkModeEnabled ? 'disabled' : 'enabled'}`
     );
   };
 
@@ -145,42 +141,22 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Temporary Debug Buttons */}
+        {/* Language Selection */}
         <TouchableOpacity
-          style={styles.forceButton}
-          onPress={handleForceSpanish}
+          style={styles.languageButton}
+          onPress={() => Alert.alert('Coming Soon', 'Language selection will be available in a future update')}
         >
-          <Text style={styles.forceButtonText}>🔧 Forzar Español (Debug)</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.forceButton}
-          onPress={async () => {
-            await i18n.forceEnglish();
-            Alert.alert('Debug', 'Idioma forzado a Inglés');
-          }}
-        >
-          <Text style={styles.forceButtonText}>🔧 Forzar Inglés (Debug)</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.forceButton}
-          onPress={async () => {
-            await i18n.clearLanguagePreference();
-            Alert.alert('Debug', 'Preferencia de idioma limpiada');
-          }}
-        >
-          <Text style={styles.forceButtonText}>🔧 Limpiar Preferencia (Debug)</Text>
+          <Text style={styles.languageButtonText}>🌐 Language / Idioma</Text>
         </TouchableOpacity>
       </Card>
 
-      {/* Notificaciones */}
+      {/* Notifications */}
       <Card style={styles.section}>
         <Text style={styles.sectionTitle}>{t('settings.notifications')}</Text>
         <SettingItem
           icon="notifications"
-          title="Notificaciones Push"
-          subtitle="Recibir notificaciones de la app"
+          title="Push Notifications"
+          subtitle="Receive app notifications"
           rightComponent={
             <Switch
               value={notificationsEnabled}
@@ -192,25 +168,25 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         />
         <SettingItem
           icon="time"
-          title="Recordatorios"
-          subtitle="Configurar horarios de notificación"
-          onPress={() => Alert.alert('Recordatorios', 'Configuración de recordatorios')}
+          title="Reminders"
+          subtitle="Configure notification schedules"
+          onPress={() => Alert.alert('Reminders', 'Reminder configuration')}
         />
         <SettingItem
           icon="volume-high"
-          title="Sonidos"
-          subtitle="Configurar sonidos de notificación"
-          onPress={() => Alert.alert('Sonidos', 'Configuración de sonidos')}
+          title="Sounds"
+          subtitle="Configure notification sounds"
+          onPress={() => Alert.alert('Sounds', 'Sound configuration')}
         />
       </Card>
 
-      {/* Dispositivos */}
+      {/* Devices */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Dispositivos</Text>
+        <Text style={styles.sectionTitle}>Devices</Text>
         <SettingItem
           icon="phone-portrait"
-          title="Ring de Dispositivos"
-          subtitle="Hacer sonar todos los dispositivos familiares"
+          title="Device Ring"
+          subtitle="Ring all family devices"
           rightComponent={
             <Switch
               value={deviceRingEnabled}
@@ -222,25 +198,25 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         />
         <SettingItem
           icon="bluetooth"
-          title="Dispositivos Conectados"
-          subtitle="Gestionar dispositivos vinculados"
-          onPress={() => Alert.alert('Dispositivos', 'Lista de dispositivos conectados')}
+          title="Connected Devices"
+          subtitle="Manage linked devices"
+          onPress={() => Alert.alert('Devices', 'Connected devices list')}
         />
         <SettingItem
           icon="location"
-          title="Ubicación Familiar"
-          subtitle="Compartir ubicación entre familiares"
-          onPress={() => Alert.alert('Ubicación', 'Configuración de ubicación')}
+          title="Family Location"
+          subtitle="Share location between family members"
+          onPress={() => Alert.alert('Location', 'Location configuration')}
         />
       </Card>
 
-      {/* Apariencia */}
+      {/* Appearance */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Apariencia</Text>
+        <Text style={styles.sectionTitle}>Appearance</Text>
         <SettingItem
           icon="moon"
-          title="Modo Oscuro"
-          subtitle="Cambiar entre tema claro y oscuro"
+          title="Dark Mode"
+          subtitle="Switch between light and dark theme"
           rightComponent={
             <Switch
               value={darkModeEnabled}
@@ -252,69 +228,69 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         />
         <SettingItem
           icon="color-palette"
-          title="Colores"
-          subtitle="Personalizar colores de la app"
-          onPress={() => Alert.alert('Colores', 'Personalización de colores')}
+          title="Colors"
+          subtitle="Customize app colors"
+          onPress={() => Alert.alert('Colors', 'Color customization')}
         />
         <SettingItem
           icon="text"
-          title="Tamaño de Texto"
-          subtitle="Ajustar tamaño de fuente"
-          onPress={() => Alert.alert('Texto', 'Configuración de tamaño de texto')}
+          title="Text Size"
+          subtitle="Adjust font size"
+          onPress={() => Alert.alert('Text', 'Text size configuration')}
         />
       </Card>
 
-      {/* Cuenta */}
+      {/* Account */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Cuenta</Text>
+        <Text style={styles.sectionTitle}>Account</Text>
         <SettingItem
           icon="person"
-          title="Perfil"
-          subtitle="Editar información personal"
-          onPress={() => Alert.alert('Perfil', 'Editar perfil')}
+          title="Profile"
+          subtitle="Edit personal information"
+          onPress={() => Alert.alert('Profile', 'Edit profile')}
         />
         <SettingItem
           icon="people"
-          title="Familia"
-          subtitle="Gestionar miembros de la familia"
-          onPress={() => Alert.alert('Familia', 'Configuración de familia')}
+          title="Family"
+          subtitle="Manage family members"
+          onPress={() => Alert.alert('Family', 'Family configuration')}
         />
         <SettingItem
           icon="shield-checkmark"
-          title="Privacidad"
-          subtitle="Configurar privacidad y seguridad"
-          onPress={() => Alert.alert('Privacidad', 'Configuración de privacidad')}
+          title="Privacy"
+          subtitle="Configure privacy and security"
+          onPress={() => Alert.alert('Privacy', 'Privacy configuration')}
         />
       </Card>
 
-      {/* Soporte */}
+      {/* Support */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Soporte</Text>
+        <Text style={styles.sectionTitle}>Support</Text>
         <SettingItem
           icon="help-circle"
-          title="Ayuda"
-          subtitle="Centro de ayuda y preguntas frecuentes"
-          onPress={() => Alert.alert('Ayuda', 'Centro de ayuda')}
+          title="Help"
+          subtitle="Help center and FAQ"
+          onPress={() => Alert.alert('Help', 'Help center')}
         />
         <SettingItem
           icon="mail"
-          title="Contacto"
-          subtitle="Enviar comentarios o reportar problemas"
-          onPress={() => Alert.alert('Contacto', 'Enviar mensaje')}
+          title="Contact"
+          subtitle="Send feedback or report issues"
+          onPress={() => Alert.alert('Contact', 'Send message')}
         />
         <SettingItem
           icon="information-circle"
-          title="Acerca de"
-          subtitle="Información de la aplicación"
-          onPress={() => Alert.alert('Acerca de', 'FamilyDash v1.0')}
+          title="About"
+          subtitle="Application information"
+          onPress={() => Alert.alert('About', 'FamilyDash v1.0')}
         />
       </Card>
 
-      {/* Botón de Cerrar Sesión */}
+      {/* Logout Button */}
       <View style={styles.logoutSection}>
         <Button
-          title="Cerrar Sesión"
-          onPress={() => Alert.alert('Cerrar Sesión', '¿Estás seguro?')}
+          title="Logout"
+          onPress={() => Alert.alert('Logout', 'Are you sure?')}
           variant="outline"
           style={styles.logoutButton}
         />
@@ -323,7 +299,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>FamilyDash v1.0</Text>
-        <Text style={styles.footerSubtext}>Manteniendo familias conectadas</Text>
+        <Text style={styles.footerSubtext}>Keeping families connected</Text>
       </View>
     </ScrollView>
   );
@@ -407,19 +383,19 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: '600',
   },
-  forceButton: {
-    backgroundColor: '#fef3c7',
-    paddingVertical: 8,
+  languageButton: {
+    backgroundColor: '#f0f9ff',
+    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
     marginHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#f59e0b',
+    borderColor: '#0ea5e9',
   },
-  forceButtonText: {
-    fontSize: 12,
-    color: '#92400e',
+  languageButtonText: {
+    fontSize: 14,
+    color: '#0369a1',
     textAlign: 'center',
     fontWeight: '500',
   },

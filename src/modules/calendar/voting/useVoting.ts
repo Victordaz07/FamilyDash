@@ -51,7 +51,7 @@ const useVoting = () => {
       {
         id: '1',
         title: '¿Qué película vemos esta noche?',
-        description: 'Elegimos una película para ver en familia',
+        description: 'We choose a movie to watch as a family',
         category: 'movie',
         options: [
           { id: 'opt1', text: 'Avengers: Endgame', votes: 2, voters: ['mom', 'jake'] },
@@ -67,7 +67,7 @@ const useVoting = () => {
       {
         id: '2',
         title: '¿Dónde vamos a cenar el fin de semana?',
-        description: 'Decidamos el restaurante para la cena familiar',
+        description: 'Let\'s decide on the restaurant for family dinner',
         category: 'food',
         options: [
           { id: 'opt4', text: 'Pizza Palace', votes: 3, voters: ['mom', 'dad', 'jake'] },
@@ -82,8 +82,8 @@ const useVoting = () => {
       },
       {
         id: '3',
-        title: '¿Qué actividad hacemos el domingo?',
-        description: 'Plan familiar para el domingo',
+        title: 'What activity do we do on Sunday?',
+        description: 'Family plan for Sunday',
         category: 'activity',
         options: [
           { id: 'opt7', text: 'Ir al parque', votes: 2, voters: ['jake', 'emma'] },
@@ -195,7 +195,7 @@ const useVoting = () => {
     return [
       { id: 'entertainment', name: 'Entretenimiento', icon: 'game-controller', color: '#8B5CF6' },
       { id: 'food', name: 'Comida', icon: 'restaurant', color: '#F59E0B' },
-      { id: 'activity', name: 'Actividad', icon: 'bicycle', color: '#10B981' },
+      { id: 'activity', name: 'Activity', icon: 'bicycle', color: '#10B981' },
       { id: 'movie', name: 'Películas', icon: 'film', color: '#EC4899' },
       { id: 'travel', name: 'Viajes', icon: 'airplane', color: '#3B82F6' },
       { id: 'other', name: 'Otros', icon: 'ellipsis-horizontal', color: '#6B7280' }

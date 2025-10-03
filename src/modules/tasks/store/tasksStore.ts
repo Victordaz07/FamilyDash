@@ -71,7 +71,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     };
     set((state) => ({ tasks: [...state.tasks, newTask] }));
 
-    // Programar notificación para la nueva tarea
+    // Schedule notification for the new task
     scheduleTaskNotification({
       id: newTask.id,
       title: newTask.title,

@@ -12,7 +12,7 @@ interface EventEditorScreenProps {
     route: {
         params: {
             selectedDate: string;
-            event?: CalendarEvent; // Si viene un evento, es modo edición
+            event?: CalendarEvent; // If an event comes, it's edit mode
             mode: 'create' | 'edit';
         };
     };

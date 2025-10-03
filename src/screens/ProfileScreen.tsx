@@ -13,17 +13,17 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const { t } = useTranslation();
 
   const [user] = useState({
-    name: 'Usuario Principal',
-    email: 'usuario@familydash.com',
+    name: 'Main User',
+    email: 'user@familydash.com',
     avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
     points: 1250,
     streak: 7,
-    level: 'Experto',
-    joinDate: 'Enero 2024'
+    level: 'Expert',
+    joinDate: 'January 2024'
   });
 
   const handleEditProfile = () => {
-    Alert.alert('Editar Perfil', 'Funcionalidad de edición de perfil');
+    Alert.alert('Edit Profile', 'Profile editing functionality');
   };
 
   const handleSettings = () => {
@@ -31,19 +31,19 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   const handleFamilyMembers = () => {
-    Alert.alert('Miembros de Familia', 'Funcionalidad próximamente - Pantalla de Miembros de Familia');
+    Alert.alert('Family Members', 'Coming soon - Family Members screen');
   };
 
   const handleAchievements = () => {
-    Alert.alert('Logros', 'Funcionalidad próximamente - Pantalla de Logros');
+    Alert.alert('Achievements', 'Coming soon - Achievements screen');
   };
 
   const handleRecentActivity = () => {
-    Alert.alert('Actividad Reciente', 'Funcionalidad próximamente - Pantalla de Actividad Reciente');
+    Alert.alert('Recent Activity', 'Coming soon - Recent Activity screen');
   };
 
   const handleStatistics = () => {
-    Alert.alert('Estadísticas', 'Funcionalidad próximamente - Pantalla de Estadísticas');
+    Alert.alert('Statistics', 'Coming soon - Statistics screen');
   };
 
   const ProfileItem = ({
@@ -94,7 +94,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Perfil</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
           style={styles.settingsButton}
           onPress={handleSettings}
@@ -117,21 +117,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             <View style={styles.userStats}>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{user.points}</Text>
-                <Text style={styles.statLabel}>Puntos</Text>
+                <Text style={styles.statLabel}>Points</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{user.streak}</Text>
-                <Text style={styles.statLabel}>Racha</Text>
+                <Text style={styles.statLabel}>Streak</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{user.level}</Text>
-                <Text style={styles.statLabel}>Nivel</Text>
+                <Text style={styles.statLabel}>Level</Text>
               </View>
             </View>
           </View>
         </View>
         <Button
-          title="Editar Perfil"
+          title="Edit Profile"
           onPress={handleEditProfile}
           variant="outline"
           style={styles.editButton}
@@ -140,85 +140,85 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
       {/* Quick Actions */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
         <ProfileItem
           icon="people"
-          title="Miembros de Familia"
-          subtitle="Gestionar familiares"
+          title="Family Members"
+          subtitle="Manage family members"
           onPress={handleFamilyMembers}
           badge="4"
         />
         <ProfileItem
           icon="trophy"
-          title="Logros"
-          subtitle="Ver medallas y logros"
+          title="Achievements"
+          subtitle="View medals and achievements"
           onPress={handleAchievements}
           badge="12"
         />
         <ProfileItem
           icon="calendar"
-          title="Actividad Reciente"
-          subtitle="Ver historial de actividades"
+          title="Recent Activity"
+          subtitle="View activity history"
           onPress={handleRecentActivity}
         />
         <ProfileItem
           icon="stats-chart"
-          title="Estadísticas"
-          subtitle="Ver progreso y métricas"
+          title="Statistics"
+          subtitle="View progress and metrics"
           onPress={handleStatistics}
         />
       </Card>
 
       {/* Family Info */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Información Familiar</Text>
+        <Text style={styles.sectionTitle}>Family Information</Text>
         <ProfileItem
           icon="home"
-          title="Hogar Principal"
-          subtitle="Casa de la familia"
-          onPress={() => Alert.alert('Hogar', 'Información del hogar')}
+          title="Main Home"
+          subtitle="Family house"
+          onPress={() => Alert.alert('Home', 'Home information')}
         />
         <ProfileItem
           icon="location"
-          title="Ubicaciones Guardadas"
-          subtitle="Lugares frecuentes"
-          onPress={() => Alert.alert('Ubicaciones', 'Lugares guardados')}
+          title="Saved Locations"
+          subtitle="Frequent places"
+          onPress={() => Alert.alert('Locations', 'Saved places')}
         />
         <ProfileItem
           icon="time"
-          title="Horarios Familiares"
-          subtitle="Rutinas y horarios"
-          onPress={() => Alert.alert('Horarios', 'Rutinas familiares')}
+          title="Family Schedules"
+          subtitle="Routines and schedules"
+          onPress={() => Alert.alert('Schedules', 'Family routines')}
         />
       </Card>
 
       {/* App Info */}
       <Card style={styles.section}>
-        <Text style={styles.sectionTitle}>Información de la App</Text>
+        <Text style={styles.sectionTitle}>App Information</Text>
         <ProfileItem
           icon="information-circle"
-          title="Versión"
+          title="Version"
           subtitle="FamilyDash v1.0"
-          onPress={() => Alert.alert('Versión', 'FamilyDash v1.0')}
+          onPress={() => Alert.alert('Version', 'FamilyDash v1.0')}
         />
         <ProfileItem
           icon="help-circle"
-          title="Ayuda y Soporte"
-          subtitle="Centro de ayuda"
-          onPress={() => Alert.alert('Ayuda', 'Centro de ayuda')}
+          title="Help & Support"
+          subtitle="Help center"
+          onPress={() => Alert.alert('Help', 'Help center')}
         />
         <ProfileItem
           icon="document-text"
-          title="Términos y Privacidad"
-          subtitle="Políticas de la app"
-          onPress={() => Alert.alert('Términos', 'Políticas de privacidad')}
+          title="Terms & Privacy"
+          subtitle="App policies"
+          onPress={() => Alert.alert('Terms', 'Privacy policies')}
         />
       </Card>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Miembro desde {user.joinDate}</Text>
-        <Text style={styles.footerSubtext}>FamilyDash - Conectando familias</Text>
+        <Text style={styles.footerText}>Member since {user.joinDate}</Text>
+        <Text style={styles.footerSubtext}>FamilyDash - Connecting families</Text>
       </View>
     </ScrollView>
   );

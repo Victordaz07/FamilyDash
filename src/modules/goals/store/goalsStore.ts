@@ -46,7 +46,7 @@ export const useGoalsStore = create<GoalsStore>((set, get) => ({
         };
         set((state) => ({ goals: [...state.goals, newGoal] }));
 
-        // Programar notificación para la nueva meta
+        // Schedule notification for the new goal
         scheduleGoalNotification({
             id: newGoal.id,
             title: newGoal.title,

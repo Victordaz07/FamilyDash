@@ -30,7 +30,7 @@ const NewProposalModal: React.FC<NewProposalModalProps> = ({
   const categories = [
     { id: 'entertainment', name: 'Entretenimiento', icon: 'game-controller', color: '#8B5CF6' },
     { id: 'food', name: 'Comida', icon: 'restaurant', color: '#F59E0B' },
-    { id: 'activity', name: 'Actividad', icon: 'bicycle', color: '#10B981' },
+    { id: 'activity', name: 'Activity', icon: 'bicycle', color: '#10B981' },
     { id: 'movie', name: 'Películas', icon: 'film', color: '#EC4899' },
     { id: 'travel', name: 'Viajes', icon: 'airplane', color: '#3B82F6' },
     { id: 'other', name: 'Otros', icon: 'ellipsis-horizontal', color: '#6B7280' }

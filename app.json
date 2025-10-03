@@ -30,9 +30,23 @@
         "android.permission.WAKE_LOCK",
         "android.permission.NOTIFICATIONS",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO"
       ]
     },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow FamilyDash to access your photos and videos.",
+          "savePhotosPermission": "Allow FamilyDash to save photos and videos to your camera roll.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     },

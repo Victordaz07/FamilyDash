@@ -181,7 +181,7 @@ const VotingCard: React.FC<VotingCardProps> = ({
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          {proposal.totalVotes} de {familyMembers.length} miembros han votado
+          {proposal.totalVotes} of {familyMembers.length} members have voted
         </Text>
         {showResults && winner && (
           <View style={styles.winnerBadge}>

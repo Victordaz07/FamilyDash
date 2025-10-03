@@ -79,12 +79,12 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
 
   const handleEndPenalty = useCallback((id: string) => {
     Alert.prompt(
-      'Completar Penalidad',
-      '¿Te gustaría agregar una reflexión sobre lo que se aprendió?',
+      'Complete Penalty',
+      'Would you like to add a reflection on what was learned?',
       [
-        { text: 'Saltar', onPress: () => endPenalty(id) },
+        { text: 'Skip', onPress: () => endPenalty(id) },
         {
-          text: 'Agregar Reflexión',
+          text: 'Add Reflection',
           onPress: (reflection?: string) => endPenalty(id, reflection)
         }
       ],
