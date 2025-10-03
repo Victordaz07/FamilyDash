@@ -164,6 +164,24 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                 </View>
             </LinearGradient>
 
+            {/* Quick Access Button */}
+            <View style={styles.quickAccessSection}>
+                <TouchableOpacity
+                    style={styles.completeProfileButton}
+                    onPress={() => setShowCompleteModal(true)}
+                >
+                    <LinearGradient
+                        colors={['#10B981', '#059669']}
+                        style={styles.buttonGradient}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                    >
+                        <Ionicons name="create" size={20} color="#ffffff" />
+                        <Text style={styles.buttonText}>Complete Profile with Photo Upload</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </View>
+
             {/* Profile Card */}
             <View style={styles.profileCard}>
                 <TouchableOpacity
@@ -455,6 +473,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#E5E7EB',
         textAlign: 'center',
+    },
+    quickAccessSection: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    completeProfileButton: {
+        borderRadius: 12,
+        overflow: 'hidden',
+        width: '100%',
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 8,
     },
     profileCard: {
         backgroundColor: '#ffffff',
