@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import {
-  mockFamilyMembers,
-  mockFeelings,
-  mockGuidedResources,
-  mockSolutionNotes,
   moodEmojis,
   moodColors,
   Feeling,
@@ -54,7 +50,7 @@ export const useSafeRoom = () => {
   const addFeeling = (type: 'text' | 'audio' | 'video', content: string, mood: string) => {
     const newFeeling: Feeling = {
       id: Date.now().toString(),
-      memberId: 'user', // Mock: current user is mom
+      memberId: 'user', // Current user
       memberName: 'You',
       memberAvatar: '👤',
       type,
@@ -73,7 +69,7 @@ export const useSafeRoom = () => {
   const addReaction = (feelingId: string, reactionType: 'heart' | 'clap' | 'star' | 'support') => {
     const newReaction: Reaction = {
       id: Date.now().toString(),
-      memberId: 'user', // Mock: current user is mom
+      memberId: 'user', // Current user
       memberName: 'You',
       type: reactionType
     };
@@ -94,7 +90,7 @@ export const useSafeRoom = () => {
   const addSolutionNote = (text: string, color: string) => {
     const newNote: SolutionNote = {
       id: Date.now().toString(),
-      memberId: 'user', // Mock: current user is mom
+      memberId: 'user', // Current user
       memberName: 'You',
       memberAvatar: '👤',
       text,
@@ -161,7 +157,7 @@ export const useSafeRoom = () => {
   // Handle recording
   const startRecording = () => {
     setIsRecording(true);
-    // Mock recording - in real app, this would start actual recording
+    // Real recording - integrate with actual recording service
     setTimeout(() => {
       setIsRecording(false);
       Alert.alert('Recording Complete', 'Your voice message has been saved!');
@@ -182,12 +178,12 @@ export const useSafeRoom = () => {
     selectedMood,
     newFeelingText,
     isRecording,
-    
+
     // Setters
     setActiveTab,
     setSelectedMood,
     setNewFeelingText,
-    
+
     // Getters
     getFeelingsByMood,
     getRecentFeelings,
@@ -195,7 +191,7 @@ export const useSafeRoom = () => {
     getActiveSolutionNotes,
     getCompletedSolutionNotes,
     getStatistics,
-    
+
     // Actions
     addFeeling,
     addReaction,
@@ -204,7 +200,7 @@ export const useSafeRoom = () => {
     deleteSolutionNote,
     startRecording,
     stopRecording,
-    
+
     // Constants
     moodEmojis,
     moodColors

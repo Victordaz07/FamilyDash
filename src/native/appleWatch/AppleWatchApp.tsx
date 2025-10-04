@@ -35,13 +35,13 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
         if (connected) {
           // Setup complications
           await setupDefaultComplications();
-          
+
           // Load quick actions
           setQuickActions(watchManager.quickActions);
-          
+
           // Load active workouts
           setActiveWorkouts(watchManager.activeWorkouts);
-          
+
           console.log('⌚ Apple Watch app initialized');
         }
       } catch (error) {
@@ -110,7 +110,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       };
 
       const success = await watchManager.sendWatchNotification(testNotification);
-      
+
       if (success) {
         setNotifications(prev => [testNotification, ...prev]);
         console.log('📱 Test notification sent to Apple Watch');
@@ -128,7 +128,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
         'steps',
         10000 // 10,000 steps goal
       );
-      
+
       setActiveWorkouts(prev => [workout, ...prev]);
       console.log('💪 Family workout started on Apple Watch');
     } catch (error) {
@@ -151,7 +151,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
           showNotifications: true,
         },
       });
-      
+
       console.log('🎨 Watch face configured');
     } catch (error) {
       console.error('Error configuring watch face:', error);
@@ -162,10 +162,10 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
   const handleQuickActionTap = async (actionId: string) => {
     try {
       console.log(`⚡ Quick action tapped: ${actionId}`);
-      
+
       const action = quickActions.find(a => a.id === actionId);
       if (!action) return;
-      
+
       // Execute action based on type
       switch (action.targetType) {
         case 'create_task':
@@ -202,10 +202,10 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {/* Connection Status */}
       <View style={styles.statusContainer}>
         <View style={styles.statusRow}>
-          <Ionicons 
-            name={isConnected ? "checkmark-circle" : "close-circle"} 
-            size={24} 
-            color={isConnected ? "#10B981" : "#EF4444"} 
+          <Ionicons
+            name={isConnected ? "checkmark-circle" : "close-circle"}
+            size={24}
+            color={isConnected ? "#10B981" : "#EF4444"}
           />
           <Text style={styles.statusText}>
             {isConnected ? 'Connected to Apple Watch' : 'Apple Watch Disconnected'}
@@ -216,7 +216,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {/* Complications Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Watch Complications</Text>
-        
+
         <View style={styles.complicationsGrid}>
           {complications.map((complication, index) => (
             <View key={index} style={styles.complicationCard}>
@@ -238,7 +238,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {/* Quick Actions Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        
+
         <View style={styles.actionsGrid}>
           {quickActions.map((action, index) => (
             <TouchableOpacity
@@ -251,7 +251,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
               </View>
               <Text style={styles.actionTitle}>{action.title}</Text>
               {action.requiresConfirmation && (
-                <Ionicons name="shield-checkmark" size={12} color="#10B981" />
+                <Ionicons name="shield" size={12} color="#10B981" />
               )}
             </TouchableOpacity>
           ))}
@@ -262,7 +262,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {activeWorkouts.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Active Workouts</Text>
-          
+
           {activeWorkouts.map((workout, index) => (
             <View key={index} style={styles.workoutCard}>
               <View style={styles.workoutHeader}>
@@ -274,16 +274,16 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
                   {workout.current} / {workout.target}
                 </Text>
               </View>
-              
+
               <View style={styles.progressBar}>
-                <View 
+                <View
                   style={[
                     styles.progressFill,
                     { width: `${(workout.current / workout.target) * 100}%` }
-                  ]} 
+                  ]}
                 />
               </View>
-              
+
               <View style={styles.workoutActions}>
                 <TouchableOpacity style={styles.workoutButton}>
                   <Ionicons name="pause" size={16} color="#6B7280" />
@@ -302,17 +302,17 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {/* Watch Controls Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Watch Controls</Text>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={sendTestNotification}>
           <Ionicons name="notifications" size={20} color="#007AFF" />
           <Text style={styles.controlButtonText}>Send Test Notification</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={startFamilyWorkout}>
           <Ionicons name="fitness" size={20} color="#007AFF" />
           <Text style={styles.controlButtonText}>Start Family Workout</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={configureWatchFace}>
           <Ionicons name="watch" size={20} color="#007AFF" />
           <Text style={styles.controlButtonText}>Configure Watch Face</Text>
@@ -323,7 +323,7 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
       {notifications.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Notifications</Text>
-          
+
           {notifications.slice(0, 3).map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
               <View style={styles.notificationHeader}>
@@ -332,9 +332,9 @@ export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
                   {new Date(notification.timestamp).toLocaleTimeString()}
                 </Text>
               </View>
-              
+
               <Text style={styles.notificationMessage}>{notification.message}</Text>
-              
+
               <View style={styles.notificationActions}>
                 {notification.actions.slice(0, 2).map((action, actionIndex) => (
                   <TouchableOpacity key={actionIndex} style={styles.notificationAction}>

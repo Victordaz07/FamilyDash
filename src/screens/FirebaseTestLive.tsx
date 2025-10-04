@@ -28,7 +28,7 @@ interface FirebaseTestScreenProps {
 const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [testResults, setTestResults] = useState<any[]>([]);
-  
+
   // Stores
   const tasksStore = useTasksStore();
   const goalsStore = useGoalsStore();
@@ -50,7 +50,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
   const runFirebaseTest = async () => {
     setIsLoading(true);
     setTestResults([]);
-    
+
     console.log('🧪 Running Firebase Live Tests...');
     addResult('Firebase Test', '✅', 'Starting live Firebase tests...');
 
@@ -67,7 +67,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
       try {
         await tasksStore.checkConnection();
         const connectionStatus = await tasksStore.checkConnection();
-        addResult('Tasks Store', connectionStatus ? '✅' : '❌', 
+        addResult('Tasks Store', connectionStatus ? '✅' : '❌',
           connectionStatus ? 'Tasks Firebase connected' : 'Tasks Firebase offline');
       } catch (error) {
         addResult('Tasks Store', '❌', `Tasks Store error: ${error.message}`);
@@ -77,7 +77,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
       try {
         await goalsStore.checkConnection();
         const connectionStatus = await goalsStore.checkConnection();
-        addResult('Goals Store', connectionStatus ? '✅' : '❌', 
+        addResult('Goals Store', connectionStatus ? '✅' : '❌',
           connectionStatus ? 'Goals Firebase connected' : 'Goals Firebase offline');
       } catch (error) {
         addResult('Goals Store', '❌', `Goals Store error: ${error.message}`);
@@ -87,7 +87,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
       try {
         await penaltiesStore.checkConnection();
         const connectionStatus = await penaltiesStore.checkConnection();
-        addResult('Penalties Store', connectionStatus ? '✅' : '❌', 
+        addResult('Penalties Store', connectionStatus ? '✅' : '❌',
           connectionStatus ? 'Penalties Firebase connected' : 'Penalties Firebase offline');
       } catch (error) {
         addResult('Penalties Store', '❌', `Penalties Store error: ${error.message}`);
@@ -97,7 +97,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
       try {
         await calendarStore.checkConnection();
         const connectionStatus = await calendarStore.checkConnection();
-        addResult('Calendar Store', connectionStatus ? '✅' : '❌', 
+        addResult('Calendar Store', connectionStatus ? '✅' : '❌',
           connectionStatus ? 'Calendar Firebase connected' : 'Calendar Firebase offline');
       } catch (error) {
         addResult('Calendar Store', '❌', `Calendar Store error: ${error.message}`);
@@ -124,7 +124,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
 
   const runSingleTest = async (testName: string) => {
     setIsLoading(true);
-    
+
     try {
       switch (testName) {
         case 'Tasks':
@@ -145,7 +145,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
     } catch (error) {
       addResult(`${testName} Reconnect`, '❌', `Failed: ${error.message}`);
     }
-    
+
     setIsLoading(false);
   };
 
@@ -195,7 +195,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
         {/* Individual Test Buttons */}
         <View style={styles.individualTestsContainer}>
           <Text style={styles.sectionTitle}>Individual Store Tests:</Text>
-          
+
           <TouchableOpacity
             style={styles.storeTestButton}
             onPress={() => runSingleTest('Tasks')}
@@ -203,7 +203,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
           >
             <Text style={styles.storeTestText}>🔄 Reconnect Tasks</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.storeTestButton}
             onPress={() => runSingleTest('Goals')}
@@ -211,7 +211,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
           >
             <Text style={styles.storeTestText}>🔄 Reconnect Goals</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.storeTestButton}
             onPress={() => runSingleTest('Calendar')}
@@ -224,27 +224,27 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
         {/* Current Data Status */}
         <View style={styles.dataStatusContainer}>
           <Text style={styles.sectionTitle}>Current Data Status:</Text>
-          
+
           <View style={styles.dataStatusItem}>
             <Text style={styles.dataStatusLabel}>📋 Tasks:</Text>
             <Text style={styles.dataStatusValue}>{tasksStore.tasks.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusItem}>
             <Text style={styles.dataStatusLabel}>🎯 Goals:</Text>
             <Text style={styles.dataStatusValue}>{goalsStore.goals.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusContainer}>
             <Text style={styles.dataStatusLabel}>⚠️ Penalties:</Text>
             <Text style={styles.dataStatusValue}>{penaltiesStore.penalties.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusItem}>
             <Text style={styles.dataStatusLabel}>📅 Events:</Text>
             <Text style={styles.dataStatusValue}>{calendarStore.events.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusItem}>
             <Text style={styles.dataStatusLabel}>👤 User:</Text>
             <Text style={styles.dataStatusValue}>{profileStore.currentUser?.name || 'Not logged in'}</Text>
@@ -254,7 +254,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
         {/* Test Results */}
         <View style={styles.resultsContainer}>
           <Text style={styles.sectionTitle}>Test Results:</Text>
-          
+
           {testResults.length === 0 ? (
             <Text style={styles.noResultsText}>No tests run yet. Tap "Run All Tests" to start.</Text>
           ) : (
@@ -270,7 +270,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
                 </View>
               </View>
             ))
-          }
+          )}
         </View>
       </View>
     </ScrollView>

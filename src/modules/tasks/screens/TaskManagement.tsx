@@ -29,7 +29,7 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
     getMemberStats,
     completeTask,
     updateTask,
-    initializeWithMockData,
+    initializeTasks,
   } = useTasksStore();
 
   const [activeTab, setActiveTab] = useState<TaskStatus | 'all'>('all');
@@ -37,9 +37,9 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
   // Initialize store with mock data
   useEffect(() => {
     if (!isInitialized) {
-      initializeWithMockData();
+      initializeTasks();
     }
-  }, [isInitialized, initializeWithMockData]);
+  }, [isInitialized, initializeTasks]);
 
   const stats = getTaskStats();
   const filteredTasks = getFilteredTasks();

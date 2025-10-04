@@ -42,7 +42,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) =>
     {
       name: 'SafeRoom',
       label: 'SafeRoom',
-      icon: 'shield-checkmark'
+      icon: 'shield'
     },
     {
       name: 'Profile',
@@ -72,10 +72,10 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress, navigation }) =>
         onPress={() => handleTabPress(tab.name)}
         activeOpacity={0.7}
       >
-        <Ionicons 
-          name={tab.icon} 
-          size={24} 
-          color={iconColor} 
+        <Ionicons
+          name={tab.icon}
+          size={24}
+          color={iconColor}
         />
         <Text style={[styles.tabLabel, { color: textColor }]}>
           {tab.label}

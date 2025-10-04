@@ -20,7 +20,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
         { key: 'all', label: 'Todos', icon: 'apps' },
         { key: 'tasksCompleted', label: 'Tareas', icon: 'checkmark-circle' },
         { key: 'goalsReached', label: 'Metas', icon: 'trophy' },
-        { key: 'noPenalties', label: 'Sin Penas', icon: 'shield-checkmark' },
+        { key: 'noPenalties', label: 'Sin Penas', icon: 'shield' },
         { key: 'specialEvents', label: 'Eventos', icon: 'star' },
     ];
 

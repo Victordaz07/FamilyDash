@@ -35,7 +35,7 @@ interface EmotionalState {
     messages: EmotionalMessage[];
     isLoading: boolean;
     error: string | null;
-    
+
     // Actions
     loadMessages: () => Promise<void>;
     saveMessages: () => Promise<void>;
@@ -86,11 +86,11 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
             id: `msg_${Date.now()}`,
             createdAt: Date.now(),
         };
-        
+
         set(state => ({
             messages: [newMessage, ...state.messages]
         }));
-        
+
         get().saveMessages();
     },
 
@@ -100,27 +100,27 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
             id: `reply_${Date.now()}`,
             createdAt: Date.now(),
         };
-        
+
         set(state => ({
-            messages: state.messages.map(msg => 
-                msg.id === messageId 
+            messages: state.messages.map(msg =>
+                msg.id === messageId
                     ? { ...msg, replies: [...msg.replies, newReply] }
                     : msg
             )
         }));
-        
+
         get().saveMessages();
     },
 
     addHeart: (messageId) => {
         set(state => ({
-            messages: state.messages.map(msg => 
-                msg.id === messageId 
+            messages: state.messages.map(msg =>
+                msg.id === messageId
                     ? { ...msg, hearts: msg.hearts + 1 }
                     : msg
             )
         }));
-        
+
         get().saveMessages();
     },
 
@@ -128,7 +128,7 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
         set(state => ({
             messages: state.messages.filter(msg => msg.id !== messageId)
         }));
-        
+
         get().saveMessages();
     },
 }));

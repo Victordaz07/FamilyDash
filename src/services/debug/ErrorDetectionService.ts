@@ -84,7 +84,7 @@ class ErrorDetectionService {
         try {
           const user = RealAuthService.getCurrentUser();
           if (!user) return false;
-          
+
           // Try to refresh the auth token
           await user.reload();
           return true;
@@ -173,13 +173,13 @@ class ErrorDetectionService {
   private startGlobalErrorHandling(): void {
     // React Native global error handler
     const originalHandler = global.ErrorUtils?.getGlobalHandler();
-    
+
     global.ErrorUtils?.setGlobalHandler((error, isFatal) => {
       this.detectError(error, 'global-error-handler', {
         isFatal,
         stack: error.stack,
       });
-      
+
       // Call original handler
       if (originalHandler) {
         originalHandler(error, isFatal);
@@ -212,7 +212,7 @@ class ErrorDetectionService {
     };
 
     // Try to match error with known patterns
-    const matchingPattern = this.errorPatterns.find(pattern => 
+    const matchingPattern = this.errorPatterns.find(pattern =>
       pattern.module === module && pattern.pattern.test(error.message)
     );
 
@@ -227,7 +227,7 @@ class ErrorDetectionService {
 
     // Add to detected errors
     this.detectedErrors.unshift(detectedError);
-    
+
     // Keep only last 100 errors
     if (this.detectedErrors.length > 100) {
       this.detectedErrors = this.detectedErrors.slice(0, 100);
@@ -247,9 +247,9 @@ class ErrorDetectionService {
 
     try {
       console.log(`🔧 Attempting auto-fix for: ${pattern.pattern}`);
-      
+
       const success = await pattern.autoFix();
-      
+
       error.resolution = {
         fixed: success,
         method: pattern.autoFix.name || 'auto_fix',
@@ -261,7 +261,7 @@ class ErrorDetectionService {
 
     } catch (fixError) {
       console.error(`❌ Auto-fix error:`, fixError);
-      
+
       error.resolution = {
         fixed: false,
         method: pattern.autoFix.name || 'auto_fix',
@@ -285,7 +285,7 @@ class ErrorDetectionService {
     };
 
     this.performanceIssues.unshift(issue);
-    
+
     // Keep only last 50 performance issues
     if (this.performanceIssues.length > 50) {
       this.performanceIssues = this.performanceIssues.slice(0, 50);
@@ -335,32 +335,32 @@ class ErrorDetectionService {
     resolved: number;
     unresolved: number;
   } {
-  const stats = {
-    total: this.detectedErrors.length,
-    bySeverity: {},
-    byCategory: {},
-    byModule: {},
-    resolved: this.detectedErrors.filter(e => e.resolution?.fixed).length,
-    unresolved: this.detectedErrors.filter(e => !e.resolution?.fixed).length,
-  };
+    const stats = {
+      total: this.detectedErrors.length,
+      bySeverity: {},
+      byCategory: {},
+      byModule: {},
+      resolved: this.detectedErrors.filter(e => e.resolution?.fixed).length,
+      unresolved: this.detectedErrors.filter(e => !e.resolution?.fixed).length,
+    };
 
-  // Count by severity
-  this.detectedErrors.forEach(error => {
-    stats.bySeverity[error.severity] = (stats.bySeverity[error.severity] || 0) + 1;
-  });
+    // Count by severity
+    this.detectedErrors.forEach(error => {
+      stats.bySeverity[error.severity] = (stats.bySeverity[error.severity] || 0) + 1;
+    });
 
-  // Count by category
-  this.detectedErrors.forEach(error => {
-    stats.byCategory[error.category]] = (stats.byCategory[error.category]] || 0) + 1;
-  });
+    // Count by category
+    this.detectedErrors.forEach(error => {
+      stats.byCategory[error.category] = (stats.byCategory[error.category] || 0) + 1;
+    });
 
-  // Count by module
-  this.detectedErrors.forEach(error => {
-    stats.byModule[error.module] = (stats.byModule[error.module] || 0) + 1;
-  });
+    // Count by module
+    this.detectedErrors.forEach(error => {
+      stats.byModule[error.module] = (stats.byModule[error.module] || 0) + 1;
+    });
 
-  return stats;
-}
+    return stats;
+  }
 
   // Manual error resolution
   async resolveError(errorId: string, method: string): Promise<boolean> {
@@ -376,24 +376,24 @@ class ErrorDetectionService {
             success = await RealDatabaseService.checkConnection();
           }
           break;
-          
+
         case 'reauthenticate':
           if (error.module.includes('auth')) {
             await RealAuthService.signOut();
             success = true;
           }
           break;
-          
+
         case 'retry':
           // Implement retry logic here
           success = true; // Placeholder
           break;
-          
+
         case 'clear_cache':
           // Implement cache clearing logic here
           success = true; // Placeholder
           break;
-          
+
         default:
           success = false;
       }
@@ -411,14 +411,14 @@ class ErrorDetectionService {
 
     } catch (resolveError) {
       console.error(`❌ Manual resolution failed:`, resolveError);
-      
+
       error.resolution = {
         fixed: false,
         method,
         timestamp: new Date(),
         success: false,
       };
-      
+
       return false;
     }
   }

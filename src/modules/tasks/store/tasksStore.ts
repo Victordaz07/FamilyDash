@@ -108,9 +108,22 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         return;
       }
 
+      // Get current user from Firebase Auth
+      const currentUser = RealAuthService.getCurrentUser();
+      if (!currentUser) {
+        console.log('⚠️ No authenticated user, using empty state');
+        set({
+          tasks: [],
+          isInitialized: true,
+          isLoading: false,
+          error: null
+        });
+        return;
+      }
+
       // Set up real-time listener for tasks
       const unsubscribe = RealDatabaseService.listenToCollection<Task>(
-        `families/${user.uid}/tasks`,
+        `families/${currentUser.uid}/tasks`,
         (tasks, error) => {
           if (error) {
             console.error('❌ Error listening to tasks:', error);
@@ -163,8 +176,8 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const user = await RealAuthService.getCurrentUser();
-      if (!user) {
+      const currentUser = await RealAuthService.getCurrentUser();
+      if (!currentUser) {
         throw new Error('User not authenticated');
       }
 
@@ -172,15 +185,15 @@ export const useTasksStore = create<TasksState>((set, get) => ({
 
       const taskWithMetadata = {
         ...taskData,
-        familyId: user.uid, // Assuming single family per user for now
-        createdBy: user.uid,
+        familyId: currentUser.uid, // Assuming single family per user for now
+        createdBy: currentUser.uid,
         status: taskData.status || 'pending' as TaskStatus,
         progress: taskData.progress || 0,
         points: taskData.points || 10,
       };
 
       const result = await RealDatabaseService.createDocument<Task>(
-        `families/${user.uid}/tasks`,
+        `families/${currentUser.uid}/tasks`,
         taskWithMetadata
       );
 
@@ -233,11 +246,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       console.log('✏️ Updating task in Firebase...');
 
       const result = await RealDatabaseService.updateDocument<Task>(
-        `families/${user.uid}/tasks`,
+        `families/${currentUser.uid}/tasks`,
         id,
         {
           ...updates,
-          updatedBy: user.uid,
+          updatedBy: currentUser.uid,
         }
       );
 
@@ -288,7 +301,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       console.log('🗑️ Deleting task from Firebase...');
 
       const result = await RealDatabaseService.deleteDocument(
-        `families/${user.uid}/tasks`,
+        `families/${currentUser.uid}/tasks`,
         id
       );
 

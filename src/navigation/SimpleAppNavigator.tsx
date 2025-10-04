@@ -206,7 +206,7 @@ const AppNavigator = () => {
           } else if (route.name === 'Penalties') {
             iconName = focused ? 'warning' : 'warning-outline';
           } else if (route.name === 'SafeRoom') {
-            iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
+            iconName = focused ? 'shield' : 'shield-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else {

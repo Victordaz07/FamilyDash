@@ -291,7 +291,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           onPress={() => Alert.alert('Family', 'Family configuration')}
         />
         <SettingItem
-          icon="shield-checkmark"
+          icon="shield"
           title="Privacy"
           subtitle="Configure privacy and security"
           onPress={() => Alert.alert('Privacy', 'Privacy configuration')}

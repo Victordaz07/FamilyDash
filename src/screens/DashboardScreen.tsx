@@ -252,7 +252,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 style={styles.quickActionGradientLarge}
                             >
                                 <View style={styles.quickActionIconLarge}>
-                                    <Ionicons name="shield-checkmark" size={28} color="white" />
+                                    <Ionicons name="shield" size={28} color="white" />
                                 </View>
                                 <View style={styles.quickActionTextContainer}>
                                     <Text style={styles.quickActionTextLarge}>Safe Room</Text>
@@ -261,7 +261,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
-                    
+
                     {/* Firebase Live Test Button */}
                     <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('FirebaseTestLive')}>
                         <LinearGradient
@@ -317,7 +317,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             style={styles.quickActionGradientLarge}
                         >
                             <View style={styles.quickActionIconLarge}>
-                                <Ionicons name="clipboard-checkmark" size={28} color="white" />
+                                <Ionicons name="checkmark-circle" size={28} color="white" />
                             </View>
                             <View style={styles.quickActionTextContainer}>
                                 <Text style={styles.quickActionTextLarge}>Testing</Text>
