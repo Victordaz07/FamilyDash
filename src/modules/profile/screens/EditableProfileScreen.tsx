@@ -20,7 +20,7 @@ interface EditableProfileScreenProps {
 
 export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ navigation }) => {
     const { currentUser, updateProfile } = useProfileStore();
-    
+
     const [isEditing, setIsEditing] = useState(false);
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [editedData, setEditedData] = useState({
@@ -90,11 +90,10 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <Ionicons name="arrow-back" size={24} color="#ffffff" />
+                    <Ionicons name="arrow-back" size={20} color="#ffffff" />
                 </TouchableOpacity>
 
                 <View style={styles.headerContent}>
-                    <Ionicons name="person-circle" size={32} color="#ffffff" />
                     <Text style={styles.headerTitle}>My Profile</Text>
                     <Text style={styles.headerSubtitle}>Personal Information & Settings</Text>
                 </View>
@@ -103,7 +102,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                     style={styles.headerButton}
                     onPress={() => setShowCompleteModal(true)}
                 >
-                    <Ionicons name="add-circle" size={24} color="#ffffff" />
+                    <Ionicons name="add-circle" size={20} color="#ffffff" />
                 </TouchableOpacity>
             </LinearGradient>
 
@@ -124,16 +123,16 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                             <Ionicons name="camera" size={16} color="#ffffff" />
                         </TouchableOpacity>
                     </View>
-                    
+
                     <View style={styles.userInfo}>
                         <Text style={styles.userName}>
-                            {currentUser.preferences?.showNickname && currentUser.nickname 
-                                ? currentUser.nickname 
+                            {currentUser.preferences?.showNickname && currentUser.nickname
+                                ? currentUser.nickname
                                 : currentUser.name
                             }
                         </Text>
                         <Text style={styles.userCode}>Code: {currentUser.code}</Text>
-                        
+
                         {/* Status and Role */}
                         <View style={styles.statusRow}>
                             <View style={styles.roleBadge}>
@@ -147,7 +146,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                     <Text style={styles.roleText}>{getRoleLabel(currentUser.role)}</Text>
                                 </LinearGradient>
                             </View>
-                            
+
                             <View style={styles.onlineStatus}>
                                 <View style={[
                                     styles.statusDot,
@@ -168,7 +167,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                             <Ionicons name="mail-outline" size={20} color="#6B7280" />
                             <Text style={styles.infoText}>{currentUser.email || 'No email'}</Text>
                         </View>
-                        
+
                         <View style={styles.infoRow}>
                             <Ionicons name="calendar-outline" size={20} color="#6B7280" />
                             <Text style={styles.infoText}>
@@ -366,48 +365,47 @@ const styles = StyleSheet.create({
         marginTop: 16,
     },
     header: {
-        paddingTop: 60,
-        paddingBottom: 20,
-        paddingHorizontal: 20,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        paddingTop: 45,
+        paddingBottom: 8,
+        paddingHorizontal: 16,
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
     },
     backButton: {
         position: 'absolute',
-        top: 60,
-        left: 20,
-        padding: 8,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        top: 45,
+        left: 16,
+        padding: 4,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
     },
     headerContent: {
         alignItems: 'center',
-        paddingTop: 20,
+        paddingTop: 4,
     },
     headerTitle: {
-        fontSize: 28,
-        fontWeight: '800',
+        fontSize: 20,
+        fontWeight: '600',
         color: '#ffffff',
-        marginTop: 8,
-        marginBottom: 4,
+        marginBottom: 1,
     },
     headerSubtitle: {
-        fontSize: 16,
+        fontSize: 12,
         color: '#E5E7EB',
         textAlign: 'center',
     },
     headerButton: {
         position: 'absolute',
-        top: 60,
-        right: 20,
-        padding: 8,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        top: 45,
+        right: 16,
+        padding: 4,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
     },
     profileCard: {
         backgroundColor: '#ffffff',
