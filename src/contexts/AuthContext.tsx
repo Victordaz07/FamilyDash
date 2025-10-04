@@ -29,10 +29,30 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(false); // Start as false = no loading
+    const [loading, setLoading] = useState(true); // Start with loading = check auth state
 
-    // Simplified - no Firebase auto-detection for now
-    // User will be null = not authenticated = show LoginScreen
+    // Check if user is already authenticated on app load
+    useEffect(() => {
+        const checkAuthState = async () => {
+            try {
+                // Check if there's a current user in Firebase
+                const currentUser = RealAuthService.getCurrentUser();
+                if (currentUser) {
+                    setUser({
+                        uid: currentUser.uid,
+                        email: currentUser.email || '',
+                        displayName: currentUser.displayName || '',
+                    });
+                }
+            } catch (error) {
+                console.log('Error checking auth state:', error);
+            } finally {
+                setLoading(false); // Stop loading after check
+            }
+        };
+
+        checkAuthState();
+    }, []);
 
     const login = async (email: string, password: string) => {
         try {
