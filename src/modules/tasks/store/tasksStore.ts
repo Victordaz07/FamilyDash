@@ -509,9 +509,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   },
 }));
 
-// Hook for easy cleanup on component unmount
-export const useTasksStore = () => {
-  const store = useTasksStoreWithFirebase();
+// Cleanup hook (non-conflicting naming)
+export const useTasksStoreCleanup = () => {
+  const store = useTasksStore();
 
   // Initialize tasks on first use
   React.useEffect(() => {
@@ -525,7 +525,7 @@ export const useTasksStore = () => {
         store.subscription();
       }
     };
-  }, []);
+  }, [store]);
 
   return store;
 };
