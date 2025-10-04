@@ -9,6 +9,7 @@ import { useFamilyDashStore } from '../state/store';
 // import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 // import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
+import { useProfileStore } from '../modules/profile/store/profileStore';
 import { theme } from '../styles/simpleTheme';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -19,6 +20,7 @@ interface DashboardScreenProps {
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { t } = useTranslation();
+    const { currentUser } = useProfileStore();
 
     // CLEAN DATA - Empty state ready for real connections
     const tasks: any[] = [];
@@ -159,7 +161,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Ionicons name="notifications-outline" size={20} color="white" />
                         </TouchableOpacity>
                         <Image
-                            source={{ uri: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' }}
+                            source={{ 
+                                uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' 
+                            }}
                             style={styles.profileImage}
                         />
                     </View>
@@ -182,84 +186,78 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 </View>
                             ) : (
                                 familyMembers.map((member) => (
-                                <View key={member.id} style={styles.memberCard}>
-                                    <View style={styles.memberAvatarContainer}>
-                                        <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
-                                        <View style={[styles.memberBadge, { backgroundColor: member.status === 'offline' ? theme.colors.error : theme.colors.success }]}>
-                                            <Text style={styles.memberBadgeText}>
-                                                {member.status === 'offline' ? '!' : member.tasks}
-                                            </Text>
+                                    <View key={member.id} style={styles.memberCard}>
+                                        <View style={styles.memberAvatarContainer}>
+                                            <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
+                                            <View style={[styles.memberBadge, { backgroundColor: member.status === 'offline' ? theme.colors.error : theme.colors.success }]}>
+                                                <Text style={styles.memberBadgeText}>
+                                                    {member.status === 'offline' ? '!' : member.tasks}
+                                                </Text>
+                                            </View>
                                         </View>
+                                        <Text style={styles.memberName}>{member.name}</Text>
+                                        <TouchableOpacity
+                                            style={styles.ringButton}
+                                            onPress={() => handleRingDevice(member.name)}
+                                        >
+                                            <Ionicons name="call" size={12} color="white" />
+                                            <Text style={styles.ringButtonText}>Ring</Text>
+                                        </TouchableOpacity>
                                     </View>
-                                    <Text style={styles.memberName}>{member.name}</Text>
-                                    <TouchableOpacity
-                                        style={styles.ringButton}
-                                        onPress={() => handleRingDevice(member.name)}
-                                    >
-                                        <Ionicons name="call" size={12} color="white" />
-                                        <Text style={styles.ringButtonText}>Ring</Text>
-                                    </TouchableOpacity>
-                                </View>
                                 ))
                             )}
                         </View>
                     </View>
                 </View>
 
-                {/* Quick Actions */}
+                {/* Quick Actions - Better Design */}
                 <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Quick Actions</Text>
+                    </View>
                     <View style={styles.quickActionsContainer}>
-                        <TouchableOpacity style={styles.quickActionButton} onPress={handleAddTask}>
+                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={handleAddTask}>
                             <LinearGradient
-                                colors={[theme.colors.success, '#059669']}
-                                style={styles.quickActionGradient}
+                                colors={[theme.colors.success, '#22C55E']}
+                                style={styles.quickActionGradientLarge}
                             >
-                                <View style={styles.quickActionIcon}>
-                                    <Ionicons name="add" size={20} color="white" />
+                                <View style={styles.quickActionIconLarge}>
+                                    <Ionicons name="add-circle" size={28} color="white" />
                                 </View>
-                                <Text style={styles.quickActionText}>Add Task</Text>
+                                <View style={styles.quickActionTextContainer}>
+                                    <Text style={styles.quickActionTextLarge}>Add New Task</Text>
+                                    <Text style={styles.quickActionSubtext}>Create tasks for family</Text>
+                                </View>
                             </LinearGradient>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('LoginScreen' as never)}
-                        >
+                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('Profile')}>
                             <LinearGradient
-                                colors={[theme.colors.firebase || '#FF6B6B', '#FF8A65']}
-                                style={styles.quickActionGradient}
+                                colors={[theme.colors.primary, '#8B5CF6']}
+                                style={styles.quickActionGradientLarge}
                             >
-                                <View style={styles.quickActionIcon}>
-                                    <Ionicons name="log-in" size={20} color="white" />
+                                <View style={styles.quickActionIconLarge}>
+                                    <Ionicons name="people" size={28} color="white" />
                                 </View>
-                                <Text style={styles.quickActionText}>Login</Text>
+                                <View style={styles.quickActionTextContainer}>
+                                    <Text style={styles.quickActionTextLarge}>Manage Family</Text>
+                                    <Text style={styles.quickActionSubtext}>Invite members</Text>
+                                </View>
                             </LinearGradient>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('RegisterScreen' as never)}
-                        >
+                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={handleSafeRoom}>
                             <LinearGradient
-                                colors={['#10B981', '#059669']}
-                                style={styles.quickActionGradient}
+                                colors={['#F59E0B', '#EF4444']}
+                                style={styles.quickActionGradientLarge}
                             >
-                                <View style={styles.quickActionIcon}>
-                                    <Ionicons name="person-add" size={20} color="white" />
+                                <View style={styles.quickActionIconLarge}>
+                                    <Ionicons name="shield-checkmark" size={28} color="white" />
                                 </View>
-                                <Text style={styles.quickActionText}>Register</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.quickActionButton} onPress={handleSafeRoom}>
-                            <LinearGradient
-                                colors={['#EC4899', '#DB2777']}
-                                style={styles.quickActionGradient}
-                            >
-                                <View style={styles.quickActionIcon}>
-                                    <Ionicons name="heart" size={20} color="white" />
+                                <View style={styles.quickActionTextContainer}>
+                                    <Text style={styles.quickActionTextLarge}>Safe Room</Text>
+                                    <Text style={styles.quickActionSubtext}>Family support</Text>
                                 </View>
-                                <Text style={styles.quickActionText}>Safe Room</Text>
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -306,47 +304,47 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </View>
                         ) : (
                             todaysTasks.map((task) => (
-                            <TouchableOpacity
-                                key={task.id}
-                                style={[styles.taskCard, { borderLeftColor: getTaskStatusColor(task.status) }]}
-                                onPress={() => handleTaskPress(task.id)}
-                            >
-                                <View style={[styles.taskStatusIcon, { backgroundColor: getTaskStatusColor(task.status) }]}>
-                                    <Ionicons name={getTaskStatusIcon(task.status) as any} size={12} color="white" />
-                                </View>
-                                <Image
-                                    source={{ uri: familyMembers.find(m => m.name === task.assignedTo)?.avatar }}
-                                    style={styles.taskAssigneeAvatar}
-                                />
-                                <View style={styles.taskContent}>
-                                    <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <Text style={styles.taskMeta}>
-                                        {task.assignedTo} • {
-                                            task.status === 'completed' ? `Completed ${task.completedAt}` :
-                                                task.status === 'pending' ? `Due in ${task.dueIn}` :
-                                                    `Overdue by ${task.overdueBy}`
-                                        }
-                                    </Text>
-                                </View>
-                                <View style={styles.taskActions}>
-                                    {task.status === 'completed' && (
-                                        <>
-                                            <Text style={styles.taskEmoji}>⭐</Text>
-                                            <Text style={styles.taskEmoji}>🎉</Text>
-                                        </>
-                                    )}
-                                    {task.status === 'pending' && (
-                                        <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: theme.colors.warning }]}>
-                                            <Ionicons name="play" size={12} color="white" />
-                                        </TouchableOpacity>
-                                    )}
-                                    {task.status === 'overdue' && (
-                                        <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: theme.colors.error }]}>
-                                            <Ionicons name="time" size={12} color="white" />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    key={task.id}
+                                    style={[styles.taskCard, { borderLeftColor: getTaskStatusColor(task.status) }]}
+                                    onPress={() => handleTaskPress(task.id)}
+                                >
+                                    <View style={[styles.taskStatusIcon, { backgroundColor: getTaskStatusColor(task.status) }]}>
+                                        <Ionicons name={getTaskStatusIcon(task.status) as any} size={12} color="white" />
+                                    </View>
+                                    <Image
+                                        source={{ uri: familyMembers.find(m => m.name === task.assignedTo)?.avatar }}
+                                        style={styles.taskAssigneeAvatar}
+                                    />
+                                    <View style={styles.taskContent}>
+                                        <Text style={styles.taskTitle}>{task.title}</Text>
+                                        <Text style={styles.taskMeta}>
+                                            {task.assignedTo} • {
+                                                task.status === 'completed' ? `Completed ${task.completedAt}` :
+                                                    task.status === 'pending' ? `Due in ${task.dueIn}` :
+                                                        `Overdue by ${task.overdueBy}`
+                                            }
+                                        </Text>
+                                    </View>
+                                    <View style={styles.taskActions}>
+                                        {task.status === 'completed' && (
+                                            <>
+                                                <Text style={styles.taskEmoji}>⭐</Text>
+                                                <Text style={styles.taskEmoji}>🎉</Text>
+                                            </>
+                                        )}
+                                        {task.status === 'pending' && (
+                                            <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: theme.colors.warning }]}>
+                                                <Ionicons name="play" size={12} color="white" />
+                                            </TouchableOpacity>
+                                        )}
+                                        {task.status === 'overdue' && (
+                                            <TouchableOpacity style={[styles.taskActionButton, { backgroundColor: theme.colors.error }]}>
+                                                <Ionicons name="time" size={12} color="white" />
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
                             ))
                         )}
                     </View>
@@ -632,32 +630,41 @@ const styles = StyleSheet.create({
         fontWeight: theme.typography.fontWeight.medium,
     },
     quickActionsContainer: {
-        flexDirection: 'row',
-        gap: 12,
+        gap: 16,
+        paddingHorizontal: 8,
     },
-    quickActionButton: {
-        flex: 1,
-        borderRadius: 12,
+    quickActionButtonLarge: {
+        borderRadius: 16,
         overflow: 'hidden',
     },
-    quickActionGradient: {
+    quickActionGradientLarge: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        gap: 12,
+        padding: 20,
+        gap: 16,
+        minHeight: 80,
     },
-    quickActionIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+    quickActionIconLarge: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    quickActionText: {
-        fontSize: 16,
-        fontWeight: theme.typography.fontWeight.semibold,
+    quickActionTextLarge: {
+        fontSize: 18,
+        fontWeight: theme.typography.fontWeight.bold,
         color: 'white',
+        marginBottom: 2,
+        flex: 1,
+    },
+    quickActionSubtext: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.8)',
+    },
+    quickActionTextContainer: {
+        flex: 1,
     },
     deviceToolsCard: {
         borderRadius: 16,
@@ -967,7 +974,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'white',
     },
-    
+
     // Empty State Styles
     emptyStateContainer: {
         alignItems: 'center',

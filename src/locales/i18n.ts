@@ -155,7 +155,7 @@ export const useTranslation = () => {
         const currentLang = i18n.getCurrentLanguage();
         setLanguage(currentLang);
         setIsInitialized(true);
-        console.log('useTranslation initialized with language:', currentLang);
+        // console.log('useTranslation initialized with language:', currentLang);
       } catch (error) {
         console.log('Error in useTranslation:', error);
         setLanguage('en');
@@ -169,7 +169,7 @@ export const useTranslation = () => {
     try {
       await i18n.changeLanguage(newLanguage);
       setLanguage(newLanguage);
-      console.log('Language changed to:', newLanguage);
+      // console.log('Language changed to:', newLanguage);
     } catch (error) {
       console.log('Error changing language:', error);
     }
