@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WeatherForecast } from '../../../components/WeatherForecast';
 
 interface NewEventModalProps {
   visible: boolean;
@@ -34,6 +35,7 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
   });
 
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [weatherData, setWeatherData] = useState<any>(null);
 
   const familyMembers = [
     { id: 'mom', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' },
@@ -100,7 +102,10 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
 
   const getCurrentDate = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const getCurrentTime = () => {
@@ -197,6 +202,12 @@ const NewEventModal: React.FC<NewEventModalProps> = ({ visible, onClose, onSubmi
                 />
               </View>
             </View>
+
+            {/* Weather Forecast */}
+            <WeatherForecast
+              selectedDate={formData.date}
+              onWeatherChange={setWeatherData}
+            />
 
             {/* Location */}
             <View style={styles.inputGroup}>

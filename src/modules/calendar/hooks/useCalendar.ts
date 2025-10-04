@@ -162,12 +162,12 @@ export const useCalendar = () => {
             newWeekStart.setDate(currentWeekStart.getDate() - 7);
         }
         setCurrentWeekStart(newWeekStart);
-        
+
         // Update currentWeek display
         const today = new Date();
         const diffTime = newWeekStart.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays === 0) {
             setCurrentWeek('This Week');
         } else if (diffDays > 0) {

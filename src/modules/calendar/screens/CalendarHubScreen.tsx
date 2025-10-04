@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCalendar } from '../hooks/useCalendar';
 import ActivityCard from '../components/ActivityCard';
 import NewEventModal from '../components/NewEventModal';
+import { WeatherWidget } from '../../../components/WeatherWidget';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -32,6 +33,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     const [showNewEventModal, setShowNewEventModal] = useState(false);
     const [viewMode, setViewMode] = useState('week'); // week, month, agenda
     const [showWeather, setShowWeather] = useState(true);
+    const [showWeatherWidget, setShowWeatherWidget] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('all'); // all, family, personal, work
 
     // Animation refs
@@ -133,12 +135,12 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         for (let i = 0; i < 7; i++) {
             const date = new Date(currentWeekStart);
             date.setDate(currentWeekStart.getDate() + i);
-            
+
             const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const dayName = dayNames[i];
             const dayNumber = date.getDate().toString();
             const isToday = date.toDateString() === new Date().toDateString();
-            
+
             weekDays.push({
                 day: dayName,
                 date: dayNumber,
@@ -279,8 +281,8 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                             <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('ExpandedCalendar')}>
                                 <Ionicons name="calendar" size={16} color="white" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.headerButton} onPress={() => setShowWeather(!showWeather)}>
-                                <Ionicons name={showWeather ? "sunny" : "cloudy"} size={16} color="white" />
+                            <TouchableOpacity style={styles.headerButton} onPress={() => setShowWeatherWidget(!showWeatherWidget)}>
+                                <Ionicons name={showWeatherWidget ? "sunny" : "cloudy"} size={16} color="white" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.headerButton} onPress={handleNewEventPress}>
                                 <Ionicons name="add" size={16} color="white" />
@@ -531,6 +533,12 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                     visible={showNewEventModal}
                     onClose={() => setShowNewEventModal(false)}
                     onSubmit={handleNewEventSubmit}
+                />
+
+                {/* Weather Widget */}
+                <WeatherWidget
+                    visible={showWeatherWidget}
+                    onClose={() => setShowWeatherWidget(false)}
                 />
             </ScrollView>
         </Animated.View>
