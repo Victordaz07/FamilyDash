@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    ScrollView,
-    Image,
-    Alert,
-    Modal,
-    Switch,
-    Platform,
-    KeyboardAvoidingView
-}| from 'react-native';
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Alert,
+  Modal,
+  Switch,
+  Platform,
+  KeyboardAvoidingView
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileStore } from '../store/profileStore';
@@ -81,7 +81,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
   const handleImagePicker = async (source: 'gallery' | 'camera') => {
     try {
       let imageResult: any = null;
-      
+
       if (source === 'gallery') {
         imageResult = await ImageService.pickImage();
       } else if (source === 'camera') {
@@ -184,7 +184,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
               <Text style={styles.mainSectionTitle}>📸 Add Your Photo</Text>
               <Text style={styles.mainSectionSubtitle}>Upload from Gallery or Camera</Text>
             </View>
-            
+
             <TouchableOpacity style={styles.mainImageContainer} onPress={() => Alert.alert('Select Photo Source', 'Choose how you want to add your photo:', [
               { text: '📱 Gallery', onPress: () => handleImagePicker('gallery') },
               { text: '📷 Camera', onPress: () => handleImagePicker('camera') },
@@ -202,8 +202,8 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
             </TouchableOpacity>
 
             <View style={styles.mainImageActions}>
-              <TouchableOpacity 
-                style={styles.mainActionButton} 
+              <TouchableOpacity
+                style={styles.mainActionButton}
                 onPress={() => handleImagePicker('gallery')}
               >
                 <LinearGradient
@@ -217,8 +217,8 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                 </LinearGradient>
               </TouchableOpacity>
 
-              <TouchableOpacity 
-                style={styles.mainActionButton} 
+              <TouchableOpacity
+                style={styles.mainActionButton}
                 onPress={() => handleImagePicker('camera')}
               >
                 <LinearGradient
@@ -231,10 +231,10 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                   <Text style={styles.actionButtonText}>Camera</Text>
                 </LinearGradient>
               </TouchableOpacity>
-              
+
               {currentUser?.profileImage && (
-                <TouchableOpacity 
-                  style={styles.removeActionButton} 
+                <TouchableOpacity
+                  style={styles.removeActionButton}
                   onPress={handleRemoveImage}
                 >
                   <LinearGradient
@@ -408,7 +408,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                 trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
                 thumbColor="#ffffff"
               />
-      </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
-  
+
   // New prominent photo section styles
   mainPictureSection: {
     marginHorizontal: 20,
