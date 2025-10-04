@@ -14,10 +14,10 @@ import {
 } from '../mock/safeRoomData';
 
 export const useSafeRoom = () => {
-  const [feelings, setFeelings] = useState<Feeling[]>(mockFeelings);
-  const [resources, setResources] = useState<GuidedResource[]>(mockGuidedResources);
-  const [solutionNotes, setSolutionNotes] = useState<SolutionNote[]>(mockSolutionNotes);
-  const [familyMembers] = useState(mockFamilyMembers);
+  const [feelings, setFeelings] = useState<Feeling[]>([]);
+  const [resources, setResources] = useState<GuidedResource[]>([]);
+  const [solutionNotes, setSolutionNotes] = useState<SolutionNote[]>([]);
+  const [familyMembers] = useState([]);
   const [activeTab, setActiveTab] = useState<'express' | 'reflections' | 'guided' | 'board'>('express');
   const [selectedMood, setSelectedMood] = useState<'happy' | 'neutral' | 'sad' | 'angry' | 'worried' | 'excited'>('neutral');
   const [newFeelingText, setNewFeelingText] = useState('');
@@ -31,7 +31,7 @@ export const useSafeRoom = () => {
 
   // Get recent feelings (last 7 days)
   const getRecentFeelings = () => {
-    return feelings.slice(0, 5); // Mock: show first 5
+    return feelings.slice(0, 5);
   };
 
   // Get resources by category
@@ -54,9 +54,9 @@ export const useSafeRoom = () => {
   const addFeeling = (type: 'text' | 'audio' | 'video', content: string, mood: string) => {
     const newFeeling: Feeling = {
       id: Date.now().toString(),
-      memberId: 'mom', // Mock: current user is mom
-      memberName: 'Mom',
-      memberAvatar: '👩',
+      memberId: 'user', // Mock: current user is mom
+      memberName: 'You',
+      memberAvatar: '👤',
       type,
       content,
       mood: mood as any,
@@ -73,8 +73,8 @@ export const useSafeRoom = () => {
   const addReaction = (feelingId: string, reactionType: 'heart' | 'clap' | 'star' | 'support') => {
     const newReaction: Reaction = {
       id: Date.now().toString(),
-      memberId: 'mom', // Mock: current user is mom
-      memberName: 'Mom',
+      memberId: 'user', // Mock: current user is mom
+      memberName: 'You',
       type: reactionType
     };
 
@@ -94,9 +94,9 @@ export const useSafeRoom = () => {
   const addSolutionNote = (text: string, color: string) => {
     const newNote: SolutionNote = {
       id: Date.now().toString(),
-      memberId: 'mom', // Mock: current user is mom
-      memberName: 'Mom',
-      memberAvatar: '👩',
+      memberId: 'user', // Mock: current user is mom
+      memberName: 'You',
+      memberAvatar: '👤',
       text,
       color,
       createdAt: 'Just now',

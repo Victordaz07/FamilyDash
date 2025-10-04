@@ -110,7 +110,7 @@ export const AdvancedSafeRoom: React.FC = () => {
         filePath: null,
         config: null,
     });
-    const [messages, setMessages] = useState<SafeRoomMessage[]>(mockMessages);
+    const [messages, setMessages] = useState<SafeRoomMessage[]>([]);
     const [showRecordingOptions, setShowRecordingOptions] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState<SafeRoomMessage | null>(null);
 
