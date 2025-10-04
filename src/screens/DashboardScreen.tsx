@@ -161,8 +161,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Ionicons name="notifications-outline" size={20} color="white" />
                         </TouchableOpacity>
                         <Image
-                            source={{ 
-                                uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' 
+                            source={{
+                                uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
                             }}
                             style={styles.profileImage}
                         />

@@ -22,7 +22,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     points: currentUser?.points || 0,
     streak: currentUser?.streak || 0,
     level: currentUser?.level || 'New User',
-    joinDate: currentUser?.joinedAt && typeof currentUser.joinedAt.toLocaleDateString === 'function' ? 
+    joinDate: currentUser?.joinedAt && typeof currentUser.joinedAt.toLocaleDateString === 'function' ?
       currentUser.joinedAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) :
       'Not connected'
   };

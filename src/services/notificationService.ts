@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 
 // Check if we're running in Expo Go (SDK 53+ has issues with notifications)
-const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants && 
-                 global.__expo.Constants.executionEnvironment === 'storeClient';
+const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants &&
+  global.__expo.Constants.executionEnvironment === 'storeClient';
 
 if (!isExpoGo) {
   // Only configure notifications if not in Expo Go
@@ -51,7 +51,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
     console.log('🔇 Skipping notification permissions in Expo Go');
     return false;
   }
-  
+
   try {
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();

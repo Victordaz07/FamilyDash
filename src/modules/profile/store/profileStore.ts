@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FamilyMember, FamilyHouse, HouseInvitationCode, ProfileData, ROLE_PERMISSIONS } from '../types';
+// 🔥 FIREBASE REAL SERVICES ACTIVATED
+import { RealDatabaseService, RealAuthService, RealStorageService, trackEvent } from '../../../services';
 
 interface ProfileState {
     // Current user profile

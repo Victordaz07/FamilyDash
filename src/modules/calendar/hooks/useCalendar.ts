@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { mockActivities, mockFamilyMembers, mockRecentDecisions, Activity, FamilyMember } from '../mock/activities';
-import { calendarFirebaseService, FirebaseActivity } from '../services/calendarFirebase';
+import { realCalendarService, FirebaseActivity } from '../services/RealCalendarService';
 
 export const useCalendar = () => {
     const [activities, setActivities] = useState<Activity[]>(mockActivities);
@@ -11,12 +11,12 @@ export const useCalendar = () => {
     const [currentWeek, setCurrentWeek] = useState('This Week');
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isLoading, setIsLoading] = useState(false);
-    const [useFirebase, setUseFirebase] = useState(false); // Toggle between mock and Firebase
+    const [useFirebase, setUseFirebase] = useState(true); // 🔥 Firebase ACTIVATED by default
 
     // Initialize Firebase listener
     useEffect(() => {
         if (useFirebase) {
-            const unsubscribe = calendarFirebaseService.subscribeToActivities((firebaseActivities) => {
+            const unsubscribe = realCalendarService.subscribeToActivities((firebaseActivities) => {
                 setFirebaseActivities(firebaseActivities);
             });
 

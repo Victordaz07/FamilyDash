@@ -6,12 +6,10 @@
 import { create } from 'zustand';
 import React from 'react';
 import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
-  // TEMPORARILY DISABLED FOR DEBUGGING
-  // import { RealDatabaseService, RealAuthService } from '../../../services';
-  // TEMPORARILY DISABLED - Services causing import conflicts
-  // import { trackEvent } from '../../../services';
-  // import { scheduleTaskNotification } from '../../../services/notificationService';
-  import { mockTasks } from '../mock/tasksData';
+// FIREBASE REAL SERVICES ACTIVATED 🔥
+import { RealDatabaseService, RealAuthService, trackEvent } from '../../../services';
+import { scheduleTaskNotification } from '../../../services/notificationService';
+import { mockTasks } from '../mock/tasksData';
 
 interface TasksState {
   tasks: Task[];
@@ -72,7 +70,7 @@ interface TasksState {
   reconnect: () => Promise<void>;
 }
 
-export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
+export const useTasksStore = create<TasksState>((set, get) => ({
   tasks: [],
   selectedTask: undefined,
   filters: {},
@@ -94,15 +92,8 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     try {
       console.log('📋 Initializing tasks...');
 
-      // TEMPORARY: Use mock data since Firebase is disabled for debugging
-      console.log('🔧 Firebase disabled, using mock tasks data');
-      set({ 
-        tasks: mockTasks, 
-        isInitialized: true, 
-        isLoading: false 
-      });
-      console.log(`✅ Initialized with ${mockTasks.length} mock tasks`);
-      return; // Skip Firebase initialization
+      // 🔥 FIREBASE REAL ACTIVATED
+      console.log('🔥 Firebase REAL mode activated - connecting to Firebase...');
 
       // Check Firebase connection
       const isConnected = await RealDatabaseService.checkConnection();

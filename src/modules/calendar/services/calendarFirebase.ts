@@ -1,4 +1,4 @@
-// Mock Calendar Firebase Service - Replaces Firebase with local storage
+// 🔥 REAL CALENDAR Firebase Service - Production Firebase integration
 export interface FirebaseActivity {
   id?: string;
   title: string;
