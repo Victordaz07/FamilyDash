@@ -20,16 +20,11 @@ interface DashboardScreenProps {
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { t } = useTranslation();
 
-    // MOCK DATA TEMPORARILY - Firebase services disabled for debugging
-    const tasks = [
-        { id: '1', title: 'Mock Task 1', status: 'pending', assignedTo: 'demo' },
-        { id: '2', title: 'Mock Task 2', status: 'completed', assignedTo: 'demo' },
-    ];
-    const penalties = [];
-    const goals = [];
-    const familyMembersFromStore = [
-        { id: 'demo', name: 'Demo User', role: 'admin', online: true }
-    ];
+    // CLEAN DATA - Empty state ready for real connections
+    const tasks: any[] = [];
+    const penalties: any[] = [];
+    const goals: any[] = [];
+    const familyMembersFromStore: any[] = [];
 
     const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
@@ -50,33 +45,27 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const activeGoals = useMemo(() => (goals || []).filter((goal: any) => goal.status === 'active'), [goals]);
 
     // Family members data with additional UI properties
+    // CLEAN DATA - Real family members without mock data
     const familyMembers = useMemo(() => {
         const baseMembers = familyMembersFromStore || [];
         const colors = ['#3B82F6', '#EC4899', '#8B5CF6', '#F59E0B'];
-        const statuses = ['online', 'away', 'offline'];
 
         return baseMembers.map((member, index) => ({
             ...member,
-            tasks: Math.floor(Math.random() * 5) + 1, // Mock task count
+            tasks: 0, // Real task count (empty initially)
             borderColor: colors[index % colors.length],
-            points: Math.floor(Math.random() * 1000) + 500, // Mock points
-            streak: Math.floor(Math.random() * 10) + 1, // Mock streak
-            status: statuses[index % statuses.length] as 'online' | 'away' | 'offline',
+            points: 0, // Real points (empty initially)
+            streak: 0, // Real streak (empty initially)
+            status: 'offline' as 'online' | 'away' | 'offline', // Default offline until connected
         }));
     }, [familyMembersFromStore]);
 
     // Mock tasks data
-    const todaysTasks = [
-        { id: '1', title: 'Clean bedroom', assignedTo: 'Emma', status: 'completed', completedAt: '2h ago', priority: 'high' },
-        { id: '2', title: 'Homework - Math', assignedTo: 'Jake', status: 'pending', dueIn: '3h', priority: 'medium' },
-        { id: '3', title: 'Fix kitchen sink', assignedTo: 'Dad', status: 'overdue', overdueBy: '1d', priority: 'high' },
-    ];
+    // CLEAN DATA - Empty tasks ready for real connections
+    const todaysTasks: any[] = [];
 
-    // Mock activities data
-    const thisWeekActivities = [
-        { id: '1', title: 'Movie Night', date: 'Friday 7:00 PM', description: 'Family vote needed', status: 'vote_needed' },
-        { id: '2', title: "Emma's Birthday Party", date: 'Saturday 2:00 PM', description: 'Mom organizing', status: 'confirmed' },
-    ];
+    // CLEAN DATA - Empty activities ready for real connections
+    const thisWeekActivities: any[] = [];
 
     // Navigation handlers
     const handleVote = useCallback(() => {
@@ -162,7 +151,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         </View>
                         <View>
                             <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
-                            <Text style={styles.headerSubtitle}>Johnson Family</Text>
+                            <Text style={styles.headerSubtitle}>Not Connected</Text>
                         </View>
                     </View>
                     <View style={styles.headerRight}>
@@ -183,10 +172,16 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                     <View style={styles.familyMembersCard}>
                         <View style={styles.sectionHeader}>
                             <Text style={styles.sectionTitle}>{t('dashboard.familyMembers')}</Text>
-                            <Text style={styles.sectionSubtitle}>4 {t('dashboard.activeMembers')}</Text>
+                            <Text style={styles.sectionSubtitle}>{familyMembersFromStore.length} {t('dashboard.activeMembers')}</Text>
                         </View>
                         <View style={styles.membersContainer}>
-                            {familyMembers.map((member) => (
+                            {familyMembers.length === 0 ? (
+                                <View style={styles.emptyStateContainer}>
+                                    <Text style={styles.emptyStateText}>No family members connected yet</Text>
+                                    <Text style={styles.emptyStateSubtext}>Connect with other apps to import family members</Text>
+                                </View>
+                            ) : (
+                                familyMembers.map((member) => (
                                 <View key={member.id} style={styles.memberCard}>
                                     <View style={styles.memberAvatarContainer}>
                                         <Image source={{ uri: member.avatar }} style={[styles.memberAvatar, { borderColor: member.borderColor }]} />
@@ -205,7 +200,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                         <Text style={styles.ringButtonText}>Ring</Text>
                                     </TouchableOpacity>
                                 </View>
-                            ))}
+                                ))
+                            )}
                         </View>
                     </View>
                 </View>
@@ -300,10 +296,16 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>Today's Tasks</Text>
-                        <Text style={styles.sectionSubtitle}>6 of 8 done</Text>
+                        <Text style={styles.sectionSubtitle}>{tasks.filter(task => task.status === 'completed').length} of {tasks.length} done</Text>
                     </View>
                     <View style={styles.tasksContainer}>
-                        {todaysTasks.map((task) => (
+                        {todaysTasks.length === 0 ? (
+                            <View style={styles.emptyStateContainer}>
+                                <Text style={styles.emptyStateText}>No tasks created yet</Text>
+                                <Text style={styles.emptyStateSubtext}>Create your first task to get started</Text>
+                            </View>
+                        ) : (
+                            todaysTasks.map((task) => (
                             <TouchableOpacity
                                 key={task.id}
                                 style={[styles.taskCard, { borderLeftColor: getTaskStatusColor(task.status) }]}
@@ -345,7 +347,8 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     )}
                                 </View>
                             </TouchableOpacity>
-                        ))}
+                            ))
+                        )}
                     </View>
                     <TouchableOpacity style={styles.viewAllButton} onPress={() => navigation.navigate('Tasks')}>
                         <Text style={styles.viewAllButtonText}>{t('dashboard.viewAll')} {t('navigation.tasks')}</Text>
@@ -963,6 +966,30 @@ const styles = StyleSheet.create({
     contributorAmount: {
         fontSize: 12,
         color: 'white',
+    },
+    
+    // Empty State Styles
+    emptyStateContainer: {
+        alignItems: 'center',
+        padding: 32,
+        backgroundColor: theme.colors.background,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: theme.colors.primary,
+        borderStyle: 'dashed',
+        marginVertical: 16,
+    },
+    emptyStateText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: theme.colors.text,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    emptyStateSubtext: {
+        fontSize: 14,
+        color: theme.colors.textSecondary,
+        textAlign: 'center',
     },
 });
 

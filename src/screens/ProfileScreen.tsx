@@ -22,9 +22,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     points: currentUser?.points || 0,
     streak: currentUser?.streak || 0,
     level: currentUser?.level || 'New User',
-    joinDate: currentUser?.joinedAt ? 
+    joinDate: currentUser?.joinedAt && typeof currentUser.joinedAt.toLocaleDateString === 'function' ?
       currentUser.joinedAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) :
-      new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      'Not connected'
   };
 
   const handleEditProfile = () => {
@@ -145,7 +145,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           variant="outline"
           style={styles.editButton}
         />
-        
+
         {/* Empty State - Connection Options */}
         {!currentUser && (
           <View style={styles.emptyState}>
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colors.textSecondary,
   },
-  
+
   // New Empty State Styles
   emptyState: {
     marginTop: 20,
