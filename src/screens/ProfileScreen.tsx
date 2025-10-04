@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card, Button, Avatar } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useTranslation } from '../locales/i18n';
+import { useProfileStore } from '../modules/profile/store/profileStore';
 
 interface ProfileScreenProps {
   navigation: any;
@@ -11,16 +12,20 @@ interface ProfileScreenProps {
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const { t } = useTranslation();
+  const { currentUser, familyHouse } = useProfileStore();
 
-  const [user] = useState({
-    name: 'Main User',
-    email: 'user@familydash.com',
-    avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
-    points: 1250,
-    streak: 7,
-    level: 'Expert',
-    joinDate: 'January 2024'
-  });
+  // Create user profile from store data or empty state
+  const user = {
+    name: currentUser?.name || '',
+    email: currentUser?.email || '',
+    avatar: currentUser?.avatar || '👤',
+    points: currentUser?.points || 0,
+    streak: currentUser?.streak || 0,
+    level: currentUser?.level || 'New User',
+    joinDate: currentUser?.joinedAt ? 
+      currentUser.joinedAt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) :
+      new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  };
 
   const handleEditProfile = () => {
     navigation.navigate('EditableProfile');
@@ -140,6 +145,34 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           variant="outline"
           style={styles.editButton}
         />
+        
+        {/* Empty State - Connection Options */}
+        {!currentUser && (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyTitle}>Welcome to FamilyDash!</Text>
+            <Text style={styles.emptySubtitle}>Connect with other apps to get started</Text>
+            <View style={styles.connectionButtons}>
+              <Button
+                title="📱 Connect Phone Contacts"
+                onPress={() => Alert.alert('Coming Soon', 'Connect with your phone contacts')}
+                variant="primary"
+                style={styles.connectionButton}
+              />
+              <Button
+                title="📧 Connect Email Apps"
+                onPress={() => Alert.alert('Coming Soon', 'Connect with Gmail, Outlook')}
+                variant="primary"
+                style={styles.connectionButton}
+              />
+              <Button
+                title="☁️ Connect Cloud Storage"
+                onPress={() => Alert.alert('Coming Soon', 'Connect with Google Drive, iCloud')}
+                variant="primary"
+                style={styles.connectionButton}
+              />
+            </View>
+          </View>
+        )}
       </Card>
 
       {/* Quick Actions */}
@@ -383,6 +416,37 @@ const styles = StyleSheet.create({
   footerSubtext: {
     fontSize: 12,
     color: theme.colors.textSecondary,
+  },
+  
+  // New Empty State Styles
+  emptyState: {
+    marginTop: 20,
+    padding: 20,
+    backgroundColor: theme.colors.background,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    borderStyle: 'dashed',
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.text,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  connectionButtons: {
+    gap: 12,
+  },
+  connectionButton: {
+    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
   },
 });
 

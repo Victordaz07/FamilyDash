@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -180,87 +179,85 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName: keyof typeof Ionicons.glyphMap;
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: keyof typeof Ionicons.glyphMap;
 
-            if (route.name === 'Dashboard') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Tasks') {
-              iconName = focused ? 'checkmark-circle' : 'checkmark-circle-outline';
-            } else if (route.name === 'Calendar') {
-              iconName = focused ? 'calendar' : 'calendar-outline';
-            } else if (route.name === 'Goals') {
-              iconName = focused ? 'trophy' : 'trophy-outline';
-            } else if (route.name === 'Penalties') {
-              iconName = focused ? 'warning' : 'warning-outline';
-            } else if (route.name === 'SafeRoom') {
-              iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person-outline';
-            } else {
-              iconName = 'help-outline';
-            }
+          if (route.name === 'Dashboard') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Tasks') {
+            iconName = focused ? 'checkmark-circle' : 'checkmark-circle-outline';
+          } else if (route.name === 'Calendar') {
+            iconName = focused ? 'calendar' : 'calendar-outline';
+          } else if (route.name === 'Goals') {
+            iconName = focused ? 'trophy' : 'trophy-outline';
+          } else if (route.name === 'Penalties') {
+            iconName = focused ? 'warning' : 'warning-outline';
+          } else if (route.name === 'SafeRoom') {
+            iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          } else {
+            iconName = 'help-outline';
+          }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#6366f1',
-          tabBarInactiveTintColor: '#6b7280',
-          tabBarStyle: {
-            backgroundColor: '#ffffff',
-            borderTopWidth: 1,
-            borderTopColor: '#e5e7eb',
-            paddingBottom: Math.max(insets.bottom, 20),
-            paddingTop: 8,
-            height: 80 + Math.max(insets.bottom, 0),
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: '500',
-            marginTop: 4,
-          },
-        })}
-      >
-        <Tab.Screen
-          name="Dashboard"
-          component={DashboardStack}
-          options={{ tabBarLabel: getTabLabel('Dashboard') }}
-        />
-        <Tab.Screen
-          name="Tasks"
-          component={TasksStack}
-          options={{ tabBarLabel: getTabLabel('Tasks') }}
-        />
-        <Tab.Screen
-          name="Calendar"
-          component={CalendarStack}
-          options={{ tabBarLabel: getTabLabel('Calendar') }}
-        />
-        <Tab.Screen
-          name="Goals"
-          component={GoalsStack}
-          options={{ tabBarLabel: getTabLabel('Goals') }}
-        />
-        <Tab.Screen
-          name="Penalties"
-          component={PenaltiesStack}
-          options={{ tabBarLabel: getTabLabel('Penalties') }}
-        />
-        <Tab.Screen
-          name="SafeRoom"
-          component={SafeRoomStack}
-          options={{ tabBarLabel: getTabLabel('SafeRoom') }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileStack}
-          options={{ tabBarLabel: getTabLabel('Profile') }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#6366f1',
+        tabBarInactiveTintColor: '#6b7280',
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
+          paddingBottom: Math.max(insets.bottom, 20),
+          paddingTop: 8,
+          height: 80 + Math.max(insets.bottom, 0),
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+          marginTop: 4,
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Dashboard"
+        component={DashboardStack}
+        options={{ tabBarLabel: getTabLabel('Dashboard') }}
+      />
+      <Tab.Screen
+        name="Tasks"
+        component={TasksStack}
+        options={{ tabBarLabel: getTabLabel('Tasks') }}
+      />
+      <Tab.Screen
+        name="Calendar"
+        component={CalendarStack}
+        options={{ tabBarLabel: getTabLabel('Calendar') }}
+      />
+      <Tab.Screen
+        name="Goals"
+        component={GoalsStack}
+        options={{ tabBarLabel: getTabLabel('Goals') }}
+      />
+      <Tab.Screen
+        name="Penalties"
+        component={PenaltiesStack}
+        options={{ tabBarLabel: getTabLabel('Penalties') }}
+      />
+      <Tab.Screen
+        name="SafeRoom"
+        component={SafeRoomStack}
+        options={{ tabBarLabel: getTabLabel('SafeRoom') }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{ tabBarLabel: getTabLabel('Profile') }}
+      />
+    </Tab.Navigator>
   );
 };
 

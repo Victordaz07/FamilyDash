@@ -29,36 +29,24 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Start as false = no loading
 
-    useEffect(() => {
-        // Simple solution: Set loading to false after 2 seconds
-        const timeoutId = setTimeout(() => {
-            setLoading(false);
-        }, 2000);
-
-        const unsubscribe = RealAuthService.onAuthStateChanged((user) => {
-            if (user) {
-                setUser({
-                    uid: user.uid,
-                    email: user.email || '',
-                    displayName: user.displayName || '',
-                });
-            } else {
-                setUser(null);
-            }
-            setLoading(false);
-        });
-
-        return () => {
-            clearTimeout(timeoutId);
-            unsubscribe();
-        };
-    }, []);
+    // Simplified - no Firebase auto-detection for now
+    // User will be null = not authenticated = show LoginScreen
 
     const login = async (email: string, password: string) => {
         try {
-            const result = await RealAuthService.signInWithEmailAndPassword(email, password);
+            const result = await RealAuthService.signInWithEmail({ email, password });
+
+            // Update local state if login was successful
+            if (result.success && result.user) {
+                setUser({
+                    uid: result.user.uid,
+                    email: result.user.email || '',
+                    displayName: result.user.displayName || '',
+                });
+            }
+
             return result;
         } catch (error: any) {
             return { success: false, error: error.message };
@@ -67,11 +55,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const register = async (email: string, password: string, displayName?: string) => {
         try {
-            const result = await RealAuthService.createUserWithEmailAndPassword(email, password);
+            const result = await RealAuthService.registerWithEmail({ email, password, displayName });
 
-            if (result.success && displayName) {
-                // Update display name
-                await RealAuthService.updateProfile({ displayName });
+            // Update local state if registration was successful
+            if (result.success && result.user) {
+                setUser({
+                    uid: result.user.uid,
+                    email: result.user.email || '',
+                    displayName: result.user.displayName || displayName || '',
+                });
             }
 
             return result;
@@ -82,12 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const registerWithDisplayName = async (email: string, password: string, displayName: string) => {
         try {
-            const result = await RealAuthService.createUserWithEmailAndPassword(email, password);
-
-            if (result.success) {
-                // Update display name
-                await RealAuthService.updateProfile({ displayName });
-            }
+            const result = await RealAuthService.registerWithEmail({ email, password, displayName });
 
             return result;
         } catch (error: any) {

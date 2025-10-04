@@ -148,10 +148,10 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation, onSu
                     {
                         text: 'OK',
                         onPress: () => {
+                            // No need to navigate - the AuthContext will handle the state change
+                            // and ConditionalNavigator will automatically show the main app
                             if (onSuccess) {
                                 onSuccess();
-                            } else {
-                                navigation.navigate('DashboardStack');
                             }
                         }
                     }
@@ -391,13 +391,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation, onSu
                 <ScrollView contentContainerStyle={styles.scrollContent}>
                     {/* Header Section */}
                     <View style={styles.header}>
-            <View style={styles.iconContainer}>
-              <Image
-                source={require('../../assets/icon.png')}
-                style={styles.logoImage}
-                contentFit="contain"
-              />
-            </View>
+                        <View style={styles.iconContainer}>
+                            <Image
+                                source={require('../../assets/icon.png')}
+                                style={styles.logoImage}
+                                contentFit="contain"
+                            />
+                        </View>
 
                         <Text style={styles.title}>{getStepTitle()}</Text>
                         <Text style={styles.subtitle}>

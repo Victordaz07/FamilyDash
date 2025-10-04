@@ -12,6 +12,8 @@ export const colors = {
     warning: '#f59e0b',
     error: '#ef4444',
     background: '#f9fafb',
+    gradientEnd: '#e5e7eb', // Faltaba este valor
+    textPrimary: '#111827',
     cardBackground: '#ffffff',
     surface: '#ffffff',
     text: '#111827',

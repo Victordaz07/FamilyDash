@@ -8,10 +8,14 @@ import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
+import { createStackNavigator } from '@react-navigation/stack';
 import SimpleAppNavigator from './SimpleAppNavigator';
 import { LoginScreen } from '../screens/LoginScreen';
+import { RegisterScreen } from '../screens/RegisterScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { theme } from '../styles/simpleTheme';
+
+const AuthStack = createStackNavigator();
 
 const ConditionalNavigator: React.FC = () => {
     const { user, loading } = useAuth();
@@ -25,13 +29,13 @@ const ConditionalNavigator: React.FC = () => {
             >
                 <View style={styles.loadingContent}>
                     {/* FamilyDash Official Icon */}
-          <View style={styles.iconContainer}>
-            <Image
-              source={require('../../assets/icon.png')}
-              style={styles.logoImage}
-              contentFit="contain"
-            />
-          </View>
+                    <View style={styles.iconContainer}>
+                        <Image
+                            source={require('../../assets/icon.png')}
+                            style={styles.logoImage}
+                            contentFit="contain"
+                        />
+                    </View>
 
                     <Text style={styles.loadingText}>FamilyDash</Text>
                     <ActivityIndicator
@@ -45,9 +49,14 @@ const ConditionalNavigator: React.FC = () => {
         );
     }
 
-    // Show Login screen when not authenticated  
+    // Show Auth screens (Login/Register) when not authenticated  
     if (!user) {
-        return <LoginScreen navigation={undefined} />;
+        return (
+            <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+                <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
+                <AuthStack.Screen name="RegisterScreen" component={RegisterScreen} />
+            </AuthStack.Navigator>
+        );
     }
 
     // Show main app when authenticated
@@ -91,108 +100,6 @@ const styles = StyleSheet.create({
     loadingSubtext: {
         fontSize: 16,
         color: theme.colors.textSecondary,
-    },
-    // FAMILYDASH LOGO STYLES
-    shieldOuter: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
-    },
-    shieldBody: {
-        width: 65,
-        height: 50,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        position: 'relative',
-        justifyContent: 'flex-end',
-        overflow: 'hidden',
-    },
-    shieldTop: {
-        position: 'absolute',
-        top: 0,
-        left: 25,
-        width: 0,
-        height: 0,
-        borderLeftWidth: 7,
-        borderRightWidth: 7,
-        borderBottomWidth: 12,
-        borderStyle: 'solid',
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: 'white',
-    },
-    familyGroup: {
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    adult1: {
-        position: 'absolute',
-        top: 8,
-        left: 8,
-        alignItems: 'center',
-    },
-    head1: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: 'white',
-        marginBottom: 2,
-    },
-    body1: {
-        width: 12,
-        height: 16,
-        backgroundColor: 'white',
-        borderRadius: 2,
-    },
-    adult2: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        alignItems: 'center',
-    },
-    head2: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: 'white',
-        marginBottom: 2,
-    },
-    body2: {
-        width: 12,
-        height: 16,
-        backgroundColor: 'white',
-        borderRadius: 2,
-    },
-    childFigure: {
-        position: 'absolute',
-        top: 15,
-        left: 25,
-        alignItems: 'center',
-    },
-    childHead: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: 'white',
-        marginBottom: 2,
-    },
-    childBody: {
-        width: 10,
-        height: 12,
-        backgroundColor: 'white',
-        borderRadius: 2,
-    },
-    familyDashText: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        color: 'white',
-        textAlign: 'center',
-        marginTop: 8,
-        letterSpacing: 0.5,
     },
 });
 

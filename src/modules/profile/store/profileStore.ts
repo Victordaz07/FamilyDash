@@ -45,122 +45,16 @@ interface ProfileState {
     generateInvitationCode: () => string;
 }
 
-// Mock data for initial state
-const mockFamilyHouse: FamilyHouse = {
-  houseId: 'house-ruiz-001',
-  houseName: 'Casa de los Ruiz',
-  adminId: 'admin-001',
-  subAdminId: 'sub-admin-001',
-  createdAt: new Date('2024-01-01'),
-  invitationCodes: [],
-  members: [
-    {
-      id: 'admin-001',
-      code: 'RUZ001',
-      name: 'María Ruiz González',
-      nickname: 'Mari',
-      role: 'admin',
-      age: 38,
-      email: 'maria@ruizfamily.com',
-      phone: '+52 555 123 4567',
-      avatar: '👩',
-      profileImage: undefined,
-      bio: 'Mamá orgullosa y administradora de la casa',
-      birthday: new Date('1986-03-15'),
-      permissions: ROLE_PERMISSIONS.admin.map(p => `${p.scope}:${p.action}`),
-      isActive: true,
-      joinedAt: new Date('2024-01-01'),
-      isOnline: true,
-      preferences: {
-        showName: true,
-        showNickname: true,
-        showAge: true,
-        showEmail: false,
-        showPhone: false,
-      },
-    },
-    {
-      id: 'sub-admin-001',
-      code: 'RUZ002',
-      name: 'Carlos Ruiz Hernández',
-      nickname: 'Carlitos',
-      role: 'sub-admin',
-      age: 40,
-      email: 'carlos@ruizfamily.com',
-      phone: '+52 555 123 4568',
-      avatar: '👨',
-      profileImage: undefined,
-      bio: 'Papá trabajador y compañero perfecto',
-      birthday: new Date('1984-07-22'),
-      permissions: ROLE_PERMISSIONS['sub-admin'].map(p => `${p.scope}:${p.action}`),
-      isActive: true,
-      joinedAt: new Date('2024-01-01'),
-      isOnline: true,
-      preferences: {
-        showName: true,
-        showNickname: true,
-        showAge: false,
-        showEmail: true,
-        showPhone: false,
-      },
-    },
-    {
-      id: 'child-001',
-      code: 'RUZ003',
-      name: 'Ana Sofia Ruiz Hernández',
-      nickname: 'Anita',
-      role: 'child',
-      age: 10,
-      email: 'ana@ruizfamily.com',
-      avatar: '👧',
-      profileImage: undefined,
-      bio: 'Estudiante brillante y hermana mayor',
-      birthday: new Date('2014-05-10'),
-      permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
-      isActive: true,
-      joinedAt: new Date('2024-01-01'),
-      isOnline: true,
-      preferences: {
-        showName: false,
-        showNickname: true,
-        showAge: true,
-        showEmail: false,
-        showPhone: false,
-      },
-    },
-    {
-      id: 'child-002',
-      code: 'RUZ004',
-      name: 'Diego Alejandro Ruiz Hernández',
-      nickname: 'Didi',
-      role: 'child',
-      age: 8,
-      avatar: '👦',
-      profileImage: undefined,
-      bio: 'Futuro astronauta y hermanito travieso',
-      birthday: new Date('2016-12-03'),
-      permissions: ROLE_PERMISSIONS.child.map(p => `${p.scope}:${p.action}`),
-      isActive: true,
-      joinedAt: new Date('2024-01-02'),
-      isOnline: false,
-      preferences: {
-        showName: false,
-        showNickname: true,
-        showAge: true,
-        showEmail: false,
-        showPhone: false,
-      },
-    },
-    ],
-};
+// Empty state - No mock data, ready for real connections
+const emptyFamilyHouse: FamilyHouse | null = null;
 
 export const useProfileStore = create<ProfileState>()(
     persist(
         (set, get) => ({
-            // Initial state
-            currentUser: mockFamilyHouse.members[0], // María as default admin
+            // Initial state - Empty, ready for real connections
+            currentUser: null,
             userProfile: null,
-            familyHouse: mockFamilyHouse,
+            familyHouse: emptyFamilyHouse,
 
             // Basic setters
             setCurrentUser: (user) => set({ currentUser: user }),

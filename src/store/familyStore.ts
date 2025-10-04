@@ -202,8 +202,8 @@ export const useFamilyStore = create<FamilyStore>((set, get) => ({
     const { isInitialized } = get();
     if (!isInitialized) {
       set({
-        familyMembers: mockFamilyMembers,
-        currentUser: mockFamilyMembers[0], // Set dad as current user
+        familyMembers: [], // Empty - ready for real connections
+        currentUser: null,
         isInitialized: true,
       });
     }

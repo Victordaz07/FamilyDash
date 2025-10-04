@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 import ConditionalNavigator from './src/navigation/ConditionalNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { initializeNotifications } from './src/services/notificationService';
@@ -14,11 +15,13 @@ export default function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <ConditionalNavigator />
-      </SafeAreaProvider>
-    </AuthProvider>
+    <NavigationContainer>
+      <AuthProvider>
+        <SafeAreaProvider>
+          <StatusBar style="light" />
+          <ConditionalNavigator />
+        </SafeAreaProvider>
+      </AuthProvider>
+    </NavigationContainer>
   );
 }
