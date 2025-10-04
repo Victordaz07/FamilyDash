@@ -1,11 +1,6 @@
 import { Task, FamilyMember } from '../types/taskTypes';
 
-export const mockFamilyMembers: FamilyMember[] = [
-  { id: 'dad', name: 'Dad', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg', role: 'parent' },
-  { id: 'mom', name: 'Mom', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg', role: 'parent' },
-  { id: 'emma', name: 'Emma', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg', role: 'child' },
-  { id: 'jake', name: 'Jake', avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg', role: 'child' },
-];
+export const mockFamilyMembers: FamilyMember[] = [];
 
 export const mockTasks: Task[] = [
   {

@@ -166,12 +166,20 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
               </TouchableOpacity>
             )}
           </View>
-          <TaskFilter
-            members={mockFamilyMembers}
-            selectedMemberId={filters.memberId}
-            onMemberSelect={handleMemberSelect}
-            taskCounts={memberTaskCounts}
-          />
+          {mockFamilyMembers.length > 0 ? (
+            <TaskFilter
+              members={mockFamilyMembers}
+              selectedMemberId={filters.memberId}
+              onMemberSelect={handleMemberSelect}
+              taskCounts={memberTaskCounts}
+            />
+          ) : (
+            <View style={styles.emptyMembersContainer}>
+              <Ionicons name="people-outline" size={32} color={theme.colors.gray} />
+              <Text style={styles.emptyMembersText}>No family members yet</Text>
+              <Text style={styles.emptyMembersSubtext}>Add family members to filter tasks</Text>
+            </View>
+          )}
         </View>
 
         {/* Task Status Tabs */}
@@ -384,6 +392,23 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  emptyMembersContainer: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+  },
+  emptyMembersText: {
+    fontSize: 16,
+    fontWeight: theme.typography.fontWeight.medium,
+    color: theme.colors.text,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptyMembersSubtext: {
+    fontSize: 14,
+    color: theme.colors.gray,
+    textAlign: 'center',
   },
 });
 
