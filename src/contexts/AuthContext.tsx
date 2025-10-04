@@ -32,6 +32,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Simple solution: Set loading to false after 2 seconds
+        const timeoutId = setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+
         const unsubscribe = RealAuthService.onAuthStateChanged((user) => {
             if (user) {
                 setUser({
@@ -45,7 +50,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setLoading(false);
         });
 
-        return unsubscribe;
+        return () => {
+            clearTimeout(timeoutId);
+            unsubscribe();
+        };
     }, []);
 
     const login = async (email: string, password: string) => {
