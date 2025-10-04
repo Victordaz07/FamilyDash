@@ -254,7 +254,7 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
                                     onPress={() => setNewMemberData({ ...newMemberData, role: 'child' })}
                                 >
                                     <Ionicons
-                                        name="happy-circle"
+                                        name="happy"
                                         size={24}
                                         color={newMemberData.role === 'child' ? '#10B981' : '#6B7280'}
                                     />

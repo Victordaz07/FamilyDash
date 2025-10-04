@@ -35,11 +35,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const getRoleIcon = (role: FamilyMember['role']) => {
         switch (role) {
             case 'admin':
-                return 'crown';
+                return 'star';
             case 'sub-admin':
                 return 'person-circle';
             case 'child':
-                return 'happy-circle';
+                return 'happy';
             default:
                 return 'person';
         }

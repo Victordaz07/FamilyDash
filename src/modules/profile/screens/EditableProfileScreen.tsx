@@ -325,11 +325,11 @@ const getRoleColors = (role: string) => {
 const getRoleIcon = (role: string) => {
     switch (role) {
         case 'admin':
-            return 'crown';
+            return 'star';
         case 'sub-admin':
             return 'person-circle';
         case 'child':
-            return 'happy-circle';
+            return 'happy';
         default:
             return 'person';
     }
