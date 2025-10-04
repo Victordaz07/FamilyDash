@@ -277,6 +277,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </View>
                         </LinearGradient>
                     </TouchableOpacity>
+
+                    {/* Sync Testing Button */}
+                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('SyncTesting')}>
+                        <LinearGradient
+                            colors={['#FF6B6B', '#4ECDC4']}
+                            style={styles.quickActionGradientLarge}
+                        >
+                            <View style={styles.quickActionIconLarge}>
+                                <Ionicons name="sync" size={28} color="white" />
+                            </View>
+                            <View style={styles.quickActionTextContainer}>
+                                <Text style={styles.quickActionTextLarge}>Sync Testing</Text>
+                                <Text style={styles.quickActionSubtext}>Multi-device sync test</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Device Tools */}
