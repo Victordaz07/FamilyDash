@@ -250,9 +250,9 @@ const SafeRoomHome: React.FC<SafeRoomHomeProps> = ({ navigation }) => {
                         <View style={styles.progressSection}>
                             <Text style={styles.progressLabel}>Family Connection</Text>
                             <View style={styles.progressBar}>
-                                <View style={[styles.progressFill, { width: '85%' }]} />
+                                <View style={[styles.progressFill, { width: '0%' }]} />
                             </View>
-                            <Text style={styles.progressText}>Excellent</Text>
+                            <Text style={styles.progressText}>Getting Started</Text>
                         </View>
                     </LinearGradient>
                 </View>

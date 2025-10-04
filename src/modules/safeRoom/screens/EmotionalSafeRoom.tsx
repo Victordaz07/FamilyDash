@@ -159,11 +159,11 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
 
                     <View style={styles.statsGrid}>
                         <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>12</Text>
+                            <Text style={styles.statNumber}>0</Text>
                             <Text style={styles.statLabel}>Messages Shared</Text>
                         </View>
                         <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>48</Text>
+                            <Text style={styles.statNumber}>0</Text>
                             <Text style={styles.statLabel}>Hearts Given</Text>
                         </View>
                     </View>
@@ -171,10 +171,10 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <View style={styles.connectionCard}>
                         <View style={styles.connectionHeader}>
                             <Text style={styles.connectionLabel}>Family Connection</Text>
-                            <Text style={styles.connectionValue}>Excellent</Text>
+                            <Text style={styles.connectionValue}>Getting Started</Text>
                         </View>
                         <View style={styles.connectionBar}>
-                            <View style={[styles.connectionFill, { width: '83%' }]} />
+                            <View style={[styles.connectionFill, { width: '0%' }]} />
                         </View>
                     </View>
                 </LinearGradient>
