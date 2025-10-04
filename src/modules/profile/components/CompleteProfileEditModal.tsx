@@ -81,20 +81,21 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
   const handleImagePicker = async (source: 'gallery' | 'camera') => {
     try {
       let imageResult: any = null;
-
+      
       if (source === 'gallery') {
-        imageResult = await ImageService.pickImage();
+        imageResult = await ImageService.pickImageFromGallery();
       } else if (source === 'camera') {
-        imageResult = await ImageService.takePhoto();
+        imageResult = await ImageService.takePhotoWithCamera();
       }
 
-      if (imageResult && !imageResult.cancelled) {
+      if (imageResult) {
         const simulatedImageUrl = imageResult.uri;
         await updateCompleteProfile({ profileImage: simulatedImageUrl });
         Alert.alert('Success', 'Profile picture updated successfully!');
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to update profile picture');
+      console.error('Error updating profile picture:', error);
+      Alert.alert('Error', 'Failed to update profile picture. Please try again.');
     }
   };
 
