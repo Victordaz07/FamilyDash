@@ -5,7 +5,7 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore, connectFirestoreEmulator, getDoc, doc, collection } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { getAnalytics } from 'firebase/analytics';
@@ -102,14 +102,14 @@ export const waitForAuth = (): Promise<any> => {
 
 // Firestore helpers
 export const createCollection = (collectionName: string) => {
-  return db.collection(collectionName);
+  return collection(db, collectionName);
 };
 
 export const createDocument = (collectionName: string, docId?: string) => {
   if (docId) {
-    return db.collection(collectionName).doc(docId);
+    return doc(db, collectionName, docId);
   }
-  return db.collection(collectionName).doc();
+  return doc(collection(db, collectionName));
 };
 
 // Storage helpers
@@ -165,7 +165,7 @@ export const getEnvironment = () => process.env.NODE_ENV || 'development';
 // Connection status
 export const checkConnectionStatus = async (): Promise<'connected' | 'offline' | 'error'> => {
   try {
-    const testDoc = await db.collection('_test_connection').doc('status').get();
+    const testDoc = await getDoc(doc(db, '_test_connection', 'status'));
     return testDoc.exists() ? 'connected' : 'connected';
   } catch (error) {
     console.error('Firebase connection check failed:', error);
