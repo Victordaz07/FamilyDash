@@ -12,19 +12,19 @@ export { FamilyChallenges } from './components/FamilyChallenges';
 
 // Types
 export type {
-  FamilyMemberActivity,
-  FamilyGoal,
-  FamilyMilestone,
-  FamilyReward,
-  FamilyChallenge,
-  FamilySchedule,
-  FamilyDashboardData,
+    FamilyMemberActivity,
+    FamilyGoal,
+    FamilyMilestone,
+    FamilyReward,
+    FamilyChallenge,
+    FamilySchedule,
+    FamilyDashboardData,
 } from './FamilyDashboardService';
 
 export type {
-  FamilyDashboardProps,
+    FamilyDashboardProps,
 } from './components/FamilyDashboard';
 
 export type {
-  FamilyChallengesProps,
+    FamilyChallengesProps,
 } from './components/FamilyChallenges';
