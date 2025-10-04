@@ -262,29 +262,8 @@ const SafeRoomHome: React.FC<SafeRoomHomeProps> = ({ navigation }) => {
                     <Text style={styles.sectionTitle}>Recent Activity</Text>
 
                     <View style={styles.activityCard}>
-                        <View style={styles.activityItem}>
-                            <Text style={styles.activityEmoji}>👩</Text>
-                            <View style={styles.activityContent}>
-                                <Text style={styles.activityText}>Mom shared a feeling</Text>
-                                <Text style={styles.activityTime}>2 hours ago</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.activityItem}>
-                            <Text style={styles.activityEmoji}>👦</Text>
-                            <View style={styles.activityContent}>
-                                <Text style={styles.activityText}>Jake completed an agreement</Text>
-                                <Text style={styles.activityTime}>1 day ago</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.activityItem}>
-                            <Text style={styles.activityEmoji}>👧</Text>
-                            <View style={styles.activityContent}>
-                                <Text style={styles.activityText}>Emma watched a guided resource</Text>
-                                <Text style={styles.activityTime}>2 days ago</Text>
-                            </View>
-                        </View>
+                        <Text style={styles.emptyStateText}>No recent activity yet</Text>
+                        <Text style={styles.emptyStateSubtext}>Start sharing feelings with your family!</Text>
                     </View>
                 </View>
 
@@ -542,6 +521,17 @@ const styles = StyleSheet.create({
     cardStatsText: {
         fontSize: 12,
         color: 'rgba(255, 255, 255, 0.8)',
+        textAlign: 'center',
+    },
+    emptyStateText: {
+        fontSize: 16,
+        color: 'rgba(255, 255, 255, 0.8)',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    emptyStateSubtext: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.6)',
         textAlign: 'center',
     },
 });
