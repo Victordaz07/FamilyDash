@@ -105,13 +105,13 @@ export const useFamilyDashStore = create<FamilyDashStore>((set, get) => {
             if (!isInitialized) {
                 // Initialize all module stores
                 import('../modules/tasks/store/tasksStore').then(({ useTasksStore }) => {
-                    useTasksStore.getState().initializeWithMockData();
+                    useTasksStore.getState().initializeTasks();
                 });
                 import('../modules/goals/store/goalsStore').then(({ useGoalsStore }) => {
-                    useGoalsStore.getState().initializeWithMockData();
+                    useGoalsStore.getState().initializeGoals();
                 });
                 import('../modules/penalties/store/penaltiesStore').then(({ usePenaltiesStore }) => {
-                    usePenaltiesStore.getState().initializeWithMockData();
+                    usePenaltiesStore.getState().initializePenalties();
                 });
                 import('../store/familyStore').then(({ useFamilyStore }) => {
                     useFamilyStore.getState().initializeWithMockData();

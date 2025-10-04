@@ -47,7 +47,7 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
     updatePenaltyTimer,
     getActivePenalties,
     getStats,
-    initializeWithMockData,
+    initializePenalties,
   } = usePenaltiesStore();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -59,9 +59,9 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
   // Initialize store with mock data
   useEffect(() => {
     if (!isInitialized) {
-      initializeWithMockData();
+      initializePenalties();
     }
-  }, [isInitialized, initializeWithMockData]);
+  }, [isInitialized, initializePenalties]);
 
   // Update penalty timers
   useEffect(() => {

@@ -19,7 +19,7 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
     const {
         goals,
         isInitialized,
-        initializeWithMockData,
+        initializeGoals,
         getActiveGoals,
         getCompletedGoals,
         getSpiritualAndFamilyGoals,
@@ -40,9 +40,9 @@ const GoalsMain: React.FC<GoalsMainProps> = ({ navigation }) => {
     // Initialize store with mock data
     useEffect(() => {
         if (!isInitialized) {
-            initializeWithMockData();
+            initializeGoals();
         }
-    }, [isInitialized, initializeWithMockData]);
+    }, [isInitialized, initializeGoals]);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
