@@ -6,11 +6,12 @@
 import { create } from 'zustand';
 import React from 'react';
 import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
-// TEMPORARILY DISABLED FOR DEBUGGING
-// import { RealDatabaseService, RealAuthService } from '../../../services';
-// TEMPORARILY DISABLED - Services causing import conflicts
-// import { trackEvent } from '../../../services';
-// import { scheduleTaskNotification } from '../../../services/notificationService';
+  // TEMPORARILY DISABLED FOR DEBUGGING
+  // import { RealDatabaseService, RealAuthService } from '../../../services';
+  // TEMPORARILY DISABLED - Services causing import conflicts
+  // import { trackEvent } from '../../../services';
+  // import { scheduleTaskNotification } from '../../../services/notificationService';
+  import { mockTasks } from '../mock/tasksData';
 
 interface TasksState {
   tasks: Task[];
@@ -91,15 +92,17 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      console.log('📋 Initializing tasks with Firebase...');
+      console.log('📋 Initializing tasks...');
 
-      // Check if user is authenticated
-      const user = await RealAuthService.getCurrentUser();
-      if (!user) {
-        console.log('⚠️ No authenticated user, initializing with empty state');
-        set({ tasks: [], isInitialized: true, isLoading: false });
-        return;
-      }
+      // TEMPORARY: Use mock data since Firebase is disabled for debugging
+      console.log('🔧 Firebase disabled, using mock tasks data');
+      set({ 
+        tasks: mockTasks, 
+        isInitialized: true, 
+        isLoading: false 
+      });
+      console.log(`✅ Initialized with ${mockTasks.length} mock tasks`);
+      return; // Skip Firebase initialization
 
       // Check Firebase connection
       const isConnected = await RealDatabaseService.checkConnection();
