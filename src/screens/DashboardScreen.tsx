@@ -293,6 +293,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </View>
                         </LinearGradient>
                     </TouchableOpacity>
+
+                    {/* Debug Dashboard Button */}
+                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('DebugDashboard')}>
+                        <LinearGradient
+                            colors={['#9C27B0', '#673AB7']}
+                            style={styles.quickActionGradientLarge}
+                        >
+                            <View style={styles.quickActionIconLarge}>
+                                <Ionicons name="bug" size={28} color="white" />
+                            </View>
+                            <View style={styles.quickActionTextContainer}>
+                                <Text style={styles.quickActionTextLarge}>Debug Mode</Text>
+                                <Text style={styles.quickActionSubtext}>Error detection & auto-fix</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Device Tools */}
