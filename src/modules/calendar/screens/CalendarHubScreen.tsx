@@ -16,6 +16,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     const {
         selectedDay,
         currentWeek,
+        currentWeekStart,
         currentMonth,
         getTodaysActivities,
         getUpcomingActivities,
@@ -126,15 +127,30 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         Alert.alert('Reminder Set', `Reminder set for ${activityTitle}`);
     };
 
-    const weekDays = [
-        { day: 'Sun', date: '14', hasEvent: false },
-        { day: 'Mon', date: '15', hasEvent: false, isSelected: true },
-        { day: 'Tue', date: '16', hasEvent: false },
-        { day: 'Wed', date: '17', hasEvent: true, eventColor: '#F59E0B' },
-        { day: 'Thu', date: '18', hasEvent: false },
-        { day: 'Fri', date: '19', hasEvent: true, eventColor: '#EC4899' },
-        { day: 'Sat', date: '20', hasEvent: true, eventColor: '#8B5CF6' },
-    ];
+    // Generate current week days dynamically
+    const getCurrentWeekDays = () => {
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(currentWeekStart);
+            date.setDate(currentWeekStart.getDate() + i);
+            
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = dayNames[i];
+            const dayNumber = date.getDate().toString();
+            const isToday = date.toDateString() === new Date().toDateString();
+            
+            weekDays.push({
+                day: dayName,
+                date: dayNumber,
+                hasEvent: false, // Will be populated from real events
+                isSelected: isToday,
+                fullDate: date
+            });
+        }
+        return weekDays;
+    };
+
+    const weekDays = getCurrentWeekDays();
 
     const todaysActivities = getTodaysActivities().map(activity => ({
         id: activity.id,

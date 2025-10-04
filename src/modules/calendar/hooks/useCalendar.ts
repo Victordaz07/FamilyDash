@@ -146,17 +146,35 @@ export const useCalendar = () => {
         updateActivity(activityId, { chatMessages: updatedMessages });
     };
 
+    const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        return startOfWeek;
+    });
+
     // Week navigation
     const navigateWeek = (direction: 'prev' | 'next') => {
+        const newWeekStart = new Date(currentWeekStart);
         if (direction === 'next') {
+            newWeekStart.setDate(currentWeekStart.getDate() + 7);
+        } else {
+            newWeekStart.setDate(currentWeekStart.getDate() - 7);
+        }
+        setCurrentWeekStart(newWeekStart);
+        
+        // Update currentWeek display
+        const today = new Date();
+        const diffTime = newWeekStart.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+            setCurrentWeek('This Week');
+        } else if (diffDays > 0) {
             setCurrentWeek('Next Week');
         } else {
             setCurrentWeek('Last Week');
         }
-
-        setTimeout(() => {
-            setCurrentWeek('This Week');
-        }, 1000);
     };
 
     // Navigate between months
@@ -236,6 +254,7 @@ export const useCalendar = () => {
         recentDecisions,
         selectedDay,
         currentWeek,
+        currentWeekStart,
         currentMonth,
         isLoading,
         useFirebase,
