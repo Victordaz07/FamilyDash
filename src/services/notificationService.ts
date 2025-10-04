@@ -2,14 +2,22 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 
-// Configurar el comportamiento de las notificaciones
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+// Check if we're running in Expo Go (SDK 53+ has issues with notifications)
+const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants && 
+                 global.__expo.Constants.executionEnvironment === 'storeClient';
+
+if (!isExpoGo) {
+  // Only configure notifications if not in Expo Go
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+} else {
+  console.log('🔇 Notifications disabled in Expo Go (use development build for push notifications)');
+}
 
 // Tipos para las notificaciones
 export interface TaskNotification {
@@ -38,6 +46,12 @@ export interface PenaltyNotification {
  * Solicitar permisos de notificación
  */
 export async function requestNotificationPermissions(): Promise<boolean> {
+  // Skip notification setup in Expo Go
+  if (isExpoGo) {
+    console.log('🔇 Skipping notification permissions in Expo Go');
+    return false;
+  }
+  
   try {
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();

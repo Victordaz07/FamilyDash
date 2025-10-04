@@ -50,9 +50,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                         onPress: () => {
                             if (onSuccess) {
                                 onSuccess();
-                            } else {
-                                navigation.navigate('DashboardStack');
                             }
+                            // Navigation is handled automatically by AuthContext
                         }
                     }
                 ]);
