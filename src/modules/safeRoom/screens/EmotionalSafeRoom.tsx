@@ -161,7 +161,7 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <Card style={[styles.rulesCard, { borderLeftColor: '#EC4899' }]}>
                     <View style={styles.rulesHeader}>
                         <View style={styles.rulesIcon}>
-                            <Ionicons name="shield-checkmark" size={20} color="#EC4899" />
+                            <Ionicons name="shield" size={20} color="#EC4899" />
                         </View>
                         <View>
                             <Text style={styles.rulesTitle}>Safe Space Rules</Text>

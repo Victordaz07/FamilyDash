@@ -10,7 +10,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetailsScreen from '../screens/TaskDetailsScreen';
 import GoalsScreen from '../modules/goals/GoalsScreen';
-import SafeRoomScreen from '../modules/safeRoom/screens/SafeRoomScreen';
+import EmotionalSafeRoom from '../modules/safeRoom/screens/EmotionalSafeRoom';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -55,7 +55,7 @@ const GoalsStack = () => (
 
 const SafeRoomStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SafeRoomMain" component={SafeRoomScreen} />
+    <Stack.Screen name="SafeRoomMain" component={EmotionalSafeRoom} />
   </Stack.Navigator>
 );
 

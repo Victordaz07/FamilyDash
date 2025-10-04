@@ -157,7 +157,7 @@ export const mockSafetyTips: SafetyTip[] = [
         title: 'Digital Safety',
         description: 'Keep personal information private online and use strong passwords.',
         category: 'communication',
-        icon: 'shield-checkmark',
+        icon: 'shield',
         color: '#10B981',
         isRead: true
     },

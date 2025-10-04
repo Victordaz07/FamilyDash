@@ -248,7 +248,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
                 <Card style={[styles.guidelinesCard, { borderLeftColor: '#EC4899' }]}>
                     <View style={styles.guidelinesHeader}>
                         <View style={styles.guidelinesIcon}>
-                            <Ionicons name="shield-checkmark" size={20} color="#EC4899" />
+                            <Ionicons name="shield" size={20} color="#EC4899" />
                         </View>
                         <View>
                             <Text style={styles.guidelinesTitle}>Safe Space Guidelines</Text>

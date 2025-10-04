@@ -120,7 +120,7 @@ const PermissionTest: React.FC = () => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={requestPermissions}>
-                <Ionicons name="shield-checkmark" size={20} color="white" />
+                <Ionicons name="shield" size={20} color="white" />
                 <Text style={styles.buttonText}>Request Permissions</Text>
             </TouchableOpacity>
 

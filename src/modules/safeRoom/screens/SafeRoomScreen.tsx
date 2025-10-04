@@ -291,7 +291,7 @@ const SafeRoomScreen: React.FC<SafeRoomScreenProps> = ({ navigation }) => {
                             <Text style={styles.quickActionText}>Locations</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.quickActionButton} onPress={() => setActiveTab('tips')}>
-                            <Ionicons name="shield-checkmark" size={24} color="white" />
+                            <Ionicons name="shield" size={24} color="white" />
                             <Text style={styles.quickActionText}>Safety Tips</Text>
                         </TouchableOpacity>
                     </View>

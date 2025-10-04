@@ -165,7 +165,7 @@ const SafeRoomTabs: React.FC<SafeRoomTabsProps> = ({ navigation, route }) => {
 
             {/* Safety Message */}
             <View style={styles.safetyMessage}>
-                <Ionicons name="shield-checkmark" size={20} color="#10B981" />
+                <Ionicons name="shield" size={20} color="#10B981" />
                 <Text style={styles.safetyText}>No one will judge you here. This is a safe space.</Text>
             </View>
         </ScrollView>
