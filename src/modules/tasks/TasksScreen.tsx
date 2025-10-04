@@ -1,12 +1,12 @@
 import React from 'react';
-import TaskManagement from './screens/TaskManagement';
+import { TaskManagementMock } from '../../screens/TaskManagementMock';
 
 interface TasksScreenProps {
     navigation: any;
 }
 
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
-    return <TaskManagement navigation={navigation} />;
+    return <TaskManagementMock />;
 };
 
 export default TasksScreen;

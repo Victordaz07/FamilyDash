@@ -6,12 +6,11 @@
 import { create } from 'zustand';
 import React from 'react';
 import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
-import { 
-  RealDatabaseService, 
-  RealAuthService,
-  trackEvent 
-} from '../../../services';
-import { scheduleTaskNotification } from '../../../services/notificationService';
+// TEMPORARILY DISABLED FOR DEBUGGING
+// import { RealDatabaseService, RealAuthService } from '../../../services';
+// TEMPORARILY DISABLED - Services causing import conflicts
+// import { trackEvent } from '../../../services';
+// import { scheduleTaskNotification } from '../../../services/notificationService';
 
 interface TasksState {
   tasks: Task[];
@@ -26,11 +25,11 @@ interface TasksState {
   initializeTasks: () => Promise<void>;
   setSelectedTask: (id: string) => void;
   clearSelectedTask: () => void;
-  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<{success: boolean; error?: string}>;
-  updateTask: (id: string, updates: Partial<Task>) => Promise<{success: boolean; error?: string}>;
-  completeTask: (id: string) => Promise<{success: boolean; error?: string}>;
-  deleteTask: (id: string) => Promise<{success: boolean; error?: string}>;
-  
+  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<{ success: boolean; error?: string }>;
+  updateTask: (id: string, updates: Partial<Task>) => Promise<{ success: boolean; error?: string }>;
+  completeTask: (id: string) => Promise<{ success: boolean; error?: string }>;
+  deleteTask: (id: string) => Promise<{ success: boolean; error?: string }>;
+
   // Offline Actions (when Firebase is unavailable)
   addTaskOffline: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateTaskOffline: (id: string, updates: Partial<Task>) => void;
@@ -83,7 +82,7 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
 
   initializeTasks: async () => {
     const { isInitialized } = get();
-    
+
     if (isInitialized) {
       console.log('📋 Tasks already initialized, skipping...');
       return;
@@ -106,9 +105,9 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
       const isConnected = await RealDatabaseService.checkConnection();
       if (!isConnected) {
         console.log('⚠️ Firebase connection failed, falling back to offline mode');
-        set({ 
-          tasks: [], 
-          isInitialized: true, 
+        set({
+          tasks: [],
+          isInitialized: true,
           isLoading: false,
           error: 'Firebase connection unavailable'
         });
@@ -124,18 +123,18 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
             set({ error: error, isLoading: false });
           } else {
             console.log(`📋 Real-time update: ${tasks.length} tasks received`);
-            set({ 
-              tasks, 
-              isInitialized: true, 
-              isLoading: false, 
-              error: null 
+            set({
+              tasks,
+              isInitialized: true,
+              isLoading: false,
+              error: null
             });
-            
-            // Track analytics
-            trackEvent('tasks_synced', { 
-              count: tasks.length,
-              user_id: user.uid 
-            });
+
+            // Track analytics (DISABLED - Service conflict)
+            // trackEvent('tasks_synced', { 
+            //   count: tasks.length,
+            //   user_id: user.uid 
+            // });
           }
         },
         {
@@ -149,10 +148,10 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
       console.log('✅ Tasks initialized with Firebase real-time updates');
     } catch (error: any) {
       console.error('❌ Error initializing tasks:', error);
-      set({ 
-        error: error.message, 
-        isInitialized: true, 
-        isLoading: false 
+      set({
+        error: error.message,
+        isInitialized: true,
+        isLoading: false
       });
     }
   },
@@ -198,21 +197,21 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
       const newTask = result.data;
       set({ isLoading: false });
 
-      // Schedule notification for the new task
-      scheduleTaskNotification({
-        id: newTask.id,
-        title: newTask.title,
-        assignedTo: newTask.assignedTo,
-        dueDate: newTask.dueDate,
-      });
+      // Schedule notification (DISABLED - Service conflict)
+      // scheduleTaskNotification({
+      //   id: newTask.id,
+      //   title: newTask.title,
+      //   assignedTo: newTask.assignedTo,
+      //   dueDate: newTask.dueDate,
+      // });
 
-      // Track analytics
-      trackEvent('task_created', { 
-        task_id: newTask.id,
-        user_id: user.uid,
-        priority: newTask.priority,
-        assigned_to: newTask.assignedTo
-      });
+      // Track analytics (DISABLED - Service conflict)
+      // trackEvent('task_created', { 
+      //   task_id: newTask.id,
+      //   user_id: user.uid,
+      //   priority: newTask.priority,
+      //   assigned_to: newTask.assignedTo
+      // });
 
       console.log('✅ Task created successfully:', newTask.title);
 
@@ -220,10 +219,10 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     } catch (error: any) {
       console.error('❌ Error adding task:', error);
       set({ isLoading: false, error: error.message });
-      
-      return { 
-        success: false, 
-        error: error.message || 'Failed to add task' 
+
+      return {
+        success: false,
+        error: error.message || 'Failed to add task'
       };
     }
   },
@@ -254,12 +253,12 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
 
       set({ isLoading: false });
 
-      // Track analytics
-      trackEvent('task_updated', { 
-        task_id: id,
-        user_id: user.uid,
-        updated_fields: Object.keys(updates)
-      });
+      // Track analytics (DISABLED - Service conflict)
+      // trackEvent('task_updated', { 
+      //   task_id: id,
+      //   user_id: user.uid,
+      //   updated_fields: Object.keys(updates)
+      // });
 
       console.log('✅ Task updated successfully:', id);
 
@@ -267,10 +266,10 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     } catch (error: any) {
       console.error('❌ Error updating task:', error);
       set({ isLoading: false, error: error.message });
-      
-      return { 
-        success: false, 
-        error: error.message || 'Failed to update task' 
+
+      return {
+        success: false,
+        error: error.message || 'Failed to update task'
       };
     }
   },
@@ -305,11 +304,11 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
 
       set({ isLoading: false });
 
-      // Track analytics
-      trackEvent('task_deleted', { 
-        task_id: id,
-        user_id: user.uid
-      });
+      // Track analytics (DISABLED - Service conflict)
+      // trackEvent('task_deleted', { 
+      //   task_id: id,
+      //   user_id: user.uid
+      // });
 
       console.log('✅ Task deleted successfully:', id);
 
@@ -317,10 +316,10 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     } catch (error: any) {
       console.error('❌ Error deleting task:', error);
       set({ isLoading: false, error: error.message });
-      
-      return { 
-        success: false, 
-        error: error.message || 'Failed to delete task' 
+
+      return {
+        success: false,
+        error: error.message || 'Failed to delete task'
       };
     }
   },
@@ -333,18 +332,18 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     set((state) => ({ tasks: [...state.tasks, newTask] }));
-    
+
     console.log('📝 Task added offline, will sync when online:', newTask.title);
-    
-    // Schedule notification for the new task
-    scheduleTaskNotification({
-      id: newTask.id,
-      title: newTask.title,
-      assignedTo: newTask.assignedTo,
-      dueDate: newTask.dueDate,
-    });
+
+    // Schedule notification (DISABLED - Service conflict)
+    // scheduleTaskNotification({
+    //   id: newTask.id,
+    //   title: newTask.title,
+    //   assignedTo: newTask.assignedTo,
+    //   dueDate: newTask.dueDate,
+    // });
   },
 
   updateTaskOffline: (id, updates) => {
@@ -355,7 +354,7 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
           : t
       ),
     }));
-    
+
     console.log('✏️ Task updated offline, will sync when online:', id);
   },
 
@@ -372,22 +371,22 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
       tasks: state.tasks.filter((t) => t.id !== id),
       selectedTask: state.selectedTask?.id === id ? undefined : state.selectedTask,
     }));
-    
+
     console.log('🗑️ Task deleted offline, will sync when online:', id);
   },
 
   syncOfflineTasks: async () => {
     const { tasks } = get();
     const offlineTasks = tasks.filter(task => task.id.startsWith('offline_task_'));
-    
+
     if (offlineTasks.length === 0) {
       console.log('📋 No offline tasks to sync');
       return;
     }
 
     console.log(`📡 Syncing ${offlineTasks.length} offline tasks...`);
-    
-    let successCount= 0;
+
+    let successCount = 0;
     let errorCount = 0;
 
     for (const task of offlineTasks) {
@@ -395,7 +394,7 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
         // Remove offline prefix from ID
         const { id, ...taskData } = task;
         const result = await get().addTask(taskData);
-        
+
         if (result.success) {
           // Remove offline task
           get().deleteTaskOffline(task.id);
@@ -410,12 +409,12 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     }
 
     console.log(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
-    
-    // Track analytics
-    trackEvent('offline_tasks_synced', { 
-      successful: successCount,
-      failed: errorCount
-    });
+
+    // Track analytics (DISABLED - Service conflict)
+    // trackEvent('offline_tasks_synced', { 
+    //   successful: successCount,
+    //   failed: errorCount
+    // });
   },
 
   setFilter: (filter) => {
@@ -495,7 +494,7 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
     try {
       console.log('🔄 Attempting to reconnect to Firebase...');
       set({ isLoading: true, error: null });
-      
+
       // Cleanup existing subscription
       const { subscription } = get();
       if (subscription) {
@@ -504,13 +503,13 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
 
       // Reinitialize
       await get().initializeTasks();
-      
+
       console.log('✅ Reconnected to Firebase successfully');
     } catch (error: any) {
       console.error('❌ Reconnection failed:', error);
-      set({ 
-        error: error.message, 
-        isLoading: false 
+      set({
+        error: error.message,
+        isLoading: false
       });
     }
   },
@@ -519,13 +518,13 @@ export const useTasksStoreWithFirebase = create<TasksState>((set, get) => ({
 // Hook for easy cleanup on component unmount
 export const useTasksStore = () => {
   const store = useTasksStoreWithFirebase();
-  
+
   // Initialize tasks on first use
   React.useEffect(() => {
     if (!store.isInitialized) {
       store.initializeTasks();
     }
-    
+
     // Cleanup on unmount
     return () => {
       if (store.subscription) {

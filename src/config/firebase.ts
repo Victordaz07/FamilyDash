@@ -14,19 +14,29 @@ import { getMessaging } from 'firebase/messaging';
 
 // Firebase configuration - Replace with your actual config
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || "your-api-key-here",
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || "your-project-id",
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || "your-project.appspot.com",
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:abcdef123456",
-  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-XXXXXXXXXX",
+  apiKey: "AIzaSyBqZSqW2ZU1EZldEuc0rktxMuSYi1hleq8",
+  authDomain: "family-dash-15944.firebaseapp.com",
+  projectId: "family-dash-15944",
+  storageBucket: "family-dash-15944.firebasestorage.app",
+  messagingSenderId: "3950658017",
+  appId: "1:3950658017:web:9d4d2ddea39f8a785e12a0",
+  measurementId: "G-ENM2KQWEPX"
 };
 
 // Initialize Firebase
-console.log('🔥 Initializing Firebase with real configuration...');
-
 const app = initializeApp(firebaseConfig);
+
+// Enable Analytics and Performance
+console.log('🔥 Firebase initialized with project: family-dash-15944');
+
+// Initialize Analytics (optional for React Native)
+// const analytics = getAnalytics(app);
+
+// Initialize Performance Monitoring
+// const perf = getPerformance(app);
+
+// Initialize Cloud Messaging
+// const messaging = getMessaging(app);
 
 // Initialize Firebase services
 const auth = getAuth(app);
@@ -52,7 +62,7 @@ let messaging = null;
 if (process.env.NODE_ENV === 'production') {
   analytics = getAnalytics(app);
   performance = getPerformance(app);
-  
+
   // Initialize messaging (only in production and web)
   if (typeof window !== 'undefined') {
     messaging = getMessaging(app);
@@ -62,10 +72,10 @@ if (process.env.NODE_ENV === 'production') {
 // Development emulator configuration
 if (__DEV__) {
   console.log('🔧 Firebase running in development mode with emulators');
-  
+
   // Connect to Firestore emulator (uncomment if using emulators)
   // connectFirestoreEmulator(db, 'localhost', 8080);
-  
+
   // Connect to Functions emulator (uncomment if using emulators)
   // connectFunctionsEmulator(functions, 'localhost', 5001);
 }

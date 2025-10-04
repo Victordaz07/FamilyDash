@@ -4,9 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '../locales/i18n';
 import { useFamilyDashStore } from '../state/store';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
+// TEMPORARILY DISABLED FOR DEBUGGING
+// import { useTasksStore } from '../modules/tasks/store/tasksStore';
+// import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
+// import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
 import { theme } from '../styles/simpleTheme';
 
@@ -18,13 +19,18 @@ interface DashboardScreenProps {
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { t } = useTranslation();
-    
-    // Use specific module stores
-    const tasks = useTasksStore(state => state.tasks);
-    const penalties = usePenaltiesStore(state => state.penalties);
-    const goals = useGoalsStore(state => state.goals);
-    const familyMembersFromStore = useFamilyStore(state => state.familyMembers);
-    
+
+    // MOCK DATA TEMPORARILY - Firebase services disabled for debugging
+    const tasks = [
+        { id: '1', title: 'Mock Task 1', status: 'pending', assignedTo: 'demo' },
+        { id: '2', title: 'Mock Task 2', status: 'completed', assignedTo: 'demo' },
+    ];
+    const penalties = [];
+    const goals = [];
+    const familyMembersFromStore = [
+        { id: 'demo', name: 'Demo User', role: 'admin', online: true }
+    ];
+
     const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
     const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
 
@@ -48,7 +54,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         const baseMembers = familyMembersFromStore || [];
         const colors = ['#3B82F6', '#EC4899', '#8B5CF6', '#F59E0B'];
         const statuses = ['online', 'away', 'offline'];
-        
+
         return baseMembers.map((member, index) => ({
             ...member,
             tasks: Math.floor(Math.random() * 5) + 1, // Mock task count
@@ -216,6 +222,36 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     <Ionicons name="add" size={20} color="white" />
                                 </View>
                                 <Text style={styles.quickActionText}>Add Task</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.quickActionButton}
+                            onPress={() => navigation.navigate('LoginScreen' as never)}
+                        >
+                            <LinearGradient
+                                colors={[theme.colors.firebase || '#FF6B6B', '#FF8A65']}
+                                style={styles.quickActionGradient}
+                            >
+                                <View style={styles.quickActionIcon}>
+                                    <Ionicons name="log-in" size={20} color="white" />
+                                </View>
+                                <Text style={styles.quickActionText}>Login</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.quickActionButton}
+                            onPress={() => navigation.navigate('RegisterScreen' as never)}
+                        >
+                            <LinearGradient
+                                colors={['#10B981', '#059669']}
+                                style={styles.quickActionGradient}
+                            >
+                                <View style={styles.quickActionIcon}>
+                                    <Ionicons name="person-add" size={20} color="white" />
+                                </View>
+                                <Text style={styles.quickActionText}>Register</Text>
                             </LinearGradient>
                         </TouchableOpacity>
 

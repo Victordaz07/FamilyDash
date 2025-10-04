@@ -3,7 +3,7 @@
  * Production-ready authentication with Firebase Auth
  */
 
-import { 
+import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -71,10 +71,10 @@ class RealAuthService {
     onAuthStateChanged(auth, async (user) => {
       const authUser = user ? this.mapFirebaseUserToAuthUser(user) : null;
       this.user = authUser;
-      
+
       // Save user data to AsyncStorage
       await this.saveUserToStorage(authUser);
-      
+
       // Notify all listeners
       this.authStateListeners.forEach(listener => listener(authUser));
     });
@@ -131,7 +131,7 @@ class RealAuthService {
    */
   addAuthStateListener(listener: (user: AuthUser | null) => void): () => void {
     this.authStateListeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.authStateListeners.indexOf(listener);
@@ -175,16 +175,16 @@ class RealAuthService {
       );
 
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
-      
+
       console.log('✅ Login successful:', user.displayName);
-      
+
       return {
         success: true,
         user,
       };
     } catch (error: any) {
       console.error('❌ Login error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -214,16 +214,16 @@ class RealAuthService {
       }
 
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
-      
+
       console.log('✅ Registration successful:', user.displayName);
-      
+
       return {
         success: true,
         user,
       };
     } catch (error: any) {
       console.error('❌ Registration error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -241,16 +241,16 @@ class RealAuthService {
 
       const userCredential: UserCredential = await signInWithPopup(auth, googleProvider);
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
-      
+
       console.log('✅ Google login successful:', user.displayName);
-      
+
       return {
         success: true,
         user,
       };
     } catch (error: any) {
       console.error('❌ Google login error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -267,15 +267,15 @@ class RealAuthService {
       console.log('🚪 Signing out user');
 
       await signOut(auth);
-      
+
       console.log('✅ Sign out successful');
-      
+
       return {
         success: true,
       };
     } catch (error: any) {
       console.error('❌ Sign out error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -290,7 +290,7 @@ class RealAuthService {
   async updateUserProfile(updates: ProfileUpdate): Promise<AuthResult> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         throw new Error('No authenticated user');
       }
@@ -298,18 +298,18 @@ class RealAuthService {
       console.log('✏️ Updating user profile');
 
       await updateProfile(currentUser, updates);
-      
+
       const user = this.mapFirebaseUserToAuthUser(currentUser);
-      
+
       console.log('✅ Profile update successful');
-      
+
       return {
         success: true,
         user,
       };
     } catch (error: any) {
       console.error('❌ Profile update error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -324,7 +324,7 @@ class RealAuthService {
   async updateUserEmail(newEmail: string): Promise<AuthResult> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         throw new Error('No authenticated user');
       }
@@ -332,18 +332,18 @@ class RealAuthService {
       console.log('📧 Updating user email');
 
       await updateEmail(currentUser, newEmail);
-      
+
       const user = this.mapFirebaseUserToAuthUser(currentUser);
-      
+
       console.log('✅ Email update successful');
-      
+
       return {
         success: true,
         user,
       };
     } catch (error: any) {
       console.error('❌ Email update error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -358,7 +358,7 @@ class RealAuthService {
   async updateUserPassword(newPassword: string): Promise<AuthResult> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         throw new Error('No authenticated user');
       }
@@ -366,15 +366,15 @@ class RealAuthService {
       console.log('🔐 Updating user password');
 
       await updatePassword(currentUser, newPassword);
-      
+
       console.log('✅ Password update successful');
-      
+
       return {
         success: true,
       };
     } catch (error: any) {
       console.error('❌ Password update error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -391,15 +391,15 @@ class RealAuthService {
       console.log('📧 Sending password reset email to:', email);
 
       await sendPasswordResetEmail(auth, email);
-      
+
       console.log('✅ Password reset email sent');
-      
+
       return {
         success: true,
       };
     } catch (error: any) {
       console.error('❌ Password reset error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -414,7 +414,7 @@ class RealAuthService {
   async deleteUserAccount(): Promise<AuthResult> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         throw new Error('No authenticated user');
       }
@@ -422,15 +422,15 @@ class RealAuthService {
       console.log('🗑️ Deleting user account');
 
       await sendPasswordResetEmail(auth, currentUser.email!);
-      
+
       console.log('✅ Account deletion initiated');
-      
+
       return {
         success: true,
       };
     } catch (error: any) {
       console.error('❌ Account deletion error:', error);
-      
+
       return {
         success: false,
         error: this.getAuthErrorMessage(error.code),
@@ -468,7 +468,7 @@ class RealAuthService {
       const unsubscribe = this.addAuthStateListener((user) => {
         resolve(user);
       });
-      
+
       // If user is already available, resolve immediately
       if (this.user !== undefined) {
         unsubscribe();
@@ -483,7 +483,7 @@ class RealAuthService {
   async getAuthToken(): Promise<string | null> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         return null;
       }
@@ -501,7 +501,7 @@ class RealAuthService {
   async refreshAuthToken(): Promise<string | null> {
     try {
       const currentUser = auth.currentUser;
-      
+
       if (!currentUser) {
         return null;
       }
@@ -512,7 +512,26 @@ class RealAuthService {
       return null;
     }
   }
+
+  /**
+   * Listen to authentication state changes
+   * @param callback Function to call when auth state changes
+   * @returns Unsubscribe function
+   */
+  onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
+    return onAuthStateChanged(auth, (firebaseUser) => {
+      const authUser = firebaseUser ? this.mapFirebaseUserToAuthUser(firebaseUser) : null;
+      callback(authUser);
+    });
+  }
+
+  /**
+   * Get current authenticated user
+   */
+  getCurrentUser(): AuthUser | null {
+    return this.user;
+  }
 }
 
-// Export singleton instance
+export { RealAuthService };
 export default new RealAuthService();

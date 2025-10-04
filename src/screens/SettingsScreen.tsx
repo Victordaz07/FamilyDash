@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, BackHandler } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useTranslation, Language } from '../locales/i18n';
 import i18n from '../locales/i18n';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -12,6 +13,7 @@ interface SettingsScreenProps {
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const { t, language, changeLanguage } = useTranslation();
+  const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [deviceRingEnabled, setDeviceRingEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -29,6 +31,39 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
     Alert.alert(
       'Device Ring',
       `Device ring ${deviceRingEnabled ? 'disabled' : 'enabled'}`
+    );
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              console.log('🚪 Logging out...');
+              const result = await logout();
+
+              if (result.success) {
+                console.log('✅ Logout successful');
+                Alert.alert('Success', 'Logged out successfully');
+              } else {
+                console.error('❌ Logout failed:', result.error);
+                Alert.alert('Error', result.error || 'Logout failed');
+              }
+            } catch (error: any) {
+              console.error('❌ Logout error:', error);
+              Alert.alert('Error', error.message || 'Logout failed');
+            }
+          },
+        },
+      ]
     );
   };
 
@@ -290,7 +325,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       <View style={styles.logoutSection}>
         <Button
           title="Logout"
-          onPress={() => Alert.alert('Logout', 'Are you sure?')}
+          onPress={handleLogout}
           variant="outline"
           style={styles.logoutButton}
         />

@@ -8,6 +8,7 @@ import { useTranslation } from '../locales/i18n';
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
+import { FirebaseTest } from '../screens/FirebaseTest';
 import TasksScreen from '../modules/tasks/TasksScreen';
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
 import GoalsScreen from '../modules/goals/GoalsScreen';
@@ -16,6 +17,10 @@ import NewEmotionalEntry from '../modules/safeRoom/screens/NewEmotionalEntry';
 import PermissionTest from '../modules/safeRoom/screens/PermissionTest';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+
+// Import Auth screens
+import { LoginScreen } from '../screens/LoginScreen';
+import { RegisterScreen } from '../screens/RegisterScreen';
 
 // Import Penalties module screens
 import PenaltiesMain from '../modules/penalties/screens/PenaltiesMain';
@@ -46,6 +51,9 @@ const Stack = createStackNavigator();
 const DashboardStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DashboardMain" component={DashboardScreen} />
+    <Stack.Screen name="FirebaseTest" component={FirebaseTest as any} />
+    <Stack.Screen name="LoginScreen" component={LoginScreen as any} />
+    <Stack.Screen name="RegisterScreen" component={RegisterScreen as any} />
     <Stack.Screen name="PenaltiesMain" component={PenaltiesMain as any} />
     <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
     <Stack.Screen name="PenaltyHistory" component={PenaltyHistory as any} />
