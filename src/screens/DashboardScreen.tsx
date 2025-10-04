@@ -261,6 +261,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
+                    
+                    {/* Firebase Live Test Button */}
+                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('FirebaseTestLive')}>
+                        <LinearGradient
+                            colors={['#8B5CF6', '#06B6D4']}
+                            style={styles.quickActionGradientLarge}
+                        >
+                            <View style={styles.quickActionIconLarge}>
+                                <Ionicons name="flame" size={28} color="white" />
+                            </View>
+                            <View style={styles.quickActionTextContainer}>
+                                <Text style={styles.quickActionTextLarge}>Firebase Test</Text>
+                                <Text style={styles.quickActionSubtext}>Live Firebase Testing</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Device Tools */}

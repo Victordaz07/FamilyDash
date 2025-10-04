@@ -230,16 +230,66 @@ export const useProfileStore = create<ProfileState>()(
                 return familyHouse.invitationCodes.filter(inv => !inv.isUsed);
             },
 
-      // Profile management
+      // Profile management 🔥 FIREBASE ACTIVATED
       updateProfile: async (profileData) => {
         const currentUser = get().currentUser;
         if (!currentUser) return;
-        
-        await get().updateMember(currentUser.id, profileData);
-        
-        set({
-          userProfile: profileData as ProfileData,
-        });
+
+        try {
+          console.log('🔥 Firebase Profile update:', profileData);
+          
+          // Update via Firebase Firestore
+          const firebaseUser = RealAuthService.getCurrentUser();
+          if (firebaseUser) {
+            // Update user profile in Firebase
+            await RealDatabaseService.updateDocument(
+              `users/${firebaseUser.uid}/profile`,
+              {
+                ...profileData,
+                updatedAt: new Date(),
+              }
+            );
+
+            // Update family member data if part of a family
+            if (get().familyHouse) {
+              await RealDatabaseService.updateDocument(
+                `families/${firebaseUser.uid}/members/${currentUser.id}`,
+                {
+                  ...profileData,
+                  updatedAt: new Date(),
+                }
+              );
+            }
+
+            console.log('✅ Profile updated successfully in Firebase');
+            
+            // Track analytics event
+            trackEvent('profile_updated', {
+              userId: firebaseUser.uid,
+              fields: Object.keys(profileData),
+              timestamp: new Date().toISOString()
+            });
+          } else {
+            console.log('⚠️ No Firebase user authenticated, using local update');
+          }
+
+          // Update local state
+          await get().updateMember(currentUser.id, profileData);
+          
+          set({
+            userProfile: profileData as ProfileData,
+          });
+
+        } catch (error) {
+          console.error('❌ Error updating profile in Firebase:', error);
+          
+          // Fallback to local update
+          await get().updateMember(currentUser.id, profileData);
+          
+          set({
+            userProfile: profileData as ProfileData,
+          });
+        }
       },
       
       updateAvatar: async (avatar) => {
@@ -308,23 +358,96 @@ export const useProfileStore = create<ProfileState>()(
                 return currentUser?.role === 'child';
             },
 
-            // House management
+            // House management 🔥 FIREBASE ACTIVATED
             createHouse: async (houseName: string, admin: FamilyMember) => {
-                const newHouse: FamilyHouse = {
-                    houseId: get().generateUniqueId(),
-                    houseName,
-                    adminId: admin.id,
-                    members: [admin],
-                    createdAt: new Date(),
-                    invitationCodes: [],
-                };
+                try {
+                    console.log('🔥 Creating house in Firebase:', houseName);
+                    
+                    const newHouse: FamilyHouse = {
+                        houseId: get().generateUniqueId(),
+                        houseName,
+                        adminId: admin.id,
+                        members: [admin],
+                        createdAt: new Date(),
+                        invitationCodes: [],
+                    };
 
-                set({
-                    familyHouse: newHouse,
-                    currentUser: admin,
-                });
+                    // Create house in Firebase Firestore
+                    const firebaseUser = RealAuthService.getCurrentUser();
+                    if (firebaseUser) {
+                        // Create house document
+                        await RealDatabaseService.updateDocument(
+                            `families/${firebaseUser.uid}`,
+                            {
+                                ...newHouse,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            }
+                        );
 
-                console.log('New house created:', houseName);
+                        // Create member document
+                        await RealDatabaseService.updateDocument(
+                            `families/${firebaseUser.uid}/members/${admin.id}`,
+                            {
+                                ...admin,
+                                joinedAt: new Date(),
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            }
+                        );
+
+                        // Create user profile document
+                        await RealDatabaseService.updateDocument(
+                            `users/${firebaseUser.uid}/profile`,
+                            {
+                                ...admin,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            }
+                        );
+
+                        console.log('✅ House created successfully in Firebase');
+
+                        // Track analytics
+                        trackEvent('house_created', {
+                            userId: firebaseUser.uid,
+                            houseId: newHouse.houseId,
+                            houseName: houseName,
+                            memberCount: 1,
+                            timestamp: new Date().toISOString()
+                        });
+                    } else {
+                        console.log('⚠️ No Firebase user authenticated, house created locally only');
+                    }
+
+                    // Update local state
+                    set({
+                        familyHouse: newHouse,
+                        currentUser: admin,
+                    });
+
+                    console.log('✅ New house created successfully:', houseName);
+
+                } catch (error) {
+                    console.error('❌ Error creating house in Firebase:', error);
+                    
+                    // Fallback to local creation
+                    const fallbackHouse: FamilyHouse = {
+                        houseId: get().generateUniqueId(),
+                        houseName,
+                        adminId: admin.id,
+                        members: [admin],
+                        createdAt: new Date(),
+                        invitationCodes: [],
+                    };
+                    
+                    set({
+                        familyHouse: fallbackHouse,
+                        currentUser: admin,
+                    });
+                    
+                    console.log('⚠️ House created locally (Firebase failed):', houseName);
+                }
             },
 
             leaveHouse: async () => {
