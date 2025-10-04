@@ -37,6 +37,12 @@ import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
 import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '../modules/profile/screens';
 import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
 
+// Import Testing & Debug screens
+import FirebaseTestLive from '../screens/FirebaseTestLive';
+import SyncTestingScreen from '../screens/SyncTestingScreen';
+import DebugDashboard from '../screens/DebugDashboard';
+import TestingReports from '../screens/TestingReports';
+
 // Import Quick Actions module screens - TEMPORARILY COMMENTED FOR DEBUGGING
 // import FamilyMembersScreen from '../modules/quickActions/screens/FamilyMembersScreen';
 // import AchievementsScreen from '../modules/quickActions/screens/AchievementsScreen';
