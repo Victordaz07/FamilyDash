@@ -53,7 +53,9 @@ export interface FamilyMember {
     hasVoted?: boolean;
 }
 
-export const mockActivities: Activity[] = [
+// CLEAN DATA - Empty activities ready for real connections
+export const mockActivities: Activity[] = [];
+/* Original mock data - commented out for clean state
     {
         id: '1',
         title: 'Movie Night',
@@ -217,34 +219,10 @@ export const mockActivities: Activity[] = [
         status: 'confirmed',
         description: 'Regular checkup appointment'
     }
-];
+]; */
 
-export const mockFamilyMembers: FamilyMember[] = [
-    {
-        id: 'dad',
-        name: 'Dad',
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
-        hasVoted: true
-    },
-    {
-        id: 'mom',
-        name: 'Mom',
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg',
-        hasVoted: true
-    },
-    {
-        id: 'emma',
-        name: 'Emma',
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg',
-        hasVoted: true
-    },
-    {
-        id: 'jake',
-        name: 'Jake',
-        avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
-        hasVoted: false
-    }
-];
+// CLEAN DATA - Empty members ready for real connections
+export const mockFamilyMembers: FamilyMember[] = [];
 
 export const mockRecentDecisions = [
     {
