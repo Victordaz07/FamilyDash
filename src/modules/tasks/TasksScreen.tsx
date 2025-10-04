@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaskManagement } from './screens/TaskManagement';
+import TaskManagement from './screens/TaskManagement';
 
 interface TasksScreenProps {
     navigation: any;
