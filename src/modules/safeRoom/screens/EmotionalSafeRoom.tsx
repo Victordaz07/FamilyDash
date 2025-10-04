@@ -50,88 +50,6 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
         Alert.alert('Heart Added', 'You showed your support with a heart ❤️');
     };
 
-    const renderMessage = (message: EmotionalMessage) => (
-        <Card key={message.id} style={[styles.messageCard, { borderLeftColor: message.emotionColor }]}>
-            <View style={styles.messageHeader}>
-                <Image source={{ uri: message.senderAvatar }} style={styles.avatar} />
-                <View style={styles.messageInfo}>
-                    <View style={styles.messageTitle}>
-                        <Text style={styles.senderName}>{message.sender}</Text>
-                        <View style={[styles.emotionTag, { backgroundColor: `${message.emotionColor}20` }]}>
-                            <Text style={styles.emotionIcon}>{message.emotionIcon}</Text>
-                            <Text style={[styles.emotionText, { color: message.emotionColor }]}>
-                                {message.emotion}
-                            </Text>
-                        </View>
-                    </View>
-                    <Text style={styles.timestamp}>{message.timestamp}</Text>
-                </View>
-                <TouchableOpacity style={styles.moreButton}>
-                    <Ionicons name="ellipsis-horizontal" size={16} color="#9CA3AF" />
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.messageContent}>
-                <View style={[styles.messageBubble, { backgroundColor: `${message.emotionColor}10` }]}>
-                    <Text style={styles.messageText}>{message.content}</Text>
-                </View>
-
-                {message.type === 'voice' && (
-                    <View style={styles.voicePlayer}>
-                        <TouchableOpacity style={styles.playButton} onPress={() => handleVoicePlay(message)}>
-                            <Ionicons name="play" size={16} color="white" />
-                        </TouchableOpacity>
-                        <View style={styles.progressContainer}>
-                            <View style={styles.progressBar}>
-                                <View style={[styles.progressFill, { width: '33%' }]} />
-                            </View>
-                            <Text style={styles.duration}>{message.voiceDuration}</Text>
-                        </View>
-                        <Ionicons name="mic" size={16} color="#EC4899" />
-                    </View>
-                )}
-
-                <View style={styles.messageActions}>
-                    <TouchableOpacity
-                        style={styles.heartButton}
-                        onPress={() => handleAddHeart(message.id)}
-                    >
-                        <Ionicons name="heart" size={16} color="#EC4899" />
-                        <Text style={styles.heartCount}>{message.hearts}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.replyButton}>
-                        <Ionicons name="chatbubble" size={16} color="#6B7280" />
-                        <Text style={styles.replyText}>Reply</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {message.replies.length > 0 && (
-                    <View style={styles.repliesContainer}>
-                        {message.replies.map((reply) => (
-                            <View key={reply.id} style={styles.replyItem}>
-                                <Image source={{ uri: reply.senderAvatar }} style={styles.replyAvatar} />
-                                <View style={styles.replyContent}>
-                                    <View style={styles.replyHeader}>
-                                        <Text style={styles.replySender}>{reply.sender}</Text>
-                                        <Text style={styles.replyTimestamp}>{reply.timestamp}</Text>
-                                    </View>
-                                    <Text style={styles.replyText}>{reply.content}</Text>
-                                    <View style={styles.replyReaction}>
-                                        <Text style={styles.reactionEmoji}>{reply.reaction}</Text>
-                                        <Text style={styles.reactionText}>
-                                            {reply.reaction === '❤️' ? 'Loved' :
-                                                reply.reaction === '💪' ? 'Supportive' : 'Reacted'}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                        ))}
-                    </View>
-                )}
-            </View>
-        </Card>
-    );
-
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Header */}
@@ -212,21 +130,19 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
                 </View>
             </View>
 
-            {/* Recent Messages */}
+            {/* Empty State for Messages */}
             <View style={styles.messagesSection}>
                 <Card style={styles.messagesCard}>
-                    <View style={styles.messagesHeader}>
-                        <Text style={styles.messagesTitle}>Recent Messages</Text>
-                        <Text style={styles.newCount}>3 new</Text>
+                    <View style={styles.emptyStateContainer}>
+                        <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
+                        <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
+                        <Text style={styles.emptyStateText}>
+                            Start sharing your feelings with your family
+                        </Text>
+                        <TouchableOpacity style={styles.startSharingButton}>
+                            <Text style={styles.startSharingText}>Start Sharing</Text>
+                        </TouchableOpacity>
                     </View>
-
-                    <View style={styles.messagesList}>
-                        {messages.map(renderMessage)}
-                    </View>
-
-                    <TouchableOpacity style={styles.viewAllButton}>
-                        <Text style={styles.viewAllText}>View All Messages</Text>
-                    </TouchableOpacity>
                 </Card>
             </View>
 
@@ -684,6 +600,36 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 20,
+    },
+    emptyStateContainer: {
+        alignItems: 'center',
+        paddingVertical: 40,
+        paddingHorizontal: 20,
+    },
+    emptyStateTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#374151',
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    emptyStateText: {
+        fontSize: 14,
+        color: '#6B7280',
+        textAlign: 'center',
+        marginBottom: 24,
+        lineHeight: 20,
+    },
+    startSharingButton: {
+        backgroundColor: '#EC4899',
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 25,
+    },
+    startSharingText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
 

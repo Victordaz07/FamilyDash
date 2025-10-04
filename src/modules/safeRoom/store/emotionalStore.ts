@@ -63,6 +63,10 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
                 // Start with empty messages for new users
                 set({ messages: [] });
             }
+            
+            // Clear any existing mock data from storage
+            await AsyncStorage.removeItem(STORAGE_KEY);
+            set({ messages: [] });
         } catch (error) {
             console.error('Error loading emotional messages:', error);
             set({ error: 'Failed to load messages' });
