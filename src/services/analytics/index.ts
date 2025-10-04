@@ -14,19 +14,19 @@ export { AnalyticsDashboard } from '../../components/analytics/AnalyticsDashboar
 
 // Types
 export type {
-  UserEvent,
-  UserSession,
-  UserBehaviorMetrics,
-  FamilyAnalytics,
-  AnalyticsInsight,
-  SmartReport,
+    UserEvent,
+    UserSession,
+    UserBehaviorMetrics,
+    FamilyAnalytics,
+    AnalyticsInsight,
+    SmartReport,
 } from './DataAnalyticsService';
 
 export type {
-  AnalyticsConfig,
-  UseAnalyticsReturn,
+    AnalyticsConfig,
+    UseAnalyticsReturn,
 } from '../../hooks/useAnalytics';
 
 export type {
-  AnalyticsDashboardProps,
+    AnalyticsDashboardProps,
 } from '../../components/analytics/AnalyticsDashboard';
