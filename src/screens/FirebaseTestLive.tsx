@@ -270,7 +270,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
                 </View>
               </View>
             ))
-          }}
+          }
         </View>
       </View>
     </ScrollView>
