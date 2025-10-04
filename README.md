@@ -249,7 +249,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍👩‍👧 About FamilyDash
 
-FamilyDash is designed to **help families with kids (8–12 y/o)** manage responsibilities, communicate openly, and grow together in a safe environment.  
+FamilyDash is designed to **help families with kids (8–17 y/o)** manage responsibilities, communicate openly, and grow together in a safe environment.  
 
 ### Our Mission
 To create a digital space where families can:
@@ -261,7 +261,7 @@ To create a digital space where families can:
 
 ### Target Audience
 - **Parents** looking for family management tools
-- **Children** (8-12 years) learning responsibility
+- **Children** (8-17 years) learning responsibility
 - **Families** wanting to improve communication
 - **Educators** interested in family dynamics
 
@@ -288,7 +288,7 @@ This project started as a **portfolio project** showcasing modern React Native d
 
 If you have any questions or need help:
 
-- 📧 Email: [your-email@example.com]
+- 📧 Email: [lighthousestudiolabs@gmail.com]
 - 🐛 Issues: [GitHub Issues](https://github.com/Victordaz07/FamilyDash/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/Victordaz07/FamilyDash/discussions)
 
