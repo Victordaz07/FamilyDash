@@ -309,6 +309,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             </View>
                         </LinearGradient>
                     </TouchableOpacity>
+
+                    {/* Testing Reports Button */}
+                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('TestingReports')}>
+                        <LinearGradient
+                            colors={['#00BCD4', '#0097A7']}
+                            style={styles.quickActionGradientLarge}
+                        >
+                            <View style={styles.quickActionIconLarge}>
+                                <Ionicons name="clipboard-checkmark" size={28} color="white" />
+                            </View>
+                            <View style={styles.quickActionTextContainer}>
+                                <Text style={styles.quickActionTextLarge}>Testing</Text>
+                                <Text style={styles.quickActionSubtext}>Comprehensive Firebase tests</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Device Tools */}

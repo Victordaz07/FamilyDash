@@ -54,6 +54,7 @@ const DashboardStack = () => (
     <Stack.Screen name="FirebaseTestLive" component={FirebaseTestLive as any} />
     <Stack.Screen name="SyncTesting" component={SyncTestingScreen as any} />
     <Stack.Screen name="DebugDashboard" component={DebugDashboard as any} />
+    <Stack.Screen name="TestingReports" component={TestingReports as any} />
     <Stack.Screen name="LoginScreen" component={LoginScreen as any} />
     <Stack.Screen name="RegisterScreen" component={RegisterScreen as any} />
     <Stack.Screen name="PenaltiesMain" component={PenaltiesMain as any} />
