@@ -13,7 +13,7 @@ import {
 
 export class AdvancedMediaService {
     private static audioRecording: Audio.Recording | null = null;
-    private static cameraRef: Camera | null = null;
+    private static cameraRef: any = null;
     private static recordingState: RecordingState = {
         status: 'idle',
         mediaType: null,
@@ -92,16 +92,16 @@ export class AdvancedMediaService {
             await this.audioRecording.prepareToRecordAsync({
                 android: {
                     extension: `.${config.audio.format}`,
-                    outputFormat: config.audio.format === 'mp3' ? Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT : Audio.ANDROID_AUDIO_FORMAT_PCM_16bit,
-                    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
+                    outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+                    audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
                     sampleRate: config.audio.sampleRate || 44100,
                     numberOfChannels: config.audio.channels || 2,
                     bitRate: config.audio.quality === 'high' ? 256000 : config.audio.quality === 'medium' ? 128000 : 64000,
                 },
                 ios: {
                     extension: `.${config.audio.format}`,
-                    outputFormat: Audio.IOS_OUTPUT_FORMAT_MPEG4AAC,
-                    audioQuality: config.audio.quality === 'high' ? Audio.IOS_AUDIO_QUALITY_MAX : config.audio.quality === 'medium' ? Audio.IOS_AUDIO_QUALITY_HIGH : Audio.IOS_AUDIO_QUALITY_MEDIUM,
+                    outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+                    audioQuality: config.audio.quality === 'high' ? Audio.IOSAudioQuality.MAX : config.audio.quality === 'medium' ? Audio.IOSAudioQuality.HIGH : Audio.IOSAudioQuality.MEDIUM,
                     sampleRate: config.audio.sampleRate || 44100,
                     numberOfChannels: config.audio.channels || 2,
                     bitRate: config.audio.quality === 'high' ? 256000 : config.audio.quality === 'medium' ? 128000 : 64000,
@@ -187,7 +187,7 @@ export class AdvancedMediaService {
             // Create metadata
             const metadata: MediaMetadata = {
                 duration: duration / 1000, // Convert to seconds
-                size: fileInfo.size || 0,
+                size: (fileInfo as any).size || 0,
                 format: this.recordingState.config?.audio.format || 'mp3',
                 quality: this.recordingState.config?.audio.quality || 'medium',
                 thumbnail: '', // Will be generated if needed
@@ -259,7 +259,7 @@ export class AdvancedMediaService {
             this.recordingState.status = 'processing';
 
             // Generate mock URI for now (will be replaced with actual camera implementation)
-            const uri = `${FileSystem.documentDirectory}safemom_video_${Date.now()}.mp4`;
+            const uri = `file:///safemom_video_${Date.now()}.mp4`;
 
             // Mock metadata
             const metadata: MediaMetadata = {
@@ -269,7 +269,7 @@ export class AdvancedMediaService {
                 height: 720,
                 format: 'mp4',
                 quality: this.recordingState.config?.video?.quality || 'medium',
-                thumbnail: `${FileSystem.documentDirectory}thumbnail_${Date.now()}.jpg`,
+                thumbnail: `file:///thumbnail_${Date.now()}.jpg`,
             };
 
             this.recordingState = {
@@ -324,7 +324,7 @@ export class AdvancedMediaService {
     }
 
     // Duration timer management
-    private static durationTimerInterval: NodeJS.Timer | null = null;
+    private static durationTimerInterval: any = null;
 
     private static startDurationTimer() {
         if (this.durationTimerInterval) {
@@ -412,7 +412,7 @@ export class AdvancedMediaService {
 
             return {
                 duration: 0, // Would be extracted from file
-                size: fileInfo.size || 0,
+                size: (fileInfo as any).size || 0,
                 width: undefined,
                 height: undefined,
                 format: uri.split('.').pop() || 'mp4',

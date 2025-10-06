@@ -5,10 +5,10 @@
 
 import { create } from 'zustand';
 import React from 'react';
-import { 
-  RealDatabaseService, 
-  RealAuthService, 
-  trackEvent 
+import {
+  RealDatabaseService,
+  RealAuthService,
+  trackEvent
 } from '../../../services';
 
 export interface CalendarEvent {
@@ -44,7 +44,7 @@ interface CalendarState {
   addEvent: (event: Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>) => Promise<{ success: boolean; error?: string }>;
   updateEvent: (id: string, updates: Partial<CalendarEvent>) => Promise<{ success: boolean; error?: string }>;
   deleteEvent: (id: string) => Promise<{ success: boolean; error?: string }>;
-  
+
   // Voting & Responsibilities
   voteOnEvent: (eventId: string, optionId: string) => Promise<{ success: boolean; error?: string }>;
   assignResponsibility: (eventId: string, memberId: string, task: string) => Promise<{ success: boolean; error?: string }>;
@@ -53,7 +53,7 @@ interface CalendarState {
   getEventsByDate: (date: string) => CalendarEvent[];
   getEventsByStatus: (status: string) => CalendarEvent[];
   getVotingEvents: () => CalendarEvent[];
-  
+
   // Connection & Sync
   checkConnection: () => Promise<boolean>;
   reconnect: () => Promise<void>;
@@ -74,7 +74,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
     try {
       console.log('📅 Initializing calendar with Firebase...');
-      
+
       // Check Firebase connection
       const isConnected = await RealDatabaseService.checkConnection();
       if (!isConnected) {
@@ -88,7 +88,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       }
 
       // Get current user
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) {
         console.log('⚠️ No user authenticated for calendar');
         set({ isLoading: false, error: 'User not authenticated' });
@@ -104,15 +104,15 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
             set({ error: error, isLoading: false });
           } else {
             console.log(`📅 Real-time update: ${events.length} events received`);
-            
+
             // Format events with proper date handling
             const formattedEvents = events.map(doc => ({
               id: doc.id,
-              ...doc.data(),
-              createdAt: doc.data().createdAt?.toDate() || new Date(),
-              updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+              ...doc,
+              createdAt: doc.createdAt || new Date(),
+              updatedAt: doc.updatedAt || new Date(),
             })) as CalendarEvent[];
-            
+
             set({
               events: formattedEvents,
               isLoading: false,
@@ -135,8 +135,8 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
     } catch (error) {
       console.error('❌ Error initializing calendar:', error);
-      set({ 
-        isLoading: false, 
+      set({
+        isLoading: false,
         error: `Calendar initialization failed: ${error.message}`
       });
     }
@@ -154,8 +154,8 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   addEvent: async (eventData) => {
     try {
       set({ isLoading: true });
-      
-      const user = RealAuthService.getCurrentUser();
+
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const event: CalendarEvent = {
@@ -165,22 +165,25 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
 
       // Create document in Firebase
-      const docRef = await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events`
+      const result = await RealDatabaseService.createDocument(
+        `families/${user.uid}/calendar/events`,
+        event
       );
-      
-      await RealDatabaseService.updateDocument(docRef.id, event);
-      
+
+      if (!result.success || !result.data) {
+        throw new Error('Failed to create event');
+      }
+
       trackEvent('event_created', {
         userId: user.uid,
-        eventId: docRef.id,
+        eventId: result.data.id,
         eventType: event.type,
         participants: event.participants.length
       });
 
       set({ isLoading: false });
-      console.log('✅ Event created successfully:', docRef.id);
-      
+      console.log('✅ Event created successfully:', result.data.id);
+
       return { success: true };
     } catch (error) {
       console.error('❌ Error creating event:', error);
@@ -192,15 +195,16 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   updateEvent: async (id, updates) => {
     try {
       set({ isLoading: true });
-      
-      const user = RealAuthService.getCurrentUser();
+
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.updateDocument(
-        `families/${user.uid}/calendar/events/${id}`,
+        `families/${user.uid}/calendar/events`,
+        id,
         { ...updates, updatedAt: new Date() }
       );
-      
+
       trackEvent('event_updated', {
         userId: user.uid,
         eventId: id
@@ -208,7 +212,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
       set({ isLoading: false });
       console.log('✅ Event updated successfully:', id);
-      
+
       return { success: true };
     } catch (error) {
       console.error('❌ Error updating event:', error);
@@ -220,14 +224,15 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   deleteEvent: async (id) => {
     try {
       set({ isLoading: true });
-      
-      const user = RealAuthService.getCurrentUser();
+
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.deleteDocument(
-        `families/${user.uid}/calendar/events/${id}`
+        `families/${user.uid}/calendar/events`,
+        id
       );
-      
+
       trackEvent('event_deleted', {
         userId: user.uid,
         eventId: id
@@ -235,7 +240,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
       set({ isLoading: false });
       console.log('✅ Event deleted successfully:', id);
-      
+
       return { success: true };
     } catch (error) {
       console.error('❌ Error deleting event:', error);
@@ -246,7 +251,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
   voteOnEvent: async (eventId, optionId) => {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const vote = {
@@ -258,17 +263,16 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events/${eventId}/votes`
-      ).then(docRef => 
-        RealDatabaseService.updateDocument(docRef.id, vote)
+        `families/${user.uid}/calendar/events/${eventId}/votes`,
+        vote
       );
-      
+
       trackEvent('event_voted', {
         userId: user.uid,
         eventId,
         optionId
       });
-      
+
       console.log('✅ Vote recorded successfully');
       return { success: true };
     } catch (error) {
@@ -279,7 +283,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
   assignResponsibility: async (eventId, memberId, task) => {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const responsibility: any = {
@@ -292,18 +296,17 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events/${eventId}/responsibilities`
-      ).then(docRef => 
-        RealDatabaseService.updateDocument(docRef.id, responsibility)
+        `families/${user.uid}/calendar/events/${eventId}/responsibilities`,
+        responsibility
       );
-      
+
       trackEvent('responsibility_assigned', {
         userId: user.uid,
         eventId,
         memberId,
         task
       });
-      
+
       console.log('✅ Responsibility assigned successfully');
       return { success: true };
     } catch (error) {
@@ -338,11 +341,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
   reconnect: async () => {
     const { subscription } = get();
-    
+
     if (subscription) {
       subscription(); // Unsubscribe from previous listener
     }
-    
+
     set({ subscription: undefined, error: null });
     await get().initializeCalendar();
     console.log('🔄 Calendar reconnected to Firebase');

@@ -28,15 +28,7 @@ interface SyncTestScreenProps {
   navigation: any;
 }
 
-interface SyncEvent {
-  id: string;
-  type: 'create' | 'update' | 'delete' | 'sync';
-  module: string;
-  deviceId: string;
-  data?: any;
-  timestamp: Date;
-  status: 'sent' | 'received' | 'failed' | 'confirmed';
-}
+// Use the imported SyncEvent type from SyncMonitorService
 
 const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
   const [syncEvents, setSyncEvents] = useState<SyncEvent[]>([]);
@@ -61,7 +53,20 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
   const profileStore = useProfileStore();
 
   const deviceId = simulationUser;
-  const currentUser = RealAuthService.getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const user = await RealAuthService.getCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Failed to get current user:', error);
+      }
+    };
+    getUser();
+  }, []);
 
   // Add sync event
   const addSyncEvent = (event: Omit<SyncEvent, 'id' | 'timestamp'>) => {
@@ -70,19 +75,19 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
       id: Date.now().toString(),
       timestamp: new Date(),
     };
-    
+
     setSyncEvents(prev => [newEvent, ...prev.slice(0, 49)]); // Keep last 50 events
-    
+
     // Update stats
     setSyncStats(prev => ({
       ...prev,
       totalEvents: prev.totalEvents + 1,
       lastSyncTime: newEvent.timestamp,
-      successfulSyncs: event.status === 'confirmed' || event.status === 'received' 
-        ? prev.successfulSyncs + 1 
+      successfulSyncs: event.status === 'confirmed' || event.status === 'received'
+        ? prev.successfulSyncs + 1
         : prev.successfulSyncs,
-      failedSyncs: event.status === 'failed' 
-        ? prev.failedSyncs + 1 
+      failedSyncs: event.status === 'failed'
+        ? prev.failedSyncs + 1
         : prev.failedSyncs,
     }));
   };
@@ -95,7 +100,9 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type,
         module,
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'sent',
+        data: { action: type, module },
       });
 
       // Simulate network delay
@@ -108,6 +115,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
           type: 'sync',
           module: `${module}-confirmation`,
           deviceId: simulationUser === 'device-1' ? 'device-2' : 'device-1',
+          userId: currentUser?.uid || 'anonymous',
           status: 'received',
           data: { originalType: type, latency },
         });
@@ -124,6 +132,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type,
         module,
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'failed',
         data: { error: error.message },
       });
@@ -133,7 +142,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
   // Start simulation mode
   const startSimulation = () => {
     setIsSimulating(true);
-    
+
     // Simulate different types of events
     const simulationInterval = setInterval(() => {
       if (!isSimulating) {
@@ -143,10 +152,10 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
 
       const modules = ['tasks', 'goals', 'penalties', 'calendar', 'profile'];
       const types: ('create' | 'update' | 'delete')[] = ['create', 'update', 'delete'];
-      
+
       const randomModule = modules[Math.floor(Math.random() * modules.length)];
       const randomType = types[Math.floor(Math.random() * types.length)];
-      
+
       simulateSyncEvent(randomModule, randomType);
     }, 2000 + Math.random() * 3000); // Random interval 2-5 seconds
 
@@ -170,7 +179,9 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type: 'create',
         module: 'tasks-sync-test',
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'sent',
+        data: { action: 'create', module: 'tasks-sync-test' },
       });
 
       // Create test task via Firebase
@@ -179,20 +190,21 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         description: `Testing sync from ${deviceId} at ${new Date().toLocaleString()}`,
         priority: 'medium' as const,
         status: 'pending' as const,
-        assignedTo: currentUser.displayName || 'Unknown User',
-        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        category: 'sync-test',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        assignedTo: currentUser?.displayName || currentUser?.email || 'Unknown User',
+        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+        steps: ['Step 1: Test sync functionality', 'Step 2: Verify real-time updates'],
+        progress: 0,
+        points: 10,
       };
 
       const result = await tasksStore.addTask(testTask);
-      
+
       if (result.success) {
         addSyncEvent({
           type: 'sync',
           module: 'tasks-sync-test',
           deviceId,
+          userId: currentUser?.uid || 'anonymous',
           status: 'confirmed',
           data: { taskCreated: true },
         });
@@ -206,6 +218,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type: 'create',
         module: 'tasks-sync-test',
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'failed',
         data: { error: error.message },
       });
@@ -224,11 +237,14 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
 
     // Listen for sync events
     const unsubscribeSyncEvents = syncMonitorService.addEventListener((event: SyncEvent) => {
-      addResult(event.module, 
-        event.status === 'confirmed' || event.status === 'received' ? '✅' : 
-        event.status === 'failed' ? '❌' : '⚠️',
-        `${event.type}: ${event.deviceId} → ${event.module}`
-      );
+      addSyncEvent({
+        type: event.type,
+        module: event.module,
+        deviceId: event.deviceId,
+        userId: event.userId,
+        status: event.status,
+        data: event.data,
+      });
     });
 
     return () => {
@@ -262,10 +278,10 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    
+
     // Simulate refresh sync
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Test all store connections
     try {
       await Promise.all([
@@ -279,7 +295,9 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type: 'sync',
         module: 'refresh-sync',
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'confirmed',
+        data: { action: 'refresh', module: 'refresh-sync' },
       });
 
     } catch (error) {
@@ -287,6 +305,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         type: 'sync',
         module: 'refresh-sync',
         deviceId,
+        userId: currentUser?.uid || 'anonymous',
         status: 'failed',
         data: { error: error.message },
       });
@@ -301,7 +320,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
       id: Date.now().toString(),
       timestamp: new Date(),
     };
-    
+
     setSyncEvents(prev => [newEvent, ...prev.slice(0, 49)]);
   };
 
@@ -317,7 +336,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -380,10 +399,10 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
                   colors={isSimulating ? ['#f44336', '#da190b'] : ['#4CAF50', '#45a049']}
                   style={styles.buttonGradient}
                 >
-                  <Ionicons 
-                    name={isSimulating ? "stop" : "play"} 
-                    size={20} 
-                    color="white" 
+                  <Ionicons
+                    name={isSimulating ? "stop" : "play"}
+                    size={20}
+                    color="white"
                   />
                   <Text style={styles.buttonText}>
                     {isSimulating ? 'Stop Simulation' : 'Start Simulation'}
@@ -423,7 +442,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         {/* Sync Statistics */}
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>Sync Statistics</Text>
-          
+
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>{syncStats.totalEvents}</Text>
@@ -442,7 +461,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
               <Text style={styles.statLabel}>Avg Latency</Text>
             </View>
           </View>
-          
+
           {syncStats.lastSyncTime && (
             <Text style={styles.lastSyncText}>
               Last sync: {syncStats.lastSyncTime.toLocaleTimeString()}
@@ -453,27 +472,27 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         {/* Data Status */}
         <View style={styles.dataStatusContainer}>
           <Text style={styles.sectionTitle}>Live Data Status</Text>
-          
+
           <View style={styles.dataStatusRow}>
             <Text style={styles.dataStatusLabel}>📋 Tasks:</Text>
             <Text style={styles.dataStatusValue}>{tasksStore.tasks.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusRow}>
             <Text style={styles.dataStatusLabel}>🎯 Goals:</Text>
             <Text style={styles.dataStatusValue}>{goalsStore.goals.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusRow}>
             <Text style={styles.dataStatusLabel}>⚠️ Penalties:</Text>
             <Text style={styles.dataStatusValue}>{penaltiesStore.penalties.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusRow}>
             <Text style={styles.dataStatusLabel}>📅 Events:</Text>
             <Text style={styles.dataStatusValue}>{calendarStore.events.length}</Text>
           </View>
-          
+
           <View style={styles.dataStatusRow}>
             <Text style={styles.dataStatusLabel}>👤 User:</Text>
             <Text style={styles.dataStatusValue}>
@@ -485,7 +504,7 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
         {/* Sync Events Timeline */}
         <View style={styles.eventsContainer}>
           <Text style={styles.sectionTitle}>Sync Events Timeline</Text>
-          
+
           {syncEvents.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>No sync events yet</Text>
@@ -499,19 +518,19 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
                 <View style={styles.eventHeader}>
                   <Text style={styles.eventTime}>{event.timestamp.toLocaleTimeString()}</Text>
                   <Text style={[styles.eventStatus, {
-                    color: event.status === 'confirmed' || event.status === 'received' 
-                      ? '#4CAF50' 
-                      : event.status === 'failed' 
-                        ? '#f44336' 
+                    color: event.status === 'confirmed' || event.status === 'received'
+                      ? '#4CAF50'
+                      : event.status === 'failed'
+                        ? '#f44336'
                         : '#ff9800'
                   }]}>
-                    {event.status === 'sent' ? '📤' : 
-                     event.status === 'received' ? '📥' : 
-                     event.status === 'confirmed' ? '✅' : '❌'}
+                    {event.status === 'sent' ? '📤' :
+                      event.status === 'received' ? '📥' :
+                        event.status === 'confirmed' ? '✅' : '❌'}
                     {event.status.toUpperCase()}
                   </Text>
                 </View>
-                
+
                 <View style={styles.eventContent}>
                   <Text style={styles.eventType}>{event.type.toUpperCase()}</Text>
                   <Text style={styles.eventModule}>
@@ -562,7 +581,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
   },
-  
+
   // Simulation Controls
   simulationControls: {
     backgroundColor: 'white',
@@ -638,7 +657,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    videoRadius: 4,
+    shadowRadius: 4,
     elevation: 3,
   },
   statsGrid: {

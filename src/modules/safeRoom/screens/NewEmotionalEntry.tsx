@@ -18,7 +18,7 @@ interface Emotion {
 const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
     const [messageText, setMessageText] = useState('');
-    const [selectedType, setSelectedType] = useState<'text' | 'voice' | 'video'>('text');
+    const [selectedType, setSelectedType] = useState<'text' | 'audio' | 'video'>('text');
     const [isRecording, setIsRecording] = useState(false);
     const [recordingDuration, setRecordingDuration] = useState(0);
     const { addMessage } = useEmotionalStore();
@@ -42,7 +42,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
         setSelectedEmotion(emotion);
     };
 
-    const handleTypeSelect = (type: 'text' | 'voice' | 'video') => {
+    const handleTypeSelect = (type: 'text' | 'audio' | 'video') => {
         setSelectedType(type);
     };
 
@@ -57,7 +57,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
             return;
         }
 
-        if (selectedType === 'voice' && !isRecording) {
+        if (selectedType === 'audio' && !isRecording) {
             Alert.alert('No Recording', 'Please record a voice message first');
             return;
         }
@@ -67,7 +67,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
             let voicePath: string | undefined;
             let voiceDuration: string | undefined;
 
-            if (selectedType === 'voice' && isRecording) {
+            if (selectedType === 'audio' && isRecording) {
                 const result = await mediaService.stopAudioRecording();
                 if (result) {
                     voicePath = result.uri;
@@ -90,8 +90,6 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
                 content,
                 timestamp: 'Just now',
                 type: selectedType,
-                voicePath,
-                voiceDuration,
                 replies: [],
                 hearts: 0,
             });
@@ -245,7 +243,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
 
             {/* Safe Space Guidelines */}
             <View style={styles.guidelinesSection}>
-                <Card style={[styles.guidelinesCard, { borderLeftColor: '#EC4899' }]}>
+                <Card style={[styles.guidelinesCard, { borderLeftColor: '#EC4899' }] as any}>
                     <View style={styles.guidelinesHeader}>
                         <View style={styles.guidelinesIcon}>
                             <Ionicons name="shield" size={20} color="#EC4899" />
@@ -299,19 +297,19 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
                     <TouchableOpacity
                         style={[
                             styles.typeButton,
-                            selectedType === 'voice' && styles.selectedTypeButton,
+                            selectedType === 'audio' && styles.selectedTypeButton,
                             { borderColor: '#8B5CF6' }
                         ]}
-                        onPress={() => handleTypeSelect('voice')}
+                        onPress={() => handleTypeSelect('audio')}
                     >
                         <Ionicons
                             name="mic"
                             size={20}
-                            color={selectedType === 'voice' ? '#8B5CF6' : '#6B7280'}
+                            color={selectedType === 'audio' ? '#8B5CF6' : '#6B7280'}
                         />
                         <Text style={[
                             styles.typeButtonText,
-                            selectedType === 'voice' && { color: '#8B5CF6' }
+                            selectedType === 'audio' && { color: '#8B5CF6' }
                         ]}>
                             Voice
                         </Text>
@@ -362,9 +360,9 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
             )}
 
             {/* Voice/Video Recording */}
-            {(selectedType === 'voice' || selectedType === 'video') && (
+            {(selectedType === 'audio' || selectedType === 'video') && (
                 <View style={styles.recordingSection}>
-                    {selectedType === 'voice' ? (
+                    {selectedType === 'audio' ? (
                         <View style={styles.recordingContainer}>
                             {!isRecording ? (
                                 <View style={styles.recordingPlaceholder}>
@@ -433,7 +431,7 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
                     disabled={!selectedEmotion || (selectedType === 'text' && !messageText.trim())}
                 >
                     <LinearGradient
-                        colors={selectedEmotion ? selectedEmotion.gradient : ['#9CA3AF', '#6B7280']}
+                        colors={selectedEmotion ? selectedEmotion.gradient as any : ['#9CA3AF', '#6B7280']}
                         style={styles.sendButtonGradient}
                     >
                         <Ionicons name="heart" size={20} color="white" />

@@ -96,7 +96,7 @@ export const HomeManagementScreen: React.FC<HomeManagementScreenProps> = ({ navi
         <ScrollView style={styles.container}>
             {/* Header */}
             <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
+                colors={['#8B5CF6', '#7C3AED'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -124,7 +124,7 @@ export const HomeManagementScreen: React.FC<HomeManagementScreenProps> = ({ navi
                         onPress={handleInviteMember}
                     >
                         <LinearGradient
-                            colors={['#10B981', '#059669']}
+                            colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
                             style={styles.buttonGradient}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
@@ -181,7 +181,7 @@ export const HomeManagementScreen: React.FC<HomeManagementScreenProps> = ({ navi
                         }}
                     >
                         <LinearGradient
-                            colors={['#F59E0B', '#D97706']}
+                            colors={['#F59E0B', '#D97706'] as unknown as readonly [string, string, ...string[]]}
                             style={styles.buttonGradient}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}

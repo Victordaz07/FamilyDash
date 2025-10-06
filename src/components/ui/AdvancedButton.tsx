@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from './ThemeProvider';
+import { useTheme, themeUtils } from './ThemeProvider';
 
 export type ButtonVariant =
     | 'primary'
@@ -64,32 +64,32 @@ export const AdvancedButton: React.FC<AdvancedButtonProps> = ({
         switch (variant) {
             case 'primary':
                 return {
-                    background: gradient ? theme.colors.primary : [theme.colors.primary],
-                    text: variant === 'outline' ? theme.colors.primary : theme.colors.white,
+                    background: gradient ? [theme.colors.primary, theme.colors.primary] : [theme.colors.primary],
+                    text: theme.colors.white,
                 };
             case 'secondary':
                 return {
-                    background: gradient ? theme.colors.secondary : [theme.colors.secondary],
+                    background: gradient ? [theme.colors.secondary, theme.colors.secondary] : [theme.colors.secondary],
                     text: theme.colors.white,
                 };
             case 'accent':
                 return {
-                    background: gradient ? theme.colors.accent : [theme.colors.accent],
+                    background: gradient ? [theme.colors.accent, theme.colors.accent] : [theme.colors.accent],
                     text: theme.colors.white,
                 };
             case 'success':
                 return {
-                    background: gradient ? theme.colors.success : [theme.colors.success],
+                    background: gradient ? [theme.colors.success, theme.colors.success] : [theme.colors.success],
                     text: theme.colors.white,
                 };
             case 'warning':
                 return {
-                    background: gradient ? theme.colors.warning : [theme.colors.warning],
+                    background: gradient ? [theme.colors.warning, theme.colors.warning] : [theme.colors.warning],
                     text: theme.colors.white,
                 };
             case 'error':
                 return {
-                    background: gradient ? theme.colors.error : [theme.colors.error],
+                    background: gradient ? [theme.colors.error, theme.colors.error] : [theme.colors.error],
                     text: theme.colors.white,
                 };
             case 'outline':
@@ -110,7 +110,7 @@ export const AdvancedButton: React.FC<AdvancedButtonProps> = ({
                 };
             default:
                 return {
-                    background: gradient ? theme.colors.primary : [theme.colors.primary],
+                    background: gradient ? [theme.colors.primary, theme.colors.primary] : [theme.colors.primary],
                     text: theme.colors.white,
                 };
         }
@@ -136,12 +136,12 @@ export const AdvancedButton: React.FC<AdvancedButtonProps> = ({
     const textStyleOverride: TextStyle[] = [
         {
             fontSize: sizeConfig.fontSize,
-            fontWeight: '600',
+            fontWeight: '600' as const,
             color: disabled ? theme.colors.textDisabled : colors.text,
         },
-        ...(variant === 'link' ? theme.typography.textStyles.button : []),
+        ...(variant === 'link' ? [theme.typography.textStyles.button] : []),
         textStyle,
-    ];
+    ].filter(Boolean) as TextStyle[];
 
     // Icon styles
     const iconSize = size === 'sm' ? 16 : size === 'md' ? 18 : 20;
@@ -217,7 +217,7 @@ export const AdvancedButton: React.FC<AdvancedButtonProps> = ({
                 {...props}
             >
                 <LinearGradient
-                    colors={colors.background as string[]}
+                    colors={colors.background as unknown as readonly [string, string, ...string[]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={buttonStyle}

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedCard, AdvancedButton } from '../../../components/ui';
+import { useTheme, AdvancedCard, AdvancedButton, themeUtils } from '../../../components/ui';
 import { FamilyChallenge, FamilyReward } from '../FamilyDashboardService';
 
 interface FamilyChallengesProps {
@@ -38,9 +38,9 @@ export const FamilyChallenges: React.FC<FamilyChallengesProps> = ({
             case 'upcoming':
                 return theme.colors.warning;
             case 'completed':
-                return theme.colors.info;
+                return '#3B82F6'; // Blue color for info
             default:
-                return theme.colors.gray;
+                return '#6B7280'; // Gray color
         }
     };
 
@@ -62,163 +62,161 @@ export const FamilyChallenges: React.FC<FamilyChallengesProps> = ({
             key={challenge.id}
             variant="outlined"
             style={styles.challengeCard}
-            onPress={() => onChallengeSelect?.('Challenge Details'})}
-    >
-    <View style={styles.challengeHeader}>
-        <View style={styles.challengeInfo}>
-            <Text style={theme.typography.textStyles.title}>{challenge.title}</Text>
-            <Text style={theme.typography.textStyles.body}>{challenge.description}</Text>
+            onPress={() => onChallengeSelect?.(challenge.id)}
+        >
+            <View style={styles.challengeHeader}>
+                <View style={styles.challengeInfo}>
+                    <Text style={theme.typography.textStyles.title}>{challenge.title}</Text>
+                    <Text style={theme.typography.textStyles.body}>{challenge.description}</Text>
 
-            <View style={styles.challengeMeta}>
-                <View style={styles.challengeDates}>
-                    <Ionicons name="calendar" size={14} color={theme.colors.gray} />
-                    <Text style={theme.typography.textStyles.caption}>
-                        {new Date(challenge.startDate).toLocaleDateString()} - {new Date(challenge.endDate).toLocaleDateString()}
-                    </Text>
-                </View>
+                    <View style={styles.challengeMeta}>
+                        <View style={styles.challengeDates}>
+                            <Ionicons name="calendar" size={14} color="#6B7280" />
+                            <Text style={theme.typography.textStyles.caption}>
+                                {new Date(challenge.startDate).toLocaleDateString()} - {new Date(challenge.endDate).toLocaleDateString()}
+                            </Text>
+                        </View>
 
-                <View style={styles.challengeParticipants}>
-                    <Ionicons name="people" size={14} color={theme.colors.gray} />
-                    <Text style={theme.typography.textStyles.caption}>
-                        {challenge.participants.length} participants
-                    </Text>
-                </View>
-            </View>
-        </View>
-
-        <View style={styles.challengeStatus}>
-            <View
-                style={[
-                    styles.statusBadge,
-                    { backgroundColor: getChallengeStatusColor(challenge.status) }
-                ]}
-            >
-                <Text style={styles.statusText}>{challenge.status}</Text>
-            </View>
-        </View>
-    </View>
-
-{/* Progress */ }
-{
-    challenge.status === 'active' && (
-        <View style={styles.challengeProgress}>
-            <Text style={theme.typography.textStyles.caption}>Progress</Text>
-            <View style={styles.progressBar}>
-                <View
-                    style={[
-                        styles.progressFill,
-                        {
-                            width: `${(challenge.activities.filter(a => a.completed).length / challenge.activities.length) * 100}%`,
-                            backgroundColor: theme.colors.success,
-                        }
-                    ]}
-                />
-            </View>
-            <Text style={theme.typography.textStyles.caption}>
-                {challenge.activities.filter(a => a.completed).length}/{challenge.activities.length} activities
-            </Text>
-        </View>
-    )
-}
-
-{/* Rewards */ }
-<View style={styles.challengeRewards}>
-    <Text style={theme.typography.textStyles.caption}>Rewards:</Text>
-    <View style={styles.rewardsList}>
-        {challenge.rewards.slice(0, 3).map((reward) => (
-            <View key={reward.id} style={styles.rewardBadge}>
-                <Ionicons name={reward.icon as any || "gift"} size={12} color={theme.colors.primary} />
-                <Text style={styles.rewardText}>{reward.title}</Text>
-            </View>
-        ))}
-        {challenge.rewards.length > 3 && (
-            <Text style={styles.moreRewards}>+{challenge.rewards.length - 3} more</Text>
-        )}
-    </View>
-</View>
-    </AdvancedCard >
-  );
-
-const activeChallenges = getStatusData();
-
-return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        {/* Header */}
-        <LinearGradient colors={themeUtils.gradients.warning} style={styles.header}>
-            <View style={styles.headerContent}>
-                <Text style={styles.headerTitle}>Family Challenges</Text>
-                <Text style={styles.headerSubtitle}>Fun competitions & achievements</Text>
-            </View>
-
-            <AdvancedButton
-                variant="ghost"
-                size="md"
-                onPress={onCreateChallenge}
-                icon="add"
-                style={styles.createButton}
-            >
-                Create Challenge
-            </AdvancedButton>
-        </LinearGradient>
-
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-            {[
-                { id: 'active', label: 'Active', count: challenges.filter(c => c.status === 'active').length },
-                { id: 'upcoming', label: 'Upcoming', count: challenges.filter(c => c.status === 'upcoming').length },
-                { id: 'completed', label: 'Completed', count: challenges.filter(c => c.status === 'completed').length },
-            ].map((tab) => (
-                <TouchableOpacity
-                    key={tab.id}
-                    style={[styles.tab, activeTab === tab.id && styles.activeTab]}
-                    onPress={() => setActiveTab(tab.id as any)}
-                >
-                    <Text style={[styles.tabText, activeTab === tab.id && styles.activeTabText]}>
-                        {tab.label}
-                    </Text>
-                    <View style={[
-                        styles.tabBadge,
-                        activeTab === tab.id && styles.activeTabBadge,
-                    ]}>
-                        <Text style={[
-                            styles.tabBadgeText,
-                            activeTab === tab.id && styles.activeTabBadgeText,
-                        ]}>
-                            {tab.count}
-                        </Text>
+                        <View style={styles.challengeParticipants}>
+                            <Ionicons name="people" size={14} color="#6B7280" />
+                            <Text style={theme.typography.textStyles.caption}>
+                                {challenge.participants.length} participants
+                            </Text>
+                        </View>
                     </View>
-                </TouchableOpacity>
-            ))}
-        </View>
-
-        {/* Content */}
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            {activeChallenges.length === 0 ? (
-                <View style={styles.emptyState}>
-                    <Ionicons name="trophy-outline" size={48} color={theme.colors.gray} />
-                    <Text style={[theme.typography.textStyles.h3, styles.emptyTitle]}>
-                        No Challenges Yet
-                    </Text>
-                    <Text style={[theme.typography.textStyles.body, styles.emptySubtitle]}>
-                        Create your first family challenge to start having fun together!
-                    </Text>
-
-                    <AdvancedButton
-                        variant="filled"
-                        size="lg"
-                        onPress={onCreateChallenge}
-                        icon="add"
-                        style={styles.emptyAction}
-                    >
-                        Create First Challenge
-                    </AdvancedButton>
                 </View>
-            ) : (
-                activeChallenges.map(renderChallengeCard)
+
+                <View style={styles.challengeStatus}>
+                    <View
+                        style={[
+                            styles.statusBadge,
+                            { backgroundColor: getChallengeStatusColor(challenge.status) }
+                        ]}
+                    >
+                        <Text style={styles.statusText}>{challenge.status}</Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Progress */}
+            {challenge.status === 'active' && (
+                <View style={styles.challengeProgress}>
+                    <Text style={theme.typography.textStyles.caption}>Progress</Text>
+                    <View style={styles.progressBar}>
+                        <View
+                            style={[
+                                styles.progressFill,
+                                {
+                                    width: `${(challenge.activities.filter(a => a.completed).length / challenge.activities.length) * 100}%`,
+                                    backgroundColor: theme.colors.success,
+                                }
+                            ]}
+                        />
+                    </View>
+                    <Text style={theme.typography.textStyles.caption}>
+                        {challenge.activities.filter(a => a.completed).length}/{challenge.activities.length} activities
+                    </Text>
+                </View>
             )}
-        </ScrollView>
-    </View>
-);
+
+            {/* Rewards */}
+            <View style={styles.challengeRewards}>
+                <Text style={theme.typography.textStyles.caption}>Rewards:</Text>
+                <View style={styles.rewardsList}>
+                    {challenge.rewards.slice(0, 3).map((reward) => (
+                        <View key={reward.id} style={styles.rewardBadge}>
+                            <Ionicons name={reward.Icon as any || "gift"} size={12} color={theme.colors.primary} />
+                            <Text style={styles.rewardText}>{reward.title}</Text>
+                        </View>
+                    ))}
+                    {challenge.rewards.length > 3 && (
+                        <Text style={styles.moreRewards}>+{challenge.rewards.length - 3} more</Text>
+                    )}
+                </View>
+            </View>
+        </AdvancedCard>
+    );
+
+    const activeChallenges = getStatusData();
+
+    return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            {/* Header */}
+            <LinearGradient colors={themeUtils.gradients.warning as unknown as readonly [string, string, ...string[]]} style={styles.header}>
+                <View style={styles.headerContent}>
+                    <Text style={styles.headerTitle}>Family Challenges</Text>
+                    <Text style={styles.headerSubtitle}>Fun competitions & achievements</Text>
+                </View>
+
+                <AdvancedButton
+                    variant="ghost"
+                    size="md"
+                    onPress={onCreateChallenge}
+                    icon="add"
+                    style={styles.createButton}
+                >
+                    Create Challenge
+                </AdvancedButton>
+            </LinearGradient>
+
+            {/* Tabs */}
+            <View style={styles.tabsContainer}>
+                {[
+                    { id: 'active', label: 'Active', count: challenges.filter(c => c.status === 'active').length },
+                    { id: 'upcoming', label: 'Upcoming', count: challenges.filter(c => c.status === 'upcoming').length },
+                    { id: 'completed', label: 'Completed', count: challenges.filter(c => c.status === 'completed').length },
+                ].map((tab) => (
+                    <TouchableOpacity
+                        key={tab.id}
+                        style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                        onPress={() => setActiveTab(tab.id as any)}
+                    >
+                        <Text style={[styles.tabText, activeTab === tab.id && styles.activeTabText]}>
+                            {tab.label}
+                        </Text>
+                        <View style={[
+                            styles.tabBadge,
+                            activeTab === tab.id && styles.activeTabBadge,
+                        ]}>
+                            <Text style={[
+                                styles.tabBadgeText,
+                                activeTab === tab.id && styles.activeTabBadgeText,
+                            ]}>
+                                {tab.count}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
+            {/* Content */}
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+                {activeChallenges.length === 0 ? (
+                    <View style={styles.emptyState}>
+                        <Ionicons name="trophy-outline" size={48} color="#6B7280" />
+                        <Text style={[theme.typography.textStyles.h3, styles.emptyTitle]}>
+                            No Challenges Yet
+                        </Text>
+                        <Text style={[theme.typography.textStyles.body, styles.emptySubtitle]}>
+                            Create your first family challenge to start having fun together!
+                        </Text>
+
+                        <AdvancedButton
+                            variant="primary"
+                            size="lg"
+                            onPress={onCreateChallenge}
+                            icon="add"
+                            style={styles.emptyAction}
+                        >
+                            Create First Challenge
+                        </AdvancedButton>
+                    </View>
+                ) : (
+                    activeChallenges.map(renderChallengeCard)
+                )}
+            </ScrollView>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -416,8 +414,5 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
 });
-
-// Import theme utils
-import { themeUtils } from '../../../components/ui';
 
 export default FamilyChallenges;

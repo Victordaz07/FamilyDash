@@ -16,11 +16,32 @@ export const useCalendar = () => {
     // Initialize Firebase listener
     useEffect(() => {
         if (useFirebase) {
-            const unsubscribe = realCalendarService.subscribeToActivities((firebaseActivities) => {
-                setFirebaseActivities(firebaseActivities);
+            const setupSubscription = async () => {
+                try {
+                    console.log('🗓️ Initializing calendar with Firebase...');
+
+                    const unsubscribe = await realCalendarService.subscribeToActivities((firebaseActivities) => {
+                        setFirebaseActivities(firebaseActivities);
+                    });
+
+                    return unsubscribe;
+                } catch (error) {
+                    console.error('❌ Error setting up Firebase subscription:', error);
+                    return () => { };
+                }
+            };
+
+            let unsubscribe: (() => void) | undefined;
+
+            setupSubscription().then(unsub => {
+                unsubscribe = unsub;
             });
 
-            return () => unsubscribe();
+            return () => {
+                if (unsubscribe && typeof unsubscribe === 'function') {
+                    unsubscribe();
+                }
+            };
         }
     }, [useFirebase]);
 
@@ -67,7 +88,7 @@ export const useCalendar = () => {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 };
-                await calendarFirebaseService.createActivity(firebaseActivity);
+                await realCalendarService.createActivity(firebaseActivity);
             } else {
                 const newActivity: Activity = {
                     ...activityData,

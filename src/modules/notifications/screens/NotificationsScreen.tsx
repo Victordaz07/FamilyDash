@@ -298,7 +298,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
         >
             {/* Header */}
             <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
+                colors={['#8B5CF6', '#7C3AED'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>

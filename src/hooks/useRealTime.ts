@@ -4,8 +4,168 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { WebSocketManager, RealTimeMessage } from '../services/realtime/WebSocketManager';
-import { RealTimeSync } from '../services/realtime/RealTimeSync';
+
+// Mock realtime services for development
+interface RealTimeMessage {
+    messageId: string;
+    type: string;
+    payload: any;
+    timestamp: number;
+    senderId: string;
+    senderName: string;
+    familyId: string;
+}
+
+interface ConnectionState {
+    connected: boolean;
+    connecting: boolean;
+    reconnecting: boolean;
+    connectionQuality: 'excellent' | 'good' | 'poor' | 'unknown';
+    latency?: number;
+}
+
+class WebSocketManager {
+    private static instance: WebSocketManager;
+    private connectionState: ConnectionState = {
+        connected: false,
+        connecting: false,
+        reconnecting: false,
+        connectionQuality: 'unknown',
+    };
+    private listeners: Map<string, ((state: ConnectionState) => void)[]> = new Map();
+    private messageListeners: Map<string, ((message: RealTimeMessage) => void)[]> = new Map();
+    private storedMessages: RealTimeMessage[] = [];
+
+    static getInstance(): WebSocketManager {
+        if (!WebSocketManager.instance) {
+            WebSocketManager.instance = new WebSocketManager();
+        }
+        return WebSocketManager.instance;
+    }
+
+    async connect(): Promise<void> {
+        this.connectionState.connecting = true;
+        this.notifyConnectionStateChange();
+
+        // Simulate connection
+        setTimeout(() => {
+            this.connectionState.connected = true;
+            this.connectionState.connecting = false;
+            this.connectionState.connectionQuality = 'good';
+            this.connectionState.latency = 50;
+            this.notifyConnectionStateChange();
+        }, 1000);
+    }
+
+    disconnect(): void {
+        this.connectionState.connected = false;
+        this.connectionState.connecting = false;
+        this.connectionState.reconnecting = false;
+        this.notifyConnectionStateChange();
+    }
+
+    send(message: RealTimeMessage): void {
+        // Mock sending message
+        console.log('Sending message:', message);
+    }
+
+    onConnectionStateChange(callback: (state: ConnectionState) => void): () => void {
+        const listeners = this.listeners.get('connection') || [];
+        listeners.push(callback);
+        this.listeners.set('connection', listeners);
+
+        return () => {
+            const currentListeners = this.listeners.get('connection') || [];
+            const index = currentListeners.indexOf(callback);
+            if (index > -1) {
+                currentListeners.splice(index, 1);
+            }
+        };
+    }
+
+    onMessage(messageType: string, callback: (message: RealTimeMessage) => void): () => void {
+        const listeners = this.messageListeners.get(messageType) || [];
+        listeners.push(callback);
+        this.messageListeners.set(messageType, listeners);
+
+        return () => {
+            const currentListeners = this.messageListeners.get(messageType) || [];
+            const index = currentListeners.indexOf(callback);
+            if (index > -1) {
+                currentListeners.splice(index, 1);
+            }
+        };
+    }
+
+    async getStoredMessages(maxItems: number): Promise<RealTimeMessage[]> {
+        return this.storedMessages.slice(0, maxItems);
+    }
+
+    private notifyConnectionStateChange(): void {
+        const listeners = this.listeners.get('connection') || [];
+        listeners.forEach(callback => callback(this.connectionState));
+    }
+}
+
+class RealTimeSync {
+    private static instance: RealTimeSync;
+    private listeners: Map<string, ((data?: any) => void)[]> = new Map();
+    private stores: Map<string, any> = new Map();
+
+    static getInstance(): RealTimeSync {
+        if (!RealTimeSync.instance) {
+            RealTimeSync.instance = new RealTimeSync();
+        }
+        return RealTimeSync.instance;
+    }
+
+    on(event: string, callback: (data?: any) => void): () => void {
+        const listeners = this.listeners.get(event) || [];
+        listeners.push(callback);
+        this.listeners.set(event, listeners);
+
+        return () => {
+            const currentListeners = this.listeners.get(event) || [];
+            const index = currentListeners.indexOf(callback);
+            if (index > -1) {
+                currentListeners.splice(index, 1);
+            }
+        };
+    }
+
+    syncLocalChanges(): void {
+        this.emit('syncStarted');
+
+        setTimeout(() => {
+            this.emit('syncCompleted');
+        }, 2000);
+    }
+
+    forceSync(): void {
+        this.emit('syncStarted');
+
+        setTimeout(() => {
+            this.emit('syncCompleted');
+        }, 1000);
+    }
+
+    registerStore(entityType: string, store: any): void {
+        this.stores.set(entityType, store);
+    }
+
+    setConflictResolution(strategy: 'client' | 'server' | 'manual'): void {
+        console.log('Setting conflict resolution strategy:', strategy);
+    }
+
+    queueEntityChange(change: any): void {
+        console.log('Queueing entity change:', change);
+    }
+
+    private emit(event: string, data?: any): void {
+        const listeners = this.listeners.get(event) || [];
+        listeners.forEach(callback => callback(data));
+    }
+}
 
 export interface RealTimeHookConfig {
     autoConnect?: boolean;
@@ -58,7 +218,7 @@ export const useRealTime = (config: RealTimeHookConfig = {}) => {
 
     // Refs for cleanup
     const subscriptionsRef = useRef<(() => void)[]>([]);
-    const messageThrottleRef = useRef<NodeJS.Timeout>();
+    const messageThrottleRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     // Subscribe to connection state changes
     useEffect(() => {
@@ -146,6 +306,8 @@ export const useRealTime = (config: RealTimeHookConfig = {}) => {
         messageThrottleRef.current = setTimeout(() => {
             wsManager.send({
                 ...message,
+                messageId: `msg_${Date.now()}`,
+                timestamp: Date.now(),
                 senderId: 'current_user',
                 senderName: 'Current User',
                 familyId: 'family_ruiz_001',
@@ -314,7 +476,7 @@ export const useRealTimeEntity = <T = any>(
             try {
                 if (store && typeof store.getItem === 'function') {
                     const data = await store.getItem(entityId);
-                    setState(data);
+                    setEntity(data);
                 } else if (store && typeof store.find === 'function') {
                     const data = await store.find({ id: entityId });
                     setEntity(data[0] || null);

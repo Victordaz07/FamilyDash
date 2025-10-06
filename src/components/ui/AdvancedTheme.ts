@@ -161,7 +161,16 @@ export interface AdvancedTheme {
 }
 
 // Import required React Native types
-import { TextStyle, ShadowStyle } from 'react-native';
+import { TextStyle } from 'react-native';
+
+// Define ShadowStyle interface for React Native
+interface ShadowStyle {
+    shadowColor?: string;
+    shadowOffset?: { width: number; height: number };
+    shadowOpacity?: number;
+    shadowRadius?: number;
+    elevation?: number;
+}
 
 // Default Theme Configuration
 export const defaultTheme: AdvancedTheme = {

@@ -68,7 +68,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             activeOpacity={0.8}
         >
             <LinearGradient
-                colors={getRoleColor(member.role)}
+                colors={getRoleColor(member.role) as unknown as readonly [string, string, ...string[]]}
                 style={styles.statusGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -225,28 +225,28 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         marginBottom: 2,
     },
-  memberRealName: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    fontStyle: 'italic',
-    marginBottom: 2,
-  },
-  memberEmail: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 2,
-  },
-  memberPhone: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 2,
-  },
-  memberBio: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 8,
-    fontStyle: 'italic',
-  },
+    memberRealName: {
+        fontSize: 12,
+        color: '#9CA3AF',
+        fontStyle: 'italic',
+        marginBottom: 2,
+    },
+    memberEmail: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginBottom: 2,
+    },
+    memberPhone: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginBottom: 2,
+    },
+    memberBio: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginBottom: 8,
+        fontStyle: 'italic',
+    },
     permissionsSection: {
         marginTop: 8,
     },

@@ -10,10 +10,9 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LinearGradient from 'expo-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAI } from '../../hooks/useAI';
-import { AdvancedCard } from '../advanced/AdvancedCard';
-import { AdvancedButton } from '../advanced/AdvancedButton';
+import { Card, Button } from '../ui/WorkingComponents';
 
 interface AIDashboardProps {
   familyId: string;
@@ -122,7 +121,7 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
   const renderOverview = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       {/* AI Status Card */}
-      <AdvancedCard style={styles.statusCard}>
+      <Card style={styles.statusCard}>
         <View style={styles.statusHeader}>
           <Ionicons name="checkmark-circle" size={28} color="#10B981" />
           <Text style={styles.statusText}>AI Assistant Active</Text>
@@ -130,33 +129,30 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
         <Text style={styles.statusDescription}>
           Smart recommendations and predictions are ready to help your family!
         </Text>
-      </AdvancedCard>
+      </Card>
 
       {/* Quick Actions */}
       <View style={styles.quickActions}>
         <Text style={styles.sectionTitle}>Quick AI Actions</Text>
-        
+
         <View style={styles.actionButtons}>
-          <AdvancedButton
+          <Button
             title="Voice Demo"
-            icon="mic"
             variant="primary"
             onPress={handleVoiceDemo}
             style={styles.actionButton}
           />
-          
-          <AdvancedButton
+
+          <Button
             title="Sentiment"
-            icon="happy"
             variant="secondary"
             onPress={handleSentimentDemo}
             style={styles.actionButton}
           />
-          
-          <AdvancedButton
+
+          <Button
             title="Optimize"
-            icon="time"
-            variant="accent"
+            variant="primary"
             onPress={handleScheduleOptimization}
             style={styles.actionButton}
           />
@@ -167,12 +163,12 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
       {insights.length > 0 && (
         <View style={styles.currentInsights}>
           <Text style={styles.sectionTitle}>Current Family Insights</Text>
-          
+
           {insights.slice(0, 2).map((insight, index) => (
-            <AdvancedCard key={index} style={styles.insightCard}>
+            <Card key={index} style={styles.insightCard}>
               <View style={styles.insightHeader}>
-                <Ionicons 
-                  name={insight.severity === 'high' ? 'warning' : insight.severity === 'medium' ? 'information-circle' : 'checkmark-circle'} 
+                <Ionicons
+                  name={insight.severity === 'high' ? 'warning' : insight.severity === 'medium' ? 'information-circle' : 'checkmark-circle'}
                   size={20}
                   color={insight.severity === 'high' ? '#EF4444' : insight.severity === 'medium' ? '#F59E0B' : '#10B981'}
                 />
@@ -182,7 +178,7 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
               <Text style={styles.insightConfidence}>
                 {insight.confidence}% confidence
               </Text>
-            </AdvancedCard>
+            </Card>
           ))}
         </View>
       )}
@@ -191,9 +187,9 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
       {predictions.length > 0 && (
         <View style={styles.recentPredictions}>
           <Text style={styles.sectionTitle}>Recent Predictions</Text>
-          
+
           {predictions.slice(0, 2).map((prediction, index) => (
-            <AdvancedCard key={index} style={styles.predictionCard}>
+            <Card key={index} style={styles.predictionCard}>
               <View style={styles.predictionHeader}>
                 <Text style={styles.predictionTitle}>{prediction.predictionType}</Text>
                 <Text style={styles.predictionConfidence}>
@@ -201,20 +197,20 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                 </Text>
               </View>
               <View style={styles.predictionBar}>
-                <View 
+                <View
                   style={[
                     styles.predictionBarFill,
                     { width: `${prediction.predictedValue * 100}%` }
-                  ]} 
+                  ]}
                 />
               </View>
               <Text style={styles.predictionValue}>
-                {prediction.predictionType === 'Task Completion' 
+                {prediction.predictionType === 'Task Completion'
                   ? `${prediction.predictedValue * 100}% completion rate`
                   : `${prediction.predictedValue * 100}% mood level`
                 }
               </Text>
-            </AdvancedCard>
+            </Card>
           ))}
         </View>
       )}
@@ -224,31 +220,31 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
   const renderRecommendations = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>Smart Recommendations</Text>
-      
+
       {recommendations.length === 0 ? (
-        <AdvancedCard style={styles.emptyState}>
+        <Card style={styles.emptyState}>
           <Ionicons name="bulb-outline" size={48} color="#9CA3AF" />
           <Text style={styles.emptyStateText}>Generating smart recommendations...</Text>
           <Text style={styles.emptyStateSubtext}>
             Our AI is analyzing your family patterns to provide personalized suggestions.
           </Text>
-        </AdvancedCard>
+        </Card>
       ) : (
         recommendations.map((rec, index) => (
-          <AdvancedCard key={index} style={styles.recommendationCard}>
+          <Card key={index} style={styles.recommendationCard}>
             <View style={styles.recommendationHeader}>
               <View style={styles.recommendationIcon}>
-                <Ionicons 
+                <Ionicons
                   name={
                     rec.priority === 'urgent' ? 'alert-circle' :
-                    rec.priority === 'high' ? 'star' :
-                    rec.priority === 'medium' ? 'checkmark-circle' : 'information-circle'
-                  } 
+                      rec.priority === 'high' ? 'star' :
+                        rec.priority === 'medium' ? 'checkmark-circle' : 'information-circle'
+                  }
                   size={24}
                   color={
                     rec.priority === 'urgent' ? '#EF4444' :
-                    rec.priority === 'high' ? '#F59E0B' :
-                    rec.priority === 'medium' ? '#10B981' : '#3B82F6'
+                      rec.priority === 'high' ? '#F59E0B' :
+                        rec.priority === 'medium' ? '#10B981' : '#3B82F6'
                   }
                 />
               </View>
@@ -261,15 +257,16 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
             <View style={styles.metaRow}>
               <View style={styles.metaItem}>
                 <Text style={styles.metaLabel}>Priority:</Text>
-                <Text style={[styles.metaValue, { color: 
-                  rec.priority === 'urgent' ? '#EF4444' :
-                  rec.priority === 'high' ? '#F59E0B' :
-                  rec.priority === 'medium' ? '#10B981' : '#3B82F6'
+                <Text style={[styles.metaValue, {
+                  color:
+                    rec.priority === 'urgent' ? '#EF4444' :
+                      rec.priority === 'high' ? '#F59E0B' :
+                        rec.priority === 'medium' ? '#10B981' : '#3B82F6'
                 }]}>
                   {rec.priority.charAt(0).toUpperCase() + rec.priority.slice(1)}
                 </Text>
               </View>
-              
+
               <View style={styles.metaItem}>
                 <Text style={styles.metaLabel}>Effort:</Text>
                 <Text style={styles.metaValue}>
@@ -283,21 +280,20 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                 <Text style={styles.metaLabel}>Timeframe:</Text>
                 <Text style={styles.metaValue}>{rec.timeframe}</Text>
               </View>
-              
+
               <View style={styles.metaItem}>
                 <Text style={styles.metaLabel}>Impact:</Text>
                 <Text style={styles.metaValue}>High</Text>
               </View>
             </View>
 
-            <AdvancedButton
+            <Button
               title="View Details"
-              icon="arrow-forward"
               variant="outline"
               onPress={() => Alert.alert('Recommendation Details', rec.expectedImpact)}
               style={styles.detailsButton}
             />
-          </AdvancedCard>
+          </Card>
         ))
       )}
     </ScrollView>
@@ -306,11 +302,11 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
   const renderPredictions = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>AI Predictions</Text>
-      
+
       {/* Task Completion Predictions */}
-      <AdvancedCard style={styles.predictionSection}>
+      <Card style={styles.predictionSection}>
         <Text style={styles.subsectionTitle}>Task Completion Probability</Text>
-        
+
         {predictions
           .filter(p => p.predictionType === 'Task Completion')
           .map((prediction, index) => (
@@ -321,10 +317,10 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   {(prediction.predictedValue * 100).toFixed(0)}%
                 </Text>
               </View>
-              
+
               <View style={styles.predictionBar}>
                 <LinearGradient
-                  colors={[ '#10B981', '#34D399' ]}
+                  colors={['#10B981', '#34D399']}
                   style={[
                     styles.predictionBarFill,
                     { width: `${prediction.predictedValue * 100}%` }
@@ -333,18 +329,18 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   end={{ x: 1, y: 0 }}
                 />
               </View>
-              
+
               <Text style={styles.predictionAdvice}>
                 {prediction.recommendations[0]}
               </Text>
             </View>
           ))}
-      </AdvancedCard>
+      </Card>
 
       {/* Family Mood Predictions */}
-      <AdvancedCard style={styles.predictionSection}>
+      <Card style={styles.predictionSection}>
         <Text style={styles.subsectionTitle}>Family Mood Forecast</Text>
-        
+
         {predictions
           .filter(p => p.predictionType === 'Family Mood')
           .map((prediction, index) => (
@@ -355,10 +351,10 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   {(prediction.predictedValue * 100).toFixed(0)}%
                 </Text>
               </View>
-              
+
               <View style={styles.predictionBar}>
                 <LinearGradient
-                  colors={prediction.predictedValue > 0.7 ? [ '#F59E0B', '#FBBF24' ] : prediction.predictedValue > 0.5 ? [ '#3B82F6', '#60A5FA' ] : [ '#EF4444', '#F87171' ]}
+                  colors={prediction.predictedValue > 0.7 ? ['#F59E0B', '#FBBF24'] : prediction.predictedValue > 0.5 ? ['#3B82F6', '#60A5FA'] : ['#EF4444', '#F87171']}
                   style={[
                     styles.predictionBarFill,
                     { width: `${prediction.predictedValue * 100}%` }
@@ -367,19 +363,19 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   end={{ x: 1, y: 0 }}
                 />
               </View>
-              
+
               <Text style={styles.predictionAdvice}>
                 {prediction.recommendations[0]}
               </Text>
             </View>
           ))}
-      </AdvancedCard>
+      </Card>
 
       {/* Goal Recommendations */}
       {goalRecommendations.length > 0 && (
-        <AdvancedCard style={styles.predictionSection}>
+        <Card style={styles.predictionSection}>
           <Text style={styles.subsectionTitle}>AI-Generated Goal Ideas</Text>
-          
+
           {goalRecommendations.slice(0, 3).map((goal, index) => (
             <View key={index} style={styles.goalRecommendation}>
               <View style={styles.goalHeader}>
@@ -388,11 +384,11 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   {(goal.successProbability * 100).toFixed(0)}% success rate
                 </Text>
               </View>
-              
+
               <Text style={styles.goalDescription}>
                 {goal.difficulty.toUpperCase()} • {goal.timeframe}
               </Text>
-              
+
               <View style={styles.goalBenefits}>
                 {goal.benefits.map((benefit, idx) => (
                   <View key={idx} style={styles.benefitItem}>
@@ -403,7 +399,7 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
               </View>
             </View>
           ))}
-        </AdvancedCard>
+        </Card>
       )}
     </ScrollView>
   );
@@ -411,18 +407,18 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
   const renderPatterns = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>Family Behavior Patterns</Text>
-      
+
       {familyPatterns.length === 0 ? (
-        <AdvancedCard style={styles.emptyState}>
+        <Card style={styles.emptyState}>
           <Ionicons name="analytics-outline" size={48} color="#9CA3AF" />
           <Text style={styles.emptyStateText}>Analyzing family patterns...</Text>
           <Text style={styles.emptyStateSubtext}>
             Our AI is learning from your family's behavior to identify helpful patterns.
           </Text>
-        </AdvancedCard>
+        </Card>
       ) : (
         familyPatterns.map((pattern, index) => (
-          <AdvancedCard key={index} style={styles.patternCard}>
+          <Card key={index} style={styles.patternCard}>
             <View style={styles.patternHeader}>
               <Ionicons name="trending-up" size={24} color="#3B82F6" />
               <Text style={styles.patternType}>{pattern.patternType}</Text>
@@ -430,74 +426,74 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                 {pattern.confidence}%
               </Text>
             </View>
-            
+
             <Text style={styles.patternDescription}>{pattern.description}</Text>
-            
+
             <Text style={styles.patternRecommendationsLabel}>Recommendations:</Text>
             {pattern.recommendations.map((rec, idx) => (
               <View key={idx} style={styles.patternRecommendation}>
-                <Ionicons name="arrow-right" size={16} color="#6B7280" />
+                <Ionicons name="chevron-forward" size={16} color="#6B7280" />
                 <Text style={styles.patternRecommendationText}>{rec}</Text>
               </View>
             ))}
-          </AdvancedCard>
+          </Card>
         ))
       )}
 
       {/* Productivity Trends */}
       {productivityTrends.length > 0 && (
-        <AdvancedCard style={styles.predictionSection}>
+        <Card style={styles.predictionSection}>
           <Text style={styles.subsectionTitle}>Productivity Trends</Text>
-          
+
           {productivityTrends.map((trend, index) => (
             <View key={index} style={styles.trendItem}>
               <View style={styles.trendHeader}>
                 <Text style={styles.trendTimeSlot}>{trend.timeSlot}</Text>
                 <View style={styles.trendBadge}>
-                  <Ionicons 
+                  <Ionicons
                     name={
                       trend.trend === 'improving' ? 'trending-up' :
-                      trend.trend === 'stable' ? 'remove' : 'trending-down'
-                    } 
-                    size={14} 
+                        trend.trend === 'stable' ? 'remove' : 'trending-down'
+                    }
+                    size={14}
                     color={
                       trend.trend === 'improving' ? '#10B981' :
-                      trend.trend === 'stable' ? '#6B7280' : '#EF4444'
+                        trend.trend === 'stable' ? '#6B7280' : '#EF4444'
                     }
                   />
                   <Text style={[
                     styles.trendText,
-                    { 
+                    {
                       color: trend.trend === 'improving' ? '#10B981' :
-                             trend.trend === 'stable' ? '#6B7280' : '#EF4444'
+                        trend.trend === 'stable' ? '#6B7280' : '#EF4444'
                     }
                   ]}>
                     {trend.trend.charAt(0).toUpperCase() + trend.trend.slice(1)}
                   </Text>
                 </View>
               </View>
-              
+
               <View style={styles.productivityBar}>
-                <View 
+                <View
                   style={[
                     styles.productivityBarFill,
                     { width: `${trend.productivityLevel}%` }
-                  ]} 
+                  ]}
                 />
               </View>
-              
+
               <Text style={styles.patternRecommendationsLabel}>Recommendations:</Text>
               <Text style={styles.trendRecommendation}>{trend.recommendations[0]}</Text>
             </View>
           ))}
-        </AdvancedCard>
+        </Card>
       )}
 
       {/* Recent Voice Commands */}
       {voiceCommands.length > 0 && (
-        <AdvancedCard style={styles.predictionSection}>
+        <Card style={styles.predictionSection}>
           <Text style={styles.subsectionTitle}>Recent Voice Commands</Text>
-          
+
           {voiceCommands.slice(-3).map((command, index) => (
             <View key={index} style={styles.voiceCommand}>
               <View style={styles.voiceCommandHeader}>
@@ -507,16 +503,16 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
                   {command.confidence}%
                 </Text>
               </View>
-              
+
               <Text style={styles.voiceCommandTranscript}>
                 "{command.transcript}"
               </Text>
-              
+
               <View style={styles.voiceCommandStatus}>
-                <Ionicons 
-                  name={command.executed ? 'checkmark-circle' : 'close-circle'} 
-                  size={14} 
-                  color={command.executed ? '#10B981' : '#EF4444'} 
+                <Ionicons
+                  name={command.executed ? 'checkmark-circle' : 'close-circle'}
+                  size={14}
+                  color={command.executed ? '#10B981' : '#EF4444'}
                 />
                 <Text style={[
                   styles.voiceCommandStatusText,
@@ -527,7 +523,7 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
               </View>
             </View>
           ))}
-        </AdvancedCard>
+        </Card>
       )}
     </ScrollView>
   );
@@ -601,14 +597,14 @@ export function AIDashboard({ familyId }: AIDashboardProps) {
 
       {/* Tab Content */}
       {renderTabContent()}
-      
+
       {/* Loading Overlay */}
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <AdvancedCard style={styles.loadingCard}>
+          <Card style={styles.loadingCard}>
             <Ionicons name="hourglass" size={32} color="#3B82F6" />
             <Text style={styles.loadingText}>AI Analysis in Progress...</Text>
-          </AdvancedCard>
+          </Card>
         </View>
       )}
     </ScrollView>

@@ -40,7 +40,7 @@ const ReflectionCard: React.FC<ReflectionCardProps> = ({
     return (
         <View style={styles.container}>
             <LinearGradient
-                colors={['#F8FAFC', '#F1F5F9']}
+                colors={['#F8FAFC', '#F1F5F9'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.card}
             >
                 {/* Quote Icon */}

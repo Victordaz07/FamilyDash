@@ -31,6 +31,7 @@ interface ProfileState {
     // Profile management
     updateProfile: (profileData: Partial<ProfileData>) => Promise<void>;
     updateAvatar: (avatar: string) => Promise<void>;
+    updateCompleteProfile: (profileUpdates: Partial<FamilyMember>) => Promise<void>;
 
     // Permission checks
     hasPermission: (scope: string, action: string) => boolean;
@@ -167,7 +168,7 @@ export const useProfileStore = create<ProfileState>()(
                     code: get().generateInvitationCode(),
                     createdBy: currentUser.id,
                     createdAt: new Date(),
-                    expiredAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+                    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
                     isUsed: false,
                 };
 
@@ -230,109 +231,113 @@ export const useProfileStore = create<ProfileState>()(
                 return familyHouse.invitationCodes.filter(inv => !inv.isUsed);
             },
 
-      // Profile management 🔥 FIREBASE ACTIVATED
-      updateProfile: async (profileData) => {
-        const currentUser = get().currentUser;
-        if (!currentUser) return;
+            // Profile management 🔥 FIREBASE ACTIVATED
+            updateProfile: async (profileData) => {
+                const currentUser = get().currentUser;
+                if (!currentUser) return;
 
-        try {
-          console.log('🔥 Firebase Profile update:', profileData);
-          
-          // Update via Firebase Firestore
-          const firebaseUser = RealAuthService.getCurrentUser();
-          if (firebaseUser) {
-            // Update user profile in Firebase
-            await RealDatabaseService.updateDocument(
-              `users/${firebaseUser.uid}/profile`,
-              {
-                ...profileData,
-                updatedAt: new Date(),
-              }
-            );
+                try {
+                    console.log('🔥 Firebase Profile update:', profileData);
 
-            // Update family member data if part of a family
-            if (get().familyHouse) {
-              await RealDatabaseService.updateDocument(
-                `families/${firebaseUser.uid}/members/${currentUser.id}`,
-                {
-                  ...profileData,
-                  updatedAt: new Date(),
+                    // Update via Firebase Firestore
+                    const firebaseUser = await RealAuthService.getCurrentUser();
+                    if (firebaseUser) {
+                        // Update user profile in Firebase
+                        await RealDatabaseService.updateDocument(
+                            `users/${firebaseUser.uid}/profile`,
+                            firebaseUser.uid,
+                            {
+                                ...profileData,
+                                updatedAt: new Date(),
+                            }
+                        );
+
+                        // Update family member data if part of a family
+                        if (get().familyHouse) {
+                            await RealDatabaseService.updateDocument(
+                                `families/${firebaseUser.uid}/members`,
+                                currentUser.id,
+                                {
+                                    ...profileData,
+                                    updatedAt: new Date(),
+                                }
+                            );
+                        }
+
+                        console.log('✅ Profile updated successfully in Firebase');
+
+                        // Track analytics event
+                        trackEvent('profile_updated', {
+                            userId: firebaseUser.uid,
+                            fields: Object.keys(profileData),
+                            timestamp: new Date().toISOString()
+                        });
+                    } else {
+                        console.log('⚠️ No Firebase user authenticated, using local update');
+                    }
+
+                    // Update local state
+                    await get().updateMember(currentUser.id, profileData as unknown as Partial<FamilyMember>);
+
+                    set({
+                        userProfile: profileData as ProfileData,
+                    });
+
+                } catch (error) {
+                    console.error('❌ Error updating profile in Firebase:', error);
+
+                    // Fallback to local update
+                    await get().updateMember(currentUser.id, profileData as unknown as Partial<FamilyMember>);
+
+                    set({
+                        userProfile: profileData as ProfileData,
+                    });
                 }
-              );
-            }
+            },
 
-            console.log('✅ Profile updated successfully in Firebase');
-            
-            // Track analytics event
-            trackEvent('profile_updated', {
-              userId: firebaseUser.uid,
-              fields: Object.keys(profileData),
-              timestamp: new Date().toISOString()
-            });
-          } else {
-            console.log('⚠️ No Firebase user authenticated, using local update');
-          }
+            updateAvatar: async (avatar) => {
+                await get().updateProfile({ avatar });
+            },
 
-          // Update local state
-          await get().updateMember(currentUser.id, profileData);
-          
-          set({
-            userProfile: profileData as ProfileData,
-          });
+            // New enhanced profile functions
+            updateNickname: async (nickname: string) => {
+                await get().updateMember(get().currentUser?.id || '', { nickname });
+            },
 
-        } catch (error) {
-          console.error('❌ Error updating profile in Firebase:', error);
-          
-          // Fallback to local update
-          await get().updateMember(currentUser.id, profileData);
-          
-          set({
-            userProfile: profileData as ProfileData,
-          });
-        }
-      },
-      
-      updateAvatar: async (avatar) => {
-        await get().updateProfile({ avatar });
-      },
+            updateProfileImage: async (profileImageUrl: string) => {
+                await get().updateMember(get().currentUser?.id || '', { profileImage: profileImageUrl });
+            },
 
-      // New enhanced profile functions
-      updateNickname: async (nickname: string) => {
-        await get().updateProfile({ nickname });
-      },
+            updateBio: async (bio: string) => {
+                await get().updateMember(get().currentUser?.id || '', { bio });
+            },
 
-      updateProfileImage: async (profileImageUrl: string) => {
-        await get().updateProfile({ profileImage: profileImageUrl });
-      },
+            updatePhone: async (phone: string) => {
+                await get().updateMember(get().currentUser?.id || '', { phone });
+            },
 
-      updateBio: async (bio: string) => {
-        await get().updateProfile({ bio });
-      },
+            updateBirthday: async (birthday: Date) => {
+                await get().updateMember(get().currentUser?.id || '', { birthday });
+            },
 
-      updatePhone: async (phone: string) => {
-        await get().updateProfile({ phone });
-      },
+            updatePreferences: async (preferences: Partial<FamilyMember['preferences']>) => {
+                const currentUser = get().currentUser;
+                if (!currentUser) return;
 
-      updateBirthday: async (birthday: Date) => {
-        await get().updateProfile({ birthday });
-      },
+                const updatedPreferences = {
+                    ...currentUser.preferences,
+                    ...preferences,
+                };
 
-      updatePreferences: async (preferences: Partial<FamilyMember['preferences']>) => {
-        const currentUser = get().currentUser;
-        if (!currentUser) return;
+                await get().updateMember(currentUser.id, { preferences: updatedPreferences });
+            },
 
-        const updatedPreferences = {
-          ...currentUser.preferences,
-          ...preferences,
-        };
-
-        await get().updateProfile({ preferences: updatedPreferences });
-      },
-
-      // Complete profile update
-      updateCompleteProfile: async (profileUpdates: Partial<FamilyMember>) => {
-        await get().updateProfile(profileUpdates);
-      },
+            // Complete profile update
+            updateCompleteProfile: async (profileUpdates: Partial<FamilyMember>) => {
+                const currentUser = get().currentUser;
+                if (!currentUser) return;
+                await get().updateMember(currentUser.id, profileUpdates);
+            },
 
             // Permission checks
             hasPermission: (scope: string, action: string) => {
@@ -362,7 +367,7 @@ export const useProfileStore = create<ProfileState>()(
             createHouse: async (houseName: string, admin: FamilyMember) => {
                 try {
                     console.log('🔥 Creating house in Firebase:', houseName);
-                    
+
                     const newHouse: FamilyHouse = {
                         houseId: get().generateUniqueId(),
                         houseName,
@@ -373,11 +378,12 @@ export const useProfileStore = create<ProfileState>()(
                     };
 
                     // Create house in Firebase Firestore
-                    const firebaseUser = RealAuthService.getCurrentUser();
+                    const firebaseUser = await RealAuthService.getCurrentUser();
                     if (firebaseUser) {
                         // Create house document
                         await RealDatabaseService.updateDocument(
                             `families/${firebaseUser.uid}`,
+                            firebaseUser.uid,
                             {
                                 ...newHouse,
                                 createdAt: new Date(),
@@ -387,7 +393,8 @@ export const useProfileStore = create<ProfileState>()(
 
                         // Create member document
                         await RealDatabaseService.updateDocument(
-                            `families/${firebaseUser.uid}/members/${admin.id}`,
+                            `families/${firebaseUser.uid}/members`,
+                            admin.id,
                             {
                                 ...admin,
                                 joinedAt: new Date(),
@@ -399,6 +406,7 @@ export const useProfileStore = create<ProfileState>()(
                         // Create user profile document
                         await RealDatabaseService.updateDocument(
                             `users/${firebaseUser.uid}/profile`,
+                            firebaseUser.uid,
                             {
                                 ...admin,
                                 createdAt: new Date(),
@@ -430,7 +438,7 @@ export const useProfileStore = create<ProfileState>()(
 
                 } catch (error) {
                     console.error('❌ Error creating house in Firebase:', error);
-                    
+
                     // Fallback to local creation
                     const fallbackHouse: FamilyHouse = {
                         houseId: get().generateUniqueId(),
@@ -440,12 +448,12 @@ export const useProfileStore = create<ProfileState>()(
                         createdAt: new Date(),
                         invitationCodes: [],
                     };
-                    
+
                     set({
                         familyHouse: fallbackHouse,
                         currentUser: admin,
                     });
-                    
+
                     console.log('⚠️ House created locally (Firebase failed):', houseName);
                 }
             },

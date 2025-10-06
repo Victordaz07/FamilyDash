@@ -60,7 +60,7 @@ const PenaltyHistory: React.FC<PenaltyHistoryProps> = ({ navigation }) => {
         <View style={styles.container}>
             {/* Header */}
             <LinearGradient
-                colors={['#6B7280', '#4B5563']}
+                colors={['#6B7280', '#4B5563'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>

@@ -16,7 +16,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
     onPress,
     showProgress = true,
 }) => {
-    const getCategoryColor = (category: Achievement['category']) => {
+    const getCategoryColor = (category: Achievement['category']): [string, string] => {
         switch (category) {
             case 'tasksCompleted':
                 return ['#10B981', '#34D399'];
@@ -53,7 +53,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <LinearGradient
-                colors={achievement.achieved ? getCategoryColor(achievement.category) : ['#6B7280', '#9CA3AF']}
+                colors={achievement.achieved ? getCategoryColor(achievement.category) : ['#6B7280', '#9CA3AF'] as [string, string]}
                 style={styles.gradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}

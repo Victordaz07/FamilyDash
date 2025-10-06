@@ -7,10 +7,10 @@ import { create } from 'zustand';
 import React from 'react';
 import { Goal, GoalStats, FamilyMember, GoalTemplate } from '../types/goalTypes';
 import { goalTemplates } from '../mock/goalsData';
-import { 
-  RealDatabaseService, 
-  RealAuthService,
-  trackEvent 
+import {
+    RealDatabaseService,
+    RealAuthService,
+    trackEvent
 } from '../../../services';
 import { scheduleGoalNotification } from '../../../services/notificationService';
 
@@ -25,13 +25,13 @@ interface GoalsStore {
 
     // Actions
     initializeGoals: () => Promise<void>;
-    addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => Promise<{success: boolean; error?: string}>;
-    updateGoal: (id: string, updates: Partial<Goal>) => Promise<{success: boolean; error?: string}>;
-    completeGoal: (id: string) => Promise<{success: boolean; error?: string}>;
-    completeMilestone: (goalId: string, milestoneIndex: number) => Promise<{success: boolean; error?: string}>;
-    addNote: (goalId: string, note: string) => Promise<{success: boolean; error?: string}>;
-    extendDueDate: (goalId: string, newDueDate: string) => Promise<{success: boolean; error?: string}>;
-    deleteGoal: (id: string) => Promise<{success: boolean; error?: string}>;
+    addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => Promise<{ success: boolean; error?: string }>;
+    updateGoal: (id: string, updates: Partial<Goal>) => Promise<{ success: boolean; error?: string }>;
+    completeGoal: (id: string) => Promise<{ success: boolean; error?: string }>;
+    completeMilestone: (goalId: string, milestoneIndex: number) => Promise<{ success: boolean; error?: string }>;
+    addNote: (goalId: string, note: string) => Promise<{ success: boolean; error?: string }>;
+    extendDueDate: (goalId: string, newDueDate: string) => Promise<{ success: boolean; error?: string }>;
+    deleteGoal: (id: string) => Promise<{ success: boolean; error?: string }>;
 
     // Offline Actions
     addGoalOffline: (goal: Omit<Goal, 'id' | 'createdAt'>) => void;
@@ -53,6 +53,7 @@ interface GoalsStore {
     // Connection & Sync
     checkConnection: () => Promise<boolean>;
     reconnect: () => Promise<void>;
+    loadFamilyMembers: () => Promise<void>;
 }
 
 export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
@@ -66,7 +67,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
 
     initializeGoals: async () => {
         const { isInitialized } = get();
-        
+
         if (isInitialized) {
             console.log('🎯 Goals already initialized, skipping...');
             return;
@@ -89,10 +90,10 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             const isConnected = await RealDatabaseService.checkConnection();
             if (!isConnected) {
                 console.log('⚠️ Firebase connection failed, falling back to offline mode');
-                set({ 
-                    goals: [], 
+                set({
+                    goals: [],
                     familyMembers: [],
-                    isInitialized: true, 
+                    isInitialized: true,
                     isLoading: false,
                     error: 'Firebase connection unavailable'
                 });
@@ -100,7 +101,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             }
 
             // Load family members first
-            await get().lordFamilyMembers();
+            await get().loadFamilyMembers();
 
             // Set up real-time listener for goals
             const unsubscribe = RealDatabaseService.listenToCollection<Goal>(
@@ -111,17 +112,17 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
                         set({ error: error, isLoading: false });
                     } else {
                         console.log(`🎯 Real-time update: ${goals.length} goals received`);
-                        set({ 
-                            goals, 
-                            isInitialized: true, 
-                            isLoading: false, 
-                            error: null 
+                        set({
+                            goals,
+                            isInitialized: true,
+                            isLoading: false,
+                            error: null
                         });
-                        
+
                         // Track analytics
-                        trackEvent('goals_synced', { 
+                        trackEvent('goals_synced', {
                             count: goals.length,
-                            user_id: user.uid 
+                            user_id: user.uid
                         });
                     }
                 },
@@ -136,10 +137,10 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             console.log('✅ Goals initialized with Firebase real-time updates');
         } catch (error: any) {
             console.error('❌ Error initializing goals:', error);
-            set({ 
-                error: error.message, 
-                isInitialized: true, 
-                isLoading: false 
+            set({
+                error: error.message,
+                isInitialized: true,
+                isLoading: false
             });
         }
     },
@@ -157,6 +158,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
 
             const goalWithMetadata = {
                 ...goalData,
+                createdAt: new Date().toISOString(),
                 familyId: user.uid,
                 createdBy: user.uid,
                 category: goalData.category || 'personal',
@@ -180,12 +182,12 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             scheduleGoalNotification({
                 id: newGoal.id,
                 title: newGoal.title,
-                assignedTo: newGoal.assignedTo,
-                dueDate: newGoal.dueDate,
+                assignedTo: Array.isArray(newGoal.assignedTo) ? newGoal.assignedTo[0] : newGoal.assignedTo,
+                category: newGoal.category,
             });
 
             // Track analytics
-            trackEvent('goal_created', { 
+            trackEvent('goal_created', {
                 goal_id: newGoal.id,
                 user_id: user.uid,
                 category: newGoal.category,
@@ -199,10 +201,10 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         } catch (error: any) {
             console.error('❌ Error adding goal:', error);
             set({ isLoading: false, error: error.message });
-            
-            return { 
-                success: false, 
-                error: error.message || 'Failed to add goal' 
+
+            return {
+                success: false,
+                error: error.message || 'Failed to add goal'
             };
         }
     },
@@ -221,10 +223,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             const result = await RealDatabaseService.updateDocument<Goal>(
                 `families/${user.uid}/goals`,
                 id,
-                {
-                    ...updates,
-                    updatedBy: user.uid,
-                }
+                updates
             );
 
             if (!result.success) {
@@ -234,7 +233,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             set({ isLoading: false });
 
             // Track analytics
-            trackEvent('goal_updated', { 
+            trackEvent('goal_updated', {
                 goal_id: id,
                 user_id: user.uid,
                 updated_fields: Object.keys(updates)
@@ -246,11 +245,11 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         } catch (error: any) {
             console.error('❌ Error updating goal:', error);
             set({ isLoading: false, error: error.message });
-            
+
             // Fallback to offline mode
             get().updateGoalOffline(id, updates);
-            
-            return { 
+
+            return {
                 success: true, // Return success for offline mode
                 error: 'Updated offline, will sync when online'
             };
@@ -260,26 +259,21 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
     completeGoal: async (id) => {
         return get().updateGoal(id, {
             status: 'completed' as any,
-            completionDate: new Date().toISOString(),
             completedAt: new Date().toISOString(),
         });
     },
 
     completeMilestone: async (goalId, milestoneIndex) => {
         const goal = get().getGoalById(goalId);
-        if (!goal || !goal.milestones || milestoneIndex >= goal.milestones.length) {
-            return { success: false, error: 'Invalid goal or milestone' };
+        if (!goal) {
+            return { success: false, error: 'Goal not found' };
         }
 
-        const updatedMilestones = [...goal.milestones];
-        updatedMilestones[milestoneIndex] = {
-            ...updatedMilestones[milestoneIndex],
-            completed: true,
-            completedAt: new Date().toISOString(),
-        };
+        // Increment the milestone count
+        const newMilestoneCount = (goal.milestones || 0) + 1;
 
         return get().updateGoal(goalId, {
-            milestones: updatedMilestones,
+            milestones: newMilestoneCount,
         });
     },
 
@@ -289,14 +283,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             return { success: false, error: 'Goal not found' };
         }
 
-        const newNote = {
-            id: `note_${Date.now()}`,
-            text: note,
-            addedBy: goal.assignedTo || 'unknown',
-            addedAt: new Date().toISOString(),
-        };
-
-        const updatedNotes = [...(goal.notes || []), newNote];
+        const updatedNotes = [...(goal.notes || []), note];
 
         return get().updateGoal(goalId, {
             notes: updatedNotes,
@@ -306,11 +293,6 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
     extendDueDate: async (goalId, newDueDate) => {
         return get().updateGoal(goalId, {
             dueDate: newDueDate,
-            extensions: ((get().getGoalById(goalId)?.extensions) || []).concat({
-                previousDueDate: get().getGoalById(goalId)?.dueDate || '',
-                newDueDate,
-                extendedOn: new Date().toISOString(),
-            }),
         });
     },
 
@@ -337,7 +319,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             set({ isLoading: false });
 
             // Track analytics
-            trackEvent('goal_deleted', { 
+            trackEvent('goal_deleted', {
                 goal_id: id,
                 user_id: user.uid
             });
@@ -348,10 +330,10 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         } catch (error: any) {
             console.error('❌ Error deleting goal:', error);
             set({ isLoading: false, error: error.message });
-            
-            return { 
-                success: false, 
-                error: error.message || 'Failed to delete goal' 
+
+            return {
+                success: false,
+                error: error.message || 'Failed to delete goal'
             };
         }
     },
@@ -365,9 +347,9 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             notes: [],
             history: []
         };
-        
+
         set((state) => ({ goals: [...state.goals, newGoal] }));
-        
+
         console.log('🎯 Goal added offline, will sync when online:', newGoal.title);
     },
 
@@ -377,14 +359,14 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
                 g.id === id ? { ...g, ...updates } : g
             ),
         }));
-        
+
         console.log('✏️ Goal updated offline, will sync when online:', id);
     },
 
     completeGoalOffline: (id) => {
         get().updateGoalOffline(id, {
             status: 'completed' as any,
-            completionDate: new Date().toISOString(),
+            completedAt: new Date().toISOString(),
         });
     },
 
@@ -392,21 +374,21 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         set((state) => ({
             goals: state.goals.filter((g) => g.id !== id),
         }));
-        
+
         console.log('🗑️ Goal deleted offline, will sync when online:', id);
     },
 
     syncOfflineGoals: async () => {
         const { goals } = get();
         const offlineGoals = goals.filter(goal => goal.id.startsWith('offline_goal_'));
-        
+
         if (offlineGoals.length === 0) {
             console.log('🎯 No offline goals to sync');
             return;
         }
 
         console.log(`📡 Syncing ${offlineGoals.length} offline goals...`);
-        
+
         let successCount = 0;
         let errorCount = 0;
 
@@ -414,7 +396,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
             try {
                 const { id, createdAt, notes, history, ...goalData } = goal;
                 const result = await get().addGoal(goalData);
-                
+
                 if (result.success) {
                     get().deleteGoalOffline(goal.id);
                     successCount++;
@@ -428,15 +410,15 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         }
 
         console.log(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
-        
-        trackEvent('offline_goals_synced', { 
+
+        trackEvent('offline_goals_synced', {
             successful: successCount,
             failed: errorCount
         });
     },
 
     // Helper method to load family members
-    lordFamilyMembers: async () => {
+    loadFamilyMembers: async () => {
         try {
             const user = await RealAuthService.getCurrentUser();
             if (!user) {
@@ -472,26 +454,41 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         return new Date(g.dueDate) < new Date();
     }),
     getGoalsByCategory: (category) => get().goals.filter((g) => g.category === category),
-    getGoalsByMember: (memberId) => get().goals.filter((g) => g.assignedTo === memberId),
+    getGoalsByMember: (memberId) => get().goals.filter((g) =>
+        Array.isArray(g.assignedTo) ? g.assignedTo.includes(memberId) : g.assignedTo === memberId
+    ),
     getGoalById: (id) => get().goals.find((g) => g.id === id),
-    
+
     getStats: () => {
         const goals = get().goals;
         const active = goals.filter((g) => g.status === 'active');
         const completed = goals.filter((g) => g.status === 'completed');
         const overdue = get().getOverdueGoals();
+        const spiritualGoals = goals.filter((g) => g.category === 'spiritual');
+        const familyGoals = goals.filter((g) => g.category === 'family');
+
+        // Group goals by category
+        const goalsByCategory = goals.reduce((acc, goal) => {
+            acc[goal.category] = (acc[goal.category] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
 
         return {
-            total: goals.length,
-            active: active.length,
-            completed: completed.length,
-            overdue: overdue.length,
+            totalGoals: goals.length,
+            activeGoals: active.length,
+            completedGoals: completed.length,
+            overdueGoals: overdue.length,
             completionRate: goals.length === 0 ? 0 : completed.length / goals.length,
-            spiritualAndFamilyCount: get().getSpiritualAndFamilyGoals().length,
+            spiritualAndFamilyCount: spiritualGoals.length + familyGoals.length,
+            averageProgress: goals.length === 0 ? 0 : goals.reduce((sum, g) => sum + (g.progress || 0), 0) / goals.length,
+            totalMilestones: goals.reduce((sum, g) => sum + (g.milestones || 0), 0),
+            goalsByCategory,
+            spiritualGoals: spiritualGoals.length,
+            familyGoals: familyGoals.length,
         };
     },
 
-    getSpiritualAndFamilyGoals: () => get().goals.filter((g) => 
+    getSpiritualAndFamilyGoals: () => get().goals.filter((g) =>
         g.category === 'spiritual' || g.category === 'family'
     ),
 
@@ -508,7 +505,7 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
         try {
             console.log('🔄 Attempting to reconnect to Firebase...');
             set({ isLoading: true, error: null });
-            
+
             // Cleanup existing subscription
             const { subscription } = get();
             if (subscription) {
@@ -517,13 +514,13 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
 
             // Reinitialize
             await get().initializeGoals();
-            
+
             console.log('✅ Reconnected to Firebase successfully');
         } catch (error: any) {
             console.error('❌ Reconnection failed:', error);
-            set({ 
-                error: error.message, 
-                isLoading: false 
+            set({
+                error: error.message,
+                isLoading: false
             });
         }
     },
@@ -532,13 +529,13 @@ export const useGoalsStoreWithFirebase = create<GoalsStore>((set, get) => ({
 // Hook for easy cleanup on component unmount
 export const useGoalsStore = () => {
     const store = useGoalsStoreWithFirebase();
-    
+
     // Initialize goals on first use
     React.useEffect(() => {
         if (!store.isInitialized) {
             store.initializeGoals();
         }
-        
+
         // Cleanup on unmount
         return () => {
             if (store.subscription) {

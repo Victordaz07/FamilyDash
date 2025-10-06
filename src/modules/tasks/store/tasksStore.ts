@@ -109,7 +109,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       }
 
       // Get current user from Firebase Auth
-      const currentUser = RealAuthService.getCurrentUser();
+      const currentUser = await RealAuthService.getCurrentUser();
       if (!currentUser) {
         console.log('⚠️ No authenticated user, using empty state');
         set({
@@ -190,6 +190,8 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         status: taskData.status || 'pending' as TaskStatus,
         progress: taskData.progress || 0,
         points: taskData.points || 10,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       const result = await RealDatabaseService.createDocument<Task>(
@@ -246,11 +248,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       console.log('✏️ Updating task in Firebase...');
 
       const result = await RealDatabaseService.updateDocument<Task>(
-        `families/${currentUser.uid}/tasks`,
+        `families/${user.uid}/tasks`,
         id,
         {
           ...updates,
-          updatedBy: currentUser.uid,
+          updatedAt: new Date().toISOString(),
         }
       );
 
@@ -285,7 +287,6 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     return get().updateTask(id, {
       status: 'completed' as TaskStatus,
       progress: 100,
-      completedAt: new Date().toISOString(),
     });
   },
 
@@ -301,7 +302,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       console.log('🗑️ Deleting task from Firebase...');
 
       const result = await RealDatabaseService.deleteDocument(
-        `families/${currentUser.uid}/tasks`,
+        `families/${user.uid}/tasks`,
         id
       );
 
@@ -369,7 +370,6 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     get().updateTaskOffline(id, {
       status: 'completed' as TaskStatus,
       progress: 100,
-      completedAt: new Date().toISOString(),
     });
   },
 
@@ -521,24 +521,3 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     }
   },
 }));
-
-// Cleanup hook (non-conflicting naming)
-export const useTasksStoreCleanup = () => {
-  const store = useTasksStore();
-
-  // Initialize tasks on first use
-  React.useEffect(() => {
-    if (!store.isInitialized) {
-      store.initializeTasks();
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (store.subscription) {
-        store.subscription();
-      }
-    };
-  }, [store]);
-
-  return store;
-};

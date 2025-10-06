@@ -81,7 +81,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Modern Header */}
             <LinearGradient
-                colors={getRoleColors(currentUser.role)}
+                colors={getRoleColors(currentUser.role) as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -137,7 +137,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                         <View style={styles.statusRow}>
                             <View style={styles.roleBadge}>
                                 <LinearGradient
-                                    colors={getRoleColors(currentUser.role)}
+                                    colors={getRoleColors(currentUser.role) as unknown as readonly [string, string, ...string[]]}
                                     style={styles.roleGradient}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 0 }}
@@ -237,7 +237,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                 onPress={() => setShowCompleteModal(true)}
                             >
                                 <LinearGradient
-                                    colors={['#10B981', '#059669']}
+                                    colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
                                     style={styles.buttonGradient}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 0 }}
@@ -262,7 +262,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
                                 disabled={!editedData.name.trim()}
                             >
                                 <LinearGradient
-                                    colors={['#10B981', '#059669']}
+                                    colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
                                     style={styles.buttonGradient}
                                     start={{ x: 0, y: 0 }}
                                     end={{ x: 1, y: 0 }}
@@ -291,7 +291,7 @@ export const EditableProfileScreen: React.FC<EditableProfileScreenProps> = ({ na
 
                 {/* Quick Tips */}
                 <View style={styles.tipsSection}>
-                    <Ionicons name="lightbulb-outline" size={20} color="#F59E0B" />
+                    <Ionicons name="bulb-outline" size={20} color="#F59E0B" />
                     <Text style={styles.tipsText}>
                         Use "Complete Profile" to add photos, bio, nickname, and privacy settings
                     </Text>

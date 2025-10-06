@@ -56,7 +56,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
 
     try {
       // 1. Test Authentication
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (user) {
         addResult('Authentication', '✅', `User authenticated: ${user.email}`);
       } else {

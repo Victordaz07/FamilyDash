@@ -48,7 +48,7 @@ class RealCalendarService {
 
   async createActivity(activityData: Omit<FirebaseActivity, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const activity: FirebaseActivity = {
@@ -57,14 +57,17 @@ class RealCalendarService {
         updatedAt: new Date(),
       };
 
-    const docRef = await RealDatabaseService.createDocument(
-      `families/${user.uid}/calendar/activities`
-    );
-      
-      await RealDatabaseService.updateDocument(docRef.id, activity);
-      
-      console.log('✅ Activity created in Firebase:', docRef.id);
-      return docRef.id;
+      const result = await RealDatabaseService.createDocument(
+        `families/${user.uid}/calendar/activities`,
+        activity
+      );
+
+      if (!result.success || !result.data) {
+        throw new Error('Failed to create activity');
+      }
+
+      console.log('✅ Activity created in Firebase:', result.data.id);
+      return result.data.id;
     } catch (error) {
       console.error('❌ Error creating activity:', error);
       throw error;
@@ -73,14 +76,15 @@ class RealCalendarService {
 
   async updateActivity(activityId: string, updates: Partial<FirebaseActivity>): Promise<void> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.updateDocument(
-        `families/${user.uid}/calendar/activities/${activityId}`,
+        `families/${user.uid}/calendar/activities`,
+        activityId,
         { ...updates, updatedAt: new Date() }
       );
-      
+
       console.log('✅ Activity updated in Firebase:', activityId);
     } catch (error) {
       console.error('❌ Error updating activity:', error);
@@ -90,13 +94,14 @@ class RealCalendarService {
 
   async deleteActivity(activityId: string): Promise<void> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.deleteDocument(
-        `families/${user.uid}/calendar/activities/${activityId}`
+        `families/${user.uid}/calendar/activities`,
+        activityId
       );
-      
+
       console.log('✅ Activity deleted from Firebase:', activityId);
     } catch (error) {
       console.error('❌ Error deleting activity:', error);
@@ -106,18 +111,23 @@ class RealCalendarService {
 
   async getActivities(): Promise<FirebaseActivity[]> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
-      const activities = await RealDatabaseService.getCollection(
+      const result = await RealDatabaseService.getDocuments(
         `families/${user.uid}/calendar/activities`
       );
-      
-      return activities.map(doc => ({
+
+      if (!result.success || !result.data) {
+        console.error('Failed to get activities:', result.error);
+        return [];
+      }
+
+      return result.data.map(doc => ({
         id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+        ...doc,
+        createdAt: doc.createdAt || new Date(),
+        updatedAt: doc.updatedAt || new Date(),
       })) as FirebaseActivity[];
     } catch (error) {
       console.error('❌ Error getting activities:', error);
@@ -158,7 +168,7 @@ class RealCalendarService {
 
   async voteOnActivity(activityId: string, optionId: string): Promise<void> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const vote: FirebaseVote = {
@@ -170,11 +180,10 @@ class RealCalendarService {
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/activities/${activityId}/votes`
-      ).then(docRef => 
-        RealDatabaseService.updateDocument(docRef.id, vote)
+        `families/${user.uid}/calendar/activities/${activityId}/votes`,
+        vote
       );
-      
+
       console.log('✅ Vote recorded in Firebase');
     } catch (error) {
       console.error('❌ Error voting on activity:', error);
@@ -184,7 +193,7 @@ class RealCalendarService {
 
   async assignResponsibility(activityId: string, memberId: string, task: string): Promise<void> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) throw new Error('User not authenticated');
 
       const responsibility: FirebaseResponsibility = {
@@ -197,11 +206,10 @@ class RealCalendarService {
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/activities/${activityId}/responsibilities`
-      ).then(docRef => 
-        RealDatabaseService.updateDocument(docRef.id, responsibility)
+        `families/${user.uid}/calendar/activities/${activityId}/responsibilities`,
+        responsibility
       );
-      
+
       console.log('✅ Responsibility assigned in Firebase');
     } catch (error) {
       console.error('❌ Error assigning responsibility:', error);
@@ -210,13 +218,17 @@ class RealCalendarService {
   }
 
   // Real-time subscription to activities
-  subscribeToActivities(callback: (activities: FirebaseActivity[]) => void): () => void {
+  async subscribeToActivities(callback: (activities: FirebaseActivity[]) => void): Promise<() => void> {
     try {
-      const user = RealAuthService.getCurrentUser();
+      const user = await RealAuthService.getCurrentUser();
       if (!user) {
-        console.warn('⚠️ No user authenticated for real-time subscription');
-        return () => {};
+        console.warn('⚠️ No user authenticated for calendar');
+        // Return empty callback instead of throwing error
+        callback([]);
+        return () => { };
       }
+
+      console.log('🗓️ Setting up calendar real-time subscription for user:', user.uid);
 
       const unsubscribe = RealDatabaseService.listenToCollection<FirebaseActivity>(
         `families/${user.uid}/calendar/activities`,
@@ -226,11 +238,11 @@ class RealCalendarService {
           } else {
             const formattedActivities = activities.map(doc => ({
               id: doc.id,
-              ...doc.data(),
-              createdAt: doc.data().createdAt?.toDate() || new Date(),
-              updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+              ...doc,
+              createdAt: doc.createdAt || new Date(),
+              updatedAt: doc.updatedAt || new Date(),
             })) as FirebaseActivity[];
-            
+
             callback(formattedActivities);
             console.log('📅 Real-time calendar update:', formattedActivities.length, 'activities');
           }
@@ -241,7 +253,9 @@ class RealCalendarService {
       return unsubscribe;
     } catch (error) {
       console.error('❌ Error setting up real-time subscription:', error);
-      return () => {};
+      // Return empty callback instead of throwing error
+      callback([]);
+      return () => { };
     }
   }
 

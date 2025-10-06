@@ -54,6 +54,15 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
                 age,
                 role: newMemberData.role,
                 email: newMemberData.email || undefined,
+                permissions: [],
+                isActive: true,
+                preferences: {
+                    showName: true,
+                    showNickname: true,
+                    showAge: true,
+                    showEmail: false,
+                    showPhone: false
+                }
             });
 
             if (newMember) {
@@ -75,57 +84,64 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
         }
     };
 
-  const handleCreateHouse = async () => {
-    if (!newMemberData.name.trim()) {
-      Alert.alert('Error', 'Please enter your name to create the house');
-      return;
-    }
-
-    Alert.alert(
-      'Create New House',
-      'Are you sure you want to create a new house and become the administrator?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Create',
-          onPress: async () => {
-            try {
-              const age = newMemberData.age ? parseInt(newMemberData.age) : undefined;
-              const newAdmin: FamilyMember = {
-                id: useProfileStore.getState().generateUniqueId(),
-                code: `${String(Math.floor(Math.random() * 9000) + 1000)}NEW`,
-                name: newMemberData.name.trim(),
-                role: 'admin',
-                email: newMemberData.email.trim() || undefined,
-                age,
-                avatar: newMemberData.avatar,
-                permissions: ['tasks:manage', 'penalties:manage', 'calendar:manage', 'family:manage', 'members:manage', 'settings:manage'],
-                isActive: true,
-                joinedAt: new Date(),
-                isOnline: true,
-              };
-
-              const houseName = `${newAdmin.name}'s Family House`;
-              await useProfileStore.getState().createHouse(houseName, newAdmin);
-              
-              Alert.alert(
-                'Success', 
-                `Welcome ${newAdmin.name}! Your house "${houseName}" has been created. You are now the administrator.`,
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => navigation.navigate('HomeManagement')
-                  }
-                ]
-              );
-            } catch (error) {
-              Alert.alert('Error', 'Failed to create house. Please try again.');
-            }
-          }
+    const handleCreateHouse = async () => {
+        if (!newMemberData.name.trim()) {
+            Alert.alert('Error', 'Please enter your name to create the house');
+            return;
         }
-      ]
-    );
-  };
+
+        Alert.alert(
+            'Create New House',
+            'Are you sure you want to create a new house and become the administrator?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Create',
+                    onPress: async () => {
+                        try {
+                            const age = newMemberData.age ? parseInt(newMemberData.age) : undefined;
+                            const newAdmin: FamilyMember = {
+                                id: useProfileStore.getState().generateUniqueId(),
+                                code: `${String(Math.floor(Math.random() * 9000) + 1000)}NEW`,
+                                name: newMemberData.name.trim(),
+                                role: 'admin',
+                                email: newMemberData.email.trim() || undefined,
+                                age,
+                                avatar: newMemberData.avatar,
+                                permissions: ['tasks:manage', 'penalties:manage', 'calendar:manage', 'family:manage', 'members:manage', 'settings:manage'],
+                                isActive: true,
+                                joinedAt: new Date(),
+                                isOnline: true,
+                                preferences: {
+                                    showName: true,
+                                    showNickname: true,
+                                    showAge: true,
+                                    showEmail: false,
+                                    showPhone: false
+                                }
+                            };
+
+                            const houseName = `${newAdmin.name}'s Family House`;
+                            await useProfileStore.getState().createHouse(houseName, newAdmin);
+
+                            Alert.alert(
+                                'Success',
+                                `Welcome ${newAdmin.name}! Your house "${houseName}" has been created. You are now the administrator.`,
+                                [
+                                    {
+                                        text: 'OK',
+                                        onPress: () => navigation.navigate('HomeManagement')
+                                    }
+                                ]
+                            );
+                        } catch (error) {
+                            Alert.alert('Error', 'Failed to create house. Please try again.');
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <KeyboardAvoidingView
@@ -135,7 +151,7 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {/* Header */}
                 <LinearGradient
-                    colors={['#10B981', '#059669']}
+                    colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
                     style={styles.header}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
@@ -318,7 +334,7 @@ export const JoinHouseScreen: React.FC<JoinHouseScreenProps> = ({ navigation }) 
                             onPress={handleCreateHouse}
                         >
                             <LinearGradient
-                                colors={['#8B5CF6', '#7C3AED']}
+                                colors={['#8B5CF6', '#7C3AED'] as unknown as readonly [string, string, ...string[]]}
                                 style={styles.buttonGradient}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}

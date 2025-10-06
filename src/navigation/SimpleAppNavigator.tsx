@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from '../locales/i18n';
+// i18n removed - using hardcoded English labels
 
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -54,7 +54,7 @@ const Stack = createStackNavigator();
 
 // Stack Navigators for each tab
 const DashboardStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DashboardMain" component={DashboardScreen} />
     <Stack.Screen name="FirebaseTest" component={FirebaseTest as any} />
     <Stack.Screen name="FirebaseTestLive" component={FirebaseTestLive as any} />
@@ -70,14 +70,14 @@ const DashboardStack = () => (
 );
 
 const TasksStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="TasksMain" component={TasksScreen as any} />
     <Stack.Screen name="TaskDetails" component={TaskDetails as any} />
   </Stack.Navigator>
 );
 
 const CalendarStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="CalendarMain" component={CalendarHubScreen as any} />
     <Stack.Screen name="ExpandedCalendar" component={ExpandedCalendar as any} />
     <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen as any} />
@@ -88,13 +88,13 @@ const CalendarStack = () => (
 );
 
 const GoalsStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="GoalsMain" component={GoalsScreen as any} />
   </Stack.Navigator>
 );
 
 const SafeRoomStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="SafeRoomMain" component={EmotionalSafeRoom as any} />
     <Stack.Screen name="NewEmotionalEntry" component={NewEmotionalEntry as any} />
     <Stack.Screen name="PermissionTest" component={PermissionTest as any} />
@@ -102,7 +102,7 @@ const SafeRoomStack = () => (
 );
 
 const PenaltiesStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="PenaltiesMain" component={PenaltiesMain as any} />
     <Stack.Screen name="PenaltyDetails" component={PenaltyDetails as any} />
     <Stack.Screen name="PenaltyHistory" component={PenaltyHistory as any} />
@@ -110,7 +110,7 @@ const PenaltiesStack = () => (
 );
 
 const ProfileStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ProfileMain" component={ProfileScreen as any} />
     <Stack.Screen name="Settings" component={SettingsScreen as any} />
     <Stack.Screen name="HomeManagement" component={HomeManagementScreen as any} />
@@ -127,69 +127,23 @@ const ProfileStack = () => (
 const AppNavigator = () => {
   const insets = useSafeAreaInsets();
 
-  // Fallback translations in case i18n fails
-  const fallbackTranslations = {
-    en: {
-      dashboard: 'Dashboard',
-      tasks: 'Tasks',
-      calendar: 'Calendar',
-      goals: 'Goals',
-      penalties: 'Penalties',
-      safeRoom: 'Safe Room',
-      profile: 'Profile'
-    },
-    es: {
-      dashboard: 'Tablero',
-      tasks: 'Tareas',
-      calendar: 'Calendario',
-      goals: 'Metas',
-      penalties: 'Penas',
-      safeRoom: 'Cuarto Seguro',
-      profile: 'Perfil'
-    }
-  };
-
-  // Try to use i18n, fallback to English if it fails
-  let t, language, isInitialized;
-  try {
-    const translationHook = useTranslation();
-    t = translationHook.t;
-    language = translationHook.language;
-    isInitialized = translationHook.isInitialized;
-  } catch (error) {
-    console.log('Error with useTranslation, using fallback:', error);
-    t = (key: string) => fallbackTranslations.en[key] || key;
-    language = 'en';
-    isInitialized = true;
-  }
-
-  // Get tab labels based on current language
+  // Hardcoded English labels (i18n removed)
   const getTabLabel = (tabName: string) => {
     const labels = {
-      Dashboard: language === 'es' ? 'Tablero' : 'Dashboard',
-      Tasks: language === 'es' ? 'Tareas' : 'Tasks',
-      Calendar: language === 'es' ? 'Calendario' : 'Calendar',
-      Goals: language === 'es' ? 'Metas' : 'Goals',
-      Penalties: language === 'es' ? 'Penas' : 'Penalties',
-      SafeRoom: language === 'es' ? 'Cuarto Seguro' : 'Safe Room',
-      Profile: language === 'es' ? 'Perfil' : 'Profile'
+      Dashboard: 'Dashboard',
+      Tasks: 'Tasks',
+      Calendar: 'Calendar',
+      Goals: 'Goals',
+      Penalties: 'Penalties',
+      SafeRoom: 'Safe Room',
+      Profile: 'Profile'
     };
     return labels[tabName] || tabName;
   };
 
-  // Debug: Log current language
-  console.log('AppNavigator - Current language:', language);
-  console.log('AppNavigator - Is initialized:', isInitialized);
-  console.log('AppNavigator - Dashboard label:', getTabLabel('Dashboard'));
-  console.log('AppNavigator - Tasks label:', getTabLabel('Tasks'));
-
-  // Show loading while i18n initializes
-  if (!isInitialized) {
-    return null; // or a loading component
-  }
-
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {

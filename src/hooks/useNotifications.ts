@@ -38,7 +38,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
 
   const notificationService = AdvancedNotificationService.getInstance();
   const deepLinkService = DeepLinkService.getInstance();
-  
+
   const [permissionStatus, setPermissionStatus] = useState<'unknown' | 'granted' | 'denied'>('unknown');
   const [unreadCount, setUnreadCount] = useState(0);
   const [channels, setChannels] = useState<NotificationChannel[]>([]);
@@ -54,7 +54,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
 
   const initializeNotifications = async () => {
     setIsLoading(true);
-    
+
     try {
       // Request permissions if needed
       if (requestPermissions) {
@@ -138,7 +138,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
       title,
       body: `${progress}% complete${options?.milestone ? ` - ${options.milestone}` : ''}`,
       channelId: 'familydash-goals',
-      priority: options?.priority || 'medium',
+      priority: options?.priority || 'normal',
       deepLink: deepLinkService.generateDeepLink('/goals', { goalId }),
       actions: [
         { id: 'view_goal', title: 'View Goal', action: 'VIEW_GOAL' },
@@ -204,7 +204,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
       title: `SafeRoom message from ${from}`,
       body: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
       channelId: 'familydash-saferoom',
-      priority: options?.urgent ? 'high' : (options?.priority || 'medium'),
+      priority: options?.urgent ? 'high' : (options?.priority || 'normal'),
       deepLink: deepLinkService.generateDeepLink('/saferoom', { messageId }),
       actions: [
         { id: 'view_message', title: 'View Message', action: 'VIEW_MESSAGE' },
@@ -243,7 +243,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
       title,
       body: `${typeMessages[options?.reminderType || 'upcoming']} ${timeRemaining} minutes`,
       channelId: 'familydash-calendar',
-      priority: options?.priority || 'medium',
+      priority: options?.priority || 'normal',
       deepLink: deepLinkService.generateDeepLink('/calendar', { eventId }),
       actions: [
         { id: 'view_event', title: 'View Event', action: 'VIEW_EVENT' },
@@ -267,17 +267,17 @@ export const useNotifications = (config: NotificationConfig = {}) => {
     notifications: SmartNotification[]
   ) => {
     try {
-      const promises = notifications.map(notification => 
+      const promises = notifications.map(notification =>
         notificationService.sendNotification(notification)
       );
-      
+
       const results = await Promise.all(promises);
       const successCount = results.filter(Boolean).length;
-      
+
       if (showToasts) {
         console.log(`📱 Batch notifications: ${successCount}/${notifications.length} sent successfully`);
       }
-      
+
       return results;
     } catch (error) {
       console.error('Error sending batch notifications:', error);
@@ -316,7 +316,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
     try {
       await notificationService.updateUserPreferences(updates);
       await loadPreferences();
-      
+
       if (showToasts) {
         console.log('⚙️ Notification preferences updated');
       }
@@ -342,7 +342,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
   // Analytics and statistics
   const getNotificationStats = useCallback((): NotificationStats => {
     const analytics = notificationService.getAnalytics();
-    
+
     const stats: NotificationStats = {
       totalNotifications: 0,
       unreadCount,
@@ -354,13 +354,13 @@ export const useNotifications = (config: NotificationConfig = {}) => {
     analytics.forEach((analyticsData) => {
       stats.totalNotifications += analyticsData.sentCount;
       stats.responseRate += analyticsData.conversionRate;
-      
+
       // Category counting would be based on notification data
       // This is simplified for demo purposes
     });
 
-    stats.responseRate = stats.responseRate / analytics.size;
-    
+    stats.responseRate = analytics.size > 0 ? stats.responseRate / analytics.size : 0;
+
     return stats;
   }, [unreadCount]);
 
@@ -384,29 +384,29 @@ export const useNotifications = (config: NotificationConfig = {}) => {
     channels,
     preferences,
     isLoading,
-    
+
     // Core notification functions
     sendTaskNotification,
     sendGoalNotification,
     sendPenaltyNotification,
     sendSafeRoomNotification,
     sendCalendarNotification,
-    
+
     // Advanced functions
     sendBatchNotifications,
     scheduleNotification,
     cancelNotification,
-    
+
     // Preferences
     updateNotificationPreferences,
     toggleChannel,
-    
+
     // Analytics
     getNotificationStats,
-    
+
     // Permissions
     requestNotificationPermission,
-    
+
     // Utilities
     initializeNotifications,
     refreshChannels: loadChannels,
@@ -417,7 +417,7 @@ export const useNotifications = (config: NotificationConfig = {}) => {
 // Hook for specific notification categories
 export const useTaskNotifications = () => {
   const { sendTaskNotification, sendBatchNotifications, scheduleNotification } = useNotifications();
-  
+
   return {
     assignTask: sendTaskNotification,
     sendTaskReminder: scheduleNotification,
@@ -427,7 +427,7 @@ export const useTaskNotifications = () => {
 
 export const useSafeRoomNotifications = () => {
   const { sendSafeRoomNotification, sendBatchNotifications } = useNotifications();
-  
+
   return {
     sendMessage: sendSafeRoomNotification,
     sendBatchMessages: sendBatchNotifications,

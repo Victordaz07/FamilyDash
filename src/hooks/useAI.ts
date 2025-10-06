@@ -4,9 +4,148 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { SmartFamilyAssistant } from '../services/ai/SmartFamilyAssistant';
-import { NaturalLanguageProcessor } from '../services/ai/NaturalLanguageProcessor';
-import { PredictiveAnalytics } from '../services/ai/PredictiveAnalytics';
+
+// Mock AI services for development
+class SmartFamilyAssistant {
+  static getInstance() {
+    return new SmartFamilyAssistant();
+  }
+
+  async generateSmartRecommendations(familyId: string) {
+    return [
+      {
+        recommendationId: 'rec_1',
+        title: 'Family Activity Suggestion',
+        description: 'Consider scheduling a family game night',
+        priority: 'medium' as const,
+        expectedImpact: 'High family bonding',
+        effortLevel: 'easy' as const,
+        timeframe: 'This weekend',
+        resources: {
+          instructions: ['Choose a game', 'Set a time', 'Invite everyone'],
+          tips: ['Make it fun', 'Keep it light'],
+        },
+      },
+    ];
+  }
+
+  async analyzeFamilyBehavior(familyId: string) {
+    return [
+      {
+        pattern: 'Evening Activity',
+        description: 'Family tends to be more active in the evenings',
+        confidence: 0.85,
+      },
+    ];
+  }
+
+  async getConversationAssistance(familyId: string, topic: string, participants: string[]) {
+    return {
+      suggestions: ['Ask open-ended questions', 'Listen actively'],
+      topics: ['Family goals', 'Daily activities'],
+    };
+  }
+}
+
+class NaturalLanguageProcessor {
+  static getInstance() {
+    return new NaturalLanguageProcessor();
+  }
+
+  async processVoiceCommand(familyId: string, speakerId: string, transcript: string) {
+    return {
+      commandId: `cmd_${Date.now()}`,
+      transcript,
+      intent: 'unknown',
+      confidence: 0.7,
+      executed: false,
+      errorMessage: undefined,
+    };
+  }
+
+  async analyzeSentiment(speakerId: string, text: string) {
+    return {
+      sentiment: 'neutral',
+      confidence: 0.8,
+      emotions: ['calm'],
+    };
+  }
+
+  async analyzeFamilyConversation(conversationId: string, messages: any[]) {
+    return {
+      overallSentiment: 'positive',
+      keyTopics: ['family', 'activities'],
+      participantEngagement: {},
+    };
+  }
+
+  async analyzeConversationContext(conversationId: string, messages: any[]) {
+    return 'neutral';
+  }
+}
+
+class PredictiveAnalytics {
+  static getInstance() {
+    return new PredictiveAnalytics();
+  }
+
+  async predictTaskCompletion(familyId: string, memberId: string) {
+    return {
+      predictedValue: 0.85,
+      confidence: 0.8,
+      recommendations: ['Set clear deadlines', 'Break into smaller tasks'],
+    };
+  }
+
+  async predictFamilyMood(familyId: string) {
+    return {
+      predictedValue: 0.75,
+      confidence: 0.7,
+      recommendations: ['Plan fun activities', 'Encourage positive communication'],
+    };
+  }
+
+  async detectFamilyPatterns(familyId: string) {
+    return [
+      {
+        patternType: 'Task Completion',
+        description: 'Tasks are completed more often on weekdays',
+        confidence: 0.8,
+        recommendations: ['Schedule important tasks for weekdays'],
+      },
+    ];
+  }
+
+  async analyzeProductivityTrends(familyId: string) {
+    return [
+      {
+        trend: 'increasing',
+        period: 'weekly',
+        value: 0.75,
+      },
+    ];
+  }
+
+  async generateSmartGoalRecommendations(familyId: string) {
+    return [
+      {
+        goalType: 'Family Bonding',
+        description: 'Spend quality time together',
+        priority: 'high',
+      },
+    ];
+  }
+
+  async optimizeSchedule(familyId: string) {
+    return [
+      {
+        timeSlot: 'evening',
+        activity: 'Family dinner',
+        priority: 'high',
+      },
+    ];
+  }
+}
 
 // Types for hooks
 interface SmartRecommendation {
@@ -35,7 +174,7 @@ interface VoiceCommandState {
 interface PredictionData {
   predictionType: string;
   predictedValue: number;
-  confidence: timeRange;
+  confidence: number;
   recommendations: string[];
 }
 
@@ -55,16 +194,16 @@ export function useSmartFamilyAssistant(familyId: string) {
 
   const generateRecommendations = useCallback(async () => {
     if (!familyId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const assistant = SmartFamilyAssistant.getInstance();
-      
+
       // Generate smart recommendations
       const smartRecommendations = await assistant.generateSmartRecommendations(familyId);
-      
+
       // Convert to hook format
       const formattedRecommendations: SmartRecommendation[] = smartRecommendations.map(rec => ({
         recommendationId: rec.recommendationId,
@@ -79,13 +218,13 @@ export function useSmartFamilyAssistant(familyId: string) {
           tips: rec.resources.tips || [],
         },
       }));
-      
+
       setRecommendations(formattedRecommendations);
-      
+
       // Get family insights
       const familyInsights = await assistant.analyzeFamilyBehavior(familyId);
       setInsights(familyInsights);
-      
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate recommendations');
       console.error('Error generating smart recommendations:', err);
@@ -96,7 +235,7 @@ export function useSmartFamilyAssistant(familyId: string) {
 
   const getConversationAssistance = useCallback(async (topic: string, participants: string[]) => {
     if (!familyId) return null;
-    
+
     try {
       const assistant = SmartFamilyAssistant.getInstance();
       return await assistant.getConversationAssistance(familyId, topic, participants);
@@ -131,15 +270,15 @@ export function useNaturalLanguageProcessor(familyId: string) {
 
   const processVoiceCommand = useCallback(async (speakerId: string, transcript: string) => {
     if (!familyId || !transcript.trim()) return null;
-    
+
     setIsProcessingVoice(true);
-    
+
     try {
       const nlp = NaturalLanguageProcessor.getInstance();
-      
+
       // Process voice command
       const command = await nlp.processVoiceCommand(familyId, speakerId, transcript);
-      
+
       // Update voice commands state
       setVoiceCommands(prev => [
         ...prev,
@@ -152,12 +291,12 @@ export function useNaturalLanguageProcessor(familyId: string) {
           errorMessage: command.errorMessage,
         },
       ]);
-      
+
       return command;
-      
+
     } catch (err) {
       console.error('Error processing voice command:', err);
-      
+
       // Add error command to state
       setVoiceCommands(prev => [
         ...prev,
@@ -170,7 +309,7 @@ export function useNaturalLanguageProcessor(familyId: string) {
           errorMessage: err instanceof Error ? err.message : 'Failed to process command',
         },
       ]);
-      
+
       return null;
     } finally {
       setIsProcessingVoice(false);
@@ -179,7 +318,7 @@ export function useNaturalLanguageProcessor(familyId: string) {
 
   const analyzeSentiment = useCallback(async (speakerId: string, text: string) => {
     if (!text.trim()) return null;
-    
+
     try {
       const nlp = NaturalLanguageProcessor.getInstance();
       const analysis = await nlp.analyzeSentiment(speakerId, text);
@@ -197,7 +336,7 @@ export function useNaturalLanguageProcessor(familyId: string) {
     timestamp: number;
   }>) => {
     if (!conversationId || !messages.length) return null;
-    
+
     try {
       const nlp = NaturalLanguageProcessor.getInstance();
       const analysis = await nlp.analyzeFamilyConversation(conversationId, messages);
@@ -214,7 +353,7 @@ export function useNaturalLanguageProcessor(familyId: string) {
     messages: Array<{ speaker: string; content: string; timestamp: number }>
   ) => {
     if (!conversationId || !messages.length) return 'neutral';
-    
+
     try {
       const nlp = NaturalLanguageProcessor.getInstance();
       return await nlp.analyzeConversationContext(conversationId, messages);
@@ -247,22 +386,22 @@ export function usePredictiveAnalytics(familyId: string) {
 
   const generatePredictions = useCallback(async (memberId?: string) => {
     if (!familyId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const analytics = PredictiveAnalytics.getInstance();
-      
+
       // Generate task completion prediction
       const taskPrediction = await analytics.predictTaskCompletion(
-        familyId, 
+        familyId,
         memberId || 'family_overall'
       );
-      
+
       // Generate mood prediction
       const moodPrediction = await analytics.predictFamilyMood(familyId);
-      
+
       const newPredictions: PredictionData[] = [
         {
           predictionType: 'Task Completion',
@@ -277,9 +416,9 @@ export function usePredictiveAnalytics(familyId: string) {
           recommendations: moodPrediction.recommendations,
         },
       ];
-      
+
       setPredictions(newPredictions);
-      
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate predictions');
       console.error('Error generating predictions:', err);
@@ -290,7 +429,7 @@ export function usePredictiveAnalytics(familyId: string) {
 
   const loadFamilyPatterns = useCallback(async () => {
     if (!familyId) return;
-    
+
     try {
       const analytics = PredictiveAnalytics.getInstance();
       const patterns = await analytics.detectFamilyPatterns(familyId);
@@ -302,7 +441,7 @@ export function usePredictiveAnalytics(familyId: string) {
 
   const loadProductivityTrends = useCallback(async () => {
     if (!familyId) return;
-    
+
     try {
       const analytics = PredictiveAnalytics.getInstance();
       const trends = await analytics.analyzeProductivityTrends(familyId);
@@ -314,7 +453,7 @@ export function usePredictiveAnalytics(familyId: string) {
 
   const loadGoalRecommendations = useCallback(async () => {
     if (!familyId) return;
-    
+
     try {
       const analytics = PredictiveAnalytics.getInstance();
       const recommendations = await analytics.generateSmartGoalRecommendations(familyId);
@@ -326,7 +465,7 @@ export function usePredictiveAnalytics(familyId: string) {
 
   const optimizeSchedule = useCallback(async () => {
     if (!familyId) return [];
-    
+
     try {
       const analytics = PredictiveAnalytics.getInstance();
       return await analytics.optimizeSchedule(familyId);
@@ -368,7 +507,7 @@ export function useAI(familyId: string) {
 
   // Combined loading state
   const isLoading = smartAssistant.loading || predictiveAnalytics.loading;
-  
+
   // Combined error state
   const error = smartAssistant.error || predictiveAnalytics.error || null;
 

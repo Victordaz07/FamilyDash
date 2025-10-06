@@ -16,15 +16,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedCard, AdvancedButton, AdvancedInput } from '../ui';
-import {
-  SecurityService,
-  SecurityConfig,
-  SecurityIncident,
-  AuditLog,
-  SecurityPolicy,
-  ThreatDetected
-} from '../services/security/SecurityService';
+import { useTheme, AdvancedCard, AdvancedButton, AdvancedInput, themeUtils } from '../ui';
+import { useSecurity } from '../../hooks/useSecurity';
 
 interface SecurityDashboardProps {
   familyId: string;
@@ -38,15 +31,23 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
   onNavigate,
 }) => {
   const theme = useTheme();
-  const securityService = SecurityService.getInstance();
+  const {
+    state: {
+      isLoading,
+      config: securityConfig,
+      threats,
+      incidents,
+      securityScore,
+      complianceLevel
+    },
+    configureSecurity,
+    createIncident,
+    resolveIncident,
+    getSecurityAnalytics
+  } = useSecurity({ familyId, userId });
 
   const [activeTab, setActiveTab] = useState<'overview' | 'threats' | 'incidents' | 'policies' | 'audit'>('overview');
-  const [securityConfig, setSecurityConfig] = useState<SecurityConfig | null>(null);
-  const [incidents, setIncidents] = useState<SecurityIncident[]>([]);
-  const [threats, setThreats] = useState<ThreatDetected[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [securityAnalytics, setSecurityAnalytics] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Load security data
   useEffect(() => {
@@ -55,72 +56,27 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
   const loadSecurityData = async () => {
     try {
-      setIsLoading(true);
-
-      const config = securityService.getConfig();
-      const analytics = await securityService.getSecurityAnalytics(familyId);
-
-      setSecurityConfig(config);
+      const analytics = await getSecurityAnalytics();
       setSecurityAnalytics(analytics);
-
-      // Load mock data for demonstration
-      setIncidents([
-        {
-          incidentId: 'incident_1',
-          familyId,
-          severity: 'high',
-          category: 'authentication',
-          title: 'Unusual login location detected',
-          description: 'Login attempt from new geographic location',
-          timestamp: Date.now() - 3600000,
-          userId: 'user_456',
-          deviceId: 'device_789',
-          location: 'New York, US',
-          status: 'investigating',
-          actions: [],
-        }
-      ]);
-
-      setThreats([
-        {
-          threatId: 'threat_1',
-          familyId,
-          threatType: 'unauthorized_access',
-          severity: 'medium',
-          description: 'Unusual access pattern detected',
-          timestamp: Date.now() - 1800000,
-          source: 'unknown_device',
-          affectedUsers: [userId],
-          mitigationActions: ['require_reauth'],
-          resolved: false,
-        }
-      ]);
-
     } catch (error) {
       console.error('Error loading security data:', error);
       Alert.alert('Error', 'Failed to load security information');
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleToggleSetting = async (setting: keyof SecurityConfig, value: any) => {
+  const handleToggleSetting = async (setting: string, value: any) => {
     try {
       if (!securityConfig) return;
 
       const updatedConfig = { ...securityConfig, [setting]: value };
-      setSecurityConfig(updatedConfig);
-
-      const success = await securityService.configureSecurity(updatedConfig);
+      const success = await configureSecurity(updatedConfig);
 
       if (!success) {
         Alert.alert('Error', 'Failed to update security configuration');
-        setSecurityConfig(securityConfig); // Revert on failure
       }
 
     } catch (error) {
       Alert.alert('Error', 'Configuration update failed');
-      setSecurityConfig(securityConfig); // Revert on failure
     }
   };
 
@@ -132,13 +88,11 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
         { text: 'Cancel' },
         {
           text: 'Resolve',
-          onPress: () => {
-            setIncidents(prev => prev.map(incident =>
-              incident.incidentId === incidentId
-                ? { ...incident, status: 'resolved' as const }
-                : incident
-            ));
-            Alert.alert('Success', 'Incident marked as resolved');
+          onPress: async () => {
+            const success = await resolveIncident(incidentId);
+            if (success) {
+              Alert.alert('Success', 'Incident marked as resolved');
+            }
           }
         },
       ]
@@ -169,7 +123,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
       case 'high': return '#FF6B35';
       case 'medium': return theme.colors.warning;
       case 'low': return theme.colors.success;
-      default: return theme.colors.gray;
+      default: return '#6B7280';
     }
   };
 
@@ -179,11 +133,11 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
     return (
       <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
         {/* Security Score */}
-        <AdvancedCard variant="filled" size="lg" style={styles.scoreCard}>
+        <AdvancedCard variant="outlined" size="lg" style={styles.scoreCard}>
           <LinearGradient
-            colors={securityAnalytics.securityScore >= 80 ? themeUtils.gradients.success :
-              securityAnalytics.securityScore >= 60 ? themeUtils.gradients.warning :
-                themeUtils.gradients.error}
+            colors={securityAnalytics.securityScore >= 80 ? ['#10B981', '#059669'] as const :
+              securityAnalytics.securityScore >= 60 ? ['#F59E0B', '#D97706'] as const :
+                ['#EF4444', '#DC2626'] as const}
             style={styles.scoreGradient}
           >
             <Text style={styles.scoreValue}>{securityAnalytics.securityScore}/100</Text>
@@ -209,7 +163,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           <AdvancedCard variant="outlined" size="md" style={styles.metricCard}>
             <Text style={styles.metricValue}>{securityAnalytics.auditLogCount}</Text>
             <Text style={styles.metricLabel}>Audit Events</Text>
-            <Ionicons name="document" size={24} color={theme.colors.info} />
+            <Ionicons name="document" size={24} color="#3B82F6" />
           </AdvancedCard>
 
           <AdvancedCard variant="outlined" size="md" style={styles.metricCard}>
@@ -273,7 +227,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Ionicons name="eye" size={24} color={theme.colors.info} />
+              <Ionicons name="eye" size={24} color="#3B82F6" />
               <View style={styles.settingDetails}>
                 <Text style={theme.typography.textStyles.title}>Audit Logging</Text>
                 <Text style={theme.typography.textStyles.caption}>Documented activity: Standard</Text>
@@ -282,7 +236,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
             <Switch
               value={securityConfig.auditLoggingEnabled}
               onValueChange={(value) => handleToggleSetting('auditLoggingEnabled', value)}
-              trackColor={{ false: '#E5E7EB', true: theme.colors.info }}
+              trackColor={{ false: '#E5E7EB', true: '#3B82F6' }}
               thumbColor={securityConfig.auditLoggingEnabled ? 'white' : '#9CA3AF'}
             />
           </View>
@@ -293,7 +247,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           <Text style={styles.sectionTitle}>Quick Actions</Text>
 
           <AdvancedButton
-            variant="filled"
+            variant="primary"
             size="md"
             onPress={() => onNavigate?.('SecuritySettings')}
             icon="settings-outline"
@@ -367,7 +321,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
                   </AdvancedButton>
 
                   <AdvancedButton
-                    variant="filled"
+                    variant="primary"
                     size="sm"
                     onPress={() => Alert.alert('Success', 'Threat mitigation initiated')}
                     icon="checkmark"
@@ -453,7 +407,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
                   </AdvancedButton>
 
                   <AdvancedButton
-                    variant="filled"
+                    variant="primary"
                     size="sm"
                     onPress={() => handleResolveIncident(incident.incidentId)}
                     icon="checkmark"
@@ -543,7 +497,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
           <AdvancedCard variant="outlined" size="sm" style={styles.auditItem}>
             <View style={styles.auditHeader}>
-              <Ionicons name="settings" size={16} color={theme.colors.info} />
+              <Ionicons name="settings" size={16} color="#3B82F6" />
               <Text style={theme.typography.textStyles.body}>Settings Change</Text>
               <Text style={theme.typography.textStyles.caption}>4 hours ago</Text>
             </View>
@@ -593,7 +547,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
-      <LinearGradient colors={themeUtils.gradients.error} style={styles.header}>
+      <LinearGradient colors={['#EF4444', '#DC2626'] as const} style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Security Center</Text>
           <Text style={styles.headerSubtitle}>Advanced Security Management</Text>
@@ -626,7 +580,7 @@ export const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
             <Ionicons
               name={tab.icon as any}
               size={16}
-              color={activeTab === tab.id ? 'white' : theme.colors.gray}
+              color={activeTab === tab.id ? 'white' : '#6B7280'}
             />
             <Text style={[
               styles.tabText,
@@ -964,7 +918,5 @@ const styles = StyleSheet.create({
   },
 });
 
-// Import theme utils
-import { themeUtils } from '../ui';
 
 export default SecurityDashboard;

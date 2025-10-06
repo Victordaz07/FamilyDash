@@ -44,7 +44,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const theme = useTheme();
   const notificationService = AdvancedNotificationService.getInstance();
-  
+
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [preferences, setPreferences] = useState<UserNotificationPreferences | null>(null);
   const [showPreferences, setShowPreferences] = useState(false);
@@ -165,7 +165,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const handleNotificationAction = async (notificationId: string, action: string) => {
     try {
       await notificationService.handleNotificationInteraction(notificationId, action);
-      
+
       // Handle the action locally
       switch (action) {
         case 'COMPLETE_TASK':
@@ -180,7 +180,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           Alert.alert('Action', 'Opening SafeRoom message...');
           break;
       }
-      
+
       markAsRead(notificationId);
     } catch (error) {
       console.error('Error handling notification action:', error);
@@ -217,9 +217,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       case 'medium':
         return theme.colors.warning;
       case 'low':
-        return theme.colors.info;
+        return theme.colors.secondary;
       default:
-        return theme.colors.gray;
+        return theme.colors.gray500;
     }
   };
 
@@ -263,21 +263,21 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         {/* Header */}
         <LinearGradient
-          colors={themeUtils.gradients.primary}
+          colors={themeUtils.gradients.primary as [string, string]}
           style={styles.header}
         >
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
             <Ionicons name="close" size={24} color={theme.colors.white} />
           </TouchableOpacity>
-          
+
           <View style={styles.headerContent}>
             <Text style={styles.headerTitle}>Notifications</Text>
             <Text style={styles.headerSubtitle}>
               {getNotificationCount()} unread
             </Text>
           </View>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => {
               setShowPreferences(true);
             }}
@@ -306,7 +306,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               </Text>
             </TouchableOpacity>
           ))}
-          
+
           {activeTab === 'all' && (
             <AdvancedButton
               variant="ghost"
@@ -323,13 +323,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         <ScrollView style={styles.notificationsList} showsVerticalScrollIndicator={false}>
           {getFilteredNotifications().length === 0 ? (
             <AdvancedCard variant="outlined" size="lg" style={styles.emptyState}>
-              <Ionicons name="notifications-off" size={48} color={theme.colors.gray} />
+              <Ionicons name="notifications-off" size={48} color={theme.colors.gray500} />
               <Text style={[theme.typography.textStyles.h3, styles.emptyTitle]}>
                 No Notifications
               </Text>
               <Text style={[theme.typography.textStyles.body, styles.emptySubtitle]}>
-                {activeTab === 'unread' 
-                  ? 'You\'re all caught up!' 
+                {activeTab === 'unread'
+                  ? 'You\'re all caught up!'
                   : 'No notifications to show at this time.'
                 }
               </Text>
@@ -340,21 +340,21 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 key={notification.id}
                 variant="outlined"
                 size="md"
-                style={[
-                  styles.notificationCard,
-                  !notification.read && styles.unreadNotification,
-                ]}
+                style={{
+                  ...styles.notificationCard,
+                  ...(!notification.read ? styles.unreadNotification : {}),
+                }}
               >
                 <View style={styles.notificationContent}>
                   <View style={styles.notificationHeader}>
                     <View style={styles.notificationIcon}>
-                      <Ionicons 
-                        name={getCategoryIcon(notification.category) as any} 
-                        size={20} 
-                        color={getSeverityColor(notification.severity)} 
+                      <Ionicons
+                        name={getCategoryIcon(notification.category) as any}
+                        size={20}
+                        color={getSeverityColor(notification.severity)}
                       />
                     </View>
-                    
+
                     <View style={styles.notificationMain}>
                       <Text style={[theme.typography.textStyles.title, styles.notificationTitle]}>
                         {notification.title}
@@ -363,7 +363,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         {notification.body}
                       </Text>
                     </View>
-                    
+
                     <View style={styles.notificationMeta}>
                       <Text style={[theme.typography.textStyles.caption, styles.notificationTime]}>
                         {formatTimestamp(notification.timestamp)}
@@ -386,9 +386,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                             handleNotificationAction(notification.id, action.action);
                             markAsRead(notification.id);
                           }}
-                          icon={action.action === 'VIEW_MESSAGE' ? 'chatbubble' : 
-                                action.action === 'REPLY_MESSAGE' ? 'arrow-undo' :
-                                action.action === 'COMPLETE_TASK' ? 'checkmark' : 'eye'}
+                          icon={action.action === 'VIEW_MESSAGE' ? 'chatbubble' :
+                            action.action === 'REPLY_MESSAGE' ? 'arrow-undo' :
+                              action.action === 'COMPLETE_TASK' ? 'checkmark' : 'eye'}
                         >
                           {action.title}
                         </AdvancedButton>
@@ -463,15 +463,15 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
     >
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <LinearGradient
-          colors={themeUtils.gradients.primary}
+          colors={themeUtils.gradients.primary as [string, string]}
           style={styles.header}
         >
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
             <Ionicons name="close" size={24} color={theme.colors.white} />
           </TouchableOpacity>
-          
+
           <Text style={styles.headerTitle}>Notification Settings</Text>
-          
+
           <View style={styles.headerButton} />
         </LinearGradient>
 
@@ -481,7 +481,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
             <Text style={[theme.typography.textStyles.h3, styles.sectionTitle]}>
               Master Settings
             </Text>
-            
+
             <View style={styles.preferenceItem}>
               <View style={styles.preferenceInfo}>
                 <Text style={theme.typography.textStyles.title}>All Notifications</Text>
@@ -489,7 +489,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                   Enable or disable all notifications
                 </Text>
               </View>
-              
+
               <TouchableOpacity
                 style={[
                   styles.toggle,
@@ -512,14 +512,14 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
             <Text style={[theme.typography.textStyles.h3, styles.sectionTitle]}>
               Notification Categories
             </Text>
-            
+
             {channels.map((channel) => (
               <View key={channel.id} style={styles.preferenceItem}>
                 <View style={styles.preferenceInfo}>
                   <Text style={theme.typography.textStyles.title}>{channel.name}</Text>
                   <Text style={theme.typography.textStyles.caption}>{channel.description}</Text>
                 </View>
-                
+
                 <TouchableOpacity
                   style={[
                     styles.toggle,
@@ -543,7 +543,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
             <Text style={[theme.typography.textStyles.h3, styles.sectionTitle]}>
               Quiet Hours
             </Text>
-            
+
             <View style={styles.preferenceItem}>
               <View style={styles.preferenceInfo}>
                 <Text style={theme.typography.textStyles.title}>Enable Quiet Hours</Text>
@@ -551,7 +551,7 @@ const NotificationPreferencesModal: React.FC<NotificationPreferencesModalProps> 
                   Disable notifications during set hours
                 </Text>
               </View>
-              
+
               <TouchableOpacity
                 style={[
                   styles.toggle,
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
+
   // Header styles
   header: {
     flexDirection: 'row',
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     marginTop: 2,
   },
-  
+
   // Tabs
   tabsContainer: {
     flexDirection: 'row',
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: 'white',
   },
-  
+
   // Notifications
   notificationsList: {
     flex: 1,
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#6366f1',
   },
-  
+
   // Actions
   actionsContainer: {
     flexDirection: 'row',
@@ -698,7 +698,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginLeft: 52,
   },
-  
+
   // Empty state
   emptyState: {
     alignItems: 'center',
@@ -714,7 +714,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#6B7280',
   },
-  
+
   // Preferences
   preferencesContent: {
     flex: 1,
@@ -738,7 +738,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 16,
   },
-  
+
   // Toggle switch
   toggle: {
     width: 50,

@@ -46,7 +46,8 @@
           "savePhotosPermission": "Allow FamilyDash to save photos and videos to your camera roll.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "expo-font"
     ],
     "web": {
       "favicon": "./assets/favicon.png"

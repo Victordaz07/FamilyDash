@@ -75,13 +75,13 @@ export const useAchievementsStore = create<AchievementsStore>((set, get) => ({
 
     getLeaderboard: () => {
         const achievements = get().achievements;
-        const memberPoints: { [key: string]: { name: string; points: number } } = {};
+        const memberPoints: { [key: string]: { memberName: string; points: number } } = {};
 
         achievements.forEach((achievement) => {
             if (achievement.achieved) {
                 achievement.assignedTo.forEach((memberId) => {
                     if (!memberPoints[memberId]) {
-                        memberPoints[memberId] = { name: `Member ${memberId}`, points: 0 };
+                        memberPoints[memberId] = { memberName: `Member ${memberId}`, points: 0 };
                     }
                     memberPoints[memberId].points += achievement.points;
                 });

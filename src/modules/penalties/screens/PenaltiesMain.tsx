@@ -127,7 +127,7 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
     <View style={styles.container}>
       {/* Beautiful Header (FIXED) */}
       <LinearGradient
-        colors={['#667eea', '#764ba2']}
+        colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
         style={[styles.header, { paddingTop: insets.top + 20 }]}
       >
         <View style={styles.headerContent}>
@@ -186,7 +186,7 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
         {activePenalties.length === 0 ? (
           <View style={styles.emptyState}>
             <LinearGradient
-              colors={['#667eea', '#764ba2']}
+              colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
               style={styles.emptyIconContainer}
             >
               <Ionicons name="checkmark-circle" size={60} color="white" />
@@ -200,7 +200,7 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
               onPress={() => setShowAddModal(true)}
             >
               <LinearGradient
-                colors={['#667eea', '#764ba2']}
+                colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.emptyButtonGradient}
               >
                 <Ionicons name="add" size={20} color="white" />
@@ -236,7 +236,7 @@ const PenaltiesMain: React.FC<PenaltiesMainProps> = ({ navigation }) => {
           onPress={() => setShowAddModal(true)}
         >
           <LinearGradient
-            colors={['#667eea', '#764ba2']}
+            colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
             style={styles.fabGradient}
           >
             <Ionicons name="add" size={28} color="white" />

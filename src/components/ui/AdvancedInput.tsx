@@ -7,9 +7,10 @@ import {
     ViewStyle,
     TextStyle,
     TextInputProps,
+    TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from './ThemeProvider';
+import { useTheme, themeUtils } from './ThemeProvider';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 export type InputVariant = 'default' | 'outlined' | 'filled' | 'ghost';
@@ -31,6 +32,8 @@ interface AdvancedInputProps extends TextInputProps {
     labelStyle?: TextStyle;
     errorStyle?: TextStyle;
     helperStyle?: TextStyle;
+    multiLine?: boolean;
+    numberOfLines?: number;
 }
 
 export const AdvancedInput = forwardRef<TextInput, AdvancedInputProps>(({
@@ -85,10 +88,8 @@ export const AdvancedInput = forwardRef<TextInput, AdvancedInputProps>(({
             height: multiLine ? 'auto' : sizeConfig.height,
             paddingHorizontal,
             paddingVertical: multiLine ? 12 : 0,
-            fontSize: sizeConfig.fontSize,
             borderRadius: theme.borders.radius.md,
             borderWidth: 1,
-            color: disabled ? theme.colors.textDisabled : theme.colors.textPrimary,
         };
 
         switch (variant) {
@@ -163,8 +164,8 @@ export const AdvancedInput = forwardRef<TextInput, AdvancedInputProps>(({
     const wrapperStyles: ViewStyle[] = [
         styles.inputWrapper,
         ...getVariantStyles(),
-        disabled && styles.disabled,
-        style,
+        ...(disabled ? [styles.disabled] : []),
+        ...(style ? [style as ViewStyle] : []),
     ];
 
     // Render icon

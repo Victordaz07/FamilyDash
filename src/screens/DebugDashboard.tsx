@@ -94,19 +94,20 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
   };
 
   // Add error report
-  const addErrorReport = (error: string, module: string) => {
+  const addErrorReport = async (error: string, module: string) => {
+    const currentUser = await RealAuthService.getCurrentUser();
     const report: ErrorReport = {
       id: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       error,
       module,
-      userId: RealAuthService.getCurrentUser()?.uid,
+      userId: currentUser?.uid,
       timestamp: new Date(),
       resolved: false,
       fixAttempts: 0,
     };
 
     setErrorReports(prev => [report, ...prev.slice(0, 49)]); // Keep last 50 errors
-    
+
     // Attempt auto-fix if enabled
     if (autoFixEnabled) {
       attemptAutoFix(report);
@@ -116,29 +117,29 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
   // Attempt auto-fix
   const attemptAutoFix = async (report: ErrorReport) => {
     addDebugLog('info', 'auto-fix', 'Attempting to auto-fix error', report);
-    
+
     try {
       const fixes = await getAvailableAutoFixes(report);
-      
+
       for (const fix of fixes) {
         const success = await executeFix(fix);
         if (success) {
           report.resolved = true;
           report.fixAttempts++;
           addDebugLog('info', 'auto-fix', `Auto-fix successful: ${fix.name}`, fix);
-          
+
           // Update health check
           updateHealthCheck(report.module, 'healthy', 0);
-          
+
           break;
         } else {
           report.fixAttempts++;
           addDebugLog('warning', 'auto-fix', `Auto-fix failed: ${fix.name}`, fix);
         }
       }
-      
+
       setErrorReports(prev => [...prev]); // Trigger re-render
-      
+
     } catch (error) {
       addDebugLog('error', 'auto-fix', 'Auto-fix system error', { error: error.message });
     }
@@ -152,10 +153,13 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
       case 'firebase-auth':
         fixes.push({
           name: 'reauthenticate',
-          action: () => RealAuthService.signInWithEmail(
-            RealAuthService.getCurrentUser()?.email || '',
-            'dummy_password'
-          ),
+          action: async () => {
+            const currentUser = await RealAuthService.getCurrentUser();
+            return RealAuthService.signInWithEmail({
+              email: currentUser?.email || '',
+              password: 'dummy_password'
+            });
+          },
         });
         break;
 
@@ -243,7 +247,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         const checkStart = Date.now();
         await module.check();
         const latency = Date.now() - checkStart;
-        
+
         if (latency > 1000) {
           updateHealthCheck(module.name, 'warning', latency);
           addDebugLog('warning', module.name, `High latency detected: ${latency}ms`);
@@ -254,7 +258,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
 
       } catch (error) {
         updateHealthCheck(module.name, 'error', 0);
-        addErrorReport(error.message, module.name);
+        await addErrorReport(error.message, module.name);
         addDebugLog('error', module.name, `Health check failed: ${error.message}`);
       }
     }
@@ -266,12 +270,12 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
   // Performance monitoring
   const startPerformanceMonitoring = () => {
     const startTime = Date.now();
-    
+
     // Simulate performance metrics
     const performanceInterval = setInterval(() => {
       const currentTime = Date.now();
       const renderTime = currentTime - startTime;
-      
+
       setPerformanceData(prev => ({
         memoryUsage: Math.random() * 100, // Mock memory usage
         renderTime,
@@ -299,28 +303,28 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
 
     try {
       const [command, ...args] = customCommand.split(' ');
-      
+
       switch (command.toLowerCase()) {
         case 'health':
           await runHealthCheck();
           break;
-          
+
         case 'ping':
           const result = await RealDatabaseService.checkConnection();
           addDebugLog('info', 'ping', `Database ping: ${result}`);
           break;
-          
+
         case 'auth':
-          const user = RealAuthService.getCurrentUser();
+          const user = await RealAuthService.getCurrentUser();
           addDebugLog('info', 'auth', `Current user: ${user?.email || 'Not authenticated'}, ${user?.uid || 'No UID'}`);
           break;
-          
+
         case 'clear':
           setDebugLogs([]);
           setErrorReports([]);
           addDebugLog('info', 'clear', 'Debug logs and errors cleared');
           break;
-          
+
         case 'stores':
           const storeInfo = Object.entries(stores).map(([name, store]) => ({
             name,
@@ -335,15 +339,15 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
           }));
           addDebugLog('info', 'stores', 'Store data counts', { stores: storeInfo });
           break;
-          
+
         default:
           addDebugLog('warning', 'custom-command', `Unknown command: ${command}`);
       }
 
       setCustomCommand('');
-      
+
     } catch (error) {
-      addErrorReport(error.message, 'custom-command');
+      await addErrorReport(error.message, 'custom-command');
       Alert.alert('Error', `Command failed: ${error.message}`);
     }
   };
@@ -359,13 +363,13 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
   // Initialize debug system
   useEffect(() => {
     addDebugLog('info', 'debug-system', 'Debug dashboard initialized');
-    
+
     // Start with initial health check
     runHealthCheck();
-    
+
     // Start performance monitoring
     const cleanupPerformance = startPerformanceMonitoring();
-    
+
     return () => {
       cleanupPerformance();
       addDebugLog('info', 'debug-system', 'Debug dashboard cleanup');
@@ -375,14 +379,14 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
   // Real-time error catching
   useEffect(() => {
     const originalConsoleError = console.error;
-    
+
     console.error = (...args: any[]) => {
-      const errorMessage = args.map(arg => 
+      const errorMessage = args.map(arg =>
         typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
       ).join(' ');
-      
-      addErrorReport(errorMessage, 'console');
-      
+
+      addErrorReport(errorMessage, 'console').catch(console.error);
+
       // Call original console.error
       originalConsoleError(...args);
     };
@@ -415,7 +419,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
                 thumbColor={isDebugModeOn ? '#f44336' : '#f4f3f4'}
               />
             </View>
-            
+
             <View style={styles.controlItem}>
               <Text style={styles.controlLabel}>Auto-Fix</Text>
               <Switch
@@ -447,7 +451,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         {/* Performance Monitor */}
         <View style={styles.performanceContainer}>
           <Text style={styles.sectionTitle}>Performance Monitor</Text>
-          
+
           <View style={styles.performanceGrid}>
             <View style={styles.performanceCard}>
               <Text style={styles.performanceValue}>{Math.round(performanceData.memoryUsage)}%</Text>
@@ -471,17 +475,17 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         {/* Health Diagnostics */}
         <View style={styles.healthContainer}>
           <Text style={styles.sectionTitle}>Health Diagnostics</Text>
-          
+
           {Array.from(healthChecks.entries()).map(([module, health]) => (
             <View key={module} style={styles.healthItem}>
               <View style={styles.healthHeader}>
                 <Text style={styles.healthModule}>{module}</Text>
                 <Text style={[styles.healthStatus, {
                   color: health.status === 'healthy' ? '#4CAF50' :
-                        health.status === 'warning' ? '#FF9800' : '#f44336'
+                    health.status === 'warning' ? '#FF9800' : '#f44336'
                 }]}>
                   {health.status === 'healthy' ? '✅' :
-                   health.status === 'warning' ? '⚠️' : '❌'}
+                    health.status === 'warning' ? '⚠️' : '❌'}
                   {health.status.toUpperCase()}
                 </Text>
               </View>
@@ -497,7 +501,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         {/* Custom Command */}
         <View style={styles.commandContainer}>
           <Text style={styles.sectionTitle}>Custom Commands</Text>
-          
+
           <View style={styles.commandInput}>
             <TextInput
               style={styles.commandTextInput}
@@ -512,7 +516,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
               </LinearGradient>
             </TouchableOpacity>
           </View>
-          
+
           <Text style={styles.commandHelp}>
             Available commands: health, ping, auth, stores, clear
           </Text>
@@ -521,7 +525,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         {/* Error Reports */}
         <View style={styles.errorsContainer}>
           <Text style={styles.sectionTitle}>Error Reports ({errorReports.length})</Text>
-          
+
           {errorReports.length === 0 ? (
             <Text style={styles.emptyText}>No errors detected</Text>
           ) : (
@@ -549,7 +553,7 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
         {/* Debug Logs */}
         <View style={styles.logsContainer}>
           <Text style={styles.sectionTitle}>Debug Logs ({debugLogs.length})</Text>
-          
+
           {debugLogs.length === 0 ? (
             <Text style={styles.emptyText}>No debug logs</Text>
           ) : (
@@ -559,12 +563,12 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
                   <Text style={styles.logTime}>{log.timestamp.toLocaleTimeString()}</Text>
                   <Text style={[styles.logLevel, {
                     color: log.level === 'error' ? '#f44336' :
-                           log.level === 'warning' ? '#FF9800' :
-                           log.level === 'info' ? '#4CAF50' : '#607D8B'
+                      log.level === 'warning' ? '#FF9800' :
+                        log.level === 'info' ? '#4CAF50' : '#607D8B'
                   }]}>
                     {log.level === 'error' ? '❌' :
-                     log.level === 'warning' ? '⚠️' :
-                     log.level === 'info' ? '✅' : '🔍'}
+                      log.level === 'warning' ? '⚠️' :
+                        log.level === 'info' ? '✅' : '🔍'}
                     {log.level.toUpperCase()}
                   </Text>
                 </View>
@@ -669,7 +673,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 15,
     shadowColor: '#000',
-    shadowoffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

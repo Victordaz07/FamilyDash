@@ -1,16 +1,16 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dimensions, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from '../locales/i18n';
 import { useFamilyDashStore } from '../state/store';
-// TEMPORARILY DISABLED FOR DEBUGGING
-// import { useTasksStore } from '../modules/tasks/store/tasksStore';
-// import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-// import { useGoalsStore } from '../modules/goals/store/goalsStore';
+import { useTasksStore } from '../modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
+import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
 import { theme } from '../styles/simpleTheme';
+import { RealAuthService } from '../services/auth/RealAuthService';
+import RealDatabaseService from '../services/database/RealDatabaseService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -19,26 +19,58 @@ interface DashboardScreenProps {
 }
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
-    const { t } = useTranslation();
+    // Real data connections
     const { currentUser } = useProfileStore();
+    const { tasks, addTask, updateTask } = useTasksStore();
+    const { penalties, addPenalty } = usePenaltiesStore();
+    const { goals, addGoal } = useGoalsStore();
+    const { familyMembers: familyMembersFromStore } = useFamilyStore();
 
-    // CLEAN DATA - Empty state ready for real connections
-    const tasks: any[] = [];
-    const penalties: any[] = [];
-    const goals: any[] = [];
-    const familyMembersFromStore: any[] = [];
+    // State management
+    const [refreshing, setRefreshing] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
+    const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
+    const [lastRingTime, setLastRingTime] = useState(0);
+    const [penaltyTime, setPenaltyTime] = useState(0);
+    const [quickActions, setQuickActions] = useState([
+        { id: 'add-task', title: 'Add Task', icon: 'add-circle', color: '#10B981' },
+        { id: 'start-vote', title: 'Start Vote', icon: 'people', color: '#3B82F6' },
+        { id: 'emergency', title: 'Emergency', icon: 'shield', color: '#EF4444' },
+        { id: 'family-chat', title: 'Family Chat', icon: 'chatbubbles', color: '#8B5CF6' }
+    ]);
 
-    const [penaltyTime, setPenaltyTime] = useState(15 * 60 + 42); // 15 minutes 42 seconds
-    const [lastRingTime, setLastRingTime] = useState(5); // 5 minutes ago
-
-    // Timer para la penalización
+    // Real-time connection monitoring
     useEffect(() => {
-        const timer = setInterval(() => {
-            setPenaltyTime(prevTime => (prevTime > 0 ? prevTime - 1 : 0));
-        }, 1000);
+        const checkConnection = async () => {
+            try {
+                const isConnected = await RealDatabaseService.checkConnection();
+                setIsConnected(isConnected);
+                if (isConnected) {
+                    setLastSyncTime(new Date());
+                }
+            } catch (error) {
+                console.log('Connection check failed:', error);
+                setIsConnected(false);
+            }
+        };
 
-        return () => clearInterval(timer);
+        // Check connection every 30 seconds
+        const connectionInterval = setInterval(checkConnection, 30000);
+        checkConnection(); // Initial check
+
+        return () => clearInterval(connectionInterval);
     }, []);
+
+    // Auto-refresh data every 2 minutes
+    useEffect(() => {
+        const refreshInterval = setInterval(() => {
+            if (isConnected) {
+                setLastSyncTime(new Date());
+            }
+        }, 120000);
+
+        return () => clearInterval(refreshInterval);
+    }, [isConnected]);
 
     // Memoized data with safety checks
     const activeTasks = useMemo(() => (tasks || []).filter((task: any) => task.status !== 'completed'), [tasks]);
@@ -69,17 +101,54 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     // CLEAN DATA - Empty activities ready for real connections
     const thisWeekActivities: any[] = [];
 
-    // Navigation handlers
-    const handleVote = useCallback(() => {
-        navigation.navigate('Calendar', { screen: 'Voting' });
-    }, [navigation]);
+    // Advanced Quick Actions handlers
+    const handleQuickAction = useCallback(async (actionId: string) => {
+        switch (actionId) {
+            case 'add-task':
+                const newTask = {
+                    title: 'Quick Task',
+                    description: 'Created from dashboard',
+                    priority: 'medium' as const,
+                    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+                    assignedTo: currentUser?.id || 'user',
+                    status: 'pending' as const,
+                    progress: 0,
+                    steps: [],
+                    points: 10
+                };
+                await addTask(newTask);
+                Alert.alert('Success', 'Quick task created!');
+                break;
 
-    const handleActivePenalty = useCallback(() => {
-        navigation.navigate('PenaltiesMain');
-    }, [navigation]);
+            case 'start-vote':
+                navigation.navigate('Calendar', { screen: 'Voting' });
+                break;
 
-    const handleNotifications = useCallback(() => {
-        Alert.alert('Notifications', 'Notifications feature coming soon!');
+            case 'emergency':
+                navigation.navigate('SafeRoom');
+                break;
+
+            case 'family-chat':
+                Alert.alert('Family Chat', 'Coming soon - Real-time family chat');
+                break;
+
+            default:
+                Alert.alert('Action', `${actionId} feature coming soon!`);
+        }
+    }, [addTask, currentUser, navigation]);
+
+    // Pull to refresh functionality
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            // Simulate data refresh
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            setLastSyncTime(new Date());
+        } catch (error) {
+            console.log('Refresh failed:', error);
+        } finally {
+            setRefreshing(false);
+        }
     }, []);
 
     const handleTaskPress = useCallback((taskId: string) => {
@@ -115,6 +184,10 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         setLastRingTime(0);
     }, []);
 
+    const handleVote = useCallback((activityId: string) => {
+        Alert.alert('Vote', `Voting on activity ${activityId}...`);
+    }, []);
+
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -141,9 +214,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
+            {/* Enhanced Header with Connection Status */}
             <LinearGradient
-                colors={[theme.colors.primary, '#7C3AED']}
+                colors={isConnected ? [theme.colors.primary, '#7C3AED'] : ['#6b7280', '#9ca3af']}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
@@ -152,13 +225,21 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Ionicons name="home" size={20} color="white" />
                         </View>
                         <View>
-                            <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
-                            <Text style={styles.headerSubtitle}>Not Connected</Text>
+                            <Text style={styles.headerTitle}>Family Dashboard</Text>
+                            <Text style={styles.headerSubtitle}>
+                                {isConnected ? '🟢 Connected' : '🔴 Offline'} • Last sync: {lastSyncTime.toLocaleTimeString()}
+                            </Text>
                         </View>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.notificationButton} onPress={handleNotifications}>
-                            <Ionicons name="notifications-outline" size={20} color="white" />
+                        <TouchableOpacity style={styles.notificationButton} onPress={() => Alert.alert('Notifications', 'Real-time notifications coming soon!')}>
+                            <Ionicons name="notifications" size={20} color="white" />
+                            <View style={styles.notificationBadge}>
+                                <Text style={styles.notificationBadgeText}>3</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.syncButton} onPress={onRefresh}>
+                            <Ionicons name="refresh" size={20} color="white" />
                         </TouchableOpacity>
                         <Image
                             source={{
@@ -170,13 +251,19 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                 </View>
             </LinearGradient>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <ScrollView
+                style={styles.content}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
                 {/* Family Members */}
                 <View style={styles.firstSection}>
                     <View style={styles.familyMembersCard}>
                         <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>{t('dashboard.familyMembers')}</Text>
-                            <Text style={styles.sectionSubtitle}>{familyMembersFromStore.length} {t('dashboard.activeMembers')}</Text>
+                            <Text style={styles.sectionTitle}>Family Members</Text>
+                            <Text style={styles.sectionSubtitle}>{familyMembersFromStore.length} active</Text>
                         </View>
                         <View style={styles.membersContainer}>
                             {familyMembers.length === 0 ? (
@@ -210,56 +297,38 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Quick Actions - Better Design */}
+                {/* Enhanced Quick Actions */}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.sectionTitle}>Quick Actions</Text>
+                        <Text style={styles.sectionSubtitle}>Tap to execute instantly</Text>
                     </View>
                     <View style={styles.quickActionsContainer}>
-                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={handleAddTask}>
-                            <LinearGradient
-                                colors={[theme.colors.success, '#22C55E']}
-                                style={styles.quickActionGradientLarge}
+                        {quickActions.map((action) => (
+                            <TouchableOpacity
+                                key={action.id}
+                                style={styles.quickActionButtonLarge}
+                                onPress={() => handleQuickAction(action.id)}
                             >
-                                <View style={styles.quickActionIconLarge}>
-                                    <Ionicons name="add-circle" size={28} color="white" />
-                                </View>
-                                <View style={styles.quickActionTextContainer}>
-                                    <Text style={styles.quickActionTextLarge}>Add New Task</Text>
-                                    <Text style={styles.quickActionSubtext}>Create tasks for family</Text>
-                                </View>
-                            </LinearGradient>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('Profile')}>
-                            <LinearGradient
-                                colors={[theme.colors.primary, '#8B5CF6']}
-                                style={styles.quickActionGradientLarge}
-                            >
-                                <View style={styles.quickActionIconLarge}>
-                                    <Ionicons name="people" size={28} color="white" />
-                                </View>
-                                <View style={styles.quickActionTextContainer}>
-                                    <Text style={styles.quickActionTextLarge}>Manage Family</Text>
-                                    <Text style={styles.quickActionSubtext}>Invite members</Text>
-                                </View>
-                            </LinearGradient>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.quickActionButtonLarge} onPress={handleSafeRoom}>
-                            <LinearGradient
-                                colors={['#F59E0B', '#EF4444']}
-                                style={styles.quickActionGradientLarge}
-                            >
-                                <View style={styles.quickActionIconLarge}>
-                                    <Ionicons name="shield" size={28} color="white" />
-                                </View>
-                                <View style={styles.quickActionTextContainer}>
-                                    <Text style={styles.quickActionTextLarge}>Safe Room</Text>
-                                    <Text style={styles.quickActionSubtext}>Family support</Text>
-                                </View>
-                            </LinearGradient>
-                        </TouchableOpacity>
+                                <LinearGradient
+                                    colors={[action.color, `${action.color}CC`]}
+                                    style={styles.quickActionGradientLarge}
+                                >
+                                    <View style={styles.quickActionIconLarge}>
+                                        <Ionicons name={action.icon as any} size={28} color="white" />
+                                    </View>
+                                    <View style={styles.quickActionTextContainer}>
+                                        <Text style={styles.quickActionTextLarge}>{action.title}</Text>
+                                        <Text style={styles.quickActionSubtext}>
+                                            {action.id === 'add-task' && 'Create tasks instantly'}
+                                            {action.id === 'start-vote' && 'Family decisions'}
+                                            {action.id === 'emergency' && 'Emergency support'}
+                                            {action.id === 'family-chat' && 'Real-time chat'}
+                                        </Text>
+                                    </View>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        ))}
                     </View>
 
                     {/* Firebase Live Test Button */}
@@ -383,11 +452,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     <View style={styles.taskContent}>
                                         <Text style={styles.taskTitle}>{task.title}</Text>
                                         <Text style={styles.taskMeta}>
-                                            {task.assignedTo} • {
-                                                task.status === 'completed' ? `Completed ${task.completedAt}` :
-                                                    task.status === 'pending' ? `Due in ${task.dueIn}` :
-                                                        `Overdue by ${task.overdueBy}`
-                                            }
+                                            {task.assignedTo} • {task.status === 'completed' ? `Completed ${task.completedAt}` : task.status === 'pending' ? `Due in ${task.dueIn}` : `Overdue by ${task.overdueBy}`}
                                         </Text>
                                     </View>
                                     <View style={styles.taskActions}>
@@ -413,7 +478,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         )}
                     </View>
                     <TouchableOpacity style={styles.viewAllButton} onPress={() => navigation.navigate('Tasks')}>
-                        <Text style={styles.viewAllButtonText}>{t('dashboard.viewAll')} {t('navigation.tasks')}</Text>
+                        <Text style={styles.viewAllButtonText}>View All Tasks</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -482,7 +547,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     </Text>
                                 </View>
                                 {activity.status === 'vote_needed' ? (
-                                    <TouchableOpacity style={styles.voteButton} onPress={handleVote}>
+                                    <TouchableOpacity style={styles.voteButton} onPress={() => handleVote(activity.id)}>
                                         <Text style={styles.voteButtonText}>Vote</Text>
                                     </TouchableOpacity>
                                 ) : (
@@ -1061,6 +1126,32 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: theme.colors.textSecondary,
         textAlign: 'center',
+    },
+    // New styles for enhanced features
+    notificationBadge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        backgroundColor: '#EF4444',
+        borderRadius: 8,
+        minWidth: 16,
+        height: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    notificationBadgeText: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    syncButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 8,
     },
 });
 

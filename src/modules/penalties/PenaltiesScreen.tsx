@@ -164,7 +164,7 @@ const PenaltiesScreen = ({ navigation }: { navigation: any }) => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Header */}
             <LinearGradient
-                colors={['#EF4444', '#DC2626']}
+                colors={['#EF4444', '#DC2626'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
@@ -322,7 +322,7 @@ const PenaltiesScreen = ({ navigation }: { navigation: any }) => {
                 <View style={styles.quickActionsGrid}>
                     <TouchableOpacity style={styles.quickActionButton} onPress={handleNewPenalty}>
                         <LinearGradient
-                            colors={['#EF4444', '#DC2626']}
+                            colors={['#EF4444', '#DC2626'] as unknown as readonly [string, string, ...string[]]}
                             style={styles.quickActionGradient}
                         >
                             <View style={styles.quickActionIconBg}>
@@ -333,7 +333,7 @@ const PenaltiesScreen = ({ navigation }: { navigation: any }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickActionButton} onPress={handleViewHistory}>
                         <LinearGradient
-                            colors={['#3B82F6', '#2563EB']}
+                            colors={['#3B82F6', '#2563EB'] as unknown as readonly [string, string, ...string[]]}
                             style={styles.quickActionGradient}
                         >
                             <View style={styles.quickActionIconBg}>

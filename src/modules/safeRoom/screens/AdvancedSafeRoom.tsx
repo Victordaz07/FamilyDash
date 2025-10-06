@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, AdvancedCard, AdvancedButton } from '../../components/ui';
-import { MediaPlayer } from '../../components/ui/MediaPlayer';
+import { useTheme, AdvancedCard, AdvancedButton } from '../../../components/ui';
+import { MediaPlayer } from '../../../components/ui/MediaPlayer';
 import { AdvancedMediaService } from '../services/AdvancedMediaService';
 import {
     SafeRoomMessage,
@@ -277,7 +277,7 @@ export const AdvancedSafeRoom: React.FC = () => {
 
             {/* Header */}
             <LinearGradient
-                colors={themeUtils.gradients.primary}
+                colors={themeUtils.gradients.primary as any}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -612,4 +612,4 @@ const styles = StyleSheet.create({
 });
 
 // Import theme utils
-import { themeUtils } from '../../components/ui';
+import { themeUtils } from '../../../components/ui';

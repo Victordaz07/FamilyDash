@@ -40,7 +40,7 @@ export const NotificationToast: FC<NotificationToastProps> = ({
   const theme = useTheme();
   const [opacity] = useState(new Animated.Value(0));
   const [translateY] = useState(new Animated.Value(-100));
-  
+
   const screenWidth = Dimensions.get('window').width;
 
   useEffect(() => {
@@ -91,26 +91,26 @@ export const NotificationToast: FC<NotificationToastProps> = ({
     switch (type) {
       case 'success':
         return {
-          background: ['#10B981', '#059669'],
+          background: ['#10B981', '#059669'] as const,
           icon: '#ffffff',
           iconName: 'checkmark-circle',
         };
       case 'error':
         return {
-          background: ['#EF4444', '#DC2626'],
+          background: ['#EF4444', '#DC2626'] as const,
           icon: '#ffffff',
           iconName: 'close-circle',
         };
       case 'warning':
         return {
-          background: ['#F59E0B', '#D97706'],
+          background: ['#F59E0B', '#D97706'] as const,
           icon: '#ffffff',
           iconName: 'warning',
         };
       case 'info':
       default:
         return {
-          background: ['#3B82F6', '#2563EB'],
+          background: ['#3B82F6', '#2563EB'] as const,
           icon: '#ffffff',
           iconName: 'information-circle',
         };
@@ -152,13 +152,13 @@ export const NotificationToast: FC<NotificationToastProps> = ({
                 />
               </View>
             )}
-            
+
             <View style={styles.textContainer}>
               <Text style={styles.title}>{title}</Text>
               <Text style={styles.message}>{message}</Text>
             </View>
           </View>
-          
+
           <TouchableOpacity
             style={styles.closeButton}
             onPress={hideToast}
@@ -185,7 +185,7 @@ export const NotificationToastManager: FC<NotificationToastManagerProps> = ({
   const addNotification = (notification: any) => {
     const id = Date.now().toString();
     const newNotification = { ...notification, id };
-    
+
     setNotifications(prev => [...prev, newNotification]);
   };
 
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     elevation: 9999,
   },
-  
+
   managerContainer: {
     position: 'absolute',
     left: 0,
@@ -233,15 +233,15 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     elevation: 9999,
   },
-  
+
   topPosition: {
     top: 60,
   },
-  
+
   bottomPosition: {
     bottom: 100,
   },
-  
+
   toastContainer: {
     borderRadius: 12,
     shadowColor: '#000',
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
   },
-  
+
   content: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -261,14 +261,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  
+
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
     marginRight: 12,
   },
-  
+
   iconContainer: {
     width: 32,
     height: 32,
@@ -278,24 +278,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  
+
   textContainer: {
     flex: 1,
   },
-  
+
   title: {
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
     marginBottom: 2,
   },
-  
+
   message: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.9)',
     lineHeight: 18,
   },
-  
+
   closeButton: {
     width: 28,
     height: 28,

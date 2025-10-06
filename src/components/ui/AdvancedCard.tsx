@@ -7,7 +7,7 @@ import {
     TouchableOpacityProps,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from './ThemeProvider';
+import { useTheme, themeUtils } from './ThemeProvider';
 
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'gradient' | 'glass';
 export type CardSize = 'sm' | 'md' | 'lg';
@@ -82,7 +82,6 @@ export const AdvancedCard: React.FC<AdvancedCardProps> = ({
                         backgroundColor: `${theme.colors.white}${Math.round(glassOpacity * 255).toString(16).padStart(2, '0')}`,
                         borderWidth: 1,
                         borderColor: theme.colors.borderLight,
-                        backdropFilter: 'blur(10px)',
                     },
                 ];
             default:
@@ -138,7 +137,7 @@ export const AdvancedCard: React.FC<AdvancedCardProps> = ({
                 {...props}
             >
                 <LinearGradient
-                    colors={colors}
+                    colors={colors as unknown as readonly [string, string, ...string[]]}
                     {...gradientProps}
                     style={[
                         {

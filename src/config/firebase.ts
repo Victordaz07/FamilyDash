@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'production') {
   performance = getPerformance(app);
 
   // Initialize messaging (only in production and web)
-  if (typeof window !== 'undefined') {
+  if (typeof global !== 'undefined' && global.window) {
     messaging = getMessaging(app);
   }
 }
@@ -113,18 +113,22 @@ export const createDocument = (collectionName: string, docId?: string) => {
 };
 
 // Storage helpers
+import { ref as storageRef, uploadBytes } from 'firebase/storage';
+
 export const getFileReference = (path: string) => {
-  return storage.ref(path);
+  return storageRef(storage, path);
 };
 
 export const uploadFile = async (path: string, file: File | Blob, metadata?: any) => {
-  const ref = storage.ref(path);
-  return await ref.put(file, metadata);
+  const ref = storageRef(storage, path);
+  return await uploadBytes(ref, file, metadata);
 };
 
 // Cloud Functions helpers
+import { httpsCallable } from 'firebase/functions';
+
 export const callFunction = async (functionName: string, data?: any) => {
-  const functionRef = functions.httpsCallable(functionName);
+  const functionRef = httpsCallable(functions, functionName);
   return await functionRef(data);
 };
 

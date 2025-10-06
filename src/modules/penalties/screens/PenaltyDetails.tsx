@@ -98,7 +98,7 @@ const PenaltyDetails: React.FC<PenaltyDetailsProps> = ({ navigation, route }) =>
         <View style={styles.container}>
             {/* Header */}
             <LinearGradient
-                colors={[getCategoryColor(), getCategoryColor() + 'CC']}
+                colors={[getCategoryColor(), getCategoryColor() + 'CC'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
@@ -200,7 +200,7 @@ const PenaltyDetails: React.FC<PenaltyDetailsProps> = ({ navigation, route }) =>
                             onPress={handleEndPenalty}
                         >
                             <LinearGradient
-                                colors={['#8B5CF6', '#7C3AED']}
+                                colors={['#8B5CF6', '#7C3AED'] as unknown as readonly [string, string, ...string[]]}
                                 style={styles.endButtonGradient}
                             >
                                 <Ionicons name="checkmark" size={20} color="white" />

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, AdvancedCard } from '../ui';
+import { useTheme, AdvancedCard, themeUtils } from '../ui';
 import { RealTimeStatus } from './RealTimeStatus';
 import { useRealTimeData, useRealTimeFamilyStatus } from '../../hooks/useRealTime';
 
@@ -183,7 +183,7 @@ export const RealTimeDashboard: React.FC = () => {
                             <Ionicons
                                 name={trend === 'up' ? 'trending-up' : trend === 'down' ? 'trending-down' : 'remove'}
                                 size={12}
-                                color={trend === 'up' ? theme.colors.green : trend === 'down' ? theme.colors.error : theme.colors.gray}
+                                color={trend === 'up' ? '#10B981' : trend === 'down' ? theme.colors.error : '#6B7280'}
                             />
                         </View>
                     )}
@@ -203,7 +203,7 @@ export const RealTimeDashboard: React.FC = () => {
         <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* Header */}
             <LinearGradient
-                colors={themeUtils.gradients.primary}
+                colors={['#3B82F6', '#2563EB'] as const}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
@@ -263,7 +263,7 @@ export const RealTimeDashboard: React.FC = () => {
                         <View key={member.id} style={styles.memberItem}>
                             <View style={[
                                 styles.memberStatusDot,
-                                { backgroundColor: member.status === 'online' ? theme.colors.green : theme.colors.gray }
+                                { backgroundColor: member.status === 'online' ? '#10B981' : '#6B7280' }
                             ]} />
                             <Text style={[theme.typography.textStyles.body, styles.memberName]}>
                                 {member.name}
@@ -512,7 +512,5 @@ const styles = StyleSheet.create({
     },
 });
 
-// Import theme utils
-import { themeUtils } from '../ui';
 
 export default RealTimeDashboard;

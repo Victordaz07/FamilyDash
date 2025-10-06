@@ -12,24 +12,11 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onPress }) => {
     const getCategoryColor = (category: string) => {
         const colors = {
             communication: '#3B82F6',
-            frustration: '#EF4444',
+            meditation: '#8B5CF6',
             breathing: '#10B981',
-            mindfulness: '#8B5CF6'
+            'conflict-resolution': '#EF4444'
         };
         return colors[category as keyof typeof colors] || '#6B7280';
-    };
-
-    const getTypeIcon = (type: string) => {
-        switch (type) {
-            case 'video':
-                return 'videocam';
-            case 'audio':
-                return 'headset';
-            case 'exercise':
-                return 'fitness';
-            default:
-                return 'play-circle';
-        }
     };
 
     return (
@@ -38,14 +25,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onPress }) => {
             onPress={() => onPress(resource)}
         >
             <View style={styles.thumbnail}>
-                <Text style={styles.thumbnailEmoji}>{resource.thumbnail}</Text>
-                <View style={styles.typeIcon}>
-                    <Ionicons
-                        name={getTypeIcon(resource.type)}
-                        size={16}
-                        color="white"
-                    />
-                </View>
+                <Text style={styles.thumbnailEmoji}>{resource.icon}</Text>
             </View>
 
             <View style={styles.content}>
@@ -89,17 +69,6 @@ const styles = StyleSheet.create({
     },
     thumbnailEmoji: {
         fontSize: 32,
-    },
-    typeIcon: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     content: {
         flex: 1,

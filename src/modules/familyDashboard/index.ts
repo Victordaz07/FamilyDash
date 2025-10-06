@@ -21,10 +21,3 @@ export type {
     FamilyDashboardData,
 } from './FamilyDashboardService';
 
-export type {
-    FamilyDashboardProps,
-} from './components/FamilyDashboard';
-
-export type {
-    FamilyChallengesProps,
-} from './components/FamilyChallenges';

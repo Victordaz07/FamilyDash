@@ -160,7 +160,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                             </View>
 
                             {/* Forgot Password */}
-                            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPassword}>
+                            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordContainer}>
                                 <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
                             </TouchableOpacity>
 

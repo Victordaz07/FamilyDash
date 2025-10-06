@@ -6,7 +6,7 @@ import PenaltyTimer from './PenaltyTimer';
 import { Penalty } from '../types/penaltyTypes';
 import { penaltyTypeConfigs } from '../mock/penaltiesData';
 import { theme } from '../../../styles/simpleTheme';
-import { useTranslation } from '../../../locales/i18n';
+// i18n removed - using hardcoded English text
 
 interface PenaltyCardProps {
   penalty: Penalty;
@@ -68,7 +68,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
     >
       {/* Card Header with Gradient */}
       <LinearGradient
-        colors={[cardColor + '15', cardColor + '05']}
+        colors={[cardColor + '15', cardColor + '05'] as unknown as readonly [string, string, ...string[]]}
         style={styles.cardHeader}
       >
         <View style={styles.memberInfo}>
@@ -155,7 +155,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
               onPress={() => onEndPenalty(penalty.id)}
             >
               <LinearGradient
-                colors={[theme.colors.primary, theme.colors.primaryDark]}
+                colors={[theme.colors.primary, theme.colors.primaryDark] as unknown as readonly [string, string, ...string[]]}
                 style={styles.endButtonGradient}
               >
                 <Ionicons name="checkmark-circle" size={18} color="white" />
@@ -169,7 +169,7 @@ const PenaltyCard: React.FC<PenaltyCardProps> = ({
         {!penalty.isActive && penalty.reflection && (
           <View style={styles.completedSection}>
             <LinearGradient
-              colors={['#10B981', '#059669']}
+              colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
               style={styles.completedBadge}
             >
               <Ionicons name="checkmark-circle" size={20} color="white" />

@@ -34,12 +34,16 @@ interface OptimizedListProps<T extends OptimizedListItem> {
 
     // Loading options
     loading?: boolean;
+    isLoading?: boolean;
     onLoadMore?: () => void;
     hasMore?: boolean;
 
     // Empty state
     emptyComponent?: React.ComponentType;
+    EmptyComponent?: React.ComponentType;
     loadingComponent?: React.ComponentType;
+    LoadingComponent?: React.ComponentType;
+    isEmpty?: boolean;
 
     // Accessibility
     accessibilityLabel?: string;
@@ -117,14 +121,14 @@ export function OptimizedList<T extends OptimizedListItem>({
 
     // Memoized render item with performance optimizations
     const optimizedRenderItem = useMemo(() => {
-        return ({ item, index }: { item: T; index: number }) => {
+        return ({ item, index, separators }: { item: T; index: number; separators: any }) => {
             const isVisible = viewableItems.some(vi => vi.key === keyExtractor(item, index));
 
             if (!isVisible && virtualization) {
                 return <View style={{ height: itemHeight }} />;
             }
 
-            return renderItem({ item, index });
+            return renderItem({ item, index, separators });
         };
     }, [renderItem, viewableItems, virtualization, keyExtractor, itemHeight]);
 
@@ -354,16 +358,16 @@ const styles = StyleSheet.create({
  * Hook for list performance monitoring
  */
 export const useListPerformanceMonitor = (listId: string) => {
-    const renderStartRef = useRef<number>();
+    const renderStartRef = useRef<number | undefined>(undefined);
     const renderTimesRef = useRef<number[]>([]);
 
     const trackRenderStart = useCallback(() => {
-        renderStartRef.current = performance.now();
+        renderStartRef.current = Date.now();
     }, []);
 
     const trackRenderEnd = useCallback(() => {
         if (renderStartRef.current) {
-            const renderTime = performance.now() - renderStartRef.current;
+            const renderTime = Date.now() - renderStartRef.current;
             renderTimesRef.current.push(renderTime);
 
             // Keep only last 50 render times

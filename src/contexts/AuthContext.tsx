@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const checkAuthState = async () => {
             try {
                 // Check if there's a current user in Firebase
-                const currentUser = RealAuthService.getCurrentUser();
+                const currentUser = await RealAuthService.getCurrentUser();
                 if (currentUser) {
                     setUser({
                         uid: currentUser.uid,
@@ -92,16 +92,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
-    const registerWithDisplayName = async (email: string, password: string, displayName: string) => {
-        try {
-            const result = await RealAuthService.registerWithEmail({ email, password, displayName });
-
-            return result;
-        } catch (error: any) {
-            return { success: false, error: error.message };
-        }
-    };
-
     const logout = async () => {
         try {
             const result = await RealAuthService.signOut();
@@ -125,7 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         user,
         loading,
         login,
-        register: registerWithDisplayName,
+        register,
         logout,
         sendPasswordReset,
     };

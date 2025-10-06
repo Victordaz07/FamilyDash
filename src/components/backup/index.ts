@@ -7,7 +7,7 @@
 export { BackupSyncDashboard } from './BackupSyncDashboard';
 
 // Service
-export { BackupSyncService } from '../services/backup/BackupSyncService';
+export { BackupSyncService } from '../../services/backup/BackupSyncService';
 
 // Types
 export type {
@@ -16,4 +16,4 @@ export type {
   SyncConflict,
   CloudStorageConfig,
   SyncRule,
-} from '../services/backup/BackupSyncService';
+} from '../../services/backup/BackupSyncService';

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '../locales/i18n';
@@ -10,13 +10,7 @@ import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
 import { theme } from '../styles/simpleTheme';
 
-// Performance optimizations
-import {
-    useAdvancedMemo,
-    useAdvancedCallback,
-    usePerformanceMonitor,
-    useShallowState,
-} from '../utils/performance';
+// Performance optimizations - using React built-in hooks
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -75,17 +69,14 @@ const MemoizedQuickActionCard = React.memo<{
 const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { t } = useTranslation();
 
-    // Performance monitoring
-    const { trackRender, getMetrics } = usePerformanceMonitor('DashboardScreen');
+    // Use specific module stores
+    const tasksStore = useTasksStore();
+    const penaltiesStore = usePenaltiesStore();
+    const goalsStore = useGoalsStore();
+    const familyMembersFromStore = useFamilyStore(state => state.familyMembers);
 
-    // Use specific module stores with shallow comparison
-    const [tasks] = useShallowState(useTasksStore(state => state.tasks));
-    const [penalties] = useShallowState(usePenaltiesStore(state => state.penalties));
-    const [goals] = useShallowState(useGoalsStore(state => state.goals));
-    const [familyMembersFromStore] = useShallowState(useFamilyStore(state => state.familyMembers));
-
-    // Optimized timers using shallow state
-    const [timerState, setTimerState] = useShallowState({
+    // Timer state
+    const [timerState, setTimerState] = useState({
         penaltyTime: 15 * 60 + 42,
         lastRingTime: 5,
     });
@@ -102,21 +93,21 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
         return () => clearInterval(timer);
     }, [setTimerState]);
 
-    // Advanced memoization for expensive computations
-    const dashboardData = useAdvancedMemo(() => {
-        const activeTasks = (tasks || []).filter((task: any) => task.status !== 'completed');
-        const activePenalties = (penalties || []).filter((penalty: any) => penalty.isActive);
-        const activeGoals = (goals || []).filter((goal: any) => goal.status === 'active');
+    // Memoized dashboard data
+    const dashboardData = useMemo(() => {
+        const activeTasks = (tasksStore.tasks || []).filter((task: any) => task.status !== 'completed');
+        const activePenalties = (penaltiesStore.penalties || []).filter((penalty: any) => penalty.isActive);
+        const activeGoals = (goalsStore.goals || []).filter((goal: any) => goal.status === 'active');
 
         return {
             activeTasks,
             activePenalties,
             activeGoals,
         };
-    }, [tasks, penalties, goals], 'dashboard_data');
+    }, [tasksStore.tasks, penaltiesStore.penalties, goalsStore.goals]);
 
-    // Optimized family members processing
-    const familyMembers = useAdvancedMemo(() => {
+    // Memoized family members processing
+    const familyMembers = useMemo(() => {
         const baseMembers = familyMembersFromStore || [];
         const colors = ['#3B82F6', '#EC4899', '#8B5CF6', '#F59E0B'];
         const statuses = ['online', 'away', 'offline'];
@@ -126,27 +117,25 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
             color: colors[index % colors.length],
             status: statuses[index % statuses.length],
         }));
-    }, [familyMembersFromStore], 'family_members');
+    }, [familyMembersFromStore]);
 
-    // Advanced callbacks with debouncing for performance
-    const handleNavigation = useAdvancedCallback(
+    // Callbacks
+    const handleNavigation = useCallback(
         (screen: string, params?: any) => {
             navigation.navigate(screen, params);
         },
-        [navigation],
-        { cacheKey: 'navigation' }
+        [navigation]
     );
 
-    const handleMemberPress = useAdvancedCallback(
+    const handleMemberPress = useCallback(
         (member: any) => {
             Alert.alert('Member Details', `${member.name} - ${member.role}`);
         },
-        [],
-        { cacheKey: 'member_press' }
+        []
     );
 
     // Quick actions with memoization
-    const quickActions = useAdvancedMemo(() => [
+    const quickActions = useMemo(() => [
         {
             icon: 'add-circle',
             title: t('dashboard.newTask'),
@@ -171,22 +160,9 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
             subtitle: 'View penalties',
             onPress: () => handleNavigation('Penalties'),
         },
-    ], [t, handleNavigation], 'quick_actions');
+    ], [t, handleNavigation]);
 
-    // Render tracking
-    useEffect(() => {
-        const metrics = getMetrics();
-        if (metrics.totalUpdates > 0) {
-            console.log('Dashboard performance:', metrics);
-        }
-    });
-
-    // Manual render time tracking
-    const renderStart = performance.now();
-    useEffect(() => {
-        const renderTime = performance.now() - renderStart;
-        trackRender(renderTime);
-    });
+    // Performance tracking removed - using standard React hooks
 
     const formatTime = useCallback((totalSeconds: number) => {
         const minutes = Math.floor(totalSeconds / 60);

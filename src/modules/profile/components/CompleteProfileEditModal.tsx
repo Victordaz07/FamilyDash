@@ -81,7 +81,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
   const handleImagePicker = async (source: 'gallery' | 'camera') => {
     try {
       let imageResult: any = null;
-      
+
       if (source === 'gallery') {
         imageResult = await ImageService.pickImageFromGallery();
       } else if (source === 'camera') {
@@ -160,7 +160,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
       >
         {/* Header */}
         <LinearGradient
-          colors={['#8B5CF6', '#7C3AED']}
+          colors={['#8B5CF6', '#7C3AED'] as unknown as readonly [string, string, ...string[]]}
           style={styles.header}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
@@ -208,7 +208,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                 onPress={() => handleImagePicker('gallery')}
               >
                 <LinearGradient
-                  colors={['#10B981', '#059669']}
+                  colors={['#10B981', '#059669'] as unknown as readonly [string, string, ...string[]]}
                   style={styles.actionGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
@@ -223,7 +223,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                 onPress={() => handleImagePicker('camera')}
               >
                 <LinearGradient
-                  colors={['#3B82F6', '#2563EB']}
+                  colors={['#3B82F6', '#2563EB'] as unknown as readonly [string, string, ...string[]]}
                   style={styles.actionGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
@@ -239,7 +239,7 @@ export const CompleteProfileEditModal: React.FC<CompleteProfileEditModalProps> =
                   onPress={handleRemoveImage}
                 >
                   <LinearGradient
-                    colors={['#EF4444', '#DC2626']}
+                    colors={['#EF4444', '#DC2626'] as unknown as readonly [string, string, ...string[]]}
                     style={styles.actionGradient}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}

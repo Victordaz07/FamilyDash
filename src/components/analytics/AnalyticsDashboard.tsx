@@ -15,14 +15,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedCard, AdvancedButton } from '../ui';
-import { useAnalytics } from '../../hooks/useAnalytics';
-import {
-    UserBehaviorMetrics,
-    FamilyAnalytics,
-    AnalyticsInsight,
-    SmartReport,
-} from '../../services/analytics/DataAnalyticsService';
+import { Card, Button } from '../ui/WorkingComponents';
+import { theme } from '../../styles/simpleTheme';
+// Temporarily commented out - service not available
+// import {
+//     UserBehaviorMetrics,
+//     FamilyAnalytics,
+//     AnalyticsInsight,
+//     SmartReport,
+// } from '../../services/analytics/DataAnalyticsService';
+
+// Mock types for now
+type UserBehaviorMetrics = any;
+type FamilyAnalytics = any;
+type AnalyticsInsight = any;
+type SmartReport = any;
 
 interface AnalyticsDashboardProps {
     userId?: string;
@@ -37,8 +44,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     reportType = 'individual',
     period = 'weekly',
 }) => {
-    const theme = useTheme();
-    const analyticsService = useAnalytics({ debugMode: true });
+    // const theme = useTheme();
+    // const analyticsService = useAnalytics({ debugMode: true });
 
     const [behaviorMetrics, setBehaviorMetrics] = useState<UserBehaviorMetrics | null>(null);
     const [familyMetrics, setFamilyMetrics] = useState<FamilyAnalytics | null>(null);
@@ -56,24 +63,25 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         try {
             setIsLoading(true);
 
-            // Load metrics based on report type
-            if (reportType === 'individual' || reportType === 'productivity') {
-                const metrics = await analyticsService.generateUserMetrics(userId, period);
-                setBehaviorMetrics(metrics);
-            }
+            // Temporarily disabled - analytics service not available
+            // // Load metrics based on report type
+            // if (reportType === 'individual' || reportType === 'productivity') {
+            //     const metrics = await analyticsService.generateUserMetrics(userId, period);
+            //     setBehaviorMetrics(metrics);
+            // }
 
-            if (reportType === 'family' || reportType === 'parental') {
-                const fmetrics = await analyticsService.generateFamilyMetrics(familyId, period === 'daily' ? 'weekly' : period);
-                setFamilyMetrics(fmetrics);
-            }
+            // if (reportType === 'family' || reportType === 'parental') {
+            //     const fmetrics = await analyticsService.generateFamilyMetrics(familyId, period === 'daily' ? 'weekly' : period);
+            //     setFamilyMetrics(fmetrics);
+            // }
 
-            // Generate insights
-            const analyticsInsights = await analyticsService.generateInsights(userId, familyId);
-            setInsights(analyticsInsights);
+            // // Generate insights
+            // const analyticsInsights = await analyticsService.generateInsights(userId, familyId);
+            // setInsights(analyticsInsights);
 
-            // Generate report
-            const analyticsReport = await analyticsService.generateReport(reportType, userId, familyId, period);
-            setReport(analyticsReport);
+            // // Generate report
+            // const analyticsReport = await analyticsService.generateReport(reportType, userId, familyId, period);
+            // setReport(analyticsReport);
 
         } catch (error) {
             console.error('Error loading analytics data:', error);
@@ -89,9 +97,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
     const handleExportData = async () => {
         try {
-            const data = await analyticsService.exportData(userId, 'json');
-            Alert.alert('Data Exported', 'Analytics data has been exported');
-            console.log('Exported data:', data);
+            // Temporarily disabled - analytics service not available
+            // const data = await analyticsService.exportData(userId, 'json');
+            Alert.alert('Data Export', 'Analytics data export is temporarily unavailable');
+            // console.log('Exported data:', data);
         } catch (error) {
             Alert.alert('Error', 'Failed to export data');
         }
@@ -103,9 +112,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
                     {/* Executive Summary */}
                     {report && (
-                        <AdvancedCard variant="filled" size="lg" style={styles.summaryCard}>
+                        <Card style={styles.summaryCard}>
                             <LinearGradient
-                                colors={themeUtils.gradients.primary}
+                                colors={[theme.colors.primary, '#7C3AED']}
                                 style={styles.summaryGradient}
                             >
                                 <Text style={styles.summaryTitle}>Performance Summary</Text>
@@ -136,48 +145,48 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                     </View>
                                 </View>
                             </LinearGradient>
-                        </AdvancedCard>
+                        </Card>
                     )}
 
                     {/* Navigation Patterns */}
-                    <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                    <Card style={styles.sectionCard}>
                         <Text style={styles.sectionTitle}>Most Visited Screens</Text>
                         {behaviorMetrics.navigation.mostVisitedScreens.slice(0, 5).map((screen, index) => (
                             <View key={screen.screen} style={styles.listItem}>
                                 <Text style={styles.listItemNumber}>{index + 1}</Text>
                                 <View style={styles.listItemContent}>
-                                    <Text style={theme.typography.textStyles.title}>{screen.screen}</Text>
-                                    <Text style={theme.typography.textStyles.body}>{screen.count} visits</Text>
+                                    <Text style={styles.listItemTitle}>{screen.screen}</Text>
+                                    <Text style={styles.listItemSubtitle}>{screen.count} visits</Text>
                                 </View>
-                                <Ionicons name="eye" size={20} color={theme.colors.gray} />
+                                <Ionicons name="eye" size={20} color={theme.colors.textSecondary} />
                             </View>
                         ))}
-                    </AdvancedCard>
+                    </Card>
 
                     {/* Feature Usage */}
-                    <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                    <Card style={styles.sectionCard}>
                         <Text style={styles.sectionTitle}>Feature Usage Time</Text>
                         {Object.entries(behaviorMetrics.engagement.featureUsageTime)
-                            .sort(([, a], [, b]) => b - a)
+                            .sort(([, a], [, b]) => (b as number) - (a as number))
                             .slice(0, 5)
                             .map(([feature, time]) => (
                                 <View key={feature} style={styles.featureItem}>
-                                    <Text style={theme.typography.textStyles.title}>{feature}</Text>
+                                    <Text style={styles.featureTitle}>{feature}</Text>
                                     <View style={styles.featureProgress}>
                                         <View
                                             style={[
                                                 styles.featureProgressBar,
                                                 {
                                                     backgroundColor: theme.colors.primary,
-                                                    width: `${Math.min((time / Math.max(...Object.values(behaviorMetrics.engagement.featureUsageTime))) * 100, 100)}%`,
+                                                    width: `${Math.min(((time as number) / Math.max(...Object.values(behaviorMetrics.engagement.featureUsageTime).map(v => v as number))) * 100, 100)}%`,
                                                 },
                                             ]}
                                         />
                                     </View>
-                                    <Text style={theme.typography.textStyles.caption}>{time} interactions</Text>
+                                    <Text style={styles.featureCaption}>{time as number} interactions</Text>
                                 </View>
                             ))}
-                    </AdvancedCard>
+                    </Card>
                 </ScrollView>
             );
         }
@@ -186,9 +195,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             return (
                 <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
                     {/* Family Summary */}
-                    <AdvancedCard variant="filled" size="lg" style={styles.summaryCard}>
+                    <Card style={styles.summaryCard}>
                         <LinearGradient
-                            colors={themeUtils.gradients.success}
+                            colors={[theme.colors.success, '#10B981']}
                             style={styles.summaryGradient}
                         >
                             <Text style={styles.summaryTitle}>Family Collaboration Summary</Text>
@@ -219,42 +228,42 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                 </View>
                             </View>
                         </LinearGradient>
-                    </AdvancedCard>
+                    </Card>
 
                     {/* Family Engagement */}
-                    <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                    <Card style={styles.sectionCard}>
                         <Text style={styles.sectionTitle}>Family Engagement Distribution</Text>
                         {Object.entries(familyMetrics.engagement.engagementByMember).map(([memberId, engagement]) => (
                             <View key={memberId} style={styles.listItem}>
                                 <Text style={styles.listItemNumber}>👥</Text>
                                 <View style={styles.listItemContent}>
-                                    <Text style={theme.typography.textStyles.title}>{memberId}</Text>
-                                    <Text style={theme.typography.textStyles.body}>{engagement} minutes engaged</Text>
+                                    <Text style={styles.memberTitle}>{memberId}</Text>
+                                    <Text style={styles.memberSubtitle}>{engagement as number} minutes engaged</Text>
                                 </View>
                                 <View style={styles.engagementIndicator}>
                                     <View
                                         style={[
                                             styles.engagementBar,
                                             {
-                                                backgroundColor: engagement > 100 ? theme.colors.success :
-                                                    engagement > 50 ? theme.colors.warning : theme.colors.error,
-                                                width: `${Math.min((engagement / 150) * 100, 100)}%`,
+                                                backgroundColor: (engagement as number) > 100 ? theme.colors.success :
+                                                    (engagement as number) > 50 ? theme.colors.warning : theme.colors.error,
+                                                width: `${Math.min(((engagement as number) / 150) * 100, 100)}%`,
                                             },
                                         ]}
                                     />
                                 </View>
                             </View>
                         ))}
-                    </AdvancedCard>
+                    </Card>
                 </ScrollView>
             );
         }
 
         return (
             <View style={styles.emptyState}>
-                <Ionicons name="analytics" size={48} color={theme.colors.gray} />
-                <Text style={[theme.typography.textStyles.h3, styles.emptyTitle]}>No Data Available</Text>
-                <Text style={[theme.typography.textStyles.body, styles.emptySubtitle]}>
+                <Ionicons name="analytics" size={48} color={theme.colors.textSecondary} />
+                <Text style={styles.emptyTitle}>No Data Available</Text>
+                <Text style={styles.emptySubtitle}>
                     Enable analytics tracking to see your data here
                 </Text>
             </View>
@@ -266,45 +275,45 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
         return (
             <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
-                <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                <Card style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>Productivity Metrics</Text>
 
                     {behaviorMetrics ? (
                         <>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Tasks Completed</Text>
-                                <Text style={theme.typography.textStyles.h4}>{behaviorMetrics.productivity.tasksCompleted}</Text>
+                                <Text style={styles.metricTitle}>Tasks Completed</Text>
+                                <Text style={styles.metricValue}>{behaviorMetrics.productivity.tasksCompleted}</Text>
                             </View>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Goals Progress</Text>
-                                <Text style={theme.typography.textStyles.h4}>{behaviorMetrics.productivity.goalsProgressUpdated}</Text>
+                                <Text style={styles.metricTitle}>Goals Progress</Text>
+                                <Text style={styles.metricValue}>{behaviorMetrics.productivity.goalsProgressUpdated}</Text>
                             </View>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Avg Task Time</Text>
-                                <Text style={theme.typography.textStyles.h4}>{behaviorMetrics.productivity.avgTaskCompletionTime}m</Text>
+                                <Text style={styles.metricTitle}>Avg Task Time</Text>
+                                <Text style={styles.metricValue}>{behaviorMetrics.productivity.avgTaskCompletionTime}m</Text>
                             </View>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>On-Time Rate</Text>
-                                <Text style={theme.typography.textStyles.h4}>{behaviorMetrics.productivity.onTimeTaskRate.toFixed(1)}%</Text>
+                                <Text style={styles.metricTitle}>On-Time Rate</Text>
+                                <Text style={styles.metricValue}>{behaviorMetrics.productivity.onTimeTaskRate.toFixed(1)}%</Text>
                             </View>
                         </>
                     ) : familyMetrics ? (
                         <>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Family Tasks</Text>
-                                <Text style={theme.typography.textStyles.h4}>{familyMetrics.productivity.totalTasksCompleted}</Text>
+                                <Text style={styles.metricTitle}>Family Tasks</Text>
+                                <Text style={styles.metricValue}>{familyMetrics.productivity.totalTasksCompleted}</Text>
                             </View>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Goal Progress</Text>
-                                <Text style={theme.typography.textStyles.h4}>{familyMetrics.productivity.totalGoalsProgress}</Text>
+                                <Text style={styles.metricTitle}>Goal Progress</Text>
+                                <Text style={styles.metricValue}>{familyMetrics.productivity.totalGoalsProgress}</Text>
                             </View>
                             <View style={styles.metricRow}>
-                                <Text style={theme.typography.textStyles.title}>Completion Rate</Text>
-                                <Text style={theme.typography.textStyles.h4}>{familyMetrics.productivity.familyGoalCompletionRate.toFixed(1)}%</Text>
+                                <Text style={styles.metricTitle}>Completion Rate</Text>
+                                <Text style={styles.metricValue}>{familyMetrics.productivity.familyGoalCompletionRate.toFixed(1)}%</Text>
                             </View>
                         </>
                     ) : null}
-                </AdvancedCard>
+                </Card>
             </ScrollView>
         );
     };
@@ -314,11 +323,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
         return (
             <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
-                <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                <Card style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>Engagement Analysis</Text>
 
-                    <AdvancedCard variant="outlined" size="md" style={styles.subCard}>
-                        <Text style={theme.typography.textStyles.title}>Session Statistics</Text>
+                    <Card style={styles.subCard}>
+                        <Text style={styles.cardTitle}>Session Statistics</Text>
                         <View style={styles.metricGrid}>
                             <View style={styles.metricItem}>
                                 <Text style={styles.metricLabel}>Total Sessions</Text>
@@ -337,12 +346,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                 <Text style={styles.metricValue}>{behaviorMetrics?.navigation.avgScreensPerSession.toFixed(1) || 'N/A'}</Text>
                             </View>
                         </View>
-                    </AdvancedCard>
+                    </Card>
 
-                    <AdvancedCard variant="outlined" size="md" style={styles.subCard}>
-                        <Text style={theme.typography.textStyles.title}>Navigation Flow</Text>
-                    </AdvancedCard>
-                </AdvancedCard>
+                    <Card style={styles.subCard}>
+                        <Text style={styles.cardTitle}>Navigation Flow</Text>
+                    </Card>
+                </Card>
             </ScrollView>
         );
     };
@@ -350,55 +359,51 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     const renderInsightsTab = () => {
         return (
             <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
-                <AdvancedCard variant="outlined" size="lg" style={styles.sectionCard}>
+                <Card style={styles.sectionCard}>
                     <Text style={styles.sectionTitle}>Smart Insights</Text>
 
                     {insights.length === 0 ? (
                         <View style={styles.emptyInsightsState}>
-                            <Ionicons name="bulb" size={32} color={theme.colors.gray} />
-                            <Text style={[theme.typography.textStyles.body, styles.emptyInsightsText]}>
+                            <Ionicons name="bulb" size={32} color={theme.colors.textSecondary} />
+                            <Text style={styles.emptyInsightsText}>
                                 No insights available yet. Keep using the app to generate personalized insights!
                             </Text>
                         </View>
                     ) : (
                         insights.map((insight) => (
-                            <AdvancedCard
+                            <Card
                                 key={insight.id}
-                                variant="outlined"
-                                size="md"
-                                style={[
-                                    styles.insightCard,
-                                    {
-                                        borderLeftColor: insight.impact === 'high' ? theme.colors.error :
-                                            insight.impact === 'medium' ? theme.colors.warning : theme.colors.success
-                                    }
-                                ]}
+                                style={{
+                                    ...styles.insightCard,
+                                    borderLeftColor: insight.impact === 'high' ? theme.colors.error :
+                                        insight.impact === 'medium' ? theme.colors.warning : theme.colors.success,
+                                }}
                             >
                                 <View style={styles.insightHeader}>
-                                    <Text style={theme.typography.textStyles.title}>{insight.title}</Text>
+                                    <Text style={styles.insightTitle}>{insight.title}</Text>
                                     <View style={styles.insightBadge}>
                                         <Text style={styles.insightBadgeText}>{insight.confidence}%</Text>
                                     </View>
                                 </View>
 
-                                <Text style={[theme.typography.textStyles.body, styles.insightDescription]}>
+                                <Text style={styles.insightDescription}>
                                     {insight.description}
                                 </Text>
 
                                 {insight.actionable && insight.recommendations && (
                                     <View style={styles.recommendationsContainer}>
-                                        <Text style={theme.typography.textStyles.title}>Recommendations:</Text>
+                                        <Text style={styles.recommendationTitle}>Recommendations:</Text>
                                         {insight.recommendations.slice(0, 3).map((recommendation, index) => (
-                                            <Text key={index} style={[theme.typography.textStyles.body, styles.recommendation]}>
+                                            <Text key={index} style={styles.recommendation}>
                                                 • {recommendation}
                                             </Text>
                                         ))}
                                     </View>
                                 )}
-                            </AdvancedCard>
+                            </Card>
                         ))
                     )}
-                </AdvancedCard>
+                </Card>
             </ScrollView>
         );
     };
@@ -421,7 +426,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* Header */}
-            <LinearGradient colors={themeUtils.gradients.primary} style={styles.header}>
+            <LinearGradient colors={[theme.colors.primary, '#7C3AED']} style={styles.header}>
                 <View style={styles.headerContent}>
                     <Text style={styles.headerTitle}>Analytics Dashboard</Text>
                     <Text style={styles.headerSubtitle}>
@@ -457,7 +462,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                         <Ionicons
                             name={tab.icon as any}
                             size={16}
-                            color={activeTab === tab.id ? 'white' : theme.colors.gray}
+                            color={activeTab === tab.id ? 'white' : theme.colors.textSecondary}
                         />
                         <Text style={[
                             styles.tabText,
@@ -746,9 +751,57 @@ const styles = StyleSheet.create({
         height: '100%',
         borderRadius: 2,
     },
-});
 
-// Import theme utils
-import { themeUtils } from '../ui';
+    // Additional styles for text elements
+    listItemTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    listItemSubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+    },
+    featureTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    featureCaption: {
+        fontSize: 12,
+        color: '#6B7280',
+    },
+    memberTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    memberSubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+    },
+    metricTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    cardTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 12,
+    },
+    insightTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    recommendationTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#1F2937',
+        marginBottom: 8,
+    },
+});
 
 export default AnalyticsDashboard;

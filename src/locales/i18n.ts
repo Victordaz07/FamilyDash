@@ -34,7 +34,7 @@ class I18nManager {
         this.currentLanguage = savedLanguage as Language;
       } else {
         // Detect system language - prioritize English
-        const locale = Localization.locale || 'en';
+        const locale = Localization.getLocales()[0]?.languageCode || 'en';
         console.log('Detected locale:', locale);
 
         // More comprehensive Spanish detection
@@ -105,6 +105,12 @@ class I18nManager {
     } catch (error) {
       console.log('Error clearing language preference:', error);
     }
+  }
+
+  public async changeLanguage(language: Language): Promise<void> {
+    this.currentLanguage = language;
+    await this.saveLanguage(language);
+    console.log('Language changed to:', language);
   }
 
   public getCurrentLanguage(): Language {

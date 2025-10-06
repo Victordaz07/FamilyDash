@@ -123,7 +123,7 @@ const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onS
         <View style={[styles.modalContainer, { paddingBottom: insets.bottom }]}>
           {/* Header */}
           <LinearGradient
-            colors={['#667eea', '#764ba2']}
+            colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
             style={styles.modalHeader}
           >
             <Text style={styles.modalTitle}>{translations.title}</Text>
@@ -280,7 +280,7 @@ const NewPenaltyModal: React.FC<NewPenaltyModalProps> = ({ visible, onClose, onS
               onPress={handleSubmit}
             >
               <LinearGradient
-                colors={['#667eea', '#764ba2']}
+                colors={['#667eea', '#764ba2'] as unknown as readonly [string, string, ...string[]]}
                 style={styles.submitButtonGradient}
               >
                 <Ionicons name="add-circle" size={24} color="white" />

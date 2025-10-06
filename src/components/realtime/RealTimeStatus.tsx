@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedButton, AdvancedCard } from '../ui';
+import { useTheme, AdvancedButton, AdvancedCard, themeUtils } from '../ui';
 import { useRealTime } from '../../hooks/useRealTime';
 
 interface RealTimeStatusProps {
@@ -32,7 +32,7 @@ export const RealTimeStatus: React.FC<RealTimeStatusProps> = ({
     const theme = useTheme();
     const { connectionStatus, syncStatus, triggerSync, forceSync } = useRealTime();
     const [showDetails, setShowDetails] = useState(false);
-    const [lastActivity, setLastActivity as unknown] = useState('');
+    const [lastActivity, setLastActivity] = useState('');
 
     // Update activity timestamp
     useEffect(() => {
@@ -50,13 +50,13 @@ export const RealTimeStatus: React.FC<RealTimeStatusProps> = ({
     const getConnectionColor = () => {
         switch (connectionStatus.quality) {
             case 'excellent':
-                return theme.colors.green;
+                return '#10B981';
             case 'good':
-                return theme.colors.blue;
+                return '#3B82F6';
             case 'poor':
-                return theme.colors.orange;
+                return '#F59E0B';
             default:
-                return theme.colors.gray;
+                return '#6B7280';
         }
     };
 
@@ -229,7 +229,7 @@ export const RealTimeStatus: React.FC<RealTimeStatusProps> = ({
             >
                 <View style={[styles.modalContainer, { backgroundColor: theme.colors.background }]}>
                     <LinearGradient
-                        colors={themeUtils.gradients.primary}
+                        colors={['#3B82F6', '#2563EB'] as const}
                         style={styles.modalHeader}
                     >
                         <TouchableOpacity
@@ -520,5 +520,3 @@ const styles = StyleSheet.create({
     },
 });
 
-// Import theme utils
-import { themeUtils } from '../ui';

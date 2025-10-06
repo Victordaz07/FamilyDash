@@ -12,7 +12,7 @@ export interface ImagePickerResult {
 export class ImageService {
   static async requestCameraPermissions(): Promise<boolean> {
     try {
-      const { status } = await Camera.requestCameraPermissionsAsync();
+      const { status } = await Camera.Camera.requestCameraPermissionsAsync();
       return status === 'granted';
     } catch (error) {
       console.error('Error requesting camera permissions:', error);
@@ -142,7 +142,7 @@ export class ImageService {
 
   static validateImageFileSize(fileSizeInBytes?: number): boolean {
     if (!fileSizeInBytes) return true;
-    
+
     const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     return fileSizeInBytes <= maxSizeInBytes;
   }

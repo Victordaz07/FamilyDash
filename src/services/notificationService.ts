@@ -255,8 +255,10 @@ export async function getNotificationToken(): Promise<string | null> {
       return null;
     }
 
-    const token = await Notifications.getExpoPushTokenAsync();
-    return token.data;
+    // Temporarily disabled for Expo Go compatibility
+    // const token = await Notifications.getExpoPushTokenAsync();
+    // return token.data;
+    return null;
   } catch (error) {
     console.error('Error obteniendo token de notificación:', error);
     return null;

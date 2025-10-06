@@ -17,6 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, AdvancedCard, AdvancedButton, AdvancedInput } from '../ui';
+// @ts-ignore: The BackupSyncService module may not have type declarations
 import { BackupSyncService, BackupData, SyncStatus, SyncConflict } from '../services/backup/BackupSyncService';
 
 interface BackupSyncDashboardProps {
@@ -32,7 +33,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
 }) => {
   const theme = useTheme();
   const backupService = BackupSyncService.getInstance();
-  
+
   const [activeTab, setActiveTab] = useState<'overview' | 'backups' | 'sync' | 'conflicts' | 'settings'>('overview');
   const [backups, setBackups] = useState<BackupData[]>([]);
   const [syncStatuses, setSyncStatuses] = useState<SyncStatus[]>([]);
@@ -59,13 +60,13 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
   const loadDashboardData = async () => {
     try {
       setIsLoading(true);
-      
+
       const backupsData = await backupService.getAvailableBackups(familyId);
       const conflictsData = backupService.getConflicts();
-      
+
       setBackups(backupsData);
       setConflicts(conflictsData);
-      
+
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       Alert.alert('Error', 'Failed to load backup sync data');
@@ -94,7 +95,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
   const handleCreateBackup = async () => {
     try {
       setIsLoading(true);
-      
+
       Alert.alert(
         'Create Backup',
         'Include media files and upload to cloud?',
@@ -117,15 +118,15 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
         includeMedia,
         autoUpload: uploadToCloud,
       });
-      
+
       setBackups(prev => [backup, ...prev]);
-      
+
       Alert.alert(
         'Backup Created',
         `Backup ${backup.backupId} created successfully!\nSize: ${Math.round(backup.size / 1024)}KB`,
         [{ text: 'OK' }]
       );
-      
+
     } catch (error) {
       Alert.alert('Error', 'Failed to create backup');
     }
@@ -137,15 +138,15 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
       'This will replace your current data. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Restore', 
+        {
+          text: 'Restore',
           style: 'destructive',
           onPress: async () => {
             const success = await backupService.restoreFromBackup(backupId, {
               preserveCurrent: false,
               mergeStrategy: 'replace',
             });
-            
+
             if (success) {
               Alert.alert('Success', 'Data restored successfully');
               loadDashboardData();
@@ -161,16 +162,16 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
   const handleSyncNow = async () => {
     try {
       setIsLoading(true);
-      
+
       const syncStatus = await backupService.synchronizeData(familyId, userId, true);
       setSyncStatuses(prev => [syncStatus, ...prev]);
-      
+
       Alert.alert(
         'Sync Started',
         `Sync ${syncStatus.syncId} initiated${syncStatus.status === 'completed' ? ' and completed!' : '...'}`,
         [{ text: 'OK' }]
       );
-      
+
     } catch (error) {
       Alert.alert('Error', 'Failed to start synchronization');
     } finally {
@@ -188,7 +189,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
           text: 'Resolve',
           onPress: async () => {
             const success = await backupService.resolveConflict(conflictId, resolution, userId);
-            
+
             if (success) {
               Alert.alert('Success', 'Conflict resolved successfully');
               loadDashboardData();
@@ -218,14 +219,14 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
     const totalBackupSize = backups.reduce((sum, backup) => sum + backup.size, 0);
     const activeSyncs = syncStatuses.filter(s => s.status === 'in_progress').length;
     const pendingConflicts = conflicts.filter(c => c.resolution === 'pending').length;
-    
+
     return (
       <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
         {/* Status Cards */}
         <View style={styles.statusGrid}>
-          <AdvancedCard variant="filled" size="md" style={styles.statusCard}>
+          <AdvancedCard variant="elevated" size="md" style={styles.statusCard}>
             <LinearGradient
-              colors={themeUtils.gradients.primary}
+              colors={themeUtils.gradients.primary as [string, string]}
               style={styles.statusGradient}
             >
               <Ionicons name="save" size={32} color="white" />
@@ -234,9 +235,9 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
             </LinearGradient>
           </AdvancedCard>
 
-          <AdvancedCard variant="filled" size="md" style={styles.statusCard}>
+          <AdvancedCard variant="elevated" size="md" style={styles.statusCard}>
             <LinearGradient
-              colors={themeUtils.gradients.success}
+              colors={themeUtils.gradients.success as [string, string]}
               style={styles.statusGradient}
             >
               <Ionicons name="folder" size={32} color="white" />
@@ -245,9 +246,9 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
             </LinearGradient>
           </AdvancedCard>
 
-          <AdvancedCard variant="filled" size="md" style={styles.statusCard}>
+          <AdvancedCard variant="elevated" size="md" style={styles.statusCard}>
             <LinearGradient
-              colors={themeUtils.gradients.warning}
+              colors={themeUtils.gradients.warning as [string, string]}
               style={styles.statusGradient}
             >
               <Ionicons name="sync" size={32} color="white" />
@@ -256,9 +257,9 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
             </LinearGradient>
           </AdvancedCard>
 
-          <AdvancedCard variant="filled" size="md" style={styles.statusCard}>
+          <AdvancedCard variant="elevated" size="md" style={styles.statusCard}>
             <LinearGradient
-              colors={themeUtils.gradients.error}
+              colors={themeUtils.gradients.error as [string, string]}
               style={styles.statusGradient}
             >
               <Ionicons name="warning" size={32} color="white" />
@@ -271,24 +272,24 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
         {/* Quick Actions */}
         <AdvancedCard variant="outlined" size="lg" style={styles.actionCard}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
-          
+
           <View style={styles.actionGrid}>
             <AdvancedButton
-              variant="filled"
+              variant="primary"
               size="md"
               onPress={handleCreateBackup}
               icon="save"
-              style={styles.actionButton}
+              style={styles.actionGridButton}
             >
               Create Backup
             </AdvancedButton>
-            
+
             <AdvancedButton
               variant="outline"
               size="md"
               onPress={handleSyncNow}
               icon="sync"
-              style={styles.actionButton}
+              style={styles.actionGridButton}
             >
               Sync Now
             </AdvancedButton>
@@ -298,45 +299,45 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
         {/* Settings Summary */}
         <AdvancedCard variant="outlined" size="lg" style={styles.settingsCard}>
           <Text style={styles.sectionTitle}>Current Settings</Text>
-          
+
           <View style={styles.settingItem}>
             <View style={styles.settingContent}>
               <Ionicons name="time" size={20} color={theme.colors.primary} />
               <Text style={theme.typography.textStyles.title}>Auto Backup</Text>
               <Text style={theme.typography.textStyles.caption}>Daily at 2:00 AM</Text>
             </View>
-            <Switch 
-              value={autoBackupEnabled} 
+            <Switch
+              value={autoBackupEnabled}
               onValueChange={setAutoBackupEnabled}
               trackColor={{ false: '#E5E7EB', true: theme.colors.primary }}
               thumbColor={autoBackupEnabled ? 'white' : '#9CA3AF'}
             />
           </View>
-          
+
           <View style={styles.settingItem}>
             <View style={styles.settingContent}>
               <Ionicons name="sync" size={20} color={theme.colors.success} />
               <Text style={theme.typography.textStyles.title}>Auto Sync</Text>
               <Text style={theme.typography.textStyles.caption}>Every 15 minutes</Text>
             </View>
-            <Switch 
-              value={autoSyncEnabled} 
+            <Switch
+              value={autoSyncEnabled}
               onValueChange={setAutoSyncEnabled}
               trackColor={{ false: '#E5E7EB', true: theme.colors.success }}
               thumbColor={autoSyncEnabled ? 'white' : '#9CA3AF'}
             />
           </View>
-          
+
           <View style={styles.settingItem}>
             <View style={styles.settingContent}>
-              <Ionicons name="cloud" size={20} color={theme.colors.info} />
+              <Ionicons name="cloud" size={20} color={theme.colors.secondary} />
               <Text style={theme.typography.textStyles.title}>Cloud Storage</Text>
               <Text style={theme.typography.textStyles.caption}>AWS S3 configured</Text>
             </View>
-            <Switch 
-              value={cloudStorageEnabled} 
+            <Switch
+              value={cloudStorageEnabled}
               onValueChange={setCloudStorageEnabled}
-              trackColor={{ false: '#E5E7EB', true: theme.colors.info }}
+              trackColor={{ false: '#E5E7EB', true: theme.colors.secondary }}
               thumbColor={cloudStorageEnabled ? 'white' : '#9CA3AF'}
             />
           </View>
@@ -364,14 +365,14 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
 
         {backups.length === 0 ? (
           <AdvancedCard variant="outlined" size="lg" style={styles.emptyState}>
-            <Ionicons name="save-outline" size={48} color={theme.colors.gray} />
+            <Ionicons name="save-outline" size={48} color={theme.colors.gray500} />
             <Text style={[theme.typography.textStyles.h3, styles.emptyTitle]}>No Backups Yet</Text>
             <Text style={[theme.typography.textStyles.body, styles.emptySubtitle]}>
               Create your first backup to protect your family data!
             </Text>
-            
+
             <AdvancedButton
-              variant="filled"
+              variant="primary"
               size="lg"
               onPress={handleCreateBackup}
               icon="save"
@@ -393,17 +394,19 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                     Size: {formatBytes(backup.size)} • Compressed: {(backup.compressionRatio * 100).toFixed(0)}%
                   </Text>
                 </View>
-                
+
                 <View style={styles.backupActions}>
                   <AdvancedButton
                     variant="ghost"
                     size="sm"
                     onPress={() => handleRestoreBackup(backup.backupId)}
                     icon="reload"
-                  />
+                  >
+                    Restore
+                  </AdvancedButton>
                 </View>
               </View>
-              
+
               <View style={styles.backupModules}>
                 <Text style={theme.typography.textStyles.caption}>Modules:</Text>
                 <View style={styles.modulesList}>
@@ -437,10 +440,10 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
               Sync Now
             </AdvancedButton>
           </View>
-          
+
           {syncStatuses.length === 0 ? (
             <View style={styles.emptySyncState}>
-              <Ionicons name="sync-outline" size={32} color={theme.colors.gray} />
+              <Ionicons name="sync-outline" size={32} color={theme.colors.gray500} />
               <Text style={[theme.typography.textStyles.body, styles.emptySyncText]}>
                 No recent synchronization activity
               </Text>
@@ -454,22 +457,24 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                   </Text>
                   <View style={[
                     styles.statusBadge,
-                    { backgroundColor: sync.status === 'completed' ? theme.colors.success : 
-                                     sync.status === 'in_progress' ? theme.colors.warning :
-                                     sync.status === 'failed' ? theme.colors.error : theme.colors.gray }
+                    {
+                      backgroundColor: sync.status === 'completed' ? theme.colors.success :
+                        sync.status === 'in_progress' ? theme.colors.warning :
+                          sync.status === 'failed' ? theme.colors.error : theme.colors.gray500
+                    }
                   ]}>
                     <Text style={styles.statusBadgeText}>{sync.status}</Text>
                   </View>
                 </View>
-                
+
                 <Text style={theme.typography.textStyles.body}>
                   Started {formatDate(sync.startedAt)}
                 </Text>
-                
+
                 {sync.status === 'in_progress' && (
                   <View style={styles.progressContainer}>
                     <View style={styles.progressBar}>
-                      <View 
+                      <View
                         style={[
                           styles.progressFill,
                           { width: `${sync.progress}%`, backgroundColor: theme.colors.primary }
@@ -479,7 +484,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                     <Text style={theme.typography.textStyles.caption}>{sync.progress}% complete</Text>
                   </View>
                 )}
-                
+
                 <View style={styles.syncMetrics}>
                   <View style={styles.syncMetric}>
                     <Text style={styles.metricLabel}>New:</Text>
@@ -496,7 +501,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                 </View>
               </AdvancedCard>
             ))
-          ) }
+          )}
         </AdvancedCard>
       </ScrollView>
     );
@@ -507,7 +512,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
       <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
         <AdvancedCard variant="outlined" size="lg" style={styles.conflictsCard}>
           <Text style={styles.sectionTitle}>Data Conflicts</Text>
-          
+
           {conflicts.length === 0 ? (
             <View style={styles.emptyConflictState}>
               <Ionicons name="checkmark-circle" size={32} color={theme.colors.success} />
@@ -524,18 +529,20 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                   </Text>
                   <View style={[
                     styles.conflictTypeBadge,
-                    { backgroundColor: conflict.conflictType === 'data_mismatch' ? theme.colors.warning : 
-                                      conflict.conflictType === 'concurrent_modification' ? theme.colors.error :
-                                      theme.colors.info }
-                  }}>
+                    {
+                      backgroundColor: conflict.conflictType === 'data_mismatch' ? theme.colors.warning :
+                        conflict.conflictType === 'concurrent_modification' ? theme.colors.error :
+                          theme.colors.secondary
+                    }
+                  ]}>
                     <Text style={styles.conflictTypeText}>{conflict.conflictType}</Text>
                   </View>
                 </View>
-                
+
                 <Text style={theme.typography.textStyles.body}>
                   Conflict detected at {formatDate(conflict.localTimestamp)}
                 </Text>
-                
+
                 <View style={styles.conflictActions}>
                   <AdvancedButton
                     variant="outline"
@@ -546,7 +553,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                   >
                     Keep Local
                   </AdvancedButton>
-                  
+
                   <AdvancedButton
                     variant="outline"
                     size="sm"
@@ -556,9 +563,9 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                   >
                     Keep Remote
                   </AdvancedButton>
-                  
+
                   <AdvancedButton
-                    variant="filled"
+                    variant="primary"
                     size="sm"
                     onPress={() => handleResolveConflict(conflict.conflictId, 'merge')}
                     icon="git-merge"
@@ -571,7 +578,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
             ))
           )}
         </AdvancedCard>
-      </ScrollView>
+      </ScrollView >
     );
   };
 
@@ -580,7 +587,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
       <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
         <AdvancedCard variant="outlined" size="lg" style={styles.settingsCard}>
           <Text style={styles.sectionTitle}>Storage Settings</Text>
-          
+
           <AdvancedButton
             variant="outline"
             size="lg"
@@ -590,7 +597,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
           >
             Configure Cloud Storage
           </AdvancedButton>
-          
+
           <AdvancedButton
             variant="outline"
             size="lg"
@@ -600,7 +607,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
           >
             Sync Rules & Frequency
           </AdvancedButton>
-          
+
           <AdvancedButton
             variant="outline"
             size="lg"
@@ -610,7 +617,7 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
           >
             Backup Preferences
           </AdvancedButton>
-          
+
           <AdvancedButton
             variant="outline"
             size="lg"
@@ -620,8 +627,8 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
                 'This will permanently delete all local backups and sync data. Continue?',
                 [
                   { text: 'Cancel', style: 'cancel' },
-                  { 
-                    text: 'Clear All', 
+                  {
+                    text: 'Clear All',
                     style: 'destructive',
                     onPress: () => {
                       // Clear all backup/sync data
@@ -661,12 +668,12 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
-      <LinearGradient colors={themeUtils.gradients.info} style={styles.header}>
+      <LinearGradient colors={themeUtils.gradients.secondary as [string, string]} style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Backup & Sync</Text>
           <Text style={styles.headerSubtitle}>Data Protection & Synchronization</Text>
         </View>
-        
+
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={loadDashboardData} style={styles.actionButton}>
             <Ionicons name="refresh" size={24} color="white" />
@@ -691,10 +698,10 @@ export const BackupSyncDashboard: React.FC<BackupSyncDashboardProps> = ({
             style={[styles.tab, activeTab === tab.id && styles.activeTab]}
             onPress={() => setActiveTab(tab.id as any)}
           >
-            <Ionicons 
-              name={tab.icon as any} 
-              size={16} 
-              color={activeTab === tab.id ? 'white' : theme.colors.gray} 
+            <Ionicons
+              name={tab.icon as any}
+              size={16}
+              color={activeTab === tab.id ? 'white' : theme.colors.gray500}
             />
             <Text style={[
               styles.tabText,
@@ -721,7 +728,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
+
   // Header
   header: {
     paddingTop: 60,
@@ -757,7 +764,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   // Tabs
   tabsContainer: {
     flexDirection: 'row',
@@ -786,7 +793,7 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: 'white',
   },
-  
+
   // Content
   content: {
     flex: 1,
@@ -795,7 +802,7 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
   },
-  
+
   // Status grid
   statusGrid: {
     flexDirection: 'row',
@@ -826,7 +833,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 4,
   },
-  
+
   // Action cards
   actionCard: {
     marginBottom: 20,
@@ -840,10 +847,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  actionButton: {
+  actionGridButton: {
     flex: 1,
   },
-  
+
   // Settings
   settingsCard: {
     marginBottom: 20,
@@ -861,7 +868,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  
+
   // Backups
   backupsHeader: {
     marginBottom: 20,
@@ -912,7 +919,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6B7280',
   },
-  
+
   // Sync
   syncCard: {
     marginBottom: 20,
@@ -962,7 +969,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  
+
   // Conflicts
   conflictsCard: {
     marginBottom: 20,
@@ -994,7 +1001,7 @@ const styles = StyleSheet.create({
   resolveButton: {
     flex: 1,
   },
-  
+
   // Status badges
   statusBadge: {
     paddingHorizontal: 8,
@@ -1007,7 +1014,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textTransform: 'capitalize',
   },
-  
+
   // Empty states
   emptyState: {
     alignItems: 'center',
@@ -1026,7 +1033,7 @@ const styles = StyleSheet.create({
   emptyAction: {
     marginTop: 8,
   },
-  
+
   emptySyncState: {
     alignItems: 'center',
     paddingVertical: 32,
@@ -1036,7 +1043,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginTop: 12,
   },
-  
+
   emptyConflictState: {
     alignItems: 'center',
     paddingVertical: 32,
@@ -1046,7 +1053,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginTop: 12,
   },
-  
+
   // Settings buttons
   settingButton: {
     marginBottom: 12,

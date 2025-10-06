@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedCard, AdvancedButton } from '../../../components/ui';
+import { useTheme, AdvancedCard, AdvancedButton, themeUtils } from '../../../components/ui';
 import { FamilyDashboardService, FamilyDashboardData } from '../FamilyDashboardService';
 
 interface FamilyDashboardProps {
@@ -63,9 +63,9 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
             <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
                 {/* Key Metrics Cards */}
                 <View style={styles.metricsGrid}>
-                    <AdvancedCard variant="filled" size="md" style={styles.metricCard}>
+                    <AdvancedCard variant="elevated" size="md" style={styles.metricCard}>
                         <LinearGradient
-                            colors={themeUtils.gradients.success}
+                            colors={themeUtils.gradients.success as unknown as readonly [string, string, ...string[]]}
                             style={styles.metricGradient}
                         >
                             <Ionicons name="people" size={32} color="white" />
@@ -74,9 +74,9 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                         </LinearGradient>
                     </AdvancedCard>
 
-                    <AdvancedCard variant="filled" size="md" style={styles.metricCard}>
+                    <AdvancedCard variant="elevated" size="md" style={styles.metricCard}>
                         <LinearGradient
-                            colors={themeUtils.gradients.primary}
+                            colors={themeUtils.gradients.primary as unknown as readonly [string, string, ...string[]]}
                             style={styles.metricGradient}
                         >
                             <Ionicons name="checkmark-circle" size={32} color="white" />
@@ -85,9 +85,9 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                         </LinearGradient>
                     </AdvancedCard>
 
-                    <AdvancedCard variant="filled" size="md" style={styles.metricCard}>
+                    <AdvancedCard variant="elevated" size="md" style={styles.metricCard}>
                         <LinearGradient
-                            colors={themeUtils.gradients.warning}
+                            colors={themeUtils.gradients.warning as unknown as readonly [string, string, ...string[]]}
                             style={styles.metricGradient}
                         >
                             <Ionicons name="trophy" size={32} color="white" />
@@ -96,9 +96,9 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                         </LinearGradient>
                     </AdvancedCard>
 
-                    <AdvancedCard variant="filled" size="md" style={styles.metricCard}>
+                    <AdvancedCard variant="elevated" size="md" style={styles.metricCard}>
                         <LinearGradient
-                            colors={themeUtils.gradients.info}
+                            colors={themeUtils.gradients.primary as unknown as readonly [string, string, ...string[]]}
                             style={styles.metricGradient}
                         >
                             <Ionicons name="chatbubbles" size={32} color="white" />
@@ -136,7 +136,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                                     <View
                                         style={[styles.scoreBarFill, {
                                             width: `${dashboardData.metrics.productivityScore}%`,
-                                            backgroundColor: theme.colors.primary,
+                                            backgroundColor: '#6366f1',
                                         }]}
                                     />
                                 </View>
@@ -149,7 +149,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                                     <View
                                         style={[styles.scoreBarFill, {
                                             width: `${dashboardData.metrics.communicationScore}%`,
-                                            backgroundColor: theme.colors.info,
+                                            backgroundColor: '#3B82F6',
                                         }]}
                                     />
                                 </View>
@@ -177,7 +177,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                     <Text style={styles.sectionTitle}>Today's Activity</Text>
                     <View style={styles.activityGrid}>
                         <View style={styles.activityItem}>
-                            <Ionicons name="calendar" size={24} color={theme.colors.info} />
+                            <Ionicons name="calendar" size={24} color="#3B82F6" />
                             <Text style={styles.activityValue}>{dashboardData.activity.totalCalendarEvents}</Text>
                             <Text style={styles.activityLabel}>Events</Text>
                         </View>
@@ -231,7 +231,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                                     {
                                         backgroundColor: member.status === 'online' ? theme.colors.success :
                                             member.status === 'busy' ? theme.colors.error :
-                                                member.status === 'away' ? theme.colors.warning : theme.colors.gray
+                                                member.status === 'away' ? theme.colors.warning : '#6B7280'
                                     }
                                 ]} />
                                 <Text style={[theme.typography.textStyles.caption, styles.statusText]}>
@@ -242,7 +242,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
 
                         <View style={styles.memberMetrics}>
                             <View style={styles.memberMetric}>
-                                <Ionicons name="time" size={16} color={theme.colors.gray} />
+                                <Ionicons name="time" size={16} color="#6B7280" />
                                 <Text style={theme.typography.textStyles.caption}>{member.timeSpent}m today</Text>
                             </View>
 
@@ -266,9 +266,9 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
 
         return (
             <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
-                <AdvancedCard variant="filled" size="lg" style={styles.leaderboardCard}>
+                <AdvancedCard variant="elevated" size="lg" style={styles.leaderboardCard}>
                     <LinearGradient
-                        colors={themeUtils.gradients.primary}
+                        colors={themeUtils.gradients.primary as unknown as readonly [string, string, ...string[]]}
                         style={styles.leaderboardGradient}
                     >
                         <Text style={styles.leaderboardTitle}>Family Leaderboard</Text>
@@ -281,7 +281,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                         <View style={styles.leaderboardRank}>
                             <View style={[
                                 styles.rankBadge,
-                                { backgroundColor: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : theme.colors.gray }
+                                { backgroundColor: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#6B7280' }
                             ]}>
                                 <Text style={styles.rankNumber}>{member.rank}</Text>
                             </View>
@@ -302,12 +302,12 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                             <Ionicons
                                 name={index < 3 ? "trophy" : "medal"}
                                 size={24}
-                                color={index < 3 ? '#FFD700' : theme.colors.gray}
+                                color={index < 3 ? '#FFD700' : '#6B7280'}
                             />
                         </View>
                     </AdvancedCard>
                 ))}
-            </scrollView>
+            </ScrollView>
         );
     };
 
@@ -327,7 +327,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* Header */}
-            <LinearGradient colors={themeUtils.gradients.primary} style={styles.header}>
+            <LinearGradient colors={themeUtils.gradients.primary as unknown as readonly [string, string, ...string[]]} style={styles.header}>
                 <View style={styles.headerContent}>
                     <Text style={styles.headerTitle}>Family Dashboard</Text>
                     <Text style={styles.headerSubtitle}>Advanced Family Management</Text>
@@ -360,7 +360,7 @@ export const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                         <Ionicons
                             name={tab.icon as any}
                             size={16}
-                            color={activeTab === tab.id ? 'white' : theme.colors.gray}
+                            color={activeTab === tab.id ? 'white' : '#6B7280'}
                         />
                         <Text style={[
                             styles.tabText,
@@ -512,11 +512,11 @@ const styles = StyleSheet.create({
     scoreValue: {
         fontSize: 48,
         fontWeight: '700',
-        color: theme.colors.primary,
+        color: '#6366f1',
     },
     scoreLabel: {
         fontSize: 16,
-        color: theme.colors.gray,
+        color: '#6B7280',
         marginTop: 4,
     },
     scoreBreakdown: {
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     scoreItemLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: theme.colors.text,
+        color: '#1f2937',
     },
     scoreBar: {
         height: 8,
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     scoreItemValue: {
         fontSize: 12,
         fontWeight: '600',
-        color: theme.colors.gray,
+        color: '#6B7280',
         textAlign: 'right',
     },
 
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
     },
     activityLabel: {
         fontSize: 12,
-        color: theme.colors.gray,
+        color: '#6B7280',
     },
 
     // Member cards
@@ -586,7 +586,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: theme.colors.primary,
+        backgroundColor: '#6366f1',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -671,12 +671,9 @@ const styles = StyleSheet.create({
     scoreBadge: {
         fontSize: 18,
         fontWeight: '700',
-        color: theme.colors.primary,
+        color: '#6366f1',
         marginBottom: 4,
     },
 });
-
-// Import theme utils
-import { themeUtils } from '../../../components/ui';
 
 export default FamilyDashboard;
