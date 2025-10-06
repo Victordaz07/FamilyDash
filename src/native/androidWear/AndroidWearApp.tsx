@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LinearGradient from 'expo-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AndroidWearManager, WearTile, WearNotification, WearHealthData } from './AndroidWearManager';
 
 interface AndroidWearAppProps {
@@ -37,7 +38,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
           setConnectedDevices(wearManager.connectedDevices);
           setActiveTiles(wearManager.activeTiles);
           setHealthData(wearManager.healthData);
-          
+
           console.log('🤲 Android Wear app initialized');
         }
       } catch (error) {
@@ -93,7 +94,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       };
 
       const success = await wearManager.sendWearNotification(testNotification);
-      
+
       if (success) {
         setNotifications(prev => [testNotification, ...prev]);
         console.log('📱 Test notification sent to Android Wear');
@@ -116,7 +117,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
   // Sync health data
   const syncHealthData = async () => {
     try {
-      const newHealthData = await wearManager.syncHealthData();
+      const newHealthData = await wearManager.syncHealtheData();
       setHealthData(newHealthData);
       console.log('📊 Health data synced from Android Wear');
     } catch (error) {
@@ -145,7 +146,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
         content: 'Family Activities',
         category: 'family_status',
         layout: 'action_tile',
-        data: { 
+        data: {
           customData: 'This is a custom tile',
           backgroundColor: '#34D399',
           textColor: '#FFFFFF',
@@ -156,7 +157,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       };
 
       const success = await wearManager.createTile(customTile);
-      
+
       if (success) {
         setActiveTiles(prev => [customTile, ...prev]);
         console.log('📱 Custom tile created on Android Wear');
@@ -184,14 +185,14 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
   const renderHealthDataCard = (data: WearHealthData, index: number) => (
     <View key={index} style={styles.healthCard}>
       <View style={styles.healthIcon}>
-        <Ionicons 
+        <Ionicons
           name={
             data.dataType === 'steps' ? 'walk' :
-            data.dataType === 'heart_rate' ? 'heart' :
-            data.dataType === 'exercise' ?'fitness' : 'time'
-          } 
-          size={20} 
-          color="#059669" 
+              data.dataType === 'heart_rate' ? 'heart' :
+                data.dataType === 'exercise' ? 'fitness' : 'time'
+          }
+          size={20}
+          color="#059669"
         />
       </View>
       <View style={styles.healthInfo}>
@@ -224,10 +225,10 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       {/* Connection Status */}
       <View style={styles.statusContainer}>
         <View style={styles.statusRow}>
-          <Ionicons 
-            name={isConnected ? "checkmark-circle" : "close-circle"} 
-            size={24} 
-            color={isConnected ? "#10B981" : "#EF4444"} 
+          <Ionicons
+            name={isConnected ? "checkmark-circle" : "close-circle"}
+            size={24}
+            color={isConnected ? "#10B981" : "#EF4444"}
           />
           <View style={styles.statusInfo}>
             <Text style={styles.statusText}>
@@ -245,7 +246,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       {/* Active Tiles Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Active Wear Tiles</Text>
-        
+
         <View style={styles.tilesGrid}>
           {activeTiles.map((tile, index) => (
             <View key={index} style={styles.tileCard}>
@@ -254,16 +255,16 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
                   <Ionicons name="square-outline" size={20} color="#059669" />
                 </View>
                 <Text style={styles.tileTitle}>{tile.title}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.updateButton}
                   onPress={() => updateTile(tile.id)}
                 >
                   <Ionicons name="refresh" size={12} color="#059669" />
                 </TouchableOpacity>
               </View>
-              
+
               <Text style={styles.tileContent}>{tile.content}</Text>
-              
+
               <View style={styles.tileInfo}>
                 <Text style={styles.tileCategory}>
                   {tile.category.replace('_', ' ')}
@@ -272,15 +273,15 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
                   Updates every {tile.updateInterval / 60}min
                 </Text>
               </View>
-              
+
               {tile.layout === 'gauge_tile' && (
                 <View style={styles.tileGauge}>
                   <View style={styles.gaugeBackground}>
-                    <View 
+                    <View
                       style={[
                         styles.gaugeFill,
                         { width: `${tile.data.progress || 75}%` }
-                      ]} 
+                      ]}
                     />
                   </View>
                   <Text style={styles.gaugeText}>
@@ -291,7 +292,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
             </View>
           ))}
         </View>
-        
+
         <TouchableOpacity style={styles.createTileButton} onPress={createCustomTile}>
           <Ionicons name="add-circle" size={20} color="#059669" />
           <Text style={styles.createTileButtonText}>Create Custom Tile</Text>
@@ -308,7 +309,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
               <Text style={styles.syncButtonText}>Sync</Text>
             </TouchableOpacity>
           </View>
-          
+
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.healthContainer}>
               {healthData.map((data, index) => renderHealthDataCard(data, index))}
@@ -320,22 +321,22 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       {/* Wear Controls Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Wear Controls</Text>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={sendTestNotification}>
           <Ionicons name="notifications" size={20} color="#059669" />
           <Text style={styles.controlButtonText}>Send Test Notification</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={startFitnessTracking}>
           <Ionicons name="fitness" size={20} color="#059669" />
           <Text style={styles.controlButtonText}>Start Fitness Tracking</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={testVoiceCommand}>
           <Ionicons name="mic" size={20} color="#059669" />
           <Text style={styles.controlButtonText}>Test Voice Command</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.controlButton} onPress={syncHealthData}>
           <Ionicons name="sync" size={20} color="#059669" />
           <Text style={styles.controlButtonText}>Sync Health Data</Text>
@@ -346,7 +347,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       {voiceCommandResult && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Voice Command Result</Text>
-          
+
           <View style={styles.voiceResultCard}>
             <Ionicons name="chatbubble" size={20} color="#059669" />
             <Text style={styles.voiceResultText}>{voiceCommandResult}</Text>
@@ -358,7 +359,7 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
       {notifications.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Notifications</Text>
-          
+
           {notifications.slice(0, 3).map((notification, index) => (
             <View key={index} style={styles.notificationCard}>
               <View style={styles.notificationHeader}>
@@ -367,13 +368,13 @@ export function AndroidWearApp({ familyId }: AndroidWearAppProps) {
                   {new Date(notification.timestamp).toLocaleTimeString()}
                 </Text>
               </View>
-              
+
               <Text style={styles.notificationMessage}>{notification.message}</Text>
-              
+
               <View style={styles.notificationActions}>
                 {notification.actions.slice(0, 2).map((action, actionIndex) => (
                   <TouchableOpacity key={actionIndex} style={styles.notificationAction}>
-                    <Ionicons name={action.icon} size={12} color="#059669" />
+                    <Ionicons name={action.icon as any} size={12} color="#059669" />
                     <Text style={styles.notificationActionText}>{action.title}</Text>
                   </TouchableOpacity>
                 ))}
@@ -698,5 +699,3 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
 });
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-search_replace

@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import LinearGradient from 'expo-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppleWatchManager, WatchNotification, WatchComplication } from './AppleWatchManager';
 
 interface AppleWatchAppProps {
@@ -16,6 +16,7 @@ interface AppleWatchAppProps {
 }
 
 export function AppleWatchApp({ familyId }: AppleWatchAppProps) {
+  // Apple Watch app component
   const [isConnected, setIsConnected] = useState(false);
   const [complications, setComplications] = useState<WatchComplication[]>([]);
   const [quickActions, setQuickActions] = useState<any[]>([]);

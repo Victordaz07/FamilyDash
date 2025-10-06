@@ -71,9 +71,9 @@ export class AppleWatchManager {
   private isWatchConnected: boolean = false;
   private watchAppsPath: string;
   private complicationsData: WatchComplication[] = [];
-  private quickActions: WatchQuickAction[] = [];
-  private activeWorkouts: WatchWorkout[] = [];
-  
+  private _quickActions: WatchQuickAction[] = [];
+  private _activeWorkouts: WatchWorkout[] = [];
+
   private constructor() {
     this.watchAppsPath = 'src/native/appleWatch/apps';
     this.initializeWatchManager();
@@ -92,19 +92,19 @@ export class AppleWatchManager {
   private async initializeWatchManager(): Promise<void> {
     try {
       console.log('⌚ Initializing Apple Watch Manager');
-      
+
       // Check watch connectivity
       await this.checkWatchConnectivity();
-      
+
       // Load complications
       await this.loadComplications();
-      
+
       // Setup quick actions
       await this.setupQuickActions();
-      
+
       // Register for notifications
       this.registerForWatchNotifications();
-      
+
       console.log('✅ Apple Watch Manager initialized');
     } catch (error) {
       console.error('Error initializing Apple Watch Manager:', error);
@@ -117,10 +117,10 @@ export class AppleWatchManager {
   async checkWatchConnectivity(): Promise<boolean> {
     try {
       console.log('📱 Checking Apple Watch connectivity...');
-      
+
       // Mock connectivity check
       this.isWatchConnected = true; // Simulate connected state
-      
+
       if (this.isWatchConnected) {
         console.log('✅ Apple Watch connected');
         // Start sharing complications
@@ -128,7 +128,7 @@ export class AppleWatchManager {
       } else {
         console.log('❌ Apple Watch not connected');
       }
-      
+
       return this.isWatchConnected;
     } catch (error) {
       console.error('Error checking watch connectivity:', error);
@@ -201,7 +201,7 @@ export class AppleWatchManager {
     goalType: WatchWorkout['goalType'],
     target: number
   ): Promise<WatchWorkout> {
-    
+
     try {
       console.log(`💪 Starting family workout: ${goalType} for ${target}`);
 
@@ -215,7 +215,7 @@ export class AppleWatchManager {
         status: 'active',
       };
 
-      this.activeWorkouts.push(workout);
+      this._activeWorkouts.push(workout);
 
       // Start workout monitoring
       await this.startWorkoutTracking(workout);
@@ -234,7 +234,7 @@ export class AppleWatchManager {
     interactionType: 'complications_tap' | 'notification_action' | 'quick_action' | 'workout_command',
     data: Record<string, any>
   ): Promise<void> {
-    
+
     try {
       console.log(`⌚ Handling watch interaction: ${interactionType}`);
 
@@ -262,7 +262,7 @@ export class AppleWatchManager {
    */
   async configureWatchFace(config: WatchFaceConfig): Promise<void> {
     try {
-        console.log('🎨 Configuring Apple Watch face');
+      console.log('🎨 Configuring Apple Watch face');
 
       // Save configuration
       await AsyncStorage.setItem('watch_face_config', JSON.stringify(config));
@@ -293,7 +293,7 @@ export class AppleWatchManager {
    */
   private async setupQuickActions(): Promise<void> {
     try {
-      this.quickActions = [
+      this._quickActions = [
         {
           id: 'create_task',
           title: 'Create Task',
@@ -347,7 +347,7 @@ export class AppleWatchManager {
     try {
       const complicationsToShare = this.complicationsData;
       console.log(`📊 Sharing ${complicationsToShare.length} complications with Apple Watch`);
-      
+
       // Mock sharing process
       for (const complication of complicationsToShare) {
         console.log(`📈 Sharing complication: ${complication.displayText}`);
@@ -365,9 +365,9 @@ export class AppleWatchManager {
       const queuedNotifications = await AsyncStorage.getItem('queued_watch_notifications') || '[]';
       const notifications = JSON.parse(queuedNotifications);
       notifications.push(notification);
-      
+
       await AsyncStorage.setItem('queued_watch_notifications', JSON.stringify(notifications));
-      
+
       console.log('📋 Notification queued for Apple Watch');
     } catch (error) {
       console.error('Error queueing notification:', error);
@@ -380,13 +380,13 @@ export class AppleWatchManager {
   private async sendToWatchApps(notification: WatchNotification): Promise<void> {
     try {
       console.log(`📱 Sending notification to watch apps: ${notification.category}`);
-      
+
       // Determine target watch app based on notification category
       const targetApp = this.getTargetWatchApp(notification.category);
-      
+
       // Send notification to specific watch app
       await this.sendToSpecificWatchApp(targetApp, notification);
-      
+
     } catch (error) {
       console.error('Error sending to watch apps:', error);
     }
@@ -398,10 +398,10 @@ export class AppleWatchManager {
   private async registerComplication(complication: WatchComplication): Promise<void> {
     try {
       console.log(`📊 Registering complication: ${complication.displayText}`);
-      
+
       // Generate watch complication configuration
       await this.generateComplicationConfiguration(complication);
-      
+
     } catch (error) {
       console.error('Error registering complication:', error);
     }
@@ -425,18 +425,18 @@ export class AppleWatchManager {
     try {
       const notificationRecords = await AsyncStorage.getItem('watch_notification_records') || '[]';
       const records = JSON.parse(notificationRecords);
-      
+
       records.push({
         ...notification,
         sentAt: Date.now(),
         watchConnected: this.isWatchConnected,
       });
-      
+
       // Keep only last 100 records
       if (records.length > 100) {
         records.splice(0, records.length - 100);
       }
-      
+
       await AsyncStorage.setItem('watch_notification_records', JSON.stringify(records));
     } catch (error) {
       console.error('Error saving notification record:', error);
@@ -449,7 +449,7 @@ export class AppleWatchManager {
   private async startWorkoutTracking(workout: WatchWorkout): Promise<void> {
     try {
       console.log(`💪 Starting workout tracking for: ${workout.goalType}`);
-      
+
       // Set up interval to update workout progress
       const updateInterval = setInterval(async () => {
         try {
@@ -458,10 +458,10 @@ export class AppleWatchManager {
           console.error('Error updating workout progress:', error);
         }
       }, 10000); // Update every 10 seconds
-      
+
       // Store interval reference for cleanup
       AsyncStorage.setItem(`workout_interval_${workout.id}`, updateInterval.toString());
-      
+
     } catch (error) {
       console.error('Error starting workout tracking:', error);
     }
@@ -472,22 +472,22 @@ export class AppleWatchManager {
    */
   private async updateWorkoutProgress(workoutId: string): Promise<void> {
     try {
-      const workout = this.activeWorkouts.find(w => w.id === workoutId);
+      const workout = this._activeWorkouts.find(w => w.id === workoutId);
       if (!workout || workout.status !== 'active') return;
-      
+
       // Mock progress update
       workout.current = Math.min(workout.current + Math.random() * 10, workout.target);
-      
+
       // Check if workout is complete
       if (workout.current >= workout.target) {
         workout.status = 'completed';
         workout.endTime = Date.now();
         await this.completeWorkout(workout);
       }
-      
+
       // Update Apple Watch
       await this.sendWorkoutUpdateToWatch(workout);
-      
+
     } catch (error) {
       console.error('Error updating workout progress:', error);
     }
@@ -506,12 +506,12 @@ export class AppleWatchManager {
         progress: workout.current / workout.target,
         status: workout.status,
       };
-      
+
       console.log(`📊 Sending workout update to Apple Watch: ${workoutUpdate.progress.toFixed(2)}%`);
-      
+
       // Mock sending to watch
       await this.sendToSpecificWatchApp('FamilyDashWatch', workoutUpdate);
-      
+
     } catch (error) {
       console.error('Error sending workout update to watch:', error);
     }
@@ -523,7 +523,7 @@ export class AppleWatchManager {
   private async completeWorkout(workout: WatchWorkout): Promise<void> {
     try {
       console.log(`🎉 Workout completed: ${workout.goalType}`);
-      
+
       // Send completion notification to watch
       await this.sendWatchNotification({
         id: `workout_complete_${workout.id}`,
@@ -540,10 +540,10 @@ export class AppleWatchManager {
         ],
         data: { workout },
       });
-      
+
       // Clean up interval
       await this.cleanupWorkoutInterval(workout.id);
-      
+
     } catch (error) {
       console.error('Error completing workout:', error);
     }
@@ -556,11 +556,11 @@ export class AppleWatchManager {
     try {
       const complicationId = data.complicationId;
       const complication = this.complicationsData.find(c => c.id === complicationId);
-      
+
       if (!complication) return;
-      
+
       console.log(`📊 Handling complication tap: ${complication.displayText}`);
-      
+
       // Handle based on complication type
       switch (complication.type) {
         case 'family_status':
@@ -576,7 +576,7 @@ export class AppleWatchManager {
           await this.handlePenaltiesTap();
           break;
       }
-      
+
     } catch (error) {
       console.error('Error handling complication tap:', error);
     }
@@ -589,9 +589,9 @@ export class AppleWatchManager {
     try {
       const notificationId = data.notificationId;
       const actionId = data.actionId;
-      
+
       console.log(`📱 Handling notification action: ${actionId} for ${notificationId}`);
-      
+
       switch (actionId) {
         case 'mark_complete':
           await this.markNotificationComplete(notificationId);
@@ -606,7 +606,7 @@ export class AppleWatchManager {
           await this.sendQuickResponse(data.responseText);
           break;
       }
-      
+
     } catch (error) {
       console.error('Error handling notification action:', error);
     }
@@ -618,12 +618,12 @@ export class AppleWatchManager {
   private async handleQuickActionTap(data: Record<string, any>): Promise<void> {
     try {
       const actionId = data.actionId;
-      const action = this.quickActions.find(a => a.id === actionId);
-      
+      const action = this._quickActions.find(a => a.id === actionId);
+
       if (!action) return;
-      
+
       console.log(`⚡ Handling quick action: ${action.title}`);
-      
+
       switch (action.targetType) {
         case 'create_task':
           await this.openCreateTaskForm(action.parameters);
@@ -638,7 +638,7 @@ export class AppleWatchManager {
           await this.openFamilyStatus(action.parameters);
           break;
       }
-      
+
     } catch (error) {
       console.error('Error handling quick action tap:', error);
     }
@@ -651,12 +651,12 @@ export class AppleWatchManager {
     try {
       const command = data.command;
       const workoutId = data.workoutId;
-      
+
       console.log(`💪 Handling workout command: ${command} for ${workoutId}`);
-      
-      const workout = this.activeWorkouts.find(w => w.id === workoutId);
+
+      const workout = this._activeWorkouts.find(w => w.id === workoutId);
       if (!workout) return;
-      
+
       switch (command) {
         case 'pause':
           workout.status = 'paused';
@@ -670,7 +670,7 @@ export class AppleWatchManager {
           await this.completeWorkout(workout);
           break;
       }
-      
+
     } catch (error) {
       console.error('Error handling workout command:', error);
     }
@@ -682,7 +682,7 @@ export class AppleWatchManager {
   private async generateWatchFaceConfiguration(config: WatchFaceConfig): Promise<void> {
     try {
       console.log('🎨 Generating Apple Watch face configuration');
-      
+
       const watchFaceScript = {
         metadata: {
           version: '1.0',
@@ -695,10 +695,10 @@ export class AppleWatchManager {
         layout: config.layout,
         features: config.features,
       };
-      
+
       // Save configuration script
       await AsyncStorage.setItem('watch_face_script', JSON.stringify(watchFaceScript));
-      
+
     } catch (error) {
       console.error('Error generating watch face configuration:', error);
     }
@@ -718,9 +718,9 @@ export class AppleWatchManager {
         displayImage: complication.displayImage,
         priority: complication.priority,
       };
-      
+
       await AsyncStorage.setItem(`complication_config_${complication.id}`, JSON.stringify(complicationConfig));
-      
+
     } catch (error) {
       console.error('Error generating complication configuration:', error);
     }
@@ -732,10 +732,10 @@ export class AppleWatchManager {
   private async sendToSpecificWatchApp(appName: string, data: any): Promise<void> {
     try {
       console.log(`📱 Sending data to ${appName} watch app`);
-      
+
       // Mock sending to specific watch app
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
     } catch (error) {
       console.error(`Error sending to ${appName} watch app:`, error);
     }
@@ -752,7 +752,7 @@ export class AppleWatchManager {
       penalty_warning: 'notification_slot',
       calendar_event: 'complication',
     };
-    
+
     return slotMap[category] || 'notification_slot';
   }
 
@@ -766,7 +766,7 @@ export class AppleWatchManager {
       high: 'notification_warning',
       critical: 'notification_failure',
     };
-    
+
     return hapticMap[urgency] || 'notification_default';
   }
 
@@ -781,7 +781,7 @@ export class AppleWatchManager {
       penalty_warning: 'FamilyDashWatch',
       calendar_event: 'FamilyDashWatch',
     };
-    
+
     return appMap[category] || 'FamilyDashWatch';
   }
 
@@ -824,15 +824,15 @@ export class AppleWatchManager {
     console.log('➕ Opening create task form');
   }
 
-  private async openAddEventForm(): Promise<void> {
+  private async openAddEventForm(parameters?: any): Promise<void> {
     console.log('📅 Opening add event form');
   }
 
-  private async openQuickMessageForm(): Promise<void> {
+  private async openQuickMessageForm(parameters?: any): Promise<void> {
     console.log('💬 Opening quick message form');
   }
 
-  private async openFamilyStatus(): Promise<void> {
+  private async openFamilyStatus(parameters?: any): Promise<void> {
     console.log('👨‍👩‍👧‍👦 Opening family status');
   }
 
@@ -856,10 +856,10 @@ export class AppleWatchManager {
   }
 
   get quickActions(): WatchQuickAction[] {
-    return this.quickActions;
+    return this._quickActions;
   }
 
   get activeWorkouts(): WatchWorkout[] {
-    return this.activeWorkouts;
+    return this._activeWorkouts;
   }
 }

@@ -3,7 +3,7 @@
  * Exports all Android Wear related components and services
  */
 
-export { default as AndroidWearManager } from './AndroidWearManager';
+export { AndroidWearManager } from './AndroidWearManager';
 export { AndroidWearApp } from './AndroidWearApp';
 
 // Re-export types for external use

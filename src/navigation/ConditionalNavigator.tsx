@@ -52,7 +52,10 @@ const ConditionalNavigator: React.FC = () => {
     // Show Auth screens (Login/Register) when not authenticated  
     if (!user) {
         return (
-            <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+            <AuthStack.Navigator
+                id={undefined}
+                screenOptions={{ headerShown: false }}
+            >
                 <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
                 <AuthStack.Screen name="RegisterScreen" component={RegisterScreen} />
             </AuthStack.Navigator>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, BackHandler, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,6 +16,7 @@ interface SettingsScreenProps {
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   // Enhanced state management
   const { user, logout } = useAuth();
+  const nav = useNavigation();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [deviceRingEnabled, setDeviceRingEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -368,29 +370,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Appearance</Text>
           <SettingItem
-            icon="moon"
-            title="Dark Mode"
-            subtitle="Switch between light and dark theme"
-            rightComponent={
-              <Switch
-                value={darkModeEnabled}
-                onValueChange={handleDarkModeToggle}
-                trackColor={{ false: '#e5e7eb', true: theme.colors.primary }}
-                thumbColor={darkModeEnabled ? '#ffffff' : '#ffffff'}
-              />
-            }
-          />
-          <SettingItem
             icon="color-palette"
-            title="Colors"
-            subtitle="Customize app colors"
-            onPress={() => Alert.alert('Colors', 'Color customization')}
-          />
-          <SettingItem
-            icon="text"
-            title="Text Size"
-            subtitle="Adjust font size"
-            onPress={() => Alert.alert('Text', 'Text size configuration')}
+            title="Appearance Settings"
+            subtitle="Customize theme, colors, and text size"
+            onPress={() => nav.navigate('Appearance' as never)}
           />
         </Card>
 
@@ -401,19 +384,19 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             icon="person"
             title="Profile"
             subtitle="Edit personal information"
-            onPress={() => Alert.alert('Profile', 'Edit profile')}
+            onPress={() => nav.navigate('AccountProfile' as never)}
           />
           <SettingItem
             icon="people"
             title="Family"
             subtitle="Manage family members"
-            onPress={() => Alert.alert('Family', 'Family configuration')}
+            onPress={() => nav.navigate('AccountFamily' as never)}
           />
           <SettingItem
             icon="shield"
             title="Privacy"
             subtitle="Configure privacy and security"
-            onPress={() => Alert.alert('Privacy', 'Privacy configuration')}
+            onPress={() => nav.navigate('AccountPrivacy' as never)}
           />
         </Card>
 
@@ -424,19 +407,19 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             icon="help-circle"
             title="Help"
             subtitle="Help center and FAQ"
-            onPress={() => Alert.alert('Help', 'Help center')}
+            onPress={() => nav.navigate('Help' as never)}
           />
           <SettingItem
             icon="mail"
             title="Contact"
             subtitle="Send feedback or report issues"
-            onPress={() => Alert.alert('Contact', 'Send message')}
+            onPress={() => nav.navigate('Contact' as never)}
           />
           <SettingItem
             icon="information-circle"
             title="About"
             subtitle="Application information"
-            onPress={() => Alert.alert('About', 'FamilyDash v1.0')}
+            onPress={() => nav.navigate('About' as never)}
           />
         </Card>
 

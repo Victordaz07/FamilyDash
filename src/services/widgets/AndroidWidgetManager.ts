@@ -1,24 +1,21 @@
 /**
- * Android Home Screen Widgets Implementation
- * Provides quick access to FamilyDash features from Android home screen
+ * Android Widget Manager for FamilyDash
+ * Manages Android home screen widgets and widget configuration
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import * as React from 'react';
 
-// Widget Types
 export type WidgetType = 'tasks' | 'calendar' | 'goals' | 'penalties' | 'weather' | 'family_stats';
 
 export interface WidgetConfig {
     id: string;
     type: WidgetType;
     title: string;
-    size: 'small' | 'medium' | 'large';
-    position: { x: number; y: number };
     enabled: boolean;
+    size: 'small' | 'medium' | 'large';
+    updateInterval: number; // minutes
     refreshInterval: number; // minutes
+    position: { x: number; y: number };
 }
 
 export interface WidgetData {
@@ -28,28 +25,13 @@ export interface WidgetData {
         overdue: number;
     };
     calendar: {
+        currentWeek: string;
         todayEvents: number;
         upcomingEvents: number;
-        currentWeek: string;
-    };
-    goals: {
-        active: number;
-        completed: number;
-        progress: number;
-    };
-    penalties: {
-        active: number;
-        completed: number;
-        total: number;
     };
     weather: {
         temperature: number;
         condition: string;
-        forecast: Array<{
-            day: string;
-            temp: number;
-            condition: string;
-        }>;
     };
     family_stats: {
         totalMembers: number;
@@ -59,11 +41,19 @@ export interface WidgetData {
     };
 }
 
-// Widget Manager Service
 export class AndroidWidgetManager {
     private static instance: AndroidWidgetManager;
-    private widgets: Map<string, WidgetConfig> = new Map();
-    private widgetData: WidgetData | null = null;
+    private widgets: WidgetConfig[] = [];
+    private widgetData: WidgetData = {
+        tasks: { pending: 5, completed: 3, overdue: 1 },
+        calendar: { currentWeek: 'Week 45', todayEvents: 2, upcomingEvents: 4 },
+        weather: { temperature: 22, condition: 'Sunny' },
+        family_stats: { totalMembers: 4, onlineMembers: 3, messagesToday: 12, connectionScore: 85 }
+    };
+
+    private constructor() {
+        this.initializeDefaultWidgets();
+    }
 
     static getInstance(): AndroidWidgetManager {
         if (!AndroidWidgetManager.instance) {
@@ -72,454 +62,135 @@ export class AndroidWidgetManager {
         return AndroidWidgetManager.instance;
     }
 
-    // Initialize default widgets
-    async initializeDefaultWidgets(): Promise<void> {
-        const defaultWidgets: WidgetConfig[] = [
+    private initializeDefaultWidgets(): void {
+        this.widgets = [
             {
                 id: 'tasks_widget',
                 type: 'tasks',
                 title: 'Family Tasks',
-                size: 'medium',
-                position: { x: 0, y: 0 },
                 enabled: true,
-                refreshInterval: 15
+                size: 'medium',
+                updateInterval: 15,
+                refreshInterval: 15,
+                position: { x: 0, y: 0 }
             },
             {
                 id: 'calendar_widget',
                 type: 'calendar',
                 title: 'Family Calendar',
-                size: 'medium',
-                position: { x: 1, y: 0 },
                 enabled: true,
-                refreshInterval: 30
+                size: 'medium',
+                updateInterval: 30,
+                refreshInterval: 30,
+                position: { x: 1, y: 0 }
             },
             {
                 id: 'weather_widget',
                 type: 'weather',
                 title: 'Weather',
-                size: 'small',
-                position: { x: 0, y: 1 },
                 enabled: true,
-                refreshInterval: 60
+                size: 'small',
+                updateInterval: 60,
+                refreshInterval: 60,
+                position: { x: 0, y: 1 }
             },
             {
                 id: 'family_stats_widget',
                 type: 'family_stats',
                 title: 'Family Stats',
-                size: 'large',
-                position: { x: 0, y: 2 },
                 enabled: true,
-                refreshInterval: 60
+                size: 'large',
+                updateInterval: 10,
+                refreshInterval: 10,
+                position: { x: 1, y: 1 }
             }
         ];
-
-        for (const widget of defaultWidgets) {
-            this.widgets.set(widget.id, widget);
-        }
-
-        await this.refreshAllWidgets();
     }
 
-    // Refresh widget data
-    async refreshAllWidgets(): Promise<void> {
-        try {
-            // Simulate data fetching from stores
-            this.widgetData = {
-                tasks: {
-                    pending: 5,
-                    completed: 12,
-                    overdue: 2
-                },
-                calendar: {
-                    todayEvents: 3,
-                    upcomingEvents: 8,
-                    currentWeek: 'This Week'
-                },
-                goals: {
-                    active: 7,
-                    completed: 4,
-                    progress: 65
-                },
-                penalties: {
-                    active: 1,
-                    completed: 3,
-                    total: 4
-                },
-                weather: {
-                    temperature: 22,
-                    condition: 'Sunny',
-                    forecast: [
-                        { day: 'Mon', temp: 20, condition: 'Cloudy' },
-                        { day: 'Tue', temp: 24, condition: 'Sunny' },
-                        { day: 'Wed', temp: 18, condition: 'Rainy' },
-                        { day: 'Thu', temp: 26, condition: 'Sunny' },
-                        { day: 'Fri', temp: 23, condition: 'Partly Cloudy' }
-                    ]
-                },
-                family_stats: {
-                    totalMembers: 4,
-                    onlineMembers: 3,
-                    messagesToday: 12,
-                    connectionScore: 85
-                }
-            };
-        } catch (error) {
-            console.error('Error refreshing widget data:', error);
-        }
-    }
-
-    // Get widget data
-    getWidgetData(type: WidgetType): any {
-        if (!this.widgetData) return null;
-        return this.widgetData[type];
-    }
-
-    // Update widget configuration
-    updateWidgetConfig(widgetId: string, config: Partial<WidgetConfig>): void {
-        const widget = this.widgets.get(widgetId);
-        if (widget) {
-            this.widgets.set(widgetId, { ...widget, ...config });
-        }
-    }
-
-    // Get all widgets
     getAllWidgets(): WidgetConfig[] {
-        return Array.from(this.widgets.values());
+        return this.widgets;
     }
 
-    // Enable/disable widget
+    getWidgetData(type: string): any {
+        return this.widgetData[type as keyof WidgetData];
+    }
+
     toggleWidget(widgetId: string): void {
-        const widget = this.widgets.get(widgetId);
+        const widget = this.widgets.find(w => w.id === widgetId);
         if (widget) {
             widget.enabled = !widget.enabled;
-            this.widgets.set(widgetId, widget);
+        }
+    }
+
+    updateWidgetData(type: string, data: any): void {
+        if (this.widgetData[type as keyof WidgetData]) {
+            this.widgetData[type as keyof WidgetData] = { ...this.widgetData[type as keyof WidgetData], ...data };
+        }
+    }
+
+    createWidget(config: WidgetConfig): boolean {
+        try {
+            this.widgets.push(config);
+            return true;
+        } catch (error) {
+            console.error('Error creating widget:', error);
+            return false;
+        }
+    }
+
+    deleteWidget(widgetId: string): boolean {
+        try {
+            this.widgets = this.widgets.filter(w => w.id !== widgetId);
+            return true;
+        } catch (error) {
+            console.error('Error deleting widget:', error);
+            return false;
+        }
+    }
+
+    async refreshAllWidgets(): Promise<void> {
+        // Simulate refreshing widget data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // Update widget data with fresh information
+                this.updateWidgetData('tasks', {
+                    pending: Math.floor(Math.random() * 10) + 1,
+                    completed: Math.floor(Math.random() * 15) + 5,
+                    overdue: Math.floor(Math.random() * 3)
+                });
+                this.updateWidgetData('calendar', {
+                    currentWeek: `Week ${Math.floor(Math.random() * 52) + 1}`,
+                    todayEvents: Math.floor(Math.random() * 5),
+                    upcomingEvents: Math.floor(Math.random() * 8) + 2
+                });
+                this.updateWidgetData('weather', {
+                    temperature: Math.floor(Math.random() * 30) + 10,
+                    condition: ['Sunny', 'Cloudy', 'Rainy', 'Partly Cloudy'][Math.floor(Math.random() * 4)]
+                });
+                this.updateWidgetData('family_stats', {
+                    totalMembers: 4,
+                    onlineMembers: Math.floor(Math.random() * 4) + 1,
+                    messagesToday: Math.floor(Math.random() * 20) + 5,
+                    connectionScore: Math.floor(Math.random() * 30) + 70
+                });
+                resolve();
+            }, 1000);
+        });
+    }
+
+    updateWidgetConfig(widgetId: string, config: Partial<WidgetConfig>): void {
+        const widget = this.widgets.find(w => w.id === widgetId);
+        if (widget) {
+            Object.assign(widget, config);
         }
     }
 }
 
-// Widget Components
-export const TasksWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => {
-    if (!data) return null;
-
-    return (
-        <TouchableOpacity style= { styles.widgetContainer } onPress = { onPress } >
-            <LinearGradient
-        colors={ ['#3B82F6', '#1E40AF'] }
-    style = { styles.widgetGradient }
-        >
-        <View style={ styles.widgetHeader }>
-            <Ionicons name="list-outline" size = { 24} color = "white" />
-                <Text style={ styles.widgetTitle }> Tasks </Text>
-                    </View>
-
-                    < View style = { styles.widgetContent } >
-                        <View style={ styles.statRow }>
-                            <Text style={ styles.statNumber }> { data.pending } </Text>
-                                < Text style = { styles.statLabel } > Pending </Text>
-                                    </View>
-                                    < View style = { styles.statRow } >
-                                        <Text style={ styles.statNumber }> { data.completed } </Text>
-                                            < Text style = { styles.statLabel } > Completed </Text>
-                                                </View>
-    {
-        data.overdue > 0 && (
-            <View style={ styles.statRow }>
-                <Text style={ [styles.statNumber, { color: '#EF4444' }] }> { data.overdue } </Text>
-                    < Text style = { styles.statLabel } > Overdue </Text>
-                        </View>
-          )}
-</View>
-    </LinearGradient>
-    </TouchableOpacity>
-  );
-};
-
-export const CalendarWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => {
-    if (!data) return null;
-
-    return (
-        <TouchableOpacity style= { styles.widgetContainer } onPress = { onPress } >
-            <LinearGradient
-        colors={ ['#10B981', '#047857'] }
-    style = { styles.widgetGradient }
-        >
-        <View style={ styles.widgetHeader }>
-            <Ionicons name="calendar-outline" size = { 24} color = "white" />
-                <Text style={ styles.widgetTitle }> Calendar </Text>
-                    </View>
-
-                    < View style = { styles.widgetContent } >
-                        <Text style={ styles.weekText }> { data.currentWeek } </Text>
-                            < View style = { styles.statRow } >
-                                <Text style={ styles.statNumber }> { data.todayEvents } </Text>
-                                    < Text style = { styles.statLabel } > Today </Text>
-                                        </View>
-                                        < View style = { styles.statRow } >
-                                            <Text style={ styles.statNumber }> { data.upcomingEvents } </Text>
-                                                < Text style = { styles.statLabel } > Upcoming </Text>
-                                                    </View>
-                                                    </View>
-                                                    </LinearGradient>
-                                                    </TouchableOpacity>
-  );
-};
-
-export const WeatherWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => {
-    if (!data) return null;
-
-    return (
-        <TouchableOpacity style= { [styles.widgetContainer, styles.smallWidget]} onPress = { onPress } >
-            <LinearGradient
-        colors={ ['#8B5CF6', '#7C3AED'] }
-    style = { styles.widgetGradient }
-        >
-        <View style={ styles.widgetHeader }>
-            <Ionicons name="partly-sunny-outline" size = { 20} color = "white" />
-                <Text style={ styles.widgetTitle }> Weather </Text>
-                    </View>
-
-                    < View style = { styles.widgetContent } >
-                        <Text style={ styles.temperatureText }> { data.temperature }°C </Text>
-                            < Text style = { styles.conditionText } > { data.condition } </Text>
-                                </View>
-                                </LinearGradient>
-                                </TouchableOpacity>
-  );
-};
-
-export const FamilyStatsWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => {
-    if (!data) return null;
-
-    return (
-        <TouchableOpacity style= { [styles.widgetContainer, styles.largeWidget]} onPress = { onPress } >
-            <LinearGradient
-        colors={ ['#F59E0B', '#D97706'] }
-    style = { styles.widgetGradient }
-        >
-        <View style={ styles.widgetHeader }>
-            <Ionicons name="people-outline" size = { 24} color = "white" />
-                <Text style={ styles.widgetTitle }> Family Stats </Text>
-                    </View>
-
-                    < View style = { styles.widgetContent } >
-                        <View style={ styles.statsGrid }>
-                            <View style={ styles.statItem }>
-                                <Text style={ styles.statNumber }> { data.totalMembers } </Text>
-                                    < Text style = { styles.statLabel } > Members </Text>
-                                        </View>
-                                        < View style = { styles.statItem } >
-                                            <Text style={ styles.statNumber }> { data.onlineMembers } </Text>
-                                                < Text style = { styles.statLabel } > Online </Text>
-                                                    </View>
-                                                    < View style = { styles.statItem } >
-                                                        <Text style={ styles.statNumber }> { data.messagesToday } </Text>
-                                                            < Text style = { styles.statLabel } > Messages </Text>
-                                                                </View>
-                                                                < View style = { styles.statItem } >
-                                                                    <Text style={ styles.statNumber }> { data.connectionScore } % </Text>
-                                                                        < Text style = { styles.statLabel } > Connection </Text>
-                                                                            </View>
-                                                                            </View>
-                                                                            </View>
-                                                                            </LinearGradient>
-                                                                            </TouchableOpacity>
-  );
-};
-
-// Widget Configuration Screen
-export const WidgetConfigurationScreen: React.FC = () => {
-    const [widgets, setWidgets] = React.useState<WidgetConfig[]>([]);
-    const widgetManager = AndroidWidgetManager.getInstance();
-
-    React.useEffect(() => {
-        loadWidgets();
-    }, []);
-
-    const loadWidgets = () => {
-        setWidgets(widgetManager.getAllWidgets());
-    };
-
-    const toggleWidget = (widgetId: string) => {
-        widgetManager.toggleWidget(widgetId);
-        loadWidgets();
-    };
-
-    const renderWidget = (widget: WidgetConfig) => {
-        const data = widgetManager.getWidgetData(widget.type);
-
-        switch (widget.type) {
-            case 'tasks':
-                return <TasksWidget data={ data } onPress = {() => { }} />;
-      case 'calendar':
-return <CalendarWidget data={ data } onPress = {() => { }} />;
-      case 'weather':
-return <WeatherWidget data={ data } onPress = {() => { }} />;
-      case 'family_stats':
-return <FamilyStatsWidget data={ data } onPress = {() => { }} />;
-      default:
-return null;
-    }
-  };
-
-return (
-    <View style= { styles.configContainer } >
-    <Text style={ styles.configTitle }> Android Widgets Configuration </Text>
-
-        < View style = { styles.widgetsGrid } >
-        {
-            widgets.map((widget) => (
-                <View key= { widget.id } style = { styles.widgetConfigItem } >
-                <View style={ styles.widgetPreview } >
-                { renderWidget(widget) }
-                </View>
-
-            < View style = { styles.widgetControls } >
-            <Text style={ styles.widgetName } > { widget.title } </Text>
-            < TouchableOpacity
-                style = {
-                    [
-                    styles.toggleButton,
-                    { backgroundColor: widget.enabled ? '#10B981' : '#EF4444' }
-                    ]}
-                onPress = {() => toggleWidget(widget.id)}
-            >
-            <Text style={ styles.toggleText }>
-                { widget.enabled ? 'Enabled' : 'Disabled' }
-                </Text>
-                </TouchableOpacity>
-                </View>
-                </View>
-        ))}
-</View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-    widgetContainer: {
-        borderRadius: 12,
-        overflow: 'hidden',
-        margin: 8,
-    },
-    smallWidget: {
-        width: 120,
-        height: 100,
-    },
-    largeWidget: {
-        width: 200,
-        height: 150,
-    },
-    widgetGradient: {
-        padding: 12,
-        height: '100%',
-    },
-    widgetHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    widgetTitle: {
-        color: 'white',
-        fontSize: 14,
-        fontWeight: '600',
-        marginLeft: 8,
-    },
-    widgetContent: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    statRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    statNumber: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginRight: 8,
-    },
-    statLabel: {
-        color: 'white',
-        fontSize: 12,
-        opacity: 0.8,
-    },
-    weekText: {
-        color: 'white',
-        fontSize: 12,
-        marginBottom: 8,
-        opacity: 0.9,
-    },
-    temperatureText: {
-        color: 'white',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    conditionText: {
-        color: 'white',
-        fontSize: 12,
-        opacity: 0.8,
-    },
-    statsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    statItem: {
-        width: '48%',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    configContainer: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#F9FAFB',
-    },
-    configTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    widgetsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    widgetConfigItem: {
-        width: '48%',
-        backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 12,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    widgetPreview: {
-        marginBottom: 12,
-    },
-    widgetControls: {
-        alignItems: 'center',
-    },
-    widgetName: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    toggleButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-    },
-    toggleText: {
-        color: 'white',
-        fontSize: 12,
-        fontWeight: '600',
-    },
-});
-
+// Default export for the manager
 export default AndroidWidgetManager;
 
+// Placeholder components for now
+export const TasksWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
+export const CalendarWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
+export const WeatherWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
+export const FamilyStatsWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;

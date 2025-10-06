@@ -37,6 +37,19 @@ import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
 import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '../modules/profile/screens';
 import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
 
+// Import Support screens
+import HelpScreen from '../screens/Support/HelpScreen';
+import ContactScreen from '../screens/Support/ContactScreen';
+import AboutScreen from '../screens/Support/AboutScreen';
+
+// Import Account screens
+import AccountProfileScreen from '../screens/Settings/Account/ProfileScreen';
+import AccountFamilyScreen from '../screens/Settings/Account/FamilyScreen';
+import AccountPrivacyScreen from '../screens/Settings/Account/PrivacyScreen';
+
+// Import Appearance screen
+import AppearanceScreen from '../screens/Settings/AppearanceScreen';
+
 // Import Testing & Debug screens
 import FirebaseTestLive from '../screens/FirebaseTestLive';
 import SyncTestingScreen from '../screens/SyncTestingScreen';
@@ -116,6 +129,20 @@ const ProfileStack = () => (
     <Stack.Screen name="HomeManagement" component={HomeManagementScreen as any} />
     <Stack.Screen name="JoinHouse" component={JoinHouseScreen as any} />
     <Stack.Screen name="EditableProfile" component={EditableProfileScreen as any} />
+
+    {/* Support screens */}
+    <Stack.Screen name="Help" component={HelpScreen as any} />
+    <Stack.Screen name="Contact" component={ContactScreen as any} />
+    <Stack.Screen name="About" component={AboutScreen as any} />
+
+    {/* Account screens */}
+    <Stack.Screen name="AccountProfile" component={AccountProfileScreen as any} />
+    <Stack.Screen name="AccountFamily" component={AccountFamilyScreen as any} />
+    <Stack.Screen name="AccountPrivacy" component={AccountPrivacyScreen as any} />
+
+    {/* Appearance screen */}
+    <Stack.Screen name="Appearance" component={AppearanceScreen as any} />
+
     {/* Quick Actions screens temporarily commented for debugging */}
     {/* <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen as any} />
     <Stack.Screen name="Achievements" component={AchievementsScreen as any} />

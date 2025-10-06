@@ -19,7 +19,7 @@ export interface WearTile {
 
 const WearTileLayout = {
   SINGLE_CONTENT: 'single_content',
-  DUAL_CONTENT: 'dual_content', 
+  DUAL_CONTENT: 'dual_content',
   ACTION_TILE: 'action_tile',
   GAUGE_TILE: 'gauge_tile',
 } as const;
@@ -42,7 +42,7 @@ export interface WearComplication {
 const WearComplicationType = {
   SHORT_TEXT: 'short_text',
   LONG_TEXT: 'long_text',
-  SHORT_IMAGE: 'small_image', 
+  SHORT_IMAGE: 'small_image',
   LARGE_IMAGE: 'large_image',
   ICON: 'icon',
   MONOCHROME_IMAGE: 'monochrome_image',
@@ -114,12 +114,12 @@ export class AndroidWearManager {
   private static instance: AndroidWearManager;
   private isWearConnected: boolean = false;
   private wearDevices: string[] = [];
-  private activeTiles: WearTile[] = [];
-  private complications: WearComplication[] = [];
-  private watchFaces: WearWatchFace[] = [];
+  private _activeTiles: WearTile[] = [];
+  private _complications: WearComplication[] = [];
+  private _watchFaces: WearWatchFace[] = [];
   private healthDataCache: WearHealthData[] = [];
   private syncQueue: WearSyncData[] = [];
-  
+
   private constructor() {
     this.initializeWearManager();
   }
@@ -137,25 +137,25 @@ export class AndroidWearManager {
   private async initializeWearManager(): Promise<void> {
     try {
       console.log('🤲 Initializing Android Wear Manager');
-      
+
       // Check Wear OS connectivity
       await this.checkWearConnectivity();
-      
+
       // Initialize tiles
       await this.initializeTiles();
-      
+
       // Setup complications
       await this.setupComplications();
-      
+
       // Setup watch faces
       await this.setupWatchFaces();
-      
+
       // Register for voice commands
       this.registerVoiceCommands();
-      
+
       // Start health data monitoring
       this.startHealthMonitoring();
-      
+
       console.log('✅ Android Wear Manager initialized');
     } catch (error) {
       console.error('Error initializing Android Wear Manager:', error);
@@ -168,26 +168,26 @@ export class AndroidWearManager {
   async checkWearConnectivity(): Promise<boolean> {
     try {
       console.log('📱 Checking Android Wear connectivity...');
-      
+
       // Mock connectivity check
       this.isWearConnected = true; // Simulate connected state
       this.wearDevices = ['Galaxy Watch 4', 'Pixel Watch', 'Wear OS Device'];
-      
+
       if (this.isWearConnected) {
         console.log(`✅ Connected to ${this.wearDevices.length} Wear OS devices`);
-        
+
         // Start data sync
         await this.startDataSync();
-        
+
         // Send tiles to devices
         await this.sendTilesToWear();
-        
+
         // Send complications
         await this.sendComplicationsToWear();
       } else {
         console.log('❌ No Wear OS devices connected');
       }
-      
+
       return this.isWearConnected;
     } catch (error) {
       console.error('Error checking Wear connectivity:', error);
@@ -244,7 +244,7 @@ export class AndroidWearManager {
       await this.validateTileData(tile);
 
       // Add to active tiles
-      this.activeTiles.push(tile);
+      this._activeTiles.push(tile);
 
       // Send tile to devices
       if (this.isWearConnected) {
@@ -267,8 +267,8 @@ export class AndroidWearManager {
    */
   async updateTile(tileId: string, newData: Record<string, any>): Promise<void> {
     try {
-      const tile = this.activeTiles.find(t => t.id === tileId);
-      
+      const tile = this._activeTiles.find(t => t.id === tileId);
+
       if (!tile) {
         throw new Error(`Tile not found: ${tileId}`);
       }
@@ -376,7 +376,7 @@ export class AndroidWearManager {
       await this.syncHealthToCloud(newHealthData);
 
       console.log(`✅ Health data synced: ${newHealthData.length} records`);
-      
+
       return newHealthData;
     } catch (error) {
       console.error('Error syncing health data:', error);
@@ -440,7 +440,7 @@ export class AndroidWearManager {
    */
   private async setupComplications(): Promise<void> {
     try {
-      this.complications = [
+      this._complications = [
         {
           id: 'family_member_count',
           type: 'short_text',
@@ -464,7 +464,7 @@ export class AndroidWearManager {
         },
         {
           id: 'daily_progress',
-          type: 'gauge',
+          type: 'short_text',
           watchFaceComplicationId: 3,
           title: 'Daily Progress',
           content: '75%',
@@ -474,7 +474,7 @@ export class AndroidWearManager {
         },
       ];
 
-      console.log(`📊 Setup ${this.complications.length} complications`);
+      console.log(`📊 Setup ${this._complications.length} complications`);
     } catch (error) {
       console.error('Error setting up complications:', error);
     }
@@ -485,7 +485,7 @@ export class AndroidWearManager {
    */
   private async setupWatchFaces(): Promise<void> {
     try {
-      this.watchFaces = [
+      this._watchFaces = [
         {
           id: 'family_dash_digital',
           name: 'FamilyDash Digital',
@@ -510,7 +510,7 @@ export class AndroidWearManager {
         },
       ];
 
-      console.log(`🎨 Setup ${this.watchFaces.length} watch faces`);
+      console.log(`🎨 Setup ${this._watchFaces.length} watch faces`);
     } catch (error) {
       console.error('Error setting up watch faces:', error);
     }
@@ -522,7 +522,7 @@ export class AndroidWearManager {
   private registerVoiceCommands(): void {
     try {
       console.log('🎤 Registering Wear OS voice commands');
-      
+
       // Mock voice command registration
       const commands = [
         'Hey FamilyDash',
@@ -546,12 +546,12 @@ export class AndroidWearManager {
   private startHealthMonitoring(): void {
     try {
       console.log('📊 Starting health data monitoring');
-      
+
       // Set up interval for health data collection
       setInterval(async () => {
         try {
           if (this.isWearConnected) {
-            await this.syncHealthData();
+            await this.syncHealtheData();
           }
         } catch (error) {
           console.error('Error in health monitoring:', error);
@@ -590,7 +590,7 @@ export class AndroidWearManager {
   private async sendTileToWearDevices(tile: WearTile): Promise<void> {
     try {
       console.log(`📱 Sending tile to Wear devices: ${tile.title}`);
-      
+
       for (const device of this.wearDevices) {
         console.log(`📱 Sending to ${device}: ${tile.title}`);
         await this.sendToWearDevice(device, { type: 'tile', data: tile });
@@ -606,7 +606,7 @@ export class AndroidWearManager {
   private async updateTileOnWearDevices(tile: WearTile): Promise<void> {
     try {
       console.log(`📱 Updating tile on Wear devices: ${tile.title}`);
-      
+
       for (const device of this.wearDevices) {
         console.log(`📱 Updating on ${device}: ${tile.title}`);
         await this.sendToWearDevice(device, { type: 'tile_update', data: tile });
@@ -622,7 +622,7 @@ export class AndroidWearManager {
   private scheduleTileUpdate(tile: WearTile): void {
     try {
       console.log(`⏰ Scheduling tile update: ${tile.title} every ${tile.updateInterval}s`);
-      
+
       // Mock scheduling
       setInterval(() => {
         this.updateTile(tile.id, { lastUpdated: Date.now() });
@@ -639,7 +639,7 @@ export class AndroidWearManager {
     try {
       // Mock voice parsing (in real app would use Android's SpeechRecognizer)
       const command = commandText.toLowerCase();
-      
+
       if (command.includes('create') && command.includes('task')) {
         return 'create_task';
       } else if (command.includes('add') && command.includes('event')) {
@@ -663,7 +663,7 @@ export class AndroidWearManager {
   private async extractCommandParameters(commandText: string, intent: string): Promise<Record<string, any>> {
     try {
       const parameters: Record<string, any> = {};
-      
+
       switch (intent) {
         case 'create_task':
           // Extract task description
@@ -675,13 +675,13 @@ export class AndroidWearManager {
           const eventMatch = commandText.match(/(?:add|create).*?(?:event|appointment)\s*(.+)/i);
           parameters.event = eventMatch ? eventMatch[1] : 'New event';
           break;
-        case 'start_workout';
+        case 'start_workout':
           // Extract exercise type
           const exerciseType = this.extractExerciseType(commandText);
           parameters.exerciseType = exerciseType;
           break;
       }
-      
+
       return parameters;
     } catch (error) {
       console.error('Error extracting command parameters:', error);
@@ -694,7 +694,7 @@ export class AndroidWearManager {
    */
   private extractExerciseType(commandText: string): string {
     const text = commandText.toLowerCase();
-    
+
     if (text.includes('running') || text.includes('run')) {
       return 'running';
     } else if (text.includes('walking') || text.includes('walk')) {
@@ -712,7 +712,7 @@ export class AndroidWearManager {
   private async executeVoiceCommand(intent: string, parameters: Record<string, any>): Promise<string> {
     try {
       console.log(`⚡ Executing Wear voice command: ${intent}`);
-      
+
       switch (intent) {
         case 'create_task':
           return `Task "${parameters.task}" created successfully`;
@@ -738,7 +738,7 @@ export class AndroidWearManager {
   private async sendVoiceResponse(voiceCommand: WearVoiceCommand): Promise<void> {
     try {
       console.log(`🎤 Sending voice response to Wear OS: ${voiceCommand.response}`);
-      
+
       // Send response to all connected devices
       for (const device of this.wearDevices) {
         await this.sendToWearDevice(device, {
@@ -772,9 +772,9 @@ export class AndroidWearManager {
       const queuedNotifications = await AsyncStorage.getItem('queued_wear_notifications') || '[]';
       const notifications = JSON.parse(queuedNotifications);
       notifications.push(notification);
-      
+
       await AsyncStorage.setItem('queued_wear_notifications', JSON.stringify(notifications));
-      
+
       console.log('📋 Notification queued for Wear OS');
     } catch (error) {
       console.error('Error queueing Wear notification:', error);
@@ -788,18 +788,18 @@ export class AndroidWearManager {
     try {
       const records = await AsyncStorage.getItem('wear_notification_records') || '[]';
       const recordList = JSON.parse(records);
-      
+
       recordList.push({
         ...notification,
         sentAt: Date.now(),
         wearConnected: this.isWearConnected,
       });
-      
+
       // Keep only last 100 records
       if (recordList.length > 100) {
         recordList.splice(0, recordList.length - 100);
       }
-      
+
       await AsyncStorage.setItem('wear_notification_records', JSON.stringify(recordList));
     } catch (error) {
       console.error('Error saving Wear notification record:', error);
@@ -812,7 +812,7 @@ export class AndroidWearManager {
   private async startWearFitnessSession(session: any): Promise<void> {
     try {
       console.log(`💪 Starting Wear OS fitness session: ${session.exerciseType}`);
-      
+
       for (const device of this.wearDevices) {
         await this.sendToWearDevice(device, {
           type: 'fitness_session_start',
@@ -893,10 +893,10 @@ export class AndroidWearManager {
   private async syncHealthToCloud(healthData: WearHealthData[]): Promise<void> {
     try {
       console.log(`☁️ Syncing ${healthData.length} health records to cloud`);
-      
+
       // Mock cloud sync
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       console.log('✅ Health data synced to cloud');
     } catch (error) {
       console.error('Error syncing health data to cloud:', error);
@@ -911,7 +911,7 @@ export class AndroidWearManager {
       // Mock confidence calculation
       const baseConfidence = 0.8;
       const textLengthBonus = Math.min(commandText.length / 50, 0.2);
-      
+
       return Math.min(baseConfidence + textLengthBonus, 0.95);
     } catch (error) {
       console.error('Error calculating confidence:', error);
@@ -925,10 +925,10 @@ export class AndroidWearManager {
   private async startDataSync(): Promise<void> {
     try {
       console.log('🔄 Starting Wear OS data sync');
-      
+
       // Mock data sync
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       console.log('✅ Wear OS data sync completed');
     } catch (error) {
       console.error('Error starting data sync:', error);
@@ -940,12 +940,12 @@ export class AndroidWearManager {
    */
   private async sendTilesToWear(): Promise<void> {
     try {
-      console.log(`📱 Sending ${this.activeTiles.length} tiles to Wear OS`);
-      
-      for (const tile of this.activeTiles) {
+      console.log(`📱 Sending ${this._activeTiles.length} tiles to Wear OS`);
+
+      for (const tile of this._activeTiles) {
         await this.sendTileToWearDevices(tile);
       }
-      
+
       console.log('✅ Tiles sent to Wear OS');
     } catch (error) {
       console.error('Error sending tiles to Wear:', error);
@@ -957,15 +957,15 @@ export class AndroidWearManager {
    */
   private async sendComplicationsToWear(): Promise<void> {
     try {
-      console.log(`📊 Sending ${this.complications.length} complications to Wear OS`);
-      
+      console.log(`📊 Sending ${this._complications.length} complications to Wear OS`);
+
       for (const device of this.wearDevices) {
         await this.sendToWearDevice(device, {
           type: 'complications',
-          data: this.complications,
+          data: this._complications,
         });
       }
-      
+
       console.log('✅ Complications sent to Wear OS');
     } catch (error) {
       console.error('Error sending complications to Wear:', error);
@@ -984,15 +984,15 @@ export class AndroidWearManager {
   }
 
   get activeTiles(): WearTile[] {
-    return this.activeTiles;
+    return this._activeTiles;
   }
 
   get complications(): WearComplication[] {
-    return this.complications;
+    return this._complications;
   }
 
   get watchFaces(): WearWatchFace[] {
-    return this.watchFaces;
+    return this._watchFaces;
   }
 
   get healthData(): WearHealthData[] {

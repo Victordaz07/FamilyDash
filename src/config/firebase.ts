@@ -10,7 +10,7 @@ import { getStorage } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import { getAnalytics } from 'firebase/analytics';
 import { getPerformance } from 'firebase/performance';
-import { getMessaging } from 'firebase/messaging';
+// import { getMessaging } from 'firebase/messaging'; // Removed - causes issues in React Native
 
 // Firebase configuration - Replace with your actual config
 const firebaseConfig = {
@@ -64,9 +64,10 @@ if (process.env.NODE_ENV === 'production') {
   performance = getPerformance(app);
 
   // Initialize messaging (only in production and web)
-  if (typeof global !== 'undefined' && global.window) {
-    messaging = getMessaging(app);
-  }
+  // Temporarily disabled - causes issues in React Native
+  // if (typeof global !== 'undefined' && global.window) {
+  //   messaging = getMessaging(app);
+  // }
 }
 
 // Development emulator configuration
@@ -134,14 +135,28 @@ export const callFunction = async (functionName: string, data?: any) => {
 
 // Analytics helpers
 export const trackEvent = (eventName: string, parameters?: any) => {
-  if (analytics) {
-    analytics.logEvent(eventName, parameters);
+  try {
+    if (analytics && typeof analytics.logEvent === 'function') {
+      analytics.logEvent(eventName, parameters);
+    } else {
+      // Fallback: log to console in development
+      console.log(`📊 Analytics Event: ${eventName}`, parameters);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Analytics tracking failed for event: ${eventName}`, error);
   }
 };
 
 export const trackScreen = (screenName: string) => {
-  if (analytics) {
-    analytics.logEvent('screen_view', { screen_name: screenName });
+  try {
+    if (analytics && typeof analytics.logEvent === 'function') {
+      analytics.logEvent('screen_view', { screen_name: screenName });
+    } else {
+      // Fallback: log to console in development
+      console.log(`📊 Screen View: ${screenName}`);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Analytics tracking failed for screen: ${screenName}`, error);
   }
 };
 

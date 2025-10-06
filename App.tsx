@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
-import SimpleAppNavigator from './src/navigation/SimpleAppNavigator';
+import ConditionalNavigator from './src/navigation/ConditionalNavigator';
+import { AuthProvider } from './src/contexts/AuthContext';
+import { useFamilyDashStore } from './src/state/store';
 
-export default function App() {
+function AppContent() {
+  const { initializeApp } = useFamilyDashStore();
+
+  useEffect(() => {
+    // Initialize the main store when the app starts
+    initializeApp();
+  }, [initializeApp]);
+
   return (
     <NavigationContainer>
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <SimpleAppNavigator />
+        <ConditionalNavigator />
       </SafeAreaProvider>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

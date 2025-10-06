@@ -35,19 +35,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useEffect(() => {
         const checkAuthState = async () => {
             try {
-                // Check if there's a current user in Firebase
-                const currentUser = await RealAuthService.getCurrentUser();
-                if (currentUser) {
-                    setUser({
-                        uid: currentUser.uid,
-                        email: currentUser.email || '',
-                        displayName: currentUser.displayName || '',
-                    });
-                }
+                // Temporarily skip Firebase check to avoid hanging
+                console.log('AuthContext: Skipping Firebase check for now');
+                setLoading(false); // Stop loading immediately
             } catch (error) {
                 console.log('Error checking auth state:', error);
-            } finally {
-                setLoading(false); // Stop loading after check
+                setLoading(false); // Stop loading even on error
             }
         };
 

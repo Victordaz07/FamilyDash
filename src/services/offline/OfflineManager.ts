@@ -1,68 +1,52 @@
 /**
- * Advanced Offline Mode Support
- * Provides comprehensive offline functionality with smart synchronization
+ * Offline Manager for FamilyDash
+ * Handles offline data synchronization and conflict resolution
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import { Alert } from 'react-native';
 
-// Types
-export interface OfflineData {
-    tasks: any[];
-    goals: any[];
-    penalties: any[];
-    calendar: any[];
-    safeRoom: any[];
-    profile: any;
-    lastSync: number;
-    version: string;
-}
-
-export interface SyncOperation {
+export interface SyncItem {
     id: string;
     type: 'create' | 'update' | 'delete';
-    collection: string;
     data: any;
     timestamp: number;
-    retryCount: number;
-    maxRetries: number;
+    familyId: string;
+    memberId: string;
+    conflictResolution?: 'manual' | 'automatic';
 }
 
-export interface SyncConflict {
+export interface ConflictItem {
     id: string;
-    collection: string;
     localData: any;
     remoteData: any;
-    conflictType: 'update' | 'delete' | 'create';
-    resolution: 'local' | 'remote' | 'merge' | 'manual';
+    timestamp: number;
+    familyId: string;
+    memberId: string;
+    resolved: boolean;
 }
 
 export interface NetworkStatus {
     isConnected: boolean;
-    isInternetReachable: boolean;
     type: string;
-    strength: number;
+    isInternetReachable: boolean;
 }
 
-// Offline Manager Service
 export class OfflineManager {
     private static instance: OfflineManager;
-    private isOnline: boolean = true;
-    private syncQueue: SyncOperation[] = [];
-    private conflicts: SyncConflict[] = [];
-    private listeners: Array<(status: NetworkStatus) => void> = [];
-    private syncInProgress: boolean = false;
-    private lastSyncTime: number = 0;
-    private syncInterval: NodeJS.Timeout | null = null;
-
-    // Storage keys
-    private readonly STORAGE_KEYS = {
-        OFFLINE_DATA: 'offline_data',
-        SYNC_QUEUE: 'sync_queue',
-        CONFLICTS: 'sync_conflicts',
-        LAST_SYNC: 'last_sync_time',
+    private syncQueue: SyncItem[] = [];
+    private conflicts: ConflictItem[] = [];
+    private networkStatus: NetworkStatus = {
+        isConnected: false,
+        type: 'unknown',
+        isInternetReachable: false,
     };
+    private listeners: Array<(status: NetworkStatus) => void> = [];
+
+    private constructor() {
+        this.initializeNetworkListener();
+        this.loadStoredData();
+    }
 
     static getInstance(): OfflineManager {
         if (!OfflineManager.instance) {
@@ -71,64 +55,173 @@ export class OfflineManager {
         return OfflineManager.instance;
     }
 
-    // Initialize offline manager
-    async initialize(): Promise<void> {
+    private async initializeNetworkListener(): Promise<void> {
         try {
-            // Load existing data
-            await this.loadOfflineData();
-            await this.loadSyncQueue();
-            await this.loadConflicts();
+            // Get initial network state
+            const state = await NetInfo.fetch();
+            this.updateNetworkStatus(state);
 
-            // Setup network monitoring
-            this.setupNetworkMonitoring();
-
-            // Start periodic sync
-            this.startPeriodicSync();
-
-            console.log('OfflineManager initialized successfully');
+            // Listen for network changes
+            NetInfo.addEventListener(state => {
+                this.updateNetworkStatus(state);
+            });
         } catch (error) {
-            console.error('Error initializing OfflineManager:', error);
+            console.error('Error initializing network listener:', error);
         }
     }
 
-    // Network monitoring
-    private setupNetworkMonitoring(): void {
-        NetInfo.addEventListener(state => {
-            const wasOnline = this.isOnline;
-            this.isOnline = state.isConnected && state.isInternetReachable === true;
+    private updateNetworkStatus(state: any): void {
+        const newStatus: NetworkStatus = {
+            isConnected: state.isConnected ?? false,
+            type: state.type ?? 'unknown',
+            isInternetReachable: state.isInternetReachable ?? false,
+        };
 
-            if (!wasOnline && this.isOnline) {
-                // Came back online - trigger sync
-                this.triggerSync();
+        this.networkStatus = newStatus;
+
+        // Notify listeners
+        this.listeners.forEach(listener => listener(newStatus));
+
+        // Auto-sync when connection is restored
+        if (newStatus.isConnected && newStatus.isInternetReachable) {
+            this.performAutoSync();
+        }
+    }
+
+    private async loadStoredData(): Promise<void> {
+        try {
+            // Load sync queue
+            const storedQueue = await AsyncStorage.getItem('offline_sync_queue');
+            if (storedQueue) {
+                this.syncQueue = JSON.parse(storedQueue);
             }
 
-            // Notify listeners
-            const networkStatus: NetworkStatus = {
-                isConnected: state.isConnected,
-                isInternetReachable: state.isInternetReachable === true,
-                type: state.type,
-                strength: this.getNetworkStrength(state),
-            };
+            // Load conflicts
+            const storedConflicts = await AsyncStorage.getItem('offline_conflicts');
+            if (storedConflicts) {
+                this.conflicts = JSON.parse(storedConflicts);
+            }
 
-            this.listeners.forEach(listener => listener(networkStatus));
-        });
-    }
-
-    private getNetworkStrength(state: any): number {
-        // Simulate network strength based on connection type
-        switch (state.type) {
-            case 'wifi': return 90;
-            case 'cellular': return 70;
-            case 'ethernet': return 95;
-            case 'bluetooth': return 30;
-            case 'vpn': return 80;
-            default: return 50;
+            console.log(`📱 Loaded ${this.syncQueue.length} sync items and ${this.conflicts.length} conflicts`);
+        } catch (error) {
+            console.error('Error loading stored data:', error);
         }
     }
 
-    // Add network status listener
+    private async saveStoredData(): Promise<void> {
+        try {
+            await AsyncStorage.setItem('offline_sync_queue', JSON.stringify(this.syncQueue));
+            await AsyncStorage.setItem('offline_conflicts', JSON.stringify(this.conflicts));
+        } catch (error) {
+            console.error('Error saving stored data:', error);
+        }
+    }
+
+    async addToSyncQueue(item: SyncItem): Promise<void> {
+        try {
+            this.syncQueue.push(item);
+            await this.saveStoredData();
+
+            console.log(`📋 Added item to sync queue: ${item.type} ${item.id}`);
+
+            // Try to sync immediately if online
+            if (this.networkStatus.isConnected) {
+                await this.performAutoSync();
+            }
+        } catch (error) {
+            console.error('Error adding to sync queue:', error);
+        }
+    }
+
+    async performAutoSync(): Promise<void> {
+        if (!this.networkStatus.isConnected || this.syncQueue.length === 0) {
+            return;
+        }
+
+        try {
+            console.log(`🔄 Starting auto-sync for ${this.syncQueue.length} items`);
+
+            const itemsToSync = [...this.syncQueue];
+            const successfulItems: string[] = [];
+
+            for (const item of itemsToSync) {
+                try {
+                    await this.syncItem(item);
+                    successfulItems.push(item.id);
+                } catch (error) {
+                    console.error(`Error syncing item ${item.id}:`, error);
+                }
+            }
+
+            // Remove successfully synced items
+            this.syncQueue = this.syncQueue.filter(item => !successfulItems.includes(item.id));
+            await this.saveStoredData();
+
+            console.log(`✅ Auto-sync completed: ${successfulItems.length} items synced`);
+        } catch (error) {
+            console.error('Error during auto-sync:', error);
+        }
+    }
+
+    private async syncItem(item: SyncItem): Promise<void> {
+        // Mock sync implementation
+        console.log(`🔄 Syncing item: ${item.type} ${item.id}`);
+
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Mock success
+        console.log(`✅ Item synced: ${item.id}`);
+    }
+
+    async resolveConflict(conflictId: string, resolution: 'local' | 'remote' | 'merge'): Promise<void> {
+        try {
+            const conflict = this.conflicts.find(c => c.id === conflictId);
+            if (!conflict) {
+                throw new Error(`Conflict not found: ${conflictId}`);
+            }
+
+            console.log(`🔧 Resolving conflict ${conflictId} with resolution: ${resolution}`);
+
+            // Apply resolution
+            let resolvedData: any;
+            switch (resolution) {
+                case 'local':
+                    resolvedData = conflict.localData;
+                    break;
+                case 'remote':
+                    resolvedData = conflict.remoteData;
+                    break;
+                case 'merge':
+                    resolvedData = { ...conflict.localData, ...conflict.remoteData };
+                    break;
+            }
+
+            // Add resolved data to sync queue
+            await this.addToSyncQueue({
+                id: conflictId,
+                type: 'update',
+                data: resolvedData,
+                timestamp: Date.now(),
+                familyId: conflict.familyId,
+                memberId: conflict.memberId,
+            });
+
+            // Mark conflict as resolved
+            conflict.resolved = true;
+            await this.saveStoredData();
+
+            console.log(`✅ Conflict resolved: ${conflictId}`);
+        } catch (error) {
+            console.error('Error resolving conflict:', error);
+            throw error;
+        }
+    }
+
     addNetworkListener(listener: (status: NetworkStatus) => void): () => void {
         this.listeners.push(listener);
+
+        // Return unsubscribe function
         return () => {
             const index = this.listeners.indexOf(listener);
             if (index > -1) {
@@ -137,365 +230,68 @@ export class OfflineManager {
         };
     }
 
-    // Offline data management
-    async saveOfflineData(data: Partial<OfflineData>): Promise<void> {
-        try {
-            const existingData = await this.getOfflineData();
-            const updatedData: OfflineData = {
-                ...existingData,
-                ...data,
-                lastSync: Date.now(),
-                version: '1.3.0',
-            };
-
-            await AsyncStorage.setItem(
-                this.STORAGE_KEYS.OFFLINE_DATA,
-                JSON.stringify(updatedData)
-            );
-        } catch (error) {
-            console.error('Error saving offline data:', error);
-        }
-    }
-
-    async getOfflineData(): Promise<OfflineData> {
-        try {
-            const data = await AsyncStorage.getItem(this.STORAGE_KEYS.OFFLINE_DATA);
-            if (data) {
-                return JSON.parse(data);
-            }
-        } catch (error) {
-            console.error('Error loading offline data:', error);
-        }
-
-        // Return default empty data
-        return {
-            tasks: [],
-            goals: [],
-            penalties: [],
-            calendar: [],
-            safeRoom: [],
-            profile: null,
-            lastSync: 0,
-            version: '1.3.0',
-        };
-    }
-
-    // Sync queue management
-    async addToSyncQueue(operation: Omit<SyncOperation, 'id' | 'timestamp' | 'retryCount'>): Promise<void> {
-        const syncOp: SyncOperation = {
-            ...operation,
-            id: this.generateId(),
-            timestamp: Date.now(),
-            retryCount: 0,
-            maxRetries: 3,
-        };
-
-        this.syncQueue.push(syncOp);
-        await this.saveSyncQueue();
-
-        // Try to sync immediately if online
-        if (this.isOnline) {
-            this.triggerSync();
-        }
-    }
-
-    private async saveSyncQueue(): Promise<void> {
-        try {
-            await AsyncStorage.setItem(
-                this.STORAGE_KEYS.SYNC_QUEUE,
-                JSON.stringify(this.syncQueue)
-            );
-        } catch (error) {
-            console.error('Error saving sync queue:', error);
-        }
-    }
-
-    private async loadSyncQueue(): Promise<void> {
-        try {
-            const data = await AsyncStorage.getItem(this.STORAGE_KEYS.SYNC_QUEUE);
-            if (data) {
-                this.syncQueue = JSON.parse(data);
-            }
-        } catch (error) {
-            console.error('Error loading sync queue:', error);
-        }
-    }
-
-    // Sync operations
-    async triggerSync(): Promise<void> {
-        if (!this.isOnline || this.syncInProgress || this.syncQueue.length === 0) {
-            return;
-        }
-
-        this.syncInProgress = true;
-        console.log('Starting sync process...');
-
-        try {
-            // Process sync queue
-            await this.processSyncQueue();
-
-            // Handle conflicts
-            await this.resolveConflicts();
-
-            // Update last sync time
-            this.lastSyncTime = Date.now();
-            await AsyncStorage.setItem(
-                this.STORAGE_KEYS.LAST_SYNC,
-                this.lastSyncTime.toString()
-            );
-
-            console.log('Sync completed successfully');
-        } catch (error) {
-            console.error('Sync failed:', error);
-        } finally {
-            this.syncInProgress = false;
-        }
-    }
-
-    private async processSyncQueue(): Promise<void> {
-        const operationsToProcess = [...this.syncQueue];
-        const successfulOps: string[] = [];
-        const failedOps: SyncOperation[] = [];
-
-        for (const operation of operationsToProcess) {
-            try {
-                await this.executeSyncOperation(operation);
-                successfulOps.push(operation.id);
-            } catch (error) {
-                console.error(`Sync operation failed:`, error);
-                operation.retryCount++;
-
-                if (operation.retryCount < operation.maxRetries) {
-                    failedOps.push(operation);
-                } else {
-                    console.error(`Operation ${operation.id} exceeded max retries`);
-                }
-            }
-        }
-
-        // Update sync queue
-        this.syncQueue = failedOps;
-        await this.saveSyncQueue();
-
-        // Remove successful operations from queue
-        if (successfulOps.length > 0) {
-            console.log(`Successfully synced ${successfulOps.length} operations`);
-        }
-    }
-
-    private async executeSyncOperation(operation: SyncOperation): Promise<void> {
-        // Simulate API calls based on operation type
-        switch (operation.type) {
-            case 'create':
-                await this.simulateCreateOperation(operation);
-                break;
-            case 'update':
-                await this.simulateUpdateOperation(operation);
-                break;
-            case 'delete':
-                await this.simulateDeleteOperation(operation);
-                break;
-        }
-    }
-
-    private async simulateCreateOperation(operation: SyncOperation): Promise<void> {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Simulate potential conflict
-        if (Math.random() < 0.1) { // 10% chance of conflict
-            throw new Error('Conflict detected during create');
-        }
-    }
-
-    private async simulateUpdateOperation(operation: SyncOperation): Promise<void> {
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        if (Math.random() < 0.15) { // 15% chance of conflict
-            throw new Error('Conflict detected during update');
-        }
-    }
-
-    private async simulateDeleteOperation(operation: SyncOperation): Promise<void> {
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        if (Math.random() < 0.05) { // 5% chance of conflict
-            throw new Error('Conflict detected during delete');
-        }
-    }
-
-    // Conflict resolution
-    private async resolveConflicts(): Promise<void> {
-        for (const conflict of this.conflicts) {
-            try {
-                await this.resolveConflict(conflict);
-            } catch (error) {
-                console.error(`Failed to resolve conflict ${conflict.id}:`, error);
-            }
-        }
-    }
-
-    private async resolveConflict(conflict: SyncConflict): Promise<void> {
-        switch (conflict.resolution) {
-            case 'local':
-                await this.applyLocalResolution(conflict);
-                break;
-            case 'remote':
-                await this.applyRemoteResolution(conflict);
-                break;
-            case 'merge':
-                await this.applyMergeResolution(conflict);
-                break;
-            case 'manual':
-                // Manual resolution - keep conflict for user intervention
-                return;
-        }
-
-        // Remove resolved conflict
-        this.conflicts = this.conflicts.filter(c => c.id !== conflict.id);
-        await this.saveConflicts();
-    }
-
-    private async applyLocalResolution(conflict: SyncConflict): Promise<void> {
-        // Apply local data to remote
-        console.log(`Applying local resolution for conflict ${conflict.id}`);
-    }
-
-    private async applyRemoteResolution(conflict: SyncConflict): Promise<void> {
-        // Apply remote data to local
-        console.log(`Applying remote resolution for conflict ${conflict.id}`);
-    }
-
-    private async applyMergeResolution(conflict: SyncConflict): Promise<void> {
-        // Merge local and remote data intelligently
-        console.log(`Applying merge resolution for conflict ${conflict.id}`);
-    }
-
-    private async saveConflicts(): Promise<void> {
-        try {
-            await AsyncStorage.setItem(
-                this.STORAGE_KEYS.CONFLICTS,
-                JSON.stringify(this.conflicts)
-            );
-        } catch (error) {
-            console.error('Error saving conflicts:', error);
-        }
-    }
-
-    private async loadConflicts(): Promise<void> {
-        try {
-            const data = await AsyncStorage.getItem(this.STORAGE_KEYS.CONFLICTS);
-            if (data) {
-                this.conflicts = JSON.parse(data);
-            }
-        } catch (error) {
-            console.error('Error loading conflicts:', error);
-        }
-    }
-
-    // Periodic sync
-    private startPeriodicSync(): void {
-        // Sync every 5 minutes when online
-        this.syncInterval = setInterval(() => {
-            if (this.isOnline && this.syncQueue.length > 0) {
-                this.triggerSync();
-            }
-        }, 5 * 60 * 1000); // 5 minutes
-    }
-
-    stopPeriodicSync(): void {
-        if (this.syncInterval) {
-            clearInterval(this.syncInterval);
-            this.syncInterval = null;
-        }
-    }
-
-    // Utility methods
-    private generateId(): string {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    }
-
-    // Public API
-    getNetworkStatus(): NetworkStatus {
-        return {
-            isConnected: this.isOnline,
-            isInternetReachable: this.isOnline,
-            type: 'unknown',
-            strength: this.isOnline ? 80 : 0,
-        };
-    }
-
     getSyncQueueLength(): number {
         return this.syncQueue.length;
     }
 
     getConflictsCount(): number {
-        return this.conflicts.length;
+        return this.conflicts.filter(c => !c.resolved).length;
     }
 
     getLastSyncTime(): number {
-        return this.lastSyncTime;
-    }
-
-    isSyncInProgress(): boolean {
-        return this.syncInProgress;
-    }
-
-    // Manual conflict resolution
-    async resolveConflictManually(conflictId: string, resolution: 'local' | 'remote' | 'merge'): Promise<void> {
-        const conflict = this.conflicts.find(c => c.id === conflictId);
-        if (conflict) {
-            conflict.resolution = resolution;
-            await this.resolveConflict(conflict);
+        if (this.syncQueue.length === 0) {
+            return Date.now(); // Return current time if no items to sync
         }
+
+        return Math.min(...this.syncQueue.map(item => item.timestamp));
     }
 
-    // Clear all offline data
-    async clearOfflineData(): Promise<void> {
-        try {
-            await AsyncStorage.multiRemove([
-                this.STORAGE_KEYS.OFFLINE_DATA,
-                this.STORAGE_KEYS.SYNC_QUEUE,
-                this.STORAGE_KEYS.CONFLICTS,
-                this.STORAGE_KEYS.LAST_SYNC,
-            ]);
-
-            this.syncQueue = [];
-            this.conflicts = [];
-            this.lastSyncTime = 0;
-
-            console.log('Offline data cleared successfully');
-        } catch (error) {
-            console.error('Error clearing offline data:', error);
-        }
+    getNetworkStatus(): NetworkStatus {
+        return { ...this.networkStatus };
     }
 
-    // Cleanup
-    destroy(): void {
-        this.stopPeriodicSync();
-        this.listeners = [];
+    getSyncQueue(): SyncItem[] {
+        return [...this.syncQueue];
+    }
+
+    getConflicts(): ConflictItem[] {
+        return [...this.conflicts];
+    }
+
+    async clearSyncQueue(): Promise<void> {
+        this.syncQueue = [];
+        await this.saveStoredData();
+        console.log('🗑️ Sync queue cleared');
+    }
+
+    async clearResolvedConflicts(): Promise<void> {
+        this.conflicts = this.conflicts.filter(c => !c.resolved);
+        await this.saveStoredData();
+        console.log('🗑️ Resolved conflicts cleared');
     }
 }
 
-// Offline Status Component
-export interface OfflineStatusProps {
+// React component for offline status display
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+interface OfflineStatusProps {
     style?: any;
 }
 
 export const OfflineStatus: React.FC<OfflineStatusProps> = ({ style }) => {
-    const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>({
-        isConnected: true,
-        isInternetReachable: true,
-        type: 'wifi',
-        strength: 80,
+    const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
+        isConnected: false,
+        type: 'unknown',
+        isInternetReachable: false,
     });
-    const [syncQueueLength, setSyncQueueLength] = React.useState(0);
-    const [conflictsCount, setConflictsCount] = React.useState(0);
-    const [lastSyncTime, setLastSyncTime] = React.useState(0);
+    const [syncQueueLength, setSyncQueueLength] = useState(0);
+    const [conflictsCount, setConflictsCount] = useState(0);
+    const [lastSyncTime, setLastSyncTime] = useState(0);
 
-    React.useEffect(() => {
-        const offlineManager = OfflineManager.getInstance();
+    const offlineManager = OfflineManager.getInstance();
 
+    useEffect(() => {
         const removeListener = offlineManager.addNetworkListener(setNetworkStatus);
 
         const updateStats = () => {
@@ -556,14 +352,14 @@ export const OfflineStatus: React.FC<OfflineStatusProps> = ({ style }) => {
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        backgroundColor: '#F9FAFB',
+        padding: 12,
+        backgroundColor: 'white',
         borderRadius: 8,
+        marginVertical: 4,
     },
     statusIndicator: {
         width: 8,
@@ -575,16 +371,13 @@ const styles = {
         flex: 1,
     },
     statusText: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: '600',
-        color: '#374151',
+        color: '#1F2937',
     },
     syncText: {
-        fontSize: 10,
+        fontSize: 12,
         color: '#6B7280',
         marginTop: 2,
     },
-};
-
-export default OfflineManager;
-
+});

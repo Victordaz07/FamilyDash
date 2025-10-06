@@ -58,7 +58,7 @@ class RealCalendarService {
       };
 
       const result = await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/activities`,
+        `families/${user.uid}/calendar_activities`,
         activity
       );
 
@@ -80,7 +80,7 @@ class RealCalendarService {
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.updateDocument(
-        `families/${user.uid}/calendar/activities`,
+        `families/${user.uid}/calendar_activities`,
         activityId,
         { ...updates, updatedAt: new Date() }
       );
@@ -98,7 +98,7 @@ class RealCalendarService {
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.deleteDocument(
-        `families/${user.uid}/calendar/activities`,
+        `families/${user.uid}/calendar_activities`,
         activityId
       );
 
@@ -115,7 +115,7 @@ class RealCalendarService {
       if (!user) throw new Error('User not authenticated');
 
       const result = await RealDatabaseService.getDocuments(
-        `families/${user.uid}/calendar/activities`
+        `families/${user.uid}/calendar_activities`
       );
 
       if (!result.success || !result.data) {
@@ -180,7 +180,7 @@ class RealCalendarService {
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/activities/${activityId}/votes`,
+        `families/${user.uid}/calendar_activities/${activityId}/votes`,
         vote
       );
 
@@ -206,7 +206,7 @@ class RealCalendarService {
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/activities/${activityId}/responsibilities`,
+        `families/${user.uid}/calendar_activities/${activityId}/responsibilities`,
         responsibility
       );
 
@@ -231,7 +231,7 @@ class RealCalendarService {
       console.log('🗓️ Setting up calendar real-time subscription for user:', user.uid);
 
       const unsubscribe = RealDatabaseService.listenToCollection<FirebaseActivity>(
-        `families/${user.uid}/calendar/activities`,
+        `families/${user.uid}/calendar_activities`,
         (activities, error) => {
           if (error) {
             console.error('❌ Error in real-time activities subscription:', error);
