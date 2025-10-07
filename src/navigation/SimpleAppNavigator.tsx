@@ -18,6 +18,9 @@ import SafeRoomWrapper from '../modules/safeRoom/screens/SafeRoomWrapper';
 import NewEmotionalEntry from '../modules/safeRoom/screens/NewEmotionalEntry';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import MainHomeScreen from '../screens/MainHomeScreen';
+import SavedLocationsScreen from '../screens/SavedLocationsScreen';
+import FamilySchedulesScreen from '../screens/FamilySchedulesScreen';
 
 // Import Auth screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -152,6 +155,11 @@ const ProfileStack = () => (
     <Stack.Screen name="HomeManagement" component={HomeManagementScreen as any} />
     <Stack.Screen name="JoinHouse" component={JoinHouseScreen as any} />
     <Stack.Screen name="EditableProfile" component={EditableProfileScreen as any} />
+    
+    {/* Family Information Screens */}
+    <Stack.Screen name="MainHome" component={MainHomeScreen as any} />
+    <Stack.Screen name="SavedLocations" component={SavedLocationsScreen as any} />
+    <Stack.Screen name="FamilySchedules" component={FamilySchedulesScreen as any} />
 
     {/* Support screens */}
     <Stack.Screen name="Help" component={HelpScreen as any} />

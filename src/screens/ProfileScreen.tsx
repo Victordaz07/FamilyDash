@@ -303,19 +303,19 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           icon="home"
           title="Main Home"
           subtitle="Family house"
-          onPress={() => Alert.alert('Home', 'Home information')}
+          onPress={() => navigation.navigate('MainHome')}
         />
         <ProfileItem
           icon="location"
           title="Saved Locations"
           subtitle="Frequent places"
-          onPress={() => Alert.alert('Locations', 'Saved places')}
+          onPress={() => navigation.navigate('SavedLocations')}
         />
         <ProfileItem
           icon="time"
           title="Family Schedules"
           subtitle="Routines and schedules"
-          onPress={() => Alert.alert('Schedules', 'Family routines')}
+          onPress={() => navigation.navigate('FamilySchedules')}
         />
       </Card>
 
@@ -323,22 +323,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
       <Card style={styles.section}>
         <Text style={styles.sectionTitle}>App Information</Text>
         <ProfileItem
-          icon="information-circle"
-          title="Version"
-          subtitle="FamilyDash v1.0"
-          onPress={() => Alert.alert('Version', 'FamilyDash v1.0')}
-        />
-        <ProfileItem
-          icon="help-circle"
-          title="Help & Support"
-          subtitle="Help center"
-          onPress={() => Alert.alert('Help', 'Help center')}
-        />
-        <ProfileItem
-          icon="document-text"
-          title="Terms & Privacy"
-          subtitle="App policies"
-          onPress={() => Alert.alert('Terms', 'Privacy policies')}
+          icon="settings"
+          title="Settings & Support"
+          subtitle="App settings, help, and policies"
+          onPress={() => navigation.navigate('Settings')}
         />
       </Card>
 

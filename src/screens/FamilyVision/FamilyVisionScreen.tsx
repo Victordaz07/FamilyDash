@@ -17,15 +17,14 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { useFamily } from "../../contexts/FamilyContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function FamilyVisionScreen({ navigation }: any) {
-    const [goals, setGoals] = useState<any[]>([
-        { id: "1", title: "Family Prayer Time", progress: 75 },
-        { id: "2", title: "Weekly Family Dinner", progress: 60 },
-        { id: "3", title: "Exercise Together", progress: 40 },
-    ]);
+    const { visions, visionsLoading, reflections, reflectionsLoading, familyStats } = useFamily();
+    const { user } = useAuth();
 
     const fadeAnim = new Animated.Value(0);
 
@@ -36,11 +35,6 @@ export default function FamilyVisionScreen({ navigation }: any) {
             useNativeDriver: true,
         }).start();
     }, []);
-
-    const reflections = [
-        { id: "1", text: "This week we prayed together every night 🙏" },
-        { id: "2", text: "We helped Grandma organize her garden 🌿" },
-    ];
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -54,9 +48,9 @@ export default function FamilyVisionScreen({ navigation }: any) {
 
             {/* DASHBOARD */}
             <View style={styles.statsRow}>
-                <VisionStat icon="trophy" label="Goals" value={goals.length} color="#FFD54F" />
+                <VisionStat icon="trophy" label="Goals" value={visions.length} color="#FFD54F" />
                 <VisionStat icon="heart" label="Reflections" value={reflections.length} color="#F48FB1" />
-                <VisionStat icon="sparkles" label="In Progress" value={goals.filter(g => g.progress > 0 && g.progress < 100).length} color="#81C784" />
+                <VisionStat icon="sparkles" label="In Progress" value={visions.filter(v => v.progress > 0 && v.progress < 100).length} color="#81C784" />
             </View>
 
             {/* VISION BOARD */}
@@ -83,7 +77,7 @@ export default function FamilyVisionScreen({ navigation }: any) {
                     <Ionicons name="flag-outline" size={20} color="#6C63FF" />
                     <Text style={styles.sectionTitle}>Goal Tracker</Text>
                 </View>
-                {goals.length === 0 ? (
+                {visions.length === 0 ? (
                     <EmptyState
                         icon="flag"
                         message="No goals yet — start your first family challenge!"
@@ -96,8 +90,8 @@ export default function FamilyVisionScreen({ navigation }: any) {
                         showsHorizontalScrollIndicator={false}
                         style={styles.goalsScrollView}
                     >
-                        {goals.map((item) => (
-                            <GoalCard key={item.id} title={item.title} progress={item.progress} />
+                        {visions.map((vision) => (
+                            <GoalCard key={vision.id} title={vision.title} progress={vision.progress} />
                         ))}
                     </ScrollView>
                 )}
@@ -109,9 +103,9 @@ export default function FamilyVisionScreen({ navigation }: any) {
                     <Ionicons name="leaf-outline" size={20} color="#6C63FF" />
                     <Text style={styles.sectionTitle}>Reflection Corner</Text>
                 </View>
-                {reflections.map((item, index) => (
+                {reflections.map((reflection, index) => (
                     <Animated.View
-                        key={item.id}
+                        key={reflection.id}
                         style={[
                             styles.reflectionCard,
                             {
@@ -125,7 +119,7 @@ export default function FamilyVisionScreen({ navigation }: any) {
                             }
                         ]}
                     >
-                        <Text style={styles.reflectionText}>{item.text}</Text>
+                        <Text style={styles.reflectionText}>{reflection.content}</Text>
                     </Animated.View>
                 ))}
             </View>

@@ -1,0 +1,24 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.outputPath": "out",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.configuration.runtimes": [],
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/android/build": true,
+        "**/android/.gradle": true,
+        "**/android/app/build": true,
+        "**/android/app/.cxx": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/android/build": true,
+        "**/android/.gradle": true
+    }
+}

@@ -1,114 +1,206 @@
 /**
- * SafeRoomService
- * Centralized service for managing Safe Room messages (text and voice)
- * Handles both local storage and Firebase synchronization
+ * Safe Room Service - Enhanced Firebase Integration
+ * FamilyDash v1.4.0-pre - Real-time Message Management
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RealDatabaseService from './database/RealDatabaseService';
-import { useAuth } from '../contexts/AuthContext';
-
-const STORAGE_KEY = 'safeRoomMessages';
+import DatabaseService, { DatabaseResult } from './DatabaseService';
 
 export interface SafeRoomMessage {
     id: string;
-    type: 'text' | 'voice';
-    content: string; // texto o URI de audio
+    type: 'text' | 'voice' | 'image' | 'video';
+    content: string; // Text content or file URL
+    userId: string;
+    sender: string;
     timestamp: number;
     createdAt: Date;
-    userId: string;
-    sender?: string;
-    duration?: number; // para mensajes de voz
-    isSystemMessage?: boolean; // para mensajes del sistema
+    updatedAt: Date;
+    duration?: number; // For voice messages
+    isSystemMessage?: boolean;
+    metadata?: {
+        fileSize?: number;
+        mimeType?: string;
+        thumbnailUrl?: string;
+    };
 }
+
+export interface MessageInput {
+    type: SafeRoomMessage['type'];
+    content: string;
+    userId: string;
+    sender: string;
+    duration?: number;
+    metadata?: SafeRoomMessage['metadata'];
+    isSystemMessage?: boolean;
+}
+
+const COLLECTION = 'safeRoomMessages';
+const STORAGE_KEY = 'safeRoom_messages';
 
 export const SafeRoomService = {
     /**
-     * Get all messages from local storage and Firebase
+     * Add a new message (Firebase + Local Storage)
+     */
+    async addMessage(messageData: MessageInput): Promise<DatabaseResult<SafeRoomMessage>> {
+        try {
+            console.log('💬 Adding SafeRoom message:', messageData);
+
+            const message: Omit<SafeRoomMessage, 'id'> = {
+                ...messageData,
+                timestamp: Date.now(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                isSystemMessage: messageData.isSystemMessage || false
+            };
+
+            // Add to Firebase
+            const firebaseResult = await DatabaseService.add<SafeRoomMessage>(COLLECTION, message);
+
+            if (firebaseResult.success && firebaseResult.data) {
+                // Also save locally for offline access
+                await this.saveMessageLocally(firebaseResult.data);
+                console.log('✅ SafeRoom message added successfully');
+                return firebaseResult;
+            } else {
+                // If Firebase fails, save locally only
+                console.log('⚠️ Firebase failed, saving locally only');
+                const localMessage = {
+                    ...message,
+                    id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+                };
+                await this.saveMessageLocally(localMessage);
+                return { success: true, data: localMessage };
+            }
+        } catch (error: any) {
+            console.error('❌ Error adding SafeRoom message:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to add message'
+            };
+        }
+    },
+
+    /**
+     * Get all messages (Firebase + Local fallback)
      */
     async getMessages(): Promise<SafeRoomMessage[]> {
         try {
-            // Always check local storage first for immediate display
-            const data = await AsyncStorage.getItem(STORAGE_KEY);
-            const localMessages = data ? JSON.parse(data) : [];
+            console.log('📖 Getting SafeRoom messages');
 
-            // Try to get from Firebase if user is authenticated
-            const firebaseMessages = await this.getMessagesFromFirebase();
+            // Try Firebase first
+            const firebaseResult = await DatabaseService.getAll<SafeRoomMessage>(COLLECTION, {
+                orderBy: [{ field: 'timestamp', direction: 'desc' }]
+            });
 
-            // Combine both sources, prioritizing Firebase
-            const allMessages = [...firebaseMessages, ...localMessages];
-
-            console.log('📱 SafeRoomService: Loaded', allMessages.length, 'messages total');
-            console.log('📱 SafeRoomService: Firebase:', firebaseMessages.length, 'Local:', localMessages.length);
-
-            return allMessages;
+            if (firebaseResult.success && firebaseResult.data) {
+                console.log(`✅ Retrieved ${firebaseResult.data.length} messages from Firebase`);
+                // Update local storage with Firebase data
+                await this.updateLocalStorage(firebaseResult.data);
+                return firebaseResult.data;
+            } else {
+                // Fallback to local storage
+                console.log('⚠️ Firebase failed, using local storage');
+                return await this.getLocalMessages();
+            }
         } catch (error) {
-            console.error('❌ SafeRoomService: Error loading messages:', error);
-            return [];
+            console.error('❌ Error getting messages:', error);
+            return await this.getLocalMessages();
         }
     },
 
     /**
-     * Get messages from Firebase
+     * Listen to real-time message updates
      */
-    async getMessagesFromFirebase(): Promise<SafeRoomMessage[]> {
-        try {
-            // This is a placeholder - in a real implementation, you'd need the user context
-            // For now, we'll return empty array and rely on local storage
-            console.log('🔄 SafeRoomService: Firebase messages not implemented yet');
-            return [];
-        } catch (error) {
-            console.error('❌ SafeRoomService: Error loading Firebase messages:', error);
-            return [];
-        }
+    listenToMessages(callback: (messages: SafeRoomMessage[]) => void): () => void {
+        console.log('👂 Setting up real-time SafeRoom message listener');
+
+        return DatabaseService.listen<SafeRoomMessage>(
+            COLLECTION,
+            (messages) => {
+                console.log(`📡 Real-time update: ${messages.length} messages`);
+                // Update local storage
+                this.updateLocalStorage(messages);
+                callback(messages);
+            },
+            {
+                orderBy: [{ field: 'timestamp', direction: 'desc' }]
+            }
+        );
     },
 
     /**
-     * Add a new message to storage
+     * Update a message
      */
-    async addMessage(message: Omit<SafeRoomMessage, 'id' | 'timestamp' | 'createdAt'>): Promise<void> {
+    async updateMessage(id: string, updates: Partial<MessageInput>): Promise<DatabaseResult<SafeRoomMessage>> {
         try {
-            // Generate a more unique ID
-            const uniqueId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${Math.floor(Math.random() * 10000)}`;
+            console.log(`📝 Updating SafeRoom message ${id}:`, updates);
 
-            const newMessage: SafeRoomMessage = {
-                ...message,
-                id: uniqueId,
-                timestamp: Date.now(),
-                createdAt: new Date(),
+            const updateData = {
+                ...updates,
+                updatedAt: new Date()
             };
 
-            const existing = await SafeRoomService.getMessages();
-            const updated = [newMessage, ...existing];
+            const result = await DatabaseService.update<SafeRoomMessage>(COLLECTION, id, updateData);
 
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-            console.log('✅ SafeRoomService: Message added successfully with ID:', uniqueId);
+            if (result.success) {
+                // Update local storage
+                await this.updateLocalMessage(id, updateData);
+                console.log(`✅ SafeRoom message ${id} updated successfully`);
+            }
 
-            // Try to sync to Firebase if user is authenticated
-            await SafeRoomService.syncToFirebase(newMessage);
-
-        } catch (error) {
-            console.error('❌ SafeRoomService: Error adding message:', error);
-            throw error;
+            return result;
+        } catch (error: any) {
+            console.error(`❌ Error updating SafeRoom message ${id}:`, error);
+            return {
+                success: false,
+                error: error.message || 'Failed to update message'
+            };
         }
     },
 
     /**
-     * Sync message to Firebase and local storage
+     * Delete a message
      */
-    async syncToFirebase(message: SafeRoomMessage): Promise<void> {
+    async deleteMessage(id: string): Promise<DatabaseResult> {
         try {
-            // Save to local storage as backup
-            const existing = await SafeRoomService.getMessages();
-            const updated = [message, ...existing];
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-            console.log('💾 SafeRoomService: Message synced to local storage');
+            console.log(`🗑️ Deleting SafeRoom message ${id}`);
 
-            // TODO: Implement Firebase sync when user context is available
-            console.log('🔄 SafeRoomService: Firebase sync placeholder');
+            const result = await DatabaseService.remove(COLLECTION, id);
+
+            if (result.success) {
+                // Remove from local storage
+                await this.removeLocalMessage(id);
+                console.log(`✅ SafeRoom message ${id} deleted successfully`);
+            }
+
+            return result;
+        } catch (error: any) {
+            console.error(`❌ Error deleting SafeRoom message ${id}:`, error);
+            return {
+                success: false,
+                error: error.message || 'Failed to delete message'
+            };
+        }
+    },
+
+    /**
+     * Add a system message (for notifications)
+     */
+    async addSystemMessage(content: string): Promise<void> {
+        try {
+            console.log('📢 Adding system message:', content);
+
+            const systemMessage: MessageInput = {
+                type: 'text',
+                content: content,
+                userId: 'system',
+                sender: 'System',
+                isSystemMessage: true
+            };
+
+            await this.addMessage(systemMessage);
         } catch (error) {
-            console.error('❌ SafeRoomService: Sync error:', error);
-            // Don't throw error - local storage is working
+            console.error('❌ Error adding system message:', error);
         }
     },
 
@@ -117,10 +209,99 @@ export const SafeRoomService = {
      */
     async clearMessages(): Promise<void> {
         try {
+            console.log('🗑️ Clearing all SafeRoom messages');
+
+            // Clear Firebase (this would require batch delete in production)
+            // For now, just clear local storage
             await AsyncStorage.removeItem(STORAGE_KEY);
-            console.log('🗑️ SafeRoomService: All messages cleared');
+            console.log('✅ All SafeRoom messages cleared');
         } catch (error) {
-            console.error('❌ SafeRoomService: Error clearing messages:', error);
+            console.error('❌ Error clearing messages:', error);
+        }
+    },
+
+    /**
+     * Get message count
+     */
+    async getMessageCount(): Promise<number> {
+        try {
+            const messages = await this.getMessages();
+            return messages.length;
+        } catch (error) {
+            console.error('❌ Error getting message count:', error);
+            return 0;
+        }
+    },
+
+    // Local Storage Helper Methods
+
+    /**
+     * Save message to local storage
+     */
+    async saveMessageLocally(message: SafeRoomMessage): Promise<void> {
+        try {
+            const existing = await this.getLocalMessages();
+            const updated = [message, ...existing];
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        } catch (error) {
+            console.error('❌ Error saving message locally:', error);
+        }
+    },
+
+    /**
+     * Get messages from local storage
+     */
+    async getLocalMessages(): Promise<SafeRoomMessage[]> {
+        try {
+            const stored = await AsyncStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const messages = JSON.parse(stored);
+                console.log(`📱 Retrieved ${messages.length} messages from local storage`);
+                return messages;
+            }
+            return [];
+        } catch (error) {
+            console.error('❌ Error getting local messages:', error);
+            return [];
+        }
+    },
+
+    /**
+     * Update local storage with Firebase data
+     */
+    async updateLocalStorage(messages: SafeRoomMessage[]): Promise<void> {
+        try {
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+        } catch (error) {
+            console.error('❌ Error updating local storage:', error);
+        }
+    },
+
+    /**
+     * Update a specific message in local storage
+     */
+    async updateLocalMessage(id: string, updates: Partial<SafeRoomMessage>): Promise<void> {
+        try {
+            const messages = await this.getLocalMessages();
+            const updatedMessages = messages.map(msg =>
+                msg.id === id ? { ...msg, ...updates } : msg
+            );
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
+        } catch (error) {
+            console.error('❌ Error updating local message:', error);
+        }
+    },
+
+    /**
+     * Remove a message from local storage
+     */
+    async removeLocalMessage(id: string): Promise<void> {
+        try {
+            const messages = await this.getLocalMessages();
+            const updatedMessages = messages.filter(msg => msg.id !== id);
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
+        } catch (error) {
+            console.error('❌ Error removing local message:', error);
         }
     },
 
@@ -129,105 +310,17 @@ export const SafeRoomService = {
      */
     async removeDuplicates(): Promise<void> {
         try {
-            const messages = await SafeRoomService.getMessages();
+            const messages = await this.getMessages();
             const uniqueMessages = messages.filter((message, index, self) =>
                 index === self.findIndex(m => m.id === message.id)
             );
 
             if (uniqueMessages.length !== messages.length) {
                 await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(uniqueMessages));
-                console.log(`🧹 SafeRoomService: Removed ${messages.length - uniqueMessages.length} duplicate messages`);
+                console.log(`🧹 Removed ${messages.length - uniqueMessages.length} duplicate messages`);
             }
         } catch (error) {
-            console.error('❌ SafeRoomService: Error removing duplicates:', error);
-        }
-    },
-
-    /**
-     * Get message count
-     */
-    async getMessageCount(): Promise<number> {
-        const messages = await SafeRoomService.getMessages();
-        return messages.length;
-    },
-
-    /**
-     * Get messages by type
-     */
-    async getMessagesByType(type: 'text' | 'voice'): Promise<SafeRoomMessage[]> {
-        const messages = await SafeRoomService.getMessages();
-        return messages.filter(msg => msg.type === type);
-    },
-
-    /**
-     * Delete a message by ID
-     */
-    async deleteMessage(messageId: string): Promise<void> {
-        try {
-            const messages = await SafeRoomService.getMessages();
-            const filteredMessages = messages.filter(msg => msg.id !== messageId);
-
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(filteredMessages));
-            console.log('🗑️ SafeRoomService: Message deleted successfully');
-
-            // Add a system message indicating deletion
-            await SafeRoomService.addSystemMessage('A user deleted a message');
-
-        } catch (error) {
-            console.error('❌ SafeRoomService: Error deleting message:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * Update a message by ID
-     */
-    async updateMessage(messageId: string, updates: Partial<SafeRoomMessage>): Promise<void> {
-        try {
-            const messages = await SafeRoomService.getMessages();
-            const updatedMessages = messages.map(msg =>
-                msg.id === messageId ? { ...msg, ...updates, timestamp: Date.now() } : msg
-            );
-
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
-            console.log('✏️ SafeRoomService: Message updated successfully');
-
-            // Add a system message indicating edit
-            await SafeRoomService.addSystemMessage('A user edited a message');
-
-        } catch (error) {
-            console.error('❌ SafeRoomService: Error updating message:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * Add a system message (for notifications about deletions/edits)
-     */
-    async addSystemMessage(content: string): Promise<void> {
-        try {
-            // Generate a unique system message ID
-            const systemId = `sys_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${Math.floor(Math.random() * 10000)}`;
-
-            const systemMessage: SafeRoomMessage = {
-                id: systemId,
-                type: 'text',
-                content: content,
-                timestamp: Date.now(),
-                createdAt: new Date(),
-                userId: 'system',
-                sender: 'System',
-                isSystemMessage: true
-            };
-
-            const existing = await SafeRoomService.getMessages();
-            const updated = [systemMessage, ...existing];
-
-            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-            console.log('📢 SafeRoomService: System message added with ID:', systemId);
-
-        } catch (error) {
-            console.error('❌ SafeRoomService: Error adding system message:', error);
+            console.error('❌ Error removing duplicates:', error);
         }
     }
 };

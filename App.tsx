@@ -6,6 +6,7 @@ import ConditionalNavigator from './src/navigation/ConditionalNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { SettingsProvider } from './src/contexts/SettingsContext';
+import { FamilyProvider } from './src/contexts/FamilyContext';
 import { useFamilyDashStore } from './src/state/store';
 
 function AppContent() {
@@ -31,7 +32,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <SettingsProvider>
-          <AppContent />
+          <FamilyProvider>
+            <AppContent />
+          </FamilyProvider>
         </SettingsProvider>
       </AuthProvider>
     </ThemeProvider>
