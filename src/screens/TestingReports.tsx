@@ -18,7 +18,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { RealAuthService, RealDatabaseService } from '../services';
 import { errorDetectionService } from '../services/debug/ErrorDetectionService';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useCalendarStore } from '../modules/calendar/store/calendarStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
@@ -55,7 +54,6 @@ const TestingReports: React.FC<TestingReportsProps> = ({ navigation }) => {
 
     const stores = {
         tasks: useTasksStore(),
-        goals: useGoalsStore(),
         penalties: usePenaltiesStore(),
         calendar: useCalendarStore(),
         profile: useProfileStore(),

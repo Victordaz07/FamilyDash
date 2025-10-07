@@ -6,7 +6,6 @@ import { Card, Button, Avatar } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useProfileStore } from '../modules/profile/store/profileStore';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { RealAuthService } from '../services/auth/RealAuthService';
 
@@ -18,7 +17,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   // Real data connections
   const { currentUser, familyHouse, updateProfile } = useProfileStore();
   const { tasks } = useTasksStore();
-  const { goals } = useGoalsStore();
   const { penalties } = usePenaltiesStore();
 
   // Enhanced state management
@@ -35,8 +33,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const userStats = {
     totalTasks: tasks?.length || 0,
     completedTasks: tasks?.filter(task => task.status === 'completed').length || 0,
-    activeGoals: goals?.filter(goal => goal.status === 'active').length || 0,
-    completedGoals: goals?.filter(goal => goal.status === 'completed').length || 0,
     currentStreak: 0,
     totalPoints: 0,
     level: calculateLevel(0),
@@ -78,7 +74,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const handleStatistics = () => {
     Alert.alert('Statistics',
       `Tasks: ${userStats.completedTasks}/${userStats.totalTasks}\n` +
-      `Goals: ${userStats.completedGoals}/${userStats.activeGoals}\n` +
       `Streak: ${userStats.currentStreak} days\n` +
       `Level: ${userStats.level}`
     );

@@ -6,7 +6,6 @@ import { useTranslation } from '../locales/i18n';
 import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
 import { theme } from '../styles/simpleTheme';
 
@@ -72,7 +71,6 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
     // Use specific module stores
     const tasksStore = useTasksStore();
     const penaltiesStore = usePenaltiesStore();
-    const goalsStore = useGoalsStore();
     const familyMembersFromStore = useFamilyStore(state => state.familyMembers);
 
     // Timer state
@@ -97,14 +95,12 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
     const dashboardData = useMemo(() => {
         const activeTasks = (tasksStore.tasks || []).filter((task: any) => task.status !== 'completed');
         const activePenalties = (penaltiesStore.penalties || []).filter((penalty: any) => penalty.isActive);
-        const activeGoals = (goalsStore.goals || []).filter((goal: any) => goal.status === 'active');
 
         return {
             activeTasks,
             activePenalties,
-            activeGoals,
         };
-    }, [tasksStore.tasks, penaltiesStore.penalties, goalsStore.goals]);
+    }, [tasksStore.tasks, penaltiesStore.penalties]);
 
     // Memoized family members processing
     const familyMembers = useMemo(() => {

@@ -6,16 +6,28 @@ import * as Device from 'expo-device';
 const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants &&
   global.__expo.Constants.executionEnvironment === 'storeClient';
 
-if (!isExpoGo) {
-  // Only configure notifications if not in Expo Go
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
+// Additional check for SDK 53+ compatibility
+const isSDK53Plus = typeof global !== 'undefined' && global.__expo &&
+  global.__expo.Constants && global.__expo.Constants.expoVersion &&
+  parseInt(global.__expo.Constants.expoVersion.split('.')[0]) >= 53;
+
+const shouldDisableNotifications = isExpoGo || isSDK53Plus;
+
+if (!shouldDisableNotifications) {
+  // Only configure notifications if not in Expo Go or SDK 53+
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  } catch (error) {
+    console.warn('⚠️ Notifications disabled due to Expo Go compatibility:', error.message);
+  }
 } else {
+  console.warn('⚠️ Notifications disabled - Running in Expo Go or SDK 53+');
   console.log('🔇 Notifications disabled in Expo Go (use development build for push notifications)');
 }
 
@@ -46,9 +58,9 @@ export interface PenaltyNotification {
  * Solicitar permisos de notificación
  */
 export async function requestNotificationPermissions(): Promise<boolean> {
-  // Skip notification setup in Expo Go
-  if (isExpoGo) {
-    console.log('🔇 Skipping notification permissions in Expo Go');
+  // Skip notification setup in Expo Go or SDK 53+
+  if (shouldDisableNotifications) {
+    console.log('🔇 Skipping notification permissions in Expo Go or SDK 53+');
     return false;
   }
 

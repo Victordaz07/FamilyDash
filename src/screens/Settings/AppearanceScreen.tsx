@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -6,102 +6,29 @@ import {
     StyleSheet,
     ScrollView,
     Alert,
-    Dimensions,
-    Platform
+    Dimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useColorScheme } from 'react-native';
+import { useTheme, useThemeColors, useThemeFonts, useThemeGradient, colorThemes, fontSizeThemes } from '../../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-type ThemeMode = 'light' | 'dark' | 'auto';
-
-interface ColorOption {
-    name: string;
-    value: string;
-    gradient: string[];
-}
-
-interface FontSizeOption {
-    label: string;
-    size: number;
-    description: string;
-}
-
-const colorOptions: ColorOption[] = [
-    { name: 'Purple', value: '#667eea', gradient: ['#667eea', '#764ba2'] },
-    { name: 'Blue', value: '#3b82f6', gradient: ['#3b82f6', '#1d4ed8'] },
-    { name: 'Green', value: '#4ade80', gradient: ['#4ade80', '#22c55e'] },
-    { name: 'Orange', value: '#f59e0b', gradient: ['#f59e0b', '#d97706'] },
-    { name: 'Pink', value: '#ec4899', gradient: ['#ec4899', '#be185d'] },
-    { name: 'Red', value: '#ef4444', gradient: ['#ef4444', '#dc2626'] },
-];
-
-const fontSizeOptions: FontSizeOption[] = [
-    { label: 'Small', size: 14, description: 'Compact' },
-    { label: 'Medium', size: 16, description: 'Default' },
-    { label: 'Large', size: 18, description: 'Comfortable' },
-    { label: 'Extra Large', size: 20, description: 'Easy to read' },
-];
-
 export default function AppearanceScreen() {
     const navigation = useNavigation();
-    const systemColorScheme = useColorScheme();
+    const { theme, setThemeMode, setColorTheme, setFontSizeTheme, resetTheme } = useTheme();
+    const colors = useThemeColors();
+    const fonts = useThemeFonts();
+    const themeGradient = useThemeGradient();
 
-    const [theme, setTheme] = useState<ThemeMode>('auto');
-    const [accentColor, setAccentColor] = useState(colorOptions[0]);
-    const [fontSize, setFontSize] = useState(fontSizeOptions[1]);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // Ensure gradient has at least 2 colors for LinearGradient
+    const gradient = themeGradient.length >= 2
+        ? themeGradient as [string, string, ...string[]]
+        : ['#667eea', '#764ba2'] as [string, string];
 
-    // Load saved settings
-    useEffect(() => {
-        loadSettings();
-    }, []);
-
-    // Update dark mode when theme changes
-    useEffect(() => {
-        const darkMode = theme === 'dark' || (theme === 'auto' && systemColorScheme === 'dark');
-        setIsDarkMode(darkMode);
-    }, [theme, systemColorScheme]);
-
-    const loadSettings = async () => {
-        try {
-            const savedTheme = await AsyncStorage.getItem('appearance_theme');
-            const savedColor = await AsyncStorage.getItem('appearance_accent_color');
-            const savedFontSize = await AsyncStorage.getItem('appearance_font_size');
-
-            if (savedTheme) {
-                setTheme(savedTheme as ThemeMode);
-            }
-            if (savedColor) {
-                const color = colorOptions.find(c => c.value === savedColor);
-                if (color) setAccentColor(color);
-            }
-            if (savedFontSize) {
-                const size = fontSizeOptions.find(f => f.size === parseInt(savedFontSize));
-                if (size) setFontSize(size);
-            }
-        } catch (error) {
-            console.error('Error loading appearance settings:', error);
-        }
-    };
-
-    const saveSettings = async (key: string, value: string) => {
-        try {
-            await AsyncStorage.setItem(key, value);
-        } catch (error) {
-            console.error('Error saving appearance settings:', error);
-        }
-    };
-
-    const handleThemeChange = (newTheme: ThemeMode) => {
-        setTheme(newTheme);
-        saveSettings('appearance_theme', newTheme);
-
-        // Show feedback
+    const handleThemeChange = async (newTheme: 'light' | 'dark' | 'auto') => {
+        await setThemeMode(newTheme);
         Alert.alert(
             'Theme Updated',
             `Theme changed to ${newTheme === 'auto' ? 'Auto (System)' : newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
@@ -109,10 +36,8 @@ export default function AppearanceScreen() {
         );
     };
 
-    const handleColorChange = (color: ColorOption) => {
-        setAccentColor(color);
-        saveSettings('appearance_accent_color', color.value);
-
+    const handleColorChange = async (color: typeof colorThemes[0]) => {
+        await setColorTheme(color);
         Alert.alert(
             'Color Updated',
             `Accent color changed to ${color.name}`,
@@ -120,10 +45,8 @@ export default function AppearanceScreen() {
         );
     };
 
-    const handleFontSizeChange = (size: FontSizeOption) => {
-        setFontSize(size);
-        saveSettings('appearance_font_size', size.size.toString());
-
+    const handleFontSizeChange = async (size: typeof fontSizeThemes[0]) => {
+        await setFontSizeTheme(size);
         Alert.alert(
             'Text Size Updated',
             `Font size changed to ${size.label}`,
@@ -131,25 +54,35 @@ export default function AppearanceScreen() {
         );
     };
 
-    const handlePreview = () => {
+    const handleReset = async () => {
         Alert.alert(
-            'Preview Mode',
-            'This is how your text will look with the current settings.',
-            [{ text: 'OK' }]
+            'Reset Settings',
+            'Are you sure you want to reset all appearance settings to default?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Reset',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await resetTheme();
+                        Alert.alert('Reset Complete', 'All appearance settings have been reset to default.');
+                    }
+                }
+            ]
         );
     };
 
     const themeOptions = [
-        { key: 'light' as ThemeMode, label: 'Light', icon: 'sunny', description: 'Always light theme' },
-        { key: 'dark' as ThemeMode, label: 'Dark', icon: 'moon', description: 'Always dark theme' },
-        { key: 'auto' as ThemeMode, label: 'Auto', icon: 'phone-portrait', description: 'Follow system' }
+        { key: 'light' as const, label: 'Light', icon: 'sunny', description: 'Always light theme' },
+        { key: 'dark' as const, label: 'Dark', icon: 'moon', description: 'Always dark theme' },
+        { key: 'auto' as const, label: 'Auto', icon: 'phone-portrait', description: 'Follow system' }
     ];
 
     return (
-        <View style={[styles.container, { backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc' }]}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Header */}
             <LinearGradient
-                colors={accentColor.gradient}
+                colors={gradient}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -171,19 +104,19 @@ export default function AppearanceScreen() {
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Theme Selection */}
-                <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? '#1e293b' : 'white' }]}>
+                <View style={[styles.sectionContainer, { backgroundColor: colors.surface }]}>
                     <View style={styles.sectionHeader}>
                         <LinearGradient
-                            colors={accentColor.gradient}
+                            colors={gradient}
                             style={styles.sectionIconContainer}
                         >
                             <Ionicons name="color-palette" size={24} color="white" />
                         </LinearGradient>
                         <View style={styles.sectionInfo}>
-                            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#f1f5f9' : '#1e293b' }]}>
+                            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fonts.h3 }]}>
                                 Theme
                             </Text>
-                            <Text style={[styles.sectionDescription, { color: isDarkMode ? '#94a3b8' : '#64748b' }]}>
+                            <Text style={[styles.sectionDescription, { color: colors.textSecondary, fontSize: fonts.body }]}>
                                 Choose your preferred theme
                             </Text>
                         </View>
@@ -195,14 +128,14 @@ export default function AppearanceScreen() {
                                 key={option.key}
                                 style={[
                                     styles.themeOption,
-                                    theme === option.key && styles.themeOptionSelected,
-                                    { backgroundColor: isDarkMode ? '#334155' : '#f1f5f9' }
+                                    theme.mode === option.key && styles.themeOptionSelected,
+                                    { backgroundColor: colors.border }
                                 ]}
                                 onPress={() => handleThemeChange(option.key)}
                             >
-                                {theme === option.key && (
+                                {theme.mode === option.key && (
                                     <LinearGradient
-                                        colors={accentColor.gradient}
+                                        colors={gradient}
                                         style={styles.themeOptionGradient}
                                     />
                                 )}
@@ -210,17 +143,23 @@ export default function AppearanceScreen() {
                                     <Ionicons
                                         name={option.icon as any}
                                         size={24}
-                                        color={theme === option.key ? 'white' : (isDarkMode ? '#f1f5f9' : '#1e293b')}
+                                        color={theme.mode === option.key ? 'white' : colors.text}
                                     />
                                     <Text style={[
                                         styles.themeOptionLabel,
-                                        { color: theme === option.key ? 'white' : (isDarkMode ? '#f1f5f9' : '#1e293b') }
+                                        {
+                                            color: theme.mode === option.key ? 'white' : colors.text,
+                                            fontSize: fonts.body
+                                        }
                                     ]}>
                                         {option.label}
                                     </Text>
                                     <Text style={[
                                         styles.themeOptionDescription,
-                                        { color: theme === option.key ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#94a3b8' : '#64748b') }
+                                        {
+                                            color: theme.mode === option.key ? 'rgba(255,255,255,0.8)' : colors.textSecondary,
+                                            fontSize: fonts.caption
+                                        }
                                     ]}>
                                         {option.description}
                                     </Text>
@@ -231,45 +170,47 @@ export default function AppearanceScreen() {
                 </View>
 
                 {/* Accent Color Selection */}
-                <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? '#1e293b' : 'white' }]}>
+                <View style={[styles.sectionContainer, { backgroundColor: colors.surface }]}>
                     <View style={styles.sectionHeader}>
                         <LinearGradient
-                            colors={accentColor.gradient}
+                            colors={gradient}
                             style={styles.sectionIconContainer}
                         >
                             <Ionicons name="brush" size={24} color="white" />
                         </LinearGradient>
                         <View style={styles.sectionInfo}>
-                            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#f1f5f9' : '#1e293b' }]}>
+                            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fonts.h3 }]}>
                                 Accent Color
                             </Text>
-                            <Text style={[styles.sectionDescription, { color: isDarkMode ? '#94a3b8' : '#64748b' }]}>
+                            <Text style={[styles.sectionDescription, { color: colors.textSecondary, fontSize: fonts.body }]}>
                                 Choose your favorite color
                             </Text>
                         </View>
                     </View>
 
                     <View style={styles.colorGrid}>
-                        {colorOptions.map((color) => (
+                        {colorThemes.map((color) => (
                             <TouchableOpacity
                                 key={color.value}
                                 style={[
                                     styles.colorOption,
-                                    accentColor.value === color.value && styles.colorOptionSelected
+                                    theme.color.value === color.value && styles.colorOptionSelected
                                 ]}
                                 onPress={() => handleColorChange(color)}
                             >
                                 <LinearGradient
-                                    colors={color.gradient}
+                                    colors={color.gradient.length >= 2
+                                        ? color.gradient as [string, string, ...string[]]
+                                        : ['#667eea', '#764ba2'] as [string, string]}
                                     style={styles.colorCircle}
                                 />
                                 <Text style={[
                                     styles.colorLabel,
-                                    { color: isDarkMode ? '#f1f5f9' : '#1e293b' }
+                                    { color: colors.text, fontSize: fonts.caption }
                                 ]}>
                                     {color.name}
                                 </Text>
-                                {accentColor.value === color.value && (
+                                {theme.color.value === color.value && (
                                     <View style={styles.selectedIndicator}>
                                         <Ionicons name="checkmark" size={16} color="white" />
                                     </View>
@@ -280,38 +221,38 @@ export default function AppearanceScreen() {
                 </View>
 
                 {/* Text Size Selection */}
-                <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? '#1e293b' : 'white' }]}>
+                <View style={[styles.sectionContainer, { backgroundColor: colors.surface }]}>
                     <View style={styles.sectionHeader}>
                         <LinearGradient
-                            colors={accentColor.gradient}
+                            colors={gradient}
                             style={styles.sectionIconContainer}
                         >
                             <Ionicons name="text" size={24} color="white" />
                         </LinearGradient>
                         <View style={styles.sectionInfo}>
-                            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#f1f5f9' : '#1e293b' }]}>
+                            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fonts.h3 }]}>
                                 Text Size
                             </Text>
-                            <Text style={[styles.sectionDescription, { color: isDarkMode ? '#94a3b8' : '#64748b' }]}>
+                            <Text style={[styles.sectionDescription, { color: colors.textSecondary, fontSize: fonts.body }]}>
                                 Adjust text size for better readability
                             </Text>
                         </View>
                     </View>
 
                     <View style={styles.fontSizeOptions}>
-                        {fontSizeOptions.map((option) => (
+                        {fontSizeThemes.map((option) => (
                             <TouchableOpacity
                                 key={option.size}
                                 style={[
                                     styles.fontSizeOption,
-                                    fontSize.size === option.size && styles.fontSizeOptionSelected,
-                                    { backgroundColor: isDarkMode ? '#334155' : '#f1f5f9' }
+                                    theme.fontSize.size === option.size && styles.fontSizeOptionSelected,
+                                    { backgroundColor: colors.border }
                                 ]}
                                 onPress={() => handleFontSizeChange(option)}
                             >
-                                {fontSize.size === option.size && (
+                                {theme.fontSize.size === option.size && (
                                     <LinearGradient
-                                        colors={accentColor.gradient}
+                                        colors={gradient}
                                         style={styles.fontSizeOptionGradient}
                                     />
                                 )}
@@ -320,20 +261,26 @@ export default function AppearanceScreen() {
                                         styles.fontSizePreview,
                                         {
                                             fontSize: option.size,
-                                            color: fontSize.size === option.size ? 'white' : (isDarkMode ? '#f1f5f9' : '#1e293b')
+                                            color: theme.fontSize.size === option.size ? 'white' : colors.text
                                         }
                                     ]}>
                                         Aa
                                     </Text>
                                     <Text style={[
                                         styles.fontSizeLabel,
-                                        { color: fontSize.size === option.size ? 'white' : (isDarkMode ? '#f1f5f9' : '#1e293b') }
+                                        {
+                                            color: theme.fontSize.size === option.size ? 'white' : colors.text,
+                                            fontSize: fonts.caption
+                                        }
                                     ]}>
                                         {option.label}
                                     </Text>
                                     <Text style={[
                                         styles.fontSizeDescription,
-                                        { color: fontSize.size === option.size ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#94a3b8' : '#64748b') }
+                                        {
+                                            color: theme.fontSize.size === option.size ? 'rgba(255,255,255,0.8)' : colors.textSecondary,
+                                            fontSize: fonts.caption
+                                        }
                                     ]}>
                                         {option.description}
                                     </Text>
@@ -344,19 +291,19 @@ export default function AppearanceScreen() {
                 </View>
 
                 {/* Preview Section */}
-                <View style={[styles.sectionContainer, { backgroundColor: isDarkMode ? '#1e293b' : 'white' }]}>
+                <View style={[styles.sectionContainer, { backgroundColor: colors.surface }]}>
                     <View style={styles.sectionHeader}>
                         <LinearGradient
-                            colors={accentColor.gradient}
+                            colors={gradient}
                             style={styles.sectionIconContainer}
                         >
                             <Ionicons name="eye" size={24} color="white" />
                         </LinearGradient>
                         <View style={styles.sectionInfo}>
-                            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#f1f5f9' : '#1e293b' }]}>
+                            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fonts.h3 }]}>
                                 Preview
                             </Text>
-                            <Text style={[styles.sectionDescription, { color: isDarkMode ? '#94a3b8' : '#64748b' }]}>
+                            <Text style={[styles.sectionDescription, { color: colors.textSecondary, fontSize: fonts.body }]}>
                                 See how your settings look
                             </Text>
                         </View>
@@ -364,23 +311,23 @@ export default function AppearanceScreen() {
 
                     <View style={styles.previewContainer}>
                         <LinearGradient
-                            colors={accentColor.gradient}
+                            colors={gradient}
                             style={styles.previewCard}
                         >
-                            <Text style={[styles.previewTitle, { fontSize: fontSize.size + 2 }]}>
+                            <Text style={[styles.previewTitle, { fontSize: fonts.h2 }]}>
                                 Family Dashboard
                             </Text>
-                            <Text style={[styles.previewSubtitle, { fontSize: fontSize.size }]}>
+                            <Text style={[styles.previewSubtitle, { fontSize: fonts.body }]}>
                                 Your family, connected
                             </Text>
                             <View style={styles.previewButtons}>
                                 <View style={styles.previewButton}>
-                                    <Text style={[styles.previewButtonText, { fontSize: fontSize.size - 2 }]}>
+                                    <Text style={[styles.previewButtonText, { fontSize: fonts.button }]}>
                                         Dashboard
                                     </Text>
                                 </View>
                                 <View style={styles.previewButton}>
-                                    <Text style={[styles.previewButtonText, { fontSize: fontSize.size - 2 }]}>
+                                    <Text style={[styles.previewButtonText, { fontSize: fonts.button }]}>
                                         Tasks
                                     </Text>
                                 </View>
@@ -392,35 +339,14 @@ export default function AppearanceScreen() {
                 {/* Reset Button */}
                 <TouchableOpacity
                     style={styles.resetButton}
-                    onPress={() => {
-                        Alert.alert(
-                            'Reset Settings',
-                            'Are you sure you want to reset all appearance settings to default?',
-                            [
-                                { text: 'Cancel', style: 'cancel' },
-                                {
-                                    text: 'Reset',
-                                    style: 'destructive',
-                                    onPress: () => {
-                                        setTheme('auto');
-                                        setAccentColor(colorOptions[0]);
-                                        setFontSize(fontSizeOptions[1]);
-                                        saveSettings('appearance_theme', 'auto');
-                                        saveSettings('appearance_accent_color', colorOptions[0].value);
-                                        saveSettings('appearance_font_size', fontSizeOptions[1].size.toString());
-                                        Alert.alert('Reset Complete', 'All appearance settings have been reset to default.');
-                                    }
-                                }
-                            ]
-                        );
-                    }}
+                    onPress={handleReset}
                 >
                     <LinearGradient
-                        colors={['#ef4444', '#dc2626']}
+                        colors={[colors.error, colors.error]}
                         style={styles.resetButtonGradient}
                     >
                         <Ionicons name="refresh" size={20} color="white" />
-                        <Text style={styles.resetButtonText}>Reset to Default</Text>
+                        <Text style={[styles.resetButtonText, { fontSize: fonts.button }]}>Reset to Default</Text>
                     </LinearGradient>
                 </TouchableOpacity>
             </ScrollView>

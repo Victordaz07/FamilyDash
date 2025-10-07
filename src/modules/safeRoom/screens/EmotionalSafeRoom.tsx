@@ -5,15 +5,44 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../../../components/ui/WorkingComponents';
 import { useEmotionalStore, EmotionalMessage } from '../store/emotionalStore';
 import { mediaService } from '../services/mediaService';
+import { useFocusEffect } from '@react-navigation/native';
+import SafeRoomService, { SafeRoomMessage } from '../../../services/SafeRoomService';
 
-const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
+const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
     const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
     const [messageText, setMessageText] = useState('');
+    const [safeRoomMessages, setSafeRoomMessages] = useState<SafeRoomMessage[]>([]);
     const { messages, addReply, addHeart, loadMessages } = useEmotionalStore();
+
+    // Check if we're in emotional support mode
+    const isEmotionalMode = route?.params?.mode === 'emotional';
 
     useEffect(() => {
         loadMessages();
     }, [loadMessages]);
+
+    // Reload messages when screen comes into focus
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log('🔄 Safe Room focused, reloading messages...');
+            loadMessages();
+
+            // Load SafeRoom messages
+            const loadSafeRoomMessages = async () => {
+                try {
+                    // Remove duplicates first
+                    await SafeRoomService.removeDuplicates();
+                    const messages = await SafeRoomService.getMessages();
+                    setSafeRoomMessages(messages);
+                    console.log('📱 Loaded SafeRoom messages:', messages.length);
+                } catch (error) {
+                    console.error('❌ Error loading SafeRoom messages:', error);
+                }
+            };
+
+            loadSafeRoomMessages();
+        }, [loadMessages])
+    );
 
     const handleBack = () => {
         navigation.goBack();
@@ -33,23 +62,95 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
     };
 
-    const handleVoicePlay = async (message: EmotionalMessage) => {
-        if (message.type === 'audio') {
+    const handleVoicePlay = async (message: SafeRoomMessage | EmotionalMessage) => {
+        if (message.type === 'voice' || message.type === 'audio') {
             try {
-                // For now, show alert since we don't have voicePath in the interface
-                Alert.alert('Voice Message', 'Voice playback functionality - audio type detected');
+                const duration = 'duration' in message ? message.duration : undefined;
+                const sender = 'sender' in message ? message.sender : message.sender;
+                Alert.alert('Voice Message', `Playing voice message from ${sender}${duration ? ` (${duration}s)` : ''}`);
+                // TODO: Implement actual audio playback using expo-av
             } catch (error) {
                 Alert.alert('Error', 'Could not play voice message');
             }
         } else {
-            Alert.alert('Voice Message', 'Voice playback functionality');
+            Alert.alert('Voice Message', 'No voice data available');
         }
     };
 
-    const handleAddHeart = async (messageId: string) => {
-        await addHeart(messageId);
-        Alert.alert('Heart Added', 'You showed your support with a heart ❤️');
+    const handleTextShare = () => {
+        navigation.navigate('TextMessage');
     };
+
+    const handleVoiceShare = () => {
+        navigation.navigate('VoiceMessage');
+    };
+
+    const handleDeleteMessage = async (messageId: string) => {
+        Alert.alert(
+            'Delete Message',
+            'Are you sure you want to delete this message?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await SafeRoomService.deleteMessage(messageId);
+                            // Reload messages
+                            const messages = await SafeRoomService.getMessages();
+                            setSafeRoomMessages(messages);
+                            Alert.alert('Success', 'Message deleted successfully');
+                        } catch (error) {
+                            Alert.alert('Error', 'Failed to delete message');
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleEditMessage = async (message: SafeRoomMessage) => {
+        if (message.type === 'voice') {
+            Alert.alert('Edit Voice Message', 'Voice messages cannot be edited. You can delete and create a new one.');
+            return;
+        }
+
+        Alert.prompt(
+            'Edit Message',
+            'Enter new message content:',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Save',
+                    onPress: async (newContent) => {
+                        if (newContent && newContent.trim() !== message.content) {
+                            try {
+                                await SafeRoomService.updateMessage(message.id, {
+                                    content: newContent.trim()
+                                });
+                                // Reload messages
+                                const messages = await SafeRoomService.getMessages();
+                                setSafeRoomMessages(messages);
+                                Alert.alert('Success', 'Message updated successfully');
+                            } catch (error) {
+                                Alert.alert('Error', 'Failed to update message');
+                            }
+                        }
+                    }
+                }
+            ],
+            'plain-text',
+            message.content
+        );
+    };
+
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -63,8 +164,12 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
                         <Ionicons name="arrow-back" size={20} color="white" />
                     </TouchableOpacity>
                     <View style={styles.headerTitleContainer}>
-                        <Text style={styles.headerTitle}>Safe Room</Text>
-                        <Text style={styles.headerSubtitle}>Emotional Support Space</Text>
+                        <Text style={styles.headerTitle}>
+                            {isEmotionalMode ? 'Emergency Support' : 'Safe Room'}
+                        </Text>
+                        <Text style={styles.headerSubtitle}>
+                            {isEmotionalMode ? 'We\'re here for you' : 'Emotional Support Space'}
+                        </Text>
                     </View>
                     <TouchableOpacity
                         style={styles.headerButton}
@@ -107,43 +212,108 @@ const EmotionalSafeRoom: React.FC<{ navigation: any }> = ({ navigation }) => {
             {/* Quick Share Options */}
             <View style={styles.quickShareSection}>
                 <View style={styles.quickShareGrid}>
-                    <TouchableOpacity style={[styles.quickShareButton, { backgroundColor: '#3B82F6' }]}>
+                    <TouchableOpacity
+                        style={[styles.quickShareButton, { backgroundColor: '#3B82F6' }]}
+                        onPress={handleTextShare}
+                        activeOpacity={0.8}
+                    >
                         <View style={styles.quickShareIcon}>
                             <Ionicons name="chatbubble" size={20} color="white" />
                         </View>
                         <Text style={styles.quickShareText}>Text</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.quickShareButton, { backgroundColor: '#8B5CF6' }]}>
+                    <TouchableOpacity
+                        style={[styles.quickShareButton, { backgroundColor: '#8B5CF6' }]}
+                        onPress={handleVoiceShare}
+                        activeOpacity={0.8}
+                    >
                         <View style={styles.quickShareIcon}>
                             <Ionicons name="mic" size={20} color="white" />
                         </View>
                         <Text style={styles.quickShareText}>Voice</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.quickShareButton, { backgroundColor: '#F59E0B' }]}
-                        onPress={() => navigation.navigate('PermissionTest')}
-                    >
-                        <View style={styles.quickShareIcon}>
-                            <Ionicons name="settings" size={20} color="white" />
-                        </View>
-                        <Text style={styles.quickShareText}>Test</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
 
-            {/* Empty State for Messages */}
+            {/* Messages Section */}
             <View style={styles.messagesSection}>
                 <Card style={styles.messagesCard}>
-                    <View style={styles.emptyStateContainer}>
-                        <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
-                        <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
-                        <Text style={styles.emptyStateText}>
-                            Start sharing your feelings with your family
-                        </Text>
-                        <TouchableOpacity style={styles.startSharingButton}>
-                            <Text style={styles.startSharingText}>Start Sharing</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {safeRoomMessages.length === 0 ? (
+                        <View style={styles.emptyStateContainer}>
+                            <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
+                            <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
+                            <Text style={styles.emptyStateText}>
+                                Start sharing your feelings with your family
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.startSharingButton}
+                                onPress={handleTextShare}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={styles.startSharingText}>Start Sharing</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <ScrollView style={styles.messagesList} showsVerticalScrollIndicator={false}>
+                            {safeRoomMessages.map((message) => (
+                                <View key={message.id} style={[
+                                    styles.messageCard,
+                                    message.isSystemMessage && styles.systemMessageCard
+                                ]}>
+                                    <View style={styles.messageHeader}>
+                                        <Ionicons
+                                            name={message.type === 'voice' ? 'mic-outline' : 'chatbubble-outline'}
+                                            size={20}
+                                            color={message.type === 'voice' ? '#8B5CF6' : '#3B82F6'}
+                                        />
+                                        <Text style={styles.messageSender}>
+                                            {message.sender || 'Anonymous'}
+                                        </Text>
+                                        <Text style={styles.messageTime}>
+                                            {new Date(message.timestamp).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </Text>
+                                        {!message.isSystemMessage && (
+                                            <View style={styles.messageActions}>
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    onPress={() => handleEditMessage(message)}
+                                                    activeOpacity={0.7}
+                                                >
+                                                    <Ionicons name="create-outline" size={16} color="#6B7280" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    onPress={() => handleDeleteMessage(message.id)}
+                                                    activeOpacity={0.7}
+                                                >
+                                                    <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
+                                    </View>
+                                    <Text style={styles.messageContent}>
+                                        {message.type === 'voice'
+                                            ? `🎧 Voice message${message.duration ? ` (${Math.round(message.duration)}s)` : ''}`
+                                            : message.content
+                                        }
+                                    </Text>
+                                    {message.type === 'voice' && (
+                                        <TouchableOpacity
+                                            style={styles.playButton}
+                                            onPress={() => handleVoicePlay(message)}
+                                            activeOpacity={0.8}
+                                        >
+                                            <Ionicons name="play" size={16} color="#8B5CF6" />
+                                            <Text style={styles.playButtonText}>Play</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ))}
+                        </ScrollView>
+                    )}
                 </Card>
             </View>
 
@@ -625,6 +795,37 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
+    },
+    playButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 8,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        backgroundColor: '#F3F4F6',
+        borderRadius: 8,
+        alignSelf: 'flex-start',
+    },
+    playButtonText: {
+        fontSize: 14,
+        color: '#8B5CF6',
+        marginLeft: 4,
+        fontWeight: '500',
+    },
+    messageActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 'auto',
+    },
+    actionButton: {
+        padding: 8,
+        marginLeft: 8,
+        borderRadius: 6,
+        backgroundColor: '#F3F4F6',
+    },
+    systemMessageCard: {
+        backgroundColor: '#F0F9FF',
+        borderLeftColor: '#0EA5E9',
     },
 });
 

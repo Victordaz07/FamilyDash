@@ -19,7 +19,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { RealAuthService, RealDatabaseService } from '../services';
 import { syncMonitorService } from '../services/sync/SyncMonitorService';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useCalendarStore } from '../modules/calendar/store/calendarStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
@@ -73,7 +72,6 @@ const DebugDashboard: React.FC<DebugScreenProps> = ({ navigation }) => {
 
   const stores = {
     tasks: useTasksStore(),
-    goals: useGoalsStore(),
     penalties: usePenaltiesStore(),
     calendar: useCalendarStore(),
     profile: useProfileStore(),

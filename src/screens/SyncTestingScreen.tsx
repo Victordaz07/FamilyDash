@@ -17,7 +17,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useCalendarStore } from '../modules/calendar/store/calendarStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
@@ -47,7 +46,6 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
 
   // Stores with real-time listeners
   const tasksStore = useTasksStore();
-  const goalsStore = useGoalsStore();
   const penaltiesStore = usePenaltiesStore();
   const calendarStore = useCalendarStore();
   const profileStore = useProfileStore();
@@ -479,8 +477,8 @@ const SyncTestingScreen: React.FC<SyncTestScreenProps> = ({ navigation }) => {
           </View>
 
           <View style={styles.dataStatusRow}>
-            <Text style={styles.dataStatusLabel}>🎯 Goals:</Text>
-            <Text style={styles.dataStatusValue}>{goalsStore.goals.length}</Text>
+            <Text style={styles.dataStatusLabel}>🎯 Tasks:</Text>
+            <Text style={styles.dataStatusValue}>{tasksStore.tasks.length}</Text>
           </View>
 
           <View style={styles.dataStatusRow}>

@@ -66,7 +66,7 @@ export const FamilyProgressBar: React.FC<FamilyProgressBarProps> = ({
             <View style={styles.indicators}>
                 <View style={styles.indicator}>
                     <View style={[styles.indicatorDot, { backgroundColor: gradientColors[0] }]} />
-                    <Text style={styles.indicatorText}>Family Goals</Text>
+                    <Text style={styles.indicatorText}>Family Tasks</Text>
                 </View>
                 <View style={styles.indicator}>
                     <View style={[styles.indicatorDot, { backgroundColor: '#22c55e' }]} />

@@ -27,7 +27,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '../../config/firebase';
-import { RealAuthService } from '../auth/RealAuthService';
+import RealAuthService from '../auth/RealAuthService';
 
 export interface DatabaseDocument {
   id: string;
@@ -94,7 +94,7 @@ class RealDatabaseService {
       };
     } catch (error: any) {
       console.error(`❌ Error creating document in ${collectionPath}:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to create document',
@@ -139,7 +139,7 @@ class RealDatabaseService {
       };
     } catch (error: any) {
       console.error(`❌ Error getting document ${documentId}:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to get document',
@@ -160,7 +160,7 @@ class RealDatabaseService {
       console.log(`✏️ Updating document: ${collectionPath}/${documentId}`);
 
       const docRef = doc(db, collectionPath, documentId);
-      
+
       // Add server timestamp for update
       const updateData = {
         ...data,
@@ -178,7 +178,7 @@ class RealDatabaseService {
       return updatedDoc;
     } catch (error: any) {
       console.error(`❌ Error updating document ${documentId}:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to update document',
@@ -207,7 +207,7 @@ class RealDatabaseService {
       };
     } catch (error: any) {
       console.error(`❌ Error deleting document ${documentId}:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to delete document',
@@ -271,7 +271,7 @@ class RealDatabaseService {
       };
     } catch (error: any) {
       console.error(`❌ Error getting documents from ${collectionPath}:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to get documents',
@@ -291,7 +291,7 @@ class RealDatabaseService {
     console.log(`👂 Listening to document: ${collectionPath}/${documentId}`);
 
     const docRef = doc(db, collectionPath, documentId);
-    
+
     return onSnapshot(
       docRef,
       (docSnap) => {
@@ -430,7 +430,7 @@ class RealDatabaseService {
       };
     } catch (error: any) {
       console.error(`❌ Error in batch operation:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to execute batch operation',
@@ -454,7 +454,7 @@ class RealDatabaseService {
       // Note: Firestore doesn't support full-text search natively
       // This is a basic implementation using string contains
       // For production, consider using Algolia or Cloud Search
-      
+
       const searchOptions = {
         ...options,
         where: [
@@ -467,7 +467,7 @@ class RealDatabaseService {
       return await this.getDocuments<T>(collectionPath, searchOptions);
     } catch (error: any) {
       console.error(`❌ Error searching documents:`, error);
-      
+
       return {
         success: false,
         error: error.message || 'Failed to search documents',

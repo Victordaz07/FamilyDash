@@ -21,7 +21,7 @@ const faqData: FAQItem[] = [
     },
     {
         question: "How do I create family goals?",
-        answer: "Navigate to Goals → tap 'Create New Goal' → set your target and assign family members."
+        answer: "Navigate to Tasks → tap 'Create New Task' → set your target and assign family members."
     },
     {
         question: "What is the Safe Room?",

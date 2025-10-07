@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Card, Button } from '../components/ui/WorkingComponents';
 import { theme } from '../styles/simpleTheme';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { RealAuthService } from '../services/auth/RealAuthService';
 import RealDatabaseService from '../services/database/RealDatabaseService';
 
@@ -17,6 +19,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   // Enhanced state management
   const { user, logout } = useAuth();
   const nav = useNavigation();
+  const colors = useThemeColors();
+  const fonts = useThemeFonts();
+  const gradient = useThemeGradient();
+  const { settings, toggleTestingButtons } = useSettings();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [deviceRingEnabled, setDeviceRingEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -182,10 +188,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Enhanced Header with Gradient */}
       <LinearGradient
-        colors={isConnected ? ['#6366f1', '#8b5cf6'] : ['#6b7280', '#9ca3af']}
+        colors={gradient}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -374,6 +380,24 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             title="Appearance Settings"
             subtitle="Customize theme, colors, and text size"
             onPress={() => nav.navigate('Appearance' as never)}
+          />
+        </Card>
+
+        {/* Developer */}
+        <Card style={styles.section}>
+          <Text style={styles.sectionTitle}>Developer</Text>
+          <SettingItem
+            icon="bug"
+            title="Show Testing Buttons"
+            subtitle="Display Firebase testing tools on dashboard"
+            rightComponent={
+              <Switch
+                value={settings.showTestingButtons}
+                onValueChange={toggleTestingButtons}
+                trackColor={{ false: '#e5e7eb', true: theme.colors.primary }}
+                thumbColor={settings.showTestingButtons ? '#ffffff' : '#ffffff'}
+              />
+            }
           />
         </Card>
 

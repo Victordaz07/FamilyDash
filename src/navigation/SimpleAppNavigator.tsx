@@ -8,12 +8,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Import screens
 import DashboardScreen from '../screens/DashboardScreen';
 import { FirebaseTest } from '../screens/FirebaseTest';
-import TasksScreen from '../modules/tasks/TasksScreen';
+// import TasksScreen from '../modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
-import GoalsScreen from '../modules/goals/GoalsScreen';
-import EmotionalSafeRoom from '../modules/safeRoom/screens/EmotionalSafeRoom';
+import FamilyVisionNavigator from '../screens/FamilyVision/FamilyVisionNavigator';
+import FamilyVoteScreen from '../screens/FamilyVoteScreen';
+import FamilyChatScreen from '../screens/FamilyChatScreen';
+import NotificationsScreen from '../modules/notifications/screens/NotificationsScreen';
+import SafeRoomWrapper from '../modules/safeRoom/screens/SafeRoomWrapper';
 import NewEmotionalEntry from '../modules/safeRoom/screens/NewEmotionalEntry';
-import PermissionTest from '../modules/safeRoom/screens/PermissionTest';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -50,6 +52,20 @@ import AccountPrivacyScreen from '../screens/Settings/Account/PrivacyScreen';
 // Import Appearance screen
 import AppearanceScreen from '../screens/Settings/AppearanceScreen';
 
+// Import Safe Room screens
+import SafeRoomScreen from '../screens/SafeRoom/SafeRoomScreen';
+import TextMessageScreen from '../screens/SafeRoom/TextMessageScreen';
+import VoiceMessageScreen from '../screens/SafeRoom/VoiceMessageScreen';
+import MoodTestScreen from '../screens/SafeRoom/MoodTestScreen';
+
+// Import Tasks screens
+import TaskListScreen from '../screens/Tasks/TaskListScreen';
+import AddTaskScreen from '../screens/Tasks/AddTaskScreen';
+import EditTaskScreen from '../screens/Tasks/EditTaskScreen';
+import AddPhotoTaskScreen from '../screens/Tasks/AddPhotoTaskScreen';
+import VideoInstructionsScreen from '../screens/Tasks/VideoInstructionsScreen';
+import AddRewardScreen from '../screens/Tasks/AddRewardScreen';
+
 // Import Testing & Debug screens
 import FirebaseTestLive from '../screens/FirebaseTestLive';
 import SyncTestingScreen from '../screens/SyncTestingScreen';
@@ -84,8 +100,19 @@ const DashboardStack = () => (
 
 const TasksStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="TasksMain" component={TasksScreen as any} />
+    <Stack.Screen name="TasksMain" component={TaskListScreen as any} />
     <Stack.Screen name="TaskDetails" component={TaskDetails as any} />
+
+    {/* Tasks creation screens */}
+    <Stack.Screen name="AddTask" component={AddTaskScreen as any} />
+    <Stack.Screen name="EditTask" component={EditTaskScreen as any} />
+    <Stack.Screen name="AddPhotoTask" component={AddPhotoTaskScreen as any} />
+    <Stack.Screen name="VideoInstructions" component={VideoInstructionsScreen as any} />
+    <Stack.Screen name="AddReward" component={AddRewardScreen as any} />
+
+    {/* Family features */}
+    <Stack.Screen name="FamilyVote" component={FamilyVoteScreen as any} />
+    <Stack.Screen name="FamilyChat" component={FamilyChatScreen as any} />
   </Stack.Navigator>
 );
 
@@ -100,17 +127,13 @@ const CalendarStack = () => (
   </Stack.Navigator>
 );
 
-const GoalsStack = () => (
-  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="GoalsMain" component={GoalsScreen as any} />
-  </Stack.Navigator>
-);
 
 const SafeRoomStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SafeRoomMain" component={EmotionalSafeRoom as any} />
+    <Stack.Screen name="SafeRoomMain" component={SafeRoomWrapper as any} />
     <Stack.Screen name="NewEmotionalEntry" component={NewEmotionalEntry as any} />
-    <Stack.Screen name="PermissionTest" component={PermissionTest as any} />
+    <Stack.Screen name="TextMessage" component={TextMessageScreen as any} />
+    <Stack.Screen name="VoiceMessage" component={VoiceMessageScreen as any} />
   </Stack.Navigator>
 );
 
@@ -143,6 +166,15 @@ const ProfileStack = () => (
     {/* Appearance screen */}
     <Stack.Screen name="Appearance" component={AppearanceScreen as any} />
 
+    {/* Safe Room screens */}
+    <Stack.Screen name="SafeRoom" component={SafeRoomScreen as any} />
+    <Stack.Screen name="MoodTest" component={MoodTestScreen as any} />
+
+    {/* Notifications */}
+    <Stack.Screen name="Notifications" component={NotificationsScreen as any} />
+
+    {/* Tasks screens - moved to TasksStack */}
+
     {/* Quick Actions screens temporarily commented for debugging */}
     {/* <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen as any} />
     <Stack.Screen name="Achievements" component={AchievementsScreen as any} />
@@ -160,7 +192,7 @@ const AppNavigator = () => {
       Dashboard: 'Dashboard',
       Tasks: 'Tasks',
       Calendar: 'Calendar',
-      Goals: 'Goals',
+      Vision: 'Vision',
       Penalties: 'Penalties',
       SafeRoom: 'Safe Room',
       Profile: 'Profile'
@@ -182,8 +214,8 @@ const AppNavigator = () => {
             iconName = focused ? 'checkmark-circle' : 'checkmark-circle-outline';
           } else if (route.name === 'Calendar') {
             iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Goals') {
-            iconName = focused ? 'trophy' : 'trophy-outline';
+          } else if (route.name === 'Vision') {
+            iconName = focused ? 'eye' : 'eye-outline';
           } else if (route.name === 'Penalties') {
             iconName = focused ? 'warning' : 'warning-outline';
           } else if (route.name === 'SafeRoom') {
@@ -229,9 +261,9 @@ const AppNavigator = () => {
         options={{ tabBarLabel: getTabLabel('Calendar') }}
       />
       <Tab.Screen
-        name="Goals"
-        component={GoalsStack}
-        options={{ tabBarLabel: getTabLabel('Goals') }}
+        name="Vision"
+        component={FamilyVisionNavigator}
+        options={{ tabBarLabel: getTabLabel('Vision') }}
       />
       <Tab.Screen
         name="Penalties"

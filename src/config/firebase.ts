@@ -4,7 +4,8 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence, GoogleAuthProvider, FacebookAuthProvider, onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, connectFirestoreEmulator, getDoc, doc, collection } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
@@ -38,8 +39,10 @@ console.log('🔥 Firebase initialized with project: family-dash-15944');
 // Initialize Cloud Messaging
 // const messaging = getMessaging(app);
 
-// Initialize Firebase services
-const auth = getAuth(app);
+// Initialize Firebase services with React Native persistence
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
 const db = getFirestore(app);
 const storage = getStorage(app);
 const functions = getFunctions(app);

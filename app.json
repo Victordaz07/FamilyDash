@@ -35,7 +35,8 @@
         "android.permission.CAMERA",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.READ_MEDIA_AUDIO",
-        "android.permission.READ_MEDIA_VIDEO"
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.AUDIO"
       ]
     },
     "plugins": [
@@ -45,6 +46,13 @@
           "photosPermission": "Allow FamilyDash to access your photos and videos.",
           "savePhotosPermission": "Allow FamilyDash to save photos and videos to your camera roll.",
           "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow FamilyDash to access your microphone to record voice messages in the Safe Room.",
+          "cameraPermission": "Allow FamilyDash to access your camera to take photos."
         }
       ],
       "expo-font"

@@ -15,7 +15,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useCalendarStore } from '../modules/calendar/store/calendarStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
@@ -31,7 +30,6 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
 
   // Stores
   const tasksStore = useTasksStore();
-  const goalsStore = useGoalsStore();
   const penaltiesStore = usePenaltiesStore();
   const calendarStore = useCalendarStore();
   const profileStore = useProfileStore();
@@ -73,14 +71,14 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
         addResult('Tasks Store', '❌', `Tasks Store error: ${error.message}`);
       }
 
-      // 3. Test Goals Store Firebase Connection
+      // 3. Test Calendar Store Firebase Connection
       try {
-        await goalsStore.checkConnection();
-        const connectionStatus = await goalsStore.checkConnection();
-        addResult('Goals Store', connectionStatus ? '✅' : '❌',
-          connectionStatus ? 'Goals Firebase connected' : 'Goals Firebase offline');
+        await calendarStore.checkConnection();
+        const connectionStatus = await calendarStore.checkConnection();
+        addResult('Calendar Store', connectionStatus ? '✅' : '❌',
+          connectionStatus ? 'Calendar Firebase connected' : 'Calendar Firebase offline');
       } catch (error) {
-        addResult('Goals Store', '❌', `Goals Store error: ${error.message}`);
+        addResult('Calendar Store', '❌', `Calendar Store error: ${error.message}`);
       }
 
       // 4. Test Penalties Store Firebase Connection
@@ -104,7 +102,7 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
       }
 
       // 6. Test Real-time Data
-      addResult('Real-time Data', '✅', `Tasks: ${tasksStore.tasks.length}, Goals: ${goalsStore.goals.length}, Events: ${calendarStore.events.length}`);
+      addResult('Real-time Data', '✅', `Tasks: ${tasksStore.tasks.length}, Events: ${calendarStore.events.length}`);
 
       // 7. Test Firebase Analytics
       addResult('Analytics', '✅', 'Firebase Analytics events tracking active');
@@ -130,10 +128,6 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
         case 'Tasks':
           await tasksStore.reconnect();
           addResult('Tasks Reconnect', '✅', 'Tasks store reconnected to Firebase');
-          break;
-        case 'Goals':
-          await goalsStore.reconnect();
-          addResult('Goals Reconnect', '✅', 'Goals store reconnected to Firebase');
           break;
         case 'Calendar':
           await calendarStore.reconnect();
@@ -231,8 +225,8 @@ const FirebaseTestLive: React.FC<FirebaseTestScreenProps> = ({ navigation }) => 
           </View>
 
           <View style={styles.dataStatusItem}>
-            <Text style={styles.dataStatusLabel}>🎯 Goals:</Text>
-            <Text style={styles.dataStatusValue}>{goalsStore.goals.length}</Text>
+            <Text style={styles.dataStatusLabel}>📅 Events:</Text>
+            <Text style={styles.dataStatusValue}>{calendarStore.events.length}</Text>
           </View>
 
           <View style={styles.dataStatusContainer}>

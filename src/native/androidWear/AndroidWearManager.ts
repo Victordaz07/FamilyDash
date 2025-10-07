@@ -415,7 +415,7 @@ export class AndroidWearManager {
         {
           id: 'goals_tile',
           title: 'Goal Progress',
-          content: 'Daily Goals: 75%',
+          content: 'Daily Tasks: 75%',
           category: 'goals',
           layout: 'gauge_tile',
           data: { progress: 75, target: 100 },

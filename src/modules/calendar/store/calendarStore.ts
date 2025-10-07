@@ -97,7 +97,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
       // Set up real-time listener for calendar events
       const unsubscribe = RealDatabaseService.listenToCollection<CalendarEvent>(
-        `families/${user.uid}/calendar/events`,
+        `families/${user.uid}/calendar`,
         (events, error) => {
           if (error) {
             console.error('❌ Error listening to calendar events:', error);
@@ -166,7 +166,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
       // Create document in Firebase
       const result = await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events`,
+        `families/${user.uid}/calendar`,
         event
       );
 
@@ -200,7 +200,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.updateDocument(
-        `families/${user.uid}/calendar/events`,
+        `families/${user.uid}/calendar`,
         id,
         { ...updates, updatedAt: new Date() }
       );
@@ -229,7 +229,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       if (!user) throw new Error('User not authenticated');
 
       await RealDatabaseService.deleteDocument(
-        `families/${user.uid}/calendar/events`,
+        `families/${user.uid}/calendar`,
         id
       );
 
@@ -263,7 +263,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events/${eventId}/votes`,
+        `families/${user.uid}/calendar/${eventId}/votes`,
         vote
       );
 
@@ -296,7 +296,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       };
 
       await RealDatabaseService.createDocument(
-        `families/${user.uid}/calendar/events/${eventId}/responsibilities`,
+        `families/${user.uid}/calendar/${eventId}/responsibilities`,
         responsibility
       );
 

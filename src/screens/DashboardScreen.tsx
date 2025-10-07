@@ -5,11 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useGoalsStore } from '../modules/goals/store/goalsStore';
 import { useFamilyStore } from '../store/familyStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
 import { theme } from '../styles/simpleTheme';
-import { RealAuthService } from '../services/auth/RealAuthService';
+import { useSettings } from '../contexts/SettingsContext';
+import { useNotifications } from '../hooks/useNotifications';
+import { DeveloperModeToggle } from '../components/DeveloperModeToggle';
+import { DeveloperPanel } from '../components/DeveloperPanel';
 import RealDatabaseService from '../services/database/RealDatabaseService';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -23,11 +25,13 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const { currentUser } = useProfileStore();
     const { tasks, addTask, updateTask } = useTasksStore();
     const { penalties, addPenalty } = usePenaltiesStore();
-    const { goals, addGoal } = useGoalsStore();
     const { familyMembers: familyMembersFromStore } = useFamilyStore();
+    const { settings, toggleDeveloperMode } = useSettings();
+    const { unreadCount } = useNotifications();
 
     // State management
     const [refreshing, setRefreshing] = useState(false);
+    const [showDeveloperPanel, setShowDeveloperPanel] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
     const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
     const [lastRingTime, setLastRingTime] = useState(0);
@@ -76,7 +80,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const activeTasks = useMemo(() => (tasks || []).filter((task: any) => task.status !== 'completed'), [tasks]);
     const activePenalties = useMemo(() => (penalties || []).filter((penalty: any) => penalty.isActive), [penalties]);
     const upcomingActivities = useMemo(() => [], []); // Calendar activities will be handled by calendar module
-    const activeGoals = useMemo(() => (goals || []).filter((goal: any) => goal.status === 'active'), [goals]);
 
     // Family members data with additional UI properties
     // CLEAN DATA - Real family members without mock data
@@ -105,37 +108,25 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     const handleQuickAction = useCallback(async (actionId: string) => {
         switch (actionId) {
             case 'add-task':
-                const newTask = {
-                    title: 'Quick Task',
-                    description: 'Created from dashboard',
-                    priority: 'medium' as const,
-                    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-                    assignedTo: currentUser?.id || 'user',
-                    status: 'pending' as const,
-                    progress: 0,
-                    steps: [],
-                    points: 10
-                };
-                await addTask(newTask);
-                Alert.alert('Success', 'Quick task created!');
+                navigation.navigate('Tasks');
                 break;
 
             case 'start-vote':
-                navigation.navigate('Calendar', { screen: 'Voting' });
+                navigation.navigate('Tasks', { screen: 'FamilyVote' });
                 break;
 
             case 'emergency':
-                navigation.navigate('SafeRoom');
+                navigation.navigate('SafeRoom', { mode: 'emotional' });
                 break;
 
             case 'family-chat':
-                Alert.alert('Family Chat', 'Coming soon - Real-time family chat');
+                navigation.navigate('Tasks', { screen: 'FamilyChat' });
                 break;
 
             default:
                 Alert.alert('Action', `${actionId} feature coming soon!`);
         }
-    }, [addTask, currentUser, navigation]);
+    }, [navigation]);
 
     // Pull to refresh functionality
     const onRefresh = useCallback(async () => {
@@ -232,11 +223,13 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.notificationButton} onPress={() => Alert.alert('Notifications', 'Real-time notifications coming soon!')}>
+                        <TouchableOpacity style={styles.notificationButton} onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}>
                             <Ionicons name="notifications" size={20} color="white" />
-                            <View style={styles.notificationBadge}>
-                                <Text style={styles.notificationBadgeText}>3</Text>
-                            </View>
+                            {unreadCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationBadgeText}>{unreadCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.syncButton} onPress={onRefresh}>
                             <Ionicons name="refresh" size={20} color="white" />
@@ -331,69 +324,26 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         ))}
                     </View>
 
-                    {/* Firebase Live Test Button */}
-                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('FirebaseTestLive')}>
-                        <LinearGradient
-                            colors={['#8B5CF6', '#06B6D4']}
-                            style={styles.quickActionGradientLarge}
+                    {/* Developer Tools Access - Only show if developer mode is enabled */}
+                    {settings.developerModeEnabled && (
+                        <TouchableOpacity
+                            style={styles.quickActionButtonLarge}
+                            onPress={() => setShowDeveloperPanel(true)}
                         >
-                            <View style={styles.quickActionIconLarge}>
-                                <Ionicons name="flame" size={28} color="white" />
-                            </View>
-                            <View style={styles.quickActionTextContainer}>
-                                <Text style={styles.quickActionTextLarge}>Firebase Test</Text>
-                                <Text style={styles.quickActionSubtext}>Live Firebase Testing</Text>
-                            </View>
-                        </LinearGradient>
-                    </TouchableOpacity>
-
-                    {/* Sync Testing Button */}
-                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('SyncTesting')}>
-                        <LinearGradient
-                            colors={['#FF6B6B', '#4ECDC4']}
-                            style={styles.quickActionGradientLarge}
-                        >
-                            <View style={styles.quickActionIconLarge}>
-                                <Ionicons name="sync" size={28} color="white" />
-                            </View>
-                            <View style={styles.quickActionTextContainer}>
-                                <Text style={styles.quickActionTextLarge}>Sync Testing</Text>
-                                <Text style={styles.quickActionSubtext}>Multi-device sync test</Text>
-                            </View>
-                        </LinearGradient>
-                    </TouchableOpacity>
-
-                    {/* Debug Dashboard Button */}
-                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('DebugDashboard')}>
-                        <LinearGradient
-                            colors={['#9C27B0', '#673AB7']}
-                            style={styles.quickActionGradientLarge}
-                        >
-                            <View style={styles.quickActionIconLarge}>
-                                <Ionicons name="bug" size={28} color="white" />
-                            </View>
-                            <View style={styles.quickActionTextContainer}>
-                                <Text style={styles.quickActionTextLarge}>Debug Mode</Text>
-                                <Text style={styles.quickActionSubtext}>Error detection & auto-fix</Text>
-                            </View>
-                        </LinearGradient>
-                    </TouchableOpacity>
-
-                    {/* Testing Reports Button */}
-                    <TouchableOpacity style={styles.quickActionButtonLarge} onPress={() => navigation.navigate('TestingReports')}>
-                        <LinearGradient
-                            colors={['#00BCD4', '#0097A7']}
-                            style={styles.quickActionGradientLarge}
-                        >
-                            <View style={styles.quickActionIconLarge}>
-                                <Ionicons name="checkmark-circle" size={28} color="white" />
-                            </View>
-                            <View style={styles.quickActionTextContainer}>
-                                <Text style={styles.quickActionTextLarge}>Testing</Text>
-                                <Text style={styles.quickActionSubtext}>Comprehensive Firebase tests</Text>
-                            </View>
-                        </LinearGradient>
-                    </TouchableOpacity>
+                            <LinearGradient
+                                colors={['#1F2937', '#374151']}
+                                style={styles.quickActionGradientLarge}
+                            >
+                                <View style={styles.quickActionIconLarge}>
+                                    <Ionicons name="code-slash" size={28} color="#10B981" />
+                                </View>
+                                <View style={styles.quickActionTextContainer}>
+                                    <Text style={styles.quickActionTextLarge}>Developer Tools</Text>
+                                    <Text style={styles.quickActionSubtext}>Access testing & debugging tools</Text>
+                                </View>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Device Tools */}
@@ -560,38 +510,94 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Family Goal */}
+                {/* Daily Essentials */}
                 <View style={styles.section}>
-                    <LinearGradient
-                        colors={['#F59E0B', '#D97706']}
-                        style={styles.goalCard}
-                    >
-                        <View style={styles.goalHeader}>
-                            <Text style={styles.goalTitle}>Family Goal</Text>
-                            <Ionicons name="trophy" size={24} color="white" />
-                        </View>
+                    <Text style={styles.sectionTitle}>Daily Essentials</Text>
 
-                        <View style={styles.goalContent}>
-                            <Text style={styles.goalName}>Save for Disney World Trip</Text>
-                            <Text style={styles.goalProgress}>$2,400 of $5,000 saved</Text>
-
-                            <View style={styles.goalProgressBar}>
-                                <View style={styles.goalProgressFill} />
-                            </View>
-                            <Text style={styles.goalStats}>48% complete • 4 months to go</Text>
-                        </View>
-
-                        <View style={styles.goalContributors}>
-                            {familyMembers.map((member, index) => (
-                                <View key={member.id} style={styles.contributorCard}>
-                                    <Image source={{ uri: member.avatar }} style={styles.contributorAvatar} />
-                                    <Text style={styles.contributorAmount}>
-                                        ${[600, 800, 500, 500][index]}
-                                    </Text>
+                    {/* Weather & Family Check-in Row */}
+                    <View style={styles.essentialsRow}>
+                        {/* Weather Card */}
+                        <TouchableOpacity style={styles.essentialCard} onPress={() => navigation.navigate('Calendar')}>
+                            <LinearGradient
+                                colors={['#3B82F6', '#1D4ED8']}
+                                style={styles.essentialGradient}
+                            >
+                                <View style={styles.essentialHeader}>
+                                    <Ionicons name="partly-sunny" size={20} color="white" />
+                                    <Text style={styles.essentialTitle}>Weather</Text>
                                 </View>
-                            ))}
-                        </View>
-                    </LinearGradient>
+                                <Text style={styles.essentialValue}>72°F</Text>
+                                <Text style={styles.essentialSubtext}>Partly Cloudy</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+
+                        {/* Family Check-in Card */}
+                        <TouchableOpacity style={styles.essentialCard} onPress={() => navigation.navigate('SafeRoom')}>
+                            <LinearGradient
+                                colors={['#EC4899', '#DB2777']}
+                                style={styles.essentialGradient}
+                            >
+                                <View style={styles.essentialHeader}>
+                                    <Ionicons name="heart" size={20} color="white" />
+                                    <Text style={styles.essentialTitle}>Family Check-in</Text>
+                                </View>
+                                <Text style={styles.essentialValue}>3/4</Text>
+                                <Text style={styles.essentialSubtext}>Feeling Good</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Today's Focus */}
+                    <TouchableOpacity style={styles.focusCard} onPress={() => navigation.navigate('Vision')}>
+                        <LinearGradient
+                            colors={['#8B5CF6', '#7C3AED']}
+                            style={styles.focusGradient}
+                        >
+                            <View style={styles.focusHeader}>
+                                <Ionicons name="eye" size={24} color="white" />
+                                <Text style={styles.focusTitle}>Today's Focus</Text>
+                            </View>
+                            <Text style={styles.focusText}>Family Prayer Time</Text>
+                            <Text style={styles.focusSubtext}>Let's strengthen our spiritual connection together</Text>
+                            <View style={styles.focusProgress}>
+                                <View style={styles.focusProgressBar}>
+                                    <View style={[styles.focusProgressFill, { width: '75%' }]} />
+                                </View>
+                                <Text style={styles.focusProgressText}>75% Complete</Text>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+
+                    {/* Quick Actions */}
+                    <View style={styles.quickActionsRow}>
+                        <TouchableOpacity style={styles.quickActionSmall} onPress={() => navigation.navigate('Tasks')}>
+                            <View style={styles.quickActionIconSmall}>
+                                <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+                            </View>
+                            <Text style={styles.quickActionTextSmall}>Tasks</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.quickActionSmall} onPress={() => navigation.navigate('Calendar')}>
+                            <View style={styles.quickActionIconSmall}>
+                                <Ionicons name="calendar" size={20} color="#3B82F6" />
+                            </View>
+                            <Text style={styles.quickActionTextSmall}>Calendar</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.quickActionSmall} onPress={() => navigation.navigate('SafeRoom')}>
+                            <View style={styles.quickActionIconSmall}>
+                                <Ionicons name="shield" size={20} color="#EC4899" />
+                            </View>
+                            <Text style={styles.quickActionTextSmall}>Safe Room</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.quickActionSmall} onPress={() => navigation.navigate('Vision')}>
+                            <View style={styles.quickActionIconSmall}>
+                                <Ionicons name="eye" size={20} color="#8B5CF6" />
+                            </View>
+                            <Text style={styles.quickActionTextSmall}>Vision</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={{ height: 100 }} />
@@ -1039,69 +1045,134 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    goalCard: {
-        borderRadius: 16,
-        padding: 16,
-    },
-    goalHeader: {
+    // Daily Essentials Styles
+    essentialsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: 16,
     },
-    goalTitle: {
+    essentialCard: {
+        flex: 1,
+        marginHorizontal: 4,
+        borderRadius: 16,
+        overflow: 'hidden',
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    essentialGradient: {
+        padding: 16,
+        alignItems: 'center',
+    },
+    essentialHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    essentialTitle: {
+        fontSize: 14,
+        fontWeight: theme.typography.fontWeight.semibold,
+        color: 'white',
+        marginLeft: 6,
+    },
+    essentialValue: {
+        fontSize: 24,
+        fontWeight: theme.typography.fontWeight.bold,
+        color: 'white',
+        marginBottom: 4,
+    },
+    essentialSubtext: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.8)',
+        textAlign: 'center',
+    },
+    focusCard: {
+        borderRadius: 16,
+        overflow: 'hidden',
+        marginBottom: 16,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    focusGradient: {
+        padding: 20,
+    },
+    focusHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    focusTitle: {
         fontSize: 18,
         fontWeight: theme.typography.fontWeight.bold,
         color: 'white',
+        marginLeft: 8,
     },
-    goalContent: {
-        marginBottom: 16,
-    },
-    goalName: {
+    focusText: {
         fontSize: 16,
         fontWeight: theme.typography.fontWeight.semibold,
         color: 'white',
-        marginBottom: 8,
+        marginBottom: 6,
     },
-    goalProgress: {
+    focusSubtext: {
         fontSize: 14,
         color: 'rgba(255, 255, 255, 0.8)',
-        marginBottom: 12,
+        marginBottom: 16,
     },
-    goalProgressBar: {
-        height: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: 6,
-        marginBottom: 8,
-        overflow: 'hidden',
-    },
-    goalProgressFill: {
-        height: '100%',
-        width: '48%',
-        backgroundColor: 'white',
-        borderRadius: 6,
-    },
-    goalStats: {
-        fontSize: 14,
-        color: 'white',
-    },
-    goalContributors: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    contributorCard: {
-        flex: 1,
+    focusProgress: {
         alignItems: 'center',
     },
-    contributorAvatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        marginBottom: 4,
+    focusProgressBar: {
+        width: '100%',
+        height: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 4,
+        overflow: 'hidden',
+        marginBottom: 8,
     },
-    contributorAmount: {
+    focusProgressFill: {
+        height: '100%',
+        backgroundColor: 'white',
+        borderRadius: 4,
+    },
+    focusProgressText: {
         fontSize: 12,
-        color: 'white',
+        color: 'rgba(255, 255, 255, 0.8)',
+    },
+    quickActionsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    quickActionSmall: {
+        alignItems: 'center',
+        padding: 12,
+        backgroundColor: 'white',
+        borderRadius: 12,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        minWidth: 70,
+    },
+    quickActionIconSmall: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    quickActionTextSmall: {
+        fontSize: 12,
+        fontWeight: theme.typography.fontWeight.medium,
+        color: '#374151',
+        textAlign: 'center',
     },
 
     // Empty State Styles

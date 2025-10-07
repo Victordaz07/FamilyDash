@@ -19,6 +19,9 @@ export interface EmotionalMessage {
     replies: EmotionalReply[];
     hearts: number;
     createdAt: number;
+    // Voice message specific fields
+    voiceUri?: string;
+    duration?: number;
 }
 
 export interface EmotionalReply {
@@ -59,16 +62,14 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
             if (stored) {
                 const messages = JSON.parse(stored);
                 set({ messages });
+                console.log('📱 Loaded emotional messages:', messages.length);
             } else {
                 // Start with empty messages for new users
                 set({ messages: [] });
+                console.log('📱 No stored messages found, starting with empty array');
             }
-            
-            // Clear any existing mock data from storage
-            await AsyncStorage.removeItem(STORAGE_KEY);
-            set({ messages: [] });
         } catch (error) {
-            console.error('Error loading emotional messages:', error);
+            console.error('❌ Error loading emotional messages:', error);
             set({ error: 'Failed to load messages' });
         } finally {
             set({ isLoading: false });
