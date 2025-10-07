@@ -425,20 +425,33 @@ export default function FamilySchedulesScreen({ navigation }: FamilySchedulesScr
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
           <View style={styles.emptyState}>
-            <Ionicons name="time-outline" size={64} color="#8B5CF6" />
-            <Text style={styles.emptyTitle}>No hay horarios</Text>
+            <View style={styles.emptyIconContainer}>
+              <Ionicons name="time-outline" size={80} color="#8B5CF6" />
+              <View style={styles.emptyIconGlow} />
+            </View>
+            <Text style={styles.emptyTitle}>
+              {selectedCategory === 'all' 
+                ? '¡Organiza tu tiempo familiar! ⏰'
+                : `¡Planifica ${getCategoryInfo(selectedCategory).label.toLowerCase()}!`
+              }
+            </Text>
             <Text style={styles.emptySubtitle}>
               {selectedCategory === 'all' 
-                ? 'Agrega rutinas y horarios para tu familia'
-                : `No hay horarios de tipo ${getCategoryInfo(selectedCategory).label.toLowerCase()}`
+                ? 'Crea rutinas y horarios que ayuden a tu familia a mantenerse organizada y conectada'
+                : `Establece horarios de ${getCategoryInfo(selectedCategory).label.toLowerCase()} para una mejor organización familiar`
               }
             </Text>
             <TouchableOpacity
               style={styles.emptyAddButton}
               onPress={handleAddSchedule}
             >
-              <Ionicons name="add" size={20} color="white" />
-              <Text style={styles.emptyAddButtonText}>Agregar Horario</Text>
+              <LinearGradient
+                colors={['#8B5CF6', '#A855F7']}
+                style={styles.emptyAddButtonGradient}
+              >
+                <Ionicons name="add" size={20} color="white" />
+                <Text style={styles.emptyAddButtonText}>Crear Horario</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         )}
@@ -873,28 +886,55 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 80,
+    paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    position: 'relative',
+    marginBottom: 24,
+  },
+  emptyIconGlow: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    borderRadius: 50,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 5,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: '700',
     color: '#374151',
-    marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-    marginBottom: 24,
+    lineHeight: 24,
+    marginBottom: 32,
   },
   emptyAddButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  emptyAddButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#8B5CF6',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   emptyAddButtonText: {
     color: 'white',

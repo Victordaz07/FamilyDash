@@ -10,7 +10,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Alert,
   Modal,
 } from 'react-native';
@@ -18,6 +17,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFamily } from '../contexts/FamilyContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useFormValidation, COMMON_RULES } from '../hooks/useFormValidation';
+import { useFadeIn, useSlideIn } from '../hooks/useAnimations';
+import EnhancedInput from '../components/ui/EnhancedInput';
+import AnimatedButton from '../components/ui/AnimatedButton';
+import AnimatedCard from '../components/ui/AnimatedCard';
 
 interface MainHomeScreenProps {
   navigation: any;
@@ -52,6 +56,21 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
     description: '',
   });
 
+  // Validation rules
+  const validationRules = {
+    name: COMMON_RULES.name('El nombre de la casa es requerido'),
+    address: COMMON_RULES.address('La dirección es requerida'),
+    city: COMMON_RULES.name('La ciudad es requerida'),
+    country: COMMON_RULES.name('El país es requerido'),
+    description: COMMON_RULES.maxLength(200, 'La descripción no puede tener más de 200 caracteres'),
+  };
+
+  const { errors, touched, validateForm, setFieldTouched, setFieldError } = useFormValidation(validationRules);
+
+  // Animations
+  const fadeAnim = useFadeIn(500);
+  const slideAnim = useSlideIn('up', 400);
+
   useEffect(() => {
     loadFamilyHome();
   }, []);
@@ -83,8 +102,9 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
   };
 
   const handleSaveHome = async () => {
-    if (!formData.name || !formData.address || !formData.city) {
-      Alert.alert('Error', 'Por favor completa todos los campos obligatorios');
+    // Validate form
+    if (!validateForm(formData)) {
+      Alert.alert('Error', 'Por favor corrige los errores en el formulario');
       return;
     }
 
@@ -130,18 +150,24 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
     if (!familyHome) {
       return (
         <View style={styles.emptyState}>
-          <Ionicons name="home-outline" size={64} color="#8B5CF6" />
-          <Text style={styles.emptyTitle}>No hay casa configurada</Text>
+          <View style={styles.emptyIconContainer}>
+            <Ionicons name="home-outline" size={80} color="#8B5CF6" />
+            <View style={styles.emptyIconGlow} />
+          </View>
+          <Text style={styles.emptyTitle}>¡Tu hogar te espera! 🏠</Text>
           <Text style={styles.emptySubtitle}>
-            Configura la información de tu casa familiar
+            Configura la información de tu casa familiar para mantener a todos conectados y organizados
           </Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setShowEditModal(true)}
-          >
-            <Ionicons name="add" size={20} color="white" />
-            <Text style={styles.addButtonText}>Agregar Casa</Text>
-          </TouchableOpacity>
+            <AnimatedButton
+              title="Crear Hogar Familiar"
+              onPress={() => setShowEditModal(true)}
+              variant="primary"
+              size="large"
+              icon="add"
+              iconPosition="left"
+              gradient
+              animationType="scale"
+            />
         </View>
       );
     }
@@ -217,7 +243,7 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -226,10 +252,12 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Casa Principal</Text>
         <View style={styles.headerSpacer} />
-      </View>
+      </Animated.View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {renderHomeInfo()}
+        <Animated.View style={slideAnim.transform}>
+          {renderHomeInfo()}
+        </Animated.View>
 
         <View style={styles.familyMembers}>
           <Text style={styles.sectionTitle}>Miembros de la Familia</Text>
@@ -276,82 +304,86 @@ export default function MainHomeScreen({ navigation }: MainHomeScreenProps) {
           </View>
 
           <ScrollView style={styles.modalContent}>
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Nombre de la Casa *</Text>
-              <TextInput
-                style={styles.formInput}
-                value={formData.name}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, name: text })
-                }
-                placeholder="Ej: Casa de los Ruiz"
-              />
-            </View>
+            <EnhancedInput
+              label="Nombre de la Casa"
+              value={formData.name}
+              onChangeText={(text) => setFormData({ ...formData, name: text })}
+              onBlur={() => setFieldTouched('name')}
+              placeholder="Ej: Casa de los Ruiz"
+              error={errors.name}
+              touched={touched.name}
+              required
+              leftIcon="home"
+            />
 
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Dirección *</Text>
-              <TextInput
-                style={styles.formInput}
-                value={formData.address}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, address: text })
-                }
-                placeholder="Ej: Calle Principal 123"
-              />
-            </View>
+            <EnhancedInput
+              label="Dirección"
+              value={formData.address}
+              onChangeText={(text) => setFormData({ ...formData, address: text })}
+              onBlur={() => setFieldTouched('address')}
+              placeholder="Ej: Calle Principal 123"
+              error={errors.address}
+              touched={touched.address}
+              required
+              leftIcon="location"
+            />
 
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Ciudad *</Text>
-              <TextInput
-                style={styles.formInput}
-                value={formData.city}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, city: text })
-                }
-                placeholder="Ej: Madrid"
-              />
-            </View>
+            <EnhancedInput
+              label="Ciudad"
+              value={formData.city}
+              onChangeText={(text) => setFormData({ ...formData, city: text })}
+              onBlur={() => setFieldTouched('city')}
+              placeholder="Ej: Madrid"
+              error={errors.city}
+              touched={touched.city}
+              required
+              leftIcon="business"
+            />
 
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>País</Text>
-              <TextInput
-                style={styles.formInput}
-                value={formData.country}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, country: text })
-                }
-                placeholder="Ej: España"
-              />
-            </View>
+            <EnhancedInput
+              label="País"
+              value={formData.country}
+              onChangeText={(text) => setFormData({ ...formData, country: text })}
+              onBlur={() => setFieldTouched('country')}
+              placeholder="Ej: España"
+              error={errors.country}
+              touched={touched.country}
+              leftIcon="flag"
+            />
 
-            <View style={styles.formGroup}>
-              <Text style={styles.formLabel}>Descripción</Text>
-              <TextInput
-                style={[styles.formInput, styles.textArea]}
-                value={formData.description}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, description: text })
-                }
-                placeholder="Descripción de la casa familiar"
-                multiline
-                numberOfLines={3}
-              />
-            </View>
+            <EnhancedInput
+              label="Descripción"
+              value={formData.description}
+              onChangeText={(text) => setFormData({ ...formData, description: text })}
+              onBlur={() => setFieldTouched('description')}
+              placeholder="Descripción de la casa familiar"
+              error={errors.description}
+              touched={touched.description}
+              multiline
+              numberOfLines={3}
+              maxLength={200}
+              leftIcon="document-text"
+            />
           </ScrollView>
 
           <View style={styles.modalActions}>
-            <TouchableOpacity
-              style={styles.cancelButton}
+            <AnimatedButton
+              title="Cancelar"
               onPress={() => setShowEditModal(false)}
-            >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.saveButton}
+              variant="secondary"
+              size="medium"
+              style={styles.cancelButton}
+            />
+            <AnimatedButton
+              title="Guardar"
               onPress={handleSaveHome}
-            >
-              <Text style={styles.saveButtonText}>Guardar</Text>
-            </TouchableOpacity>
+              variant="primary"
+              size="medium"
+              icon="checkmark"
+              iconPosition="left"
+              gradient
+              style={styles.saveButton}
+            />
           </View>
         </View>
       </Modal>
@@ -393,28 +425,55 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 80,
+    paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    position: 'relative',
+    marginBottom: 24,
+  },
+  emptyIconGlow: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    borderRadius: 50,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 5,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: '700',
     color: '#374151',
-    marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
-    marginBottom: 24,
+    lineHeight: 24,
+    marginBottom: 32,
   },
   addButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  addButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#8B5CF6',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   addButtonText: {
     color: 'white',
