@@ -17,12 +17,14 @@ To fix the "Failed to load schedules" error, you need to create a composite inde
 **Collection ID**: `family_schedules`
 
 **Fields to index**:
+
 1. `familyId` - Ascending
 2. `timeISO` - Ascending
 
 ### Alternative: Use the Direct Link
 
 The error message provides a direct link to create the index:
+
 ```
 https://console.firebase.google.com/v1/r/project/family-dash-15944/firestore/indexes?create_composite=Clpwcm9qZWN0cy9mYW1pbHktZGFzaC0xNTk0NC9kYXRhYmZzZXMvKGR1ZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvZmFtaWx5X3NjaGVkdWxlcy9pbmRleGVzL18QAROMCghmYW1pbHlJZBABGgsKB3RpbWVJU08QAROMCghfX25hbWWfXxAB
 ```
@@ -30,6 +32,7 @@ https://console.firebase.google.com/v1/r/project/family-dash-15944/firestore/ind
 ### Fallback Solution
 
 If you can't create the index immediately, the code now includes a fallback that:
+
 1. Uses a simple query without `orderBy`
 2. Sorts the results in memory
 3. Works without requiring the composite index

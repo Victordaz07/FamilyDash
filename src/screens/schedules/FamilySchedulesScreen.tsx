@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { FamilySchedule } from "../../types/schedule";
 import { createSchedule, deleteSchedule, listSchedules, updateSchedule } from "../../services/schedules";
 import { ScheduleForm } from "./ScheduleForm";
@@ -62,37 +64,65 @@ export default function FamilySchedulesScreen({ route, navigation }: Props) {
   };
 
   return (
-    <View style={{ flex:1, padding: 14 }}>
-      <Text style={styles.title}>Family Schedules</Text>
+    <SafeAreaView style={styles.container}>
+      {/* Header with gradient */}
+      <LinearGradient
+        colors={['#3B82F6', '#1D4ED8']}
+        style={styles.header}
+      >
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Family Schedules</Text>
+        <View style={styles.headerRight} />
+      </LinearGradient>
 
-      <FlatList
-        data={items}
-        keyExtractor={(it)=>it.id!}
-        renderItem={({item}) => (
-          <View style={styles.item}>
-            <View style={{ flex:1 }}>
-              <Text style={styles.itemTitle}>{item.title}</Text>
-              <Text style={styles.itemMeta}>
-                {item.repeat.kind.toUpperCase()} • {new Date(item.timeISO).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
-              </Text>
-              {item.notes && (
-                <Text style={styles.itemNotes}>{item.notes}</Text>
-              )}
+      {/* Content */}
+      <View style={styles.content}>
+        <FlatList
+          data={items}
+          keyExtractor={(it)=>it.id!}
+          renderItem={({item}) => (
+            <View style={styles.item}>
+              <View style={styles.itemContent}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemMeta}>
+                  {item.repeat.kind.toUpperCase()} • {new Date(item.timeISO).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}
+                </Text>
+                {item.notes && (
+                  <Text style={styles.itemNotes}>{item.notes}</Text>
+                )}
+              </View>
+              <View style={styles.itemActions}>
+                <TouchableOpacity onPress={()=> setEditing(item)} style={styles.editBtn}>
+                  <Ionicons name="create-outline" size={16} color="white" />
+                  <Text style={styles.editBtnText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> onDelete(item.id!)} style={styles.deleteBtn}>
+                  <Ionicons name="trash-outline" size={16} color="white" />
+                  <Text style={styles.deleteBtnText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <TouchableOpacity onPress={()=> setEditing(item)} style={styles.smallBtn}>
-              <Text style={styles.smallBtnText}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={()=> onDelete(item.id!)} style={[styles.smallBtn,{backgroundColor:"#ef4444"}]}>
-              <Text style={styles.smallBtnText}>Del</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={{color:"#6b7280"}}>No routines yet.</Text>}
-      />
+          )}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="calendar-outline" size={64} color="#9CA3AF" />
+              <Text style={styles.emptyTitle}>No routines yet</Text>
+              <Text style={styles.emptySubtitle}>Create your first family routine to get started</Text>
+            </View>
+          }
+          contentContainerStyle={styles.listContainer}
+        />
 
-      <TouchableOpacity onPress={()=> setOpen(true)} style={styles.addBtn}>
-        <Text style={styles.addBtnText}>+ New Routine</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={()=> setOpen(true)} style={styles.addBtn}>
+          <Ionicons name="add" size={24} color="white" />
+          <Text style={styles.addBtnText}>New Routine</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Crear */}
       <ScheduleForm
@@ -114,37 +144,150 @@ export default function FamilySchedulesScreen({ route, navigation }: Props) {
           onSave={(data)=> onUpdate({ ...editing, ...data })}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontWeight:"800", fontSize:18, marginBottom:10 },
-  item: { 
-    flexDirection:"row", 
-    alignItems:"center", 
-    gap:8, 
-    padding:12, 
-    borderRadius:12, 
-    backgroundColor:"#f3f4f6", 
-    marginBottom:8 
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
   },
-  itemTitle: { fontWeight:"700", color:"#111827" },
-  itemMeta: { color:"#6b7280", fontSize: 12 },
-  itemNotes: { color:"#6b7280", fontSize: 11, fontStyle: 'italic', marginTop: 2 },
-  smallBtn: { 
-    backgroundColor:"#3b82f6", 
-    paddingHorizontal:10, 
-    paddingVertical:8, 
-    borderRadius:10 
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingTop: 60, // Account for status bar
   },
-  smallBtnText: { color:"#fff", fontWeight:"700", fontSize: 12 },
-  addBtn: { 
-    backgroundColor:"#10b981", 
-    padding:14, 
-    borderRadius:14, 
-    alignItems:"center", 
-    marginTop:8 
+  backButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  addBtnText: { color:"#fff", fontWeight:"800" },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerRight: {
+    width: 40, // Same width as back button for centering
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  listContainer: {
+    paddingTop: 16,
+    paddingBottom: 100, // Space for floating button
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  itemContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  itemMeta: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  itemNotes: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    fontStyle: 'italic',
+  },
+  itemActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  editBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  editBtnText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 12,
+  },
+  deleteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  deleteBtnText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 12,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    paddingHorizontal: 32,
+  },
+  addBtn: {
+    position: 'absolute',
+    bottom: 20,
+    right: 16,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10B981',
+    paddingVertical: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    gap: 8,
+  },
+  addBtnText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '700',
+  },
 });

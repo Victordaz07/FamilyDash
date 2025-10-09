@@ -6,6 +6,7 @@ import { useCalendar } from '../hooks/useCalendar';
 import ActivityCard from '../components/ActivityCard';
 import NewEventModal from '../components/NewEventModal';
 import { WeatherWidget } from '../../../components/WeatherWidget';
+import { listSchedules } from '../../../services/schedules';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -43,6 +44,41 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
     const calendarAnim = useRef(new Animated.Value(0)).current;
     const weatherAnim = useRef(new Animated.Value(0)).current;
 
+    // Load real family schedules from Firebase
+    const loadFamilySchedules = async () => {
+        try {
+            const schedules = await listSchedules('default_family');
+            const formattedSchedules = schedules.map(schedule => ({
+                id: schedule.id,
+                title: schedule.title,
+                time: formatScheduleTime(schedule),
+                details: formatScheduleDetails(schedule)
+            }));
+            setFamilySchedules(formattedSchedules);
+        } catch (error) {
+            console.error('Error loading family schedules:', error);
+            // Keep mock data on error
+        }
+    };
+
+    const formatScheduleTime = (schedule: any) => {
+        const date = new Date(schedule.timeISO);
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const repeatStr = schedule.repeat?.kind?.toUpperCase() || 'DAILY';
+        return `${repeatStr} ${timeStr}`;
+    };
+
+    const formatScheduleDetails = (schedule: any) => {
+        let details = '';
+        if (schedule.notes) {
+            details = schedule.notes;
+        }
+        if (schedule.members && schedule.members.length > 0) {
+            details += (details ? ' • ' : '') + `${schedule.members.length} members`;
+        }
+        return details || 'Family routine';
+    };
+
     useEffect(() => {
         // Entrance animations
         Animated.parallel([
@@ -78,7 +114,19 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
             delay: 400,
             useNativeDriver: true,
         }).start();
+
+        // Load family schedules on mount
+        loadFamilySchedules();
     }, []);
+
+    // Reload schedules when screen comes into focus
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadFamilySchedules();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     const handleBack = () => {
         navigation.goBack();
@@ -195,7 +243,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         }
     ];
 
-    const familySchedules = [
+    const [familySchedules, setFamilySchedules] = useState([
         {
             id: '1',
             title: 'Morning Routine',
@@ -214,7 +262,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
             time: 'Weekdays 4:00 PM',
             details: 'Study Session • Emma & Noah'
         }
-    ];
+    ]);
 
     function getActivityIcon(type: string) {
         const icons: { [key: string]: string } = {
