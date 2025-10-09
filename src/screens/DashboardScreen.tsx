@@ -33,8 +33,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     // State management
     const [refreshing, setRefreshing] = useState(false);
     const [showDeveloperPanel, setShowDeveloperPanel] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
-    const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
     const [lastRingTime, setLastRingTime] = useState(0);
     const [penaltyTime, setPenaltyTime] = useState(0);
     const [quickActions, setQuickActions] = useState([
@@ -44,38 +42,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         { id: 'family-chat', title: 'Family Chat', icon: 'chatbubbles', color: '#8B5CF6' }
     ]);
 
-    // Real-time connection monitoring
-    useEffect(() => {
-        const checkConnection = async () => {
-            try {
-                const isConnected = await RealDatabaseService.checkConnection();
-                setIsConnected(isConnected);
-                if (isConnected) {
-                    setLastSyncTime(new Date());
-                }
-            } catch (error) {
-                Logger.warn('Connection check failed', error);
-                setIsConnected(false);
-            }
-        };
 
-        // Check connection every 30 seconds
-        const connectionInterval = setInterval(checkConnection, 30000);
-        checkConnection(); // Initial check
-
-        return () => clearInterval(connectionInterval);
-    }, []);
-
-    // Auto-refresh data every 2 minutes
-    useEffect(() => {
-        const refreshInterval = setInterval(() => {
-            if (isConnected) {
-                setLastSyncTime(new Date());
-            }
-        }, 120000);
-
-        return () => clearInterval(refreshInterval);
-    }, [isConnected]);
 
     // Memoized data with safety checks
     const activeTasks = useMemo(() => (tasks || []).filter((task: any) => task.status !== 'completed'), [tasks]);
@@ -262,9 +229,9 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Enhanced Header with Connection Status */}
+            {/* Clean Header */}
             <LinearGradient
-                colors={isConnected ? [theme.colors.primary, '#7C3AED'] : ['#6b7280', '#9ca3af']}
+                colors={[theme.colors.primary, '#7C3AED']}
                 style={styles.header}
             >
                 <View style={styles.headerContent}>
@@ -272,12 +239,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         <View style={styles.headerIcon}>
                             <Ionicons name="home" size={20} color="white" />
                         </View>
-                        <View>
-                            <Text style={styles.headerTitle}>Family Dashboard</Text>
-                            <Text style={styles.headerSubtitle}>
-                                {isConnected ? '🟢 Connected' : '🔴 Offline'} • Last sync: {lastSyncTime.toLocaleTimeString()}
-                            </Text>
-                        </View>
+                        <Text style={styles.headerTitle}>Family Dashboard</Text>
                     </View>
                     <View style={styles.headerRight}>
                         <TouchableOpacity style={styles.notificationButton} onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}>
@@ -288,15 +250,14 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.syncButton} onPress={onRefresh}>
-                            <Ionicons name="refresh" size={20} color="white" />
+                        <TouchableOpacity onPress={() => navigation.navigate('Profile', { screen: 'Settings' })}>
+                            <Image
+                                source={{
+                                    uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
+                                }}
+                                style={styles.profileImage}
+                            />
                         </TouchableOpacity>
-                        <Image
-                            source={{
-                                uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
-                            }}
-                            style={styles.profileImage}
-                        />
                     </View>
                 </View>
             </LinearGradient>
@@ -694,14 +655,9 @@ const styles = StyleSheet.create({
         marginRight: 12,
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: theme.typography.fontWeight.bold,
         color: 'white',
-    },
-    headerSubtitle: {
-        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.8)',
-        marginTop: 2,
     },
     headerRight: {
         flexDirection: 'row',
