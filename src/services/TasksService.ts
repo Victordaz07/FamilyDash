@@ -4,6 +4,7 @@
  */
 
 import DatabaseService, { DatabaseResult } from './DatabaseService';
+import Logger from './Logger';
 
 export interface Task {
     id: string;
@@ -59,7 +60,7 @@ export const TasksService = {
      * Create a new task
      */
     async create(taskData: TaskInput, assignedBy: string): Promise<DatabaseResult<Task>> {
-        console.log('📝 Creating new task:', taskData);
+        Logger.debug('📝 Creating new task:', taskData);
 
         const task: Omit<Task, 'id'> = {
             ...taskData,
@@ -82,7 +83,7 @@ export const TasksService = {
      * Get all tasks with optional filtering
      */
     async getAll(filters?: TaskFilters): Promise<DatabaseResult<Task[]>> {
-        console.log('📖 Getting all tasks with filters:', filters);
+        Logger.debug('📖 Getting all tasks with filters:', filters);
 
         const options = filters ? {
             where: Object.entries(filters)
@@ -104,7 +105,7 @@ export const TasksService = {
      * Get tasks by user ID
      */
     async getByUser(userId: string, includeArchived: boolean = false): Promise<DatabaseResult<Task[]>> {
-        console.log(`📖 Getting tasks for user ${userId}`);
+        Logger.debug(`📖 Getting tasks for user ${userId}`);
 
         const filters: TaskFilters = {
             assignedTo: userId,
@@ -118,7 +119,7 @@ export const TasksService = {
      * Get a single task by ID
      */
     async getById(id: string): Promise<DatabaseResult<Task>> {
-        console.log(`📖 Getting task ${id}`);
+        Logger.debug(`📖 Getting task ${id}`);
         return await DatabaseService.getById<Task>(COLLECTION, id);
     },
 
@@ -126,7 +127,7 @@ export const TasksService = {
      * Update a task
      */
     async update(id: string, updates: Partial<TaskInput>): Promise<DatabaseResult<Task>> {
-        console.log(`📝 Updating task ${id}:`, updates);
+        Logger.debug(`📝 Updating task ${id}:`, updates);
 
         const updateData = {
             ...updates,
@@ -140,7 +141,7 @@ export const TasksService = {
      * Mark task as completed
      */
     async complete(id: string): Promise<DatabaseResult<Task>> {
-        console.log(`✅ Completing task ${id}`);
+        Logger.debug(`✅ Completing task ${id}`);
 
         return await this.update(id, {
             status: 'completed',
@@ -152,7 +153,7 @@ export const TasksService = {
      * Archive a task
      */
     async archive(id: string): Promise<DatabaseResult<Task>> {
-        console.log(`📦 Archiving task ${id}`);
+        Logger.debug(`📦 Archiving task ${id}`);
 
         return await this.update(id, {
             archived: true,
@@ -164,7 +165,7 @@ export const TasksService = {
      * Restore an archived task
      */
     async restore(id: string): Promise<DatabaseResult<Task>> {
-        console.log(`🔄 Restoring task ${id}`);
+        Logger.debug(`🔄 Restoring task ${id}`);
 
         return await this.update(id, {
             archived: false,
@@ -176,7 +177,7 @@ export const TasksService = {
      * Delete a task permanently
      */
     async delete(id: string): Promise<DatabaseResult> {
-        console.log(`🗑️ Deleting task ${id}`);
+        Logger.debug(`🗑️ Deleting task ${id}`);
         return await DatabaseService.remove(COLLECTION, id);
     },
 
@@ -187,7 +188,7 @@ export const TasksService = {
         callback: (tasks: Task[]) => void,
         filters?: TaskFilters
     ): () => void {
-        console.log('👂 Setting up real-time task listener');
+        Logger.debug('👂 Setting up real-time task listener');
 
         const options = filters ? {
             where: Object.entries(filters)
@@ -213,7 +214,7 @@ export const TasksService = {
         callback: (tasks: Task[]) => void,
         includeArchived: boolean = false
     ): () => void {
-        console.log(`👂 Setting up real-time task listener for user ${userId}`);
+        Logger.debug(`👂 Setting up real-time task listener for user ${userId}`);
 
         const filters: TaskFilters = {
             assignedTo: userId,
@@ -236,7 +237,7 @@ export const TasksService = {
         completedPoints: number;
     }>> {
         try {
-            console.log('📊 Getting task statistics');
+            Logger.debug('📊 Getting task statistics');
 
             const filters: TaskFilters = userId ? { assignedTo: userId } : {};
             const result = await this.getAll(filters);
@@ -258,10 +259,10 @@ export const TasksService = {
                     .reduce((sum, t) => sum + t.points, 0)
             };
 
-            console.log('📊 Task statistics:', stats);
+            Logger.debug('📊 Task statistics:', stats);
             return { success: true, data: stats };
         } catch (error: any) {
-            console.error('❌ Error getting task statistics:', error);
+            Logger.error('❌ Error getting task statistics:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to get statistics'
@@ -274,7 +275,7 @@ export const TasksService = {
      */
     async search(query: string, userId?: string): Promise<DatabaseResult<Task[]>> {
         try {
-            console.log(`🔍 Searching tasks with query: "${query}"`);
+            Logger.debug(`🔍 Searching tasks with query: "${query}"`);
 
             // Get all tasks first (Firestore doesn't support full-text search)
             const filters: TaskFilters = userId ? { assignedTo: userId } : {};
@@ -292,10 +293,10 @@ export const TasksService = {
                 task.tags.some(tag => tag.toLowerCase().includes(searchQuery))
             );
 
-            console.log(`🔍 Found ${filteredTasks.length} tasks matching "${query}"`);
+            Logger.debug(`🔍 Found ${filteredTasks.length} tasks matching "${query}"`);
             return { success: true, data: filteredTasks };
         } catch (error: any) {
-            console.error('❌ Error searching tasks:', error);
+            Logger.error('❌ Error searching tasks:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to search tasks'

@@ -4,6 +4,7 @@
  */
 
 import DatabaseService, { DatabaseResult } from './DatabaseService';
+import Logger from './Logger';
 
 export interface VoteOption {
     id: string;
@@ -68,7 +69,7 @@ export const VotesService = {
      */
     async createVote(voteData: VoteInput, createdBy: string, createdByName: string): Promise<DatabaseResult<Vote>> {
         try {
-            console.log('🗳️ Creating new vote:', voteData);
+            Logger.debug('🗳️ Creating new vote:', voteData);
 
             // Generate options with IDs
             const options: VoteOption[] = voteData.options.map((text, index) => ({
@@ -106,12 +107,12 @@ export const VotesService = {
             const result = await DatabaseService.add<Vote>(COLLECTION, vote);
 
             if (result.success) {
-                console.log('✅ Vote created successfully');
+                Logger.debug('✅ Vote created successfully');
             }
 
             return result;
         } catch (error: any) {
-            console.error('❌ Error creating vote:', error);
+            Logger.error('❌ Error creating vote:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to create vote'
@@ -123,7 +124,7 @@ export const VotesService = {
      * Get all votes with optional filtering
      */
     async getVotes(filters?: VoteFilters): Promise<DatabaseResult<Vote[]>> {
-        console.log('🗳️ Getting votes with filters:', filters);
+        Logger.debug('🗳️ Getting votes with filters:', filters);
 
         const options = {
             orderBy: [{ field: 'createdAt', direction: 'desc' as const }]
@@ -150,7 +151,7 @@ export const VotesService = {
      * Get active votes only
      */
     async getActiveVotes(): Promise<DatabaseResult<Vote[]>> {
-        console.log('🗳️ Getting active votes');
+        Logger.debug('🗳️ Getting active votes');
         return await this.getVotes({ status: 'active' });
     },
 
@@ -158,7 +159,7 @@ export const VotesService = {
      * Get votes by creator
      */
     async getVotesByCreator(createdBy: string): Promise<DatabaseResult<Vote[]>> {
-        console.log(`🗳️ Getting votes created by ${createdBy}`);
+        Logger.debug(`🗳️ Getting votes created by ${createdBy}`);
         return await this.getVotes({ createdBy });
     },
 
@@ -166,7 +167,7 @@ export const VotesService = {
      * Get a single vote by ID
      */
     async getVoteById(id: string): Promise<DatabaseResult<Vote>> {
-        console.log(`🗳️ Getting vote ${id}`);
+        Logger.debug(`🗳️ Getting vote ${id}`);
         return await DatabaseService.getById<Vote>(COLLECTION, id);
     },
 
@@ -175,7 +176,7 @@ export const VotesService = {
      */
     async castVote(voteId: string, optionId: string, userId: string): Promise<DatabaseResult<Vote>> {
         try {
-            console.log(`🗳️ User ${userId} casting vote for option ${optionId} in vote ${voteId}`);
+            Logger.debug(`🗳️ User ${userId} casting vote for option ${optionId} in vote ${voteId}`);
 
             // Get current vote
             const voteResult = await this.getVoteById(voteId);
@@ -234,12 +235,12 @@ export const VotesService = {
             const result = await DatabaseService.update<Vote>(COLLECTION, voteId, updates);
 
             if (result.success) {
-                console.log(`✅ Vote cast successfully for option ${optionId}`);
+                Logger.debug(`✅ Vote cast successfully for option ${optionId}`);
             }
 
             return result;
         } catch (error: any) {
-            console.error('❌ Error casting vote:', error);
+            Logger.error('❌ Error casting vote:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to cast vote'
@@ -252,7 +253,7 @@ export const VotesService = {
      */
     async removeVote(voteId: string, optionId: string, userId: string): Promise<DatabaseResult<Vote>> {
         try {
-            console.log(`🗳️ User ${userId} removing vote from option ${optionId} in vote ${voteId}`);
+            Logger.debug(`🗳️ User ${userId} removing vote from option ${optionId} in vote ${voteId}`);
 
             const voteResult = await this.getVoteById(voteId);
             if (!voteResult.success || !voteResult.data) {
@@ -292,7 +293,7 @@ export const VotesService = {
 
             return await DatabaseService.update<Vote>(COLLECTION, voteId, updates);
         } catch (error: any) {
-            console.error('❌ Error removing vote:', error);
+            Logger.error('❌ Error removing vote:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to remove vote'
@@ -304,7 +305,7 @@ export const VotesService = {
      * Complete a vote (close it)
      */
     async completeVote(voteId: string): Promise<DatabaseResult<Vote>> {
-        console.log(`🗳️ Completing vote ${voteId}`);
+        Logger.debug(`🗳️ Completing vote ${voteId}`);
 
         const updates: Partial<Vote> = {
             status: 'completed',
@@ -318,7 +319,7 @@ export const VotesService = {
      * Cancel a vote
      */
     async cancelVote(voteId: string): Promise<DatabaseResult<Vote>> {
-        console.log(`🗳️ Cancelling vote ${voteId}`);
+        Logger.debug(`🗳️ Cancelling vote ${voteId}`);
 
         const updates: Partial<Vote> = {
             status: 'cancelled',
@@ -353,7 +354,7 @@ export const VotesService = {
 
             return await DatabaseService.update<Vote>(COLLECTION, voteId, updates);
         } catch (error: any) {
-            console.error('❌ Error updating participation:', error);
+            Logger.error('❌ Error updating participation:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to update participation'
@@ -365,7 +366,7 @@ export const VotesService = {
      * Listen to real-time vote updates
      */
     listenToVotes(callback: (votes: Vote[]) => void, filters?: VoteFilters): () => void {
-        console.log('👂 Setting up real-time votes listener');
+        Logger.debug('👂 Setting up real-time votes listener');
 
         const options = {
             orderBy: [{ field: 'createdAt', direction: 'desc' as const }]
@@ -408,7 +409,7 @@ export const VotesService = {
         mostPopularCategory: string;
     }>> {
         try {
-            console.log('📊 Getting vote statistics');
+            Logger.debug('📊 Getting vote statistics');
 
             const result = await this.getVotes();
             if (!result.success || !result.data) {
@@ -434,10 +435,10 @@ export const VotesService = {
                     : 'general'
             };
 
-            console.log('📊 Vote statistics:', stats);
+            Logger.debug('📊 Vote statistics:', stats);
             return { success: true, data: stats };
         } catch (error: any) {
-            console.error('❌ Error getting vote statistics:', error);
+            Logger.error('❌ Error getting vote statistics:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to get vote statistics'

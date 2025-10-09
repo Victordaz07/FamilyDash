@@ -4,6 +4,7 @@
  */
 
 import { firestore } from '../config/firebase';
+import Logger from './Logger';
 
 export interface FamilySchedule {
   id: string;
@@ -60,7 +61,7 @@ class ScheduleService {
         ...doc.data()
       })) as FamilySchedule[];
     } catch (error) {
-      console.error('Error getting family schedules:', error);
+      Logger.error('Error getting family schedules:', error);
       throw new Error('No se pudieron cargar los horarios familiares');
     }
   }
@@ -82,7 +83,7 @@ class ScheduleService {
         ...doc.data()
       })) as FamilySchedule[];
     } catch (error) {
-      console.error('Error getting schedules by category:', error);
+      Logger.error('Error getting schedules by category:', error);
       throw new Error('No se pudieron cargar los horarios por categoría');
     }
   }
@@ -104,7 +105,7 @@ class ScheduleService {
         ...doc.data()
       })) as FamilySchedule[];
     } catch (error) {
-      console.error('Error getting schedules by type:', error);
+      Logger.error('Error getting schedules by type:', error);
       throw new Error('No se pudieron cargar los horarios por tipo');
     }
   }
@@ -123,7 +124,7 @@ class ScheduleService {
 
       return docRef.id;
     } catch (error) {
-      console.error('Error adding schedule:', error);
+      Logger.error('Error adding schedule:', error);
       throw new Error('No se pudo agregar el horario');
     }
   }
@@ -138,7 +139,7 @@ class ScheduleService {
         updatedAt: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error updating schedule:', error);
+      Logger.error('Error updating schedule:', error);
       throw new Error('No se pudo actualizar el horario');
     }
   }
@@ -166,7 +167,7 @@ class ScheduleService {
       
       await batch.commit();
     } catch (error) {
-      console.error('Error deleting schedule:', error);
+      Logger.error('Error deleting schedule:', error);
       throw new Error('No se pudo eliminar el horario');
     }
   }
@@ -209,7 +210,7 @@ class ScheduleService {
 
       return todaySchedules.sort((a, b) => a.time.localeCompare(b.time));
     } catch (error) {
-      console.error('Error getting today schedules:', error);
+      Logger.error('Error getting today schedules:', error);
       throw new Error('No se pudieron cargar los horarios de hoy');
     }
   }
@@ -254,7 +255,7 @@ class ScheduleService {
 
       return weekSchedules;
     } catch (error) {
-      console.error('Error getting week schedules:', error);
+      Logger.error('Error getting week schedules:', error);
       throw new Error('No se pudieron cargar los horarios de la semana');
     }
   }
@@ -274,7 +275,7 @@ class ScheduleService {
 
       return docRef.id;
     } catch (error) {
-      console.error('Error marking schedule completed:', error);
+      Logger.error('Error marking schedule completed:', error);
       throw new Error('No se pudo marcar el horario como completado');
     }
   }
@@ -295,7 +296,7 @@ class ScheduleService {
         ...doc.data()
       })) as ScheduleCompletion[];
     } catch (error) {
-      console.error('Error getting schedule completions:', error);
+      Logger.error('Error getting schedule completions:', error);
       throw new Error('No se pudieron cargar las completaciones del horario');
     }
   }
@@ -368,7 +369,7 @@ class ScheduleService {
 
       return stats;
     } catch (error) {
-      console.error('Error getting schedule stats:', error);
+      Logger.error('Error getting schedule stats:', error);
       throw new Error('No se pudieron cargar las estadísticas de horarios');
     }
   }
@@ -397,7 +398,7 @@ class ScheduleService {
 
       return upcomingToday.slice(0, limit);
     } catch (error) {
-      console.error('Error getting upcoming schedules:', error);
+      Logger.error('Error getting upcoming schedules:', error);
       throw new Error('No se pudieron cargar los próximos horarios');
     }
   }
@@ -440,7 +441,7 @@ class ScheduleService {
 
       return tomorrowSchedules.sort((a, b) => a.time.localeCompare(b.time));
     } catch (error) {
-      console.error('Error getting tomorrow schedules:', error);
+      Logger.error('Error getting tomorrow schedules:', error);
       return [];
     }
   }
@@ -468,7 +469,7 @@ class ScheduleService {
 
       return filteredSchedules;
     } catch (error) {
-      console.error('Error searching schedules:', error);
+      Logger.error('Error searching schedules:', error);
       throw new Error('No se pudo buscar los horarios');
     }
   }
@@ -509,7 +510,7 @@ class ScheduleService {
         ...doc.data()
       })) as FamilySchedule[];
     } catch (error) {
-      console.error('Error getting schedules by visibility:', error);
+      Logger.error('Error getting schedules by visibility:', error);
       throw new Error('No se pudieron cargar los horarios por visibilidad');
     }
   }

@@ -4,6 +4,7 @@
  */
 
 import { firestore } from '../config/firebase';
+import Logger from './Logger';
 
 export interface SavedLocation {
   id: string;
@@ -60,7 +61,7 @@ class LocationService {
         ...doc.data()
       })) as SavedLocation[];
     } catch (error) {
-      console.error('Error getting family locations:', error);
+      Logger.error('Error getting family locations:', error);
       throw new Error('No se pudieron cargar las ubicaciones');
     }
   }
@@ -82,7 +83,7 @@ class LocationService {
         ...doc.data()
       })) as SavedLocation[];
     } catch (error) {
-      console.error('Error getting locations by category:', error);
+      Logger.error('Error getting locations by category:', error);
       throw new Error('No se pudieron cargar las ubicaciones por categoría');
     }
   }
@@ -101,7 +102,7 @@ class LocationService {
 
       return docRef.id;
     } catch (error) {
-      console.error('Error adding location:', error);
+      Logger.error('Error adding location:', error);
       throw new Error('No se pudo agregar la ubicación');
     }
   }
@@ -116,7 +117,7 @@ class LocationService {
         updatedAt: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error updating location:', error);
+      Logger.error('Error updating location:', error);
       throw new Error('No se pudo actualizar la ubicación');
     }
   }
@@ -128,7 +129,7 @@ class LocationService {
     try {
       await firestore.collection(this.collection).doc(locationId).delete();
     } catch (error) {
-      console.error('Error deleting location:', error);
+      Logger.error('Error deleting location:', error);
       throw new Error('No se pudo eliminar la ubicación');
     }
   }
@@ -154,7 +155,7 @@ class LocationService {
         ...doc.data()
       } as FamilyHome;
     } catch (error) {
-      console.error('Error getting family home:', error);
+      Logger.error('Error getting family home:', error);
       throw new Error('No se pudo cargar la información de la casa');
     }
   }
@@ -186,7 +187,7 @@ class LocationService {
         return docRef.id;
       }
     } catch (error) {
-      console.error('Error setting family home:', error);
+      Logger.error('Error setting family home:', error);
       throw new Error('No se pudo establecer la casa familiar');
     }
   }
@@ -201,7 +202,7 @@ class LocationService {
         await firestore.collection(this.familyHomeCollection).doc(home.id).delete();
       }
     } catch (error) {
-      console.error('Error deleting family home:', error);
+      Logger.error('Error deleting family home:', error);
       throw new Error('No se pudo eliminar la casa familiar');
     }
   }
@@ -230,7 +231,7 @@ class LocationService {
 
       return filteredLocations;
     } catch (error) {
-      console.error('Error searching locations:', error);
+      Logger.error('Error searching locations:', error);
       throw new Error('No se pudo buscar las ubicaciones');
     }
   }
@@ -252,7 +253,7 @@ class LocationService {
         ...doc.data()
       })) as SavedLocation[];
     } catch (error) {
-      console.error('Error getting locations by visibility:', error);
+      Logger.error('Error getting locations by visibility:', error);
       throw new Error('No se pudieron cargar las ubicaciones por visibilidad');
     }
   }
@@ -290,7 +291,7 @@ class LocationService {
 
       return stats;
     } catch (error) {
-      console.error('Error getting location stats:', error);
+      Logger.error('Error getting location stats:', error);
       throw new Error('No se pudieron cargar las estadísticas de ubicaciones');
     }
   }
@@ -305,7 +306,7 @@ class LocationService {
       const locations = await this.getFamilyLocations(familyId);
       return locations.slice(0, limit);
     } catch (error) {
-      console.error('Error getting frequent locations:', error);
+      Logger.error('Error getting frequent locations:', error);
       throw new Error('No se pudieron cargar las ubicaciones frecuentes');
     }
   }
