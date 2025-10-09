@@ -220,13 +220,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate('Profile', { screen: 'Settings' })}>
-                            <Image
-                                source={{
-                                    uri: currentUser?.profileImage || currentUser?.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg'
-                                }}
-                                style={styles.profileImage}
-                            />
+                        <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate('Profile', { screen: 'Settings' })}>
+                            <Ionicons name="settings" size={20} color="white" />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -638,6 +633,16 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 2,
         borderColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    settingsButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     content: {
         flex: 1,
