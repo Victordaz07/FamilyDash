@@ -9,6 +9,7 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 ## 📋 Funcionalidades Implementadas
 
 ### 1. **Sistema Multi-Tiendas**
+
 - ✅ Crear, editar y eliminar tiendas
 - ✅ Asignar ubicación con mapa embebido (react-native-maps)
 - ✅ Botón "Abrir en Maps" (Google Maps en Android, Apple Maps en iOS)
@@ -16,6 +17,7 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 - ✅ Filtrado de productos por tienda
 
 ### 2. **Gestión de Productos**
+
 - ✅ Agregar productos manualmente
 - ✅ Escanear códigos de barras para autocompletar
 - ✅ Campos: nombre, cantidad, unidad, precio
@@ -23,6 +25,7 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 - ✅ Autocompletado basado en escaneos previos
 
 ### 3. **Estados de Compra**
+
 - ✅ Pendiente (cuadrado vacío)
 - ✅ En carrito (checkmark circle)
 - ✅ Comprado (checkmark done, verde)
@@ -30,6 +33,7 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 - ✅ Feedback háptico al cambiar estado
 
 ### 4. **Presupuestos y Totales**
+
 - ✅ Presupuesto por tienda
 - ✅ Barra de progreso visual (verde < 80%, naranja 80-100%, rojo > 100%)
 - ✅ Banner de alerta cuando se supera el presupuesto
@@ -37,6 +41,7 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 - ✅ Total general de la lista
 
 ### 5. **Integración con Tasks**
+
 - ✅ Botón "Shopping List" en TaskPreviewModal
 - ✅ Una lista por tarea (auto-creación)
 - ✅ Persistencia en Firebase
@@ -66,11 +71,13 @@ Todas las funcionalidades han sido implementadas exitosamente en la rama `featur
 ### **Agregar Productos**
 
 **Manualmente:**
+
 1. Escribe el nombre del producto
 2. Ingresa cantidad, unidad (u, kg, L, etc.) y precio
 3. Toca el botón "+" verde
 
 **Con Escáner:**
+
 1. Toca el botón morado con ícono de código de barras
 2. Permite acceso a la cámara
 3. Alinea el código de barras
@@ -122,6 +129,7 @@ src/
 ## 🔥 Colecciones de Firebase
 
 ### `shopping_lists`
+
 ```typescript
 {
   id: string
@@ -137,33 +145,35 @@ src/
 ```
 
 ### `shopping_items`
+
 ```typescript
 {
-  id: string
-  listId: string          // Referencia a shopping_lists
-  name: string
-  qty: number
-  unit: string
-  price: number
-  status: "pending" | "in_cart" | "purchased"
-  storeId: string         // Referencia a tienda
-  createdAt: timestamp
-  updatedAt: timestamp
+  id: string;
+  listId: string; // Referencia a shopping_lists
+  name: string;
+  qty: number;
+  unit: string;
+  price: number;
+  status: "pending" | "in_cart" | "purchased";
+  storeId: string; // Referencia a tienda
+  createdAt: timestamp;
+  updatedAt: timestamp;
 }
 ```
 
 ### `shopping_products`
+
 ```typescript
 {
-  id: string
-  familyId: string
-  barcode: string         // EAN/UPC
-  name: string
-  defaultUnit: string
-  lastPrice: number
-  lastStoreId: string
-  createdAt: timestamp
-  updatedAt: timestamp
+  id: string;
+  familyId: string;
+  barcode: string; // EAN/UPC
+  name: string;
+  defaultUnit: string;
+  lastPrice: number;
+  lastStoreId: string;
+  createdAt: timestamp;
+  updatedAt: timestamp;
 }
 ```
 
@@ -174,10 +184,12 @@ src/
 Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 
 ### `shopping_items`
+
 - Collection: `shopping_items`
 - Fields: `listId` (ASC), `createdAt` (ASC)
 
 ### `shopping_products`
+
 - Collection: `shopping_products`
 - Fields: `familyId` (ASC), `barcode` (ASC)
 
@@ -186,6 +198,7 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 ## 🧪 Testing Checklist
 
 ### ✅ Funcionalidades Básicas
+
 - [ ] Abrir Shopping List desde una tarea
 - [ ] Crear nueva tienda con nombre
 - [ ] Agregar producto manualmente
@@ -194,29 +207,34 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 - [ ] Eliminar producto
 
 ### ✅ Mapas
+
 - [ ] Mover pin en el mapa
 - [ ] Guardar ubicación de tienda
 - [ ] Abrir en Google Maps (Android)
 - [ ] Abrir en Apple Maps (iOS)
 
 ### ✅ Escáner de Códigos
+
 - [ ] Permitir acceso a cámara
 - [ ] Escanear código de barras
 - [ ] Autocompletar producto existente
 - [ ] Guardar nuevo producto en catálogo
 
 ### ✅ Presupuestos
+
 - [ ] Asignar presupuesto a tienda
 - [ ] Ver barra de progreso (verde/naranja/rojo)
 - [ ] Ver banner de alerta cuando se supera
 - [ ] Totales por tienda correctos
 
 ### ✅ Filtros
+
 - [ ] Filtrar por tienda específica
 - [ ] Ver "Todas" las tiendas
 - [ ] Productos asignados correctamente
 
 ### ✅ Persistencia
+
 - [ ] Datos guardados en Firebase
 - [ ] Lista persiste al cerrar/abrir
 - [ ] Múltiples listas (una por tarea)
@@ -226,19 +244,23 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 ## 🐛 Troubleshooting
 
 ### **Error: "Permiso de cámara denegado"**
+
 - Ve a Configuración > Apps > FamilyDash > Permisos
 - Habilita "Cámara"
 
 ### **Error: "Index not found"**
+
 - Crea los índices compuestos en Firebase Console
 - O espera a que Firebase te muestre el link para crearlos automáticamente
 
 ### **El mapa no se muestra**
+
 - Verifica que `react-native-maps` esté instalado
 - En Android: Asegúrate de tener Google Play Services
 - En iOS: Verifica permisos de ubicación
 
 ### **Los productos no se autocompletan**
+
 - Escanea el código de barras al menos una vez
 - Asigna precio y tienda
 - El producto se guardará en el catálogo para futuros escaneos
@@ -260,6 +282,7 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 ## 📱 Permisos Requeridos
 
 ### Android (android/app/src/main/AndroidManifest.xml)
+
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -267,6 +290,7 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 ```
 
 ### iOS (app.json)
+
 ```json
 {
   "expo": {
@@ -295,6 +319,7 @@ Si recibes errores de índice faltante, crea estos índices en Firebase Console:
 Para probar en tu dispositivo:
 
 1. **Iniciar el servidor de desarrollo:**
+
    ```bash
    npx expo start
    ```
@@ -328,4 +353,3 @@ Para probar en tu dispositivo:
 La Shopping List está **100% funcional** y lista para probar. Todos los archivos están creados, no hay errores de linting, y el código está commiteado en la rama `feature/shopping-list-professional`.
 
 **¡Disfruta tu nueva Shopping List profesional!** 🛒✨
-
