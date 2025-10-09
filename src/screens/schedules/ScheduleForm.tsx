@@ -44,14 +44,17 @@ export const ScheduleForm: React.FC<Props> = ({ visible, onClose, onSave, initia
       return;
     }
 
+    // Build repeat object without undefined fields
+    const repeatData: any = { kind: repeatKind };
+    if ((repeatKind === "weekly" || repeatKind === "custom") && weekdays.length > 0) {
+      repeatData.weekdays = weekdays;
+    }
+
     onSave({
       title: title.trim(),
       notes: notes.trim() || undefined,
       timeISO,
-      repeat: { 
-        kind: repeatKind, 
-        weekdays: (repeatKind==="weekly"||repeatKind==="custom") ? weekdays : undefined 
-      },
+      repeat: repeatData,
       members: [],
       color,
       isActive: true,
