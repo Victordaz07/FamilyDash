@@ -19,6 +19,26 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
   const [price, setPrice] = useState(item.price ? item.price.toString() : "");
   const [selectedStoreId, setSelectedStoreId] = useState(item.storeId || "none");
   const [saving, setSaving] = useState(false);
+  const [showUnitPicker, setShowUnitPicker] = useState(false);
+
+  // Available unit options
+  const unitOptions = [
+    { value: "u", label: "Unit" },
+    { value: "kg", label: "Kilogram" },
+    { value: "lb", label: "Pound" },
+    { value: "g", label: "Gram" },
+    { value: "oz", label: "Ounce" },
+    { value: "l", label: "Liter" },
+    { value: "ml", label: "Milliliter" },
+    { value: "gal", label: "Gallon" },
+    { value: "can", label: "Can" },
+    { value: "box", label: "Box" },
+    { value: "bag", label: "Bag" },
+    { value: "bottle", label: "Bottle" },
+    { value: "dozen", label: "Dozen" },
+    { value: "pack", label: "Pack" },
+    { value: "piece", label: "Piece" },
+  ];
 
   useEffect(() => {
     if (visible) {
@@ -102,13 +122,13 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
               </View>
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Unit</Text>
-                <TextInput
-                  value={unit}
-                  onChangeText={setUnit}
-                  placeholder="u"
-                  style={[styles.input, styles.smallInput]}
-                  placeholderTextColor="#9ca3af"
-                />
+                <TouchableOpacity 
+                  style={[styles.input, styles.smallInput, styles.unitSelector]}
+                  onPress={() => setShowUnitPicker(true)}
+                >
+                  <Text style={styles.unitText}>{unit}</Text>
+                  <Ionicons name="chevron-down" size={16} color="#6b7280" />
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -194,6 +214,44 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Unit Picker Modal */}
+        <Modal visible={showUnitPicker} transparent animationType="fade" onRequestClose={() => setShowUnitPicker(false)}>
+          <TouchableOpacity 
+            style={styles.unitPickerBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowUnitPicker(false)}
+          >
+            <View style={styles.unitPickerCard}>
+              <Text style={styles.unitPickerTitle}>Select Unit</Text>
+              <View style={styles.unitPickerList}>
+                {unitOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    style={[
+                      styles.unitPickerOption,
+                      unit === option.value && styles.unitPickerOptionSelected
+                    ]}
+                    onPress={() => {
+                      setUnit(option.value);
+                      setShowUnitPicker(false);
+                    }}
+                  >
+                    <Text style={[
+                      styles.unitPickerOptionText,
+                      unit === option.value && styles.unitPickerOptionTextSelected
+                    ]}>
+                      {option.label} ({option.value})
+                    </Text>
+                    {unit === option.value && (
+                      <Ionicons name="checkmark" size={20} color="#7c3aed" />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
     </Modal>
   );
@@ -264,6 +322,17 @@ const styles = StyleSheet.create({
   smallInput: {
     width: "100%",
   },
+  unitSelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+  },
+  unitText: {
+    fontSize: 16,
+    color: "#111827",
+    fontWeight: "500",
+  },
   row: {
     flexDirection: "row",
     gap: 16,
@@ -326,5 +395,58 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+  },
+
+  // Unit Picker Styles
+  unitPickerBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  unitPickerCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    width: "80%",
+    maxWidth: 400,
+    maxHeight: "70%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  unitPickerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    textAlign: "center",
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+  },
+  unitPickerList: {
+    maxHeight: 400,
+  },
+  unitPickerOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f3f4f6",
+  },
+  unitPickerOptionSelected: {
+    backgroundColor: "#f8fafc",
+  },
+  unitPickerOptionText: {
+    fontSize: 16,
+    color: "#374151",
+    fontWeight: "500",
+  },
+  unitPickerOptionTextSelected: {
+    color: "#7c3aed",
+    fontWeight: "600",
   },
 });
