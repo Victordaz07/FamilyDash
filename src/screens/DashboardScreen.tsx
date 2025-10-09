@@ -331,10 +331,10 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                     <View style={styles.quickActionTextContainer}>
                                         <Text style={styles.quickActionTextLarge}>{action.title}</Text>
                                         <Text style={styles.quickActionSubtext}>
-                                            {action.id === 'add-task' && 'Create tasks instantly'}
-                                            {action.id === 'start-vote' && 'Family decisions'}
-                                            {action.id === 'emergency' && 'Emergency support'}
-                                            {action.id === 'family-chat' && 'Real-time chat'}
+                                            {action.id === 'add-task' ? 'Create tasks instantly' :
+                                             action.id === 'start-vote' ? 'Family decisions' :
+                                             action.id === 'emergency' ? 'Emergency support' :
+                                             action.id === 'family-chat' ? 'Real-time chat' : ''}
                                         </Text>
                                     </View>
                                 </LinearGradient>
