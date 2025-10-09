@@ -28,6 +28,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import RealAuthService from '../auth/RealAuthService';
+import Logger from '../Logger';
 
 export interface DatabaseDocument {
   id: string;
@@ -64,7 +65,7 @@ class RealDatabaseService {
     data: Omit<T, 'id'>
   ): Promise<DatabaseResult<T & { id: string }>> {
     try {
-      console.log(`📝 Creating document in collection: ${collectionPath}`);
+      Logger.debug(`📝 Creating document in collection: ${collectionPath}`);
 
       // Add server timestamp for creation
       const documentData = {
@@ -86,14 +87,14 @@ class RealDatabaseService {
         createdBy: await this.getCurrentUserId(),
       } as T & { id: string };
 
-      console.log(`✅ Document created with ID: ${documentId}`);
+      Logger.debug(`✅ Document created with ID: ${documentId}`);
 
       return {
         success: true,
         data: documentWithId,
       };
     } catch (error: any) {
-      console.error(`❌ Error creating document in ${collectionPath}:`, error);
+      Logger.error(`❌ Error creating document in ${collectionPath}:`, error);
 
       return {
         success: false,
@@ -111,7 +112,7 @@ class RealDatabaseService {
     documentId: string
   ): Promise<DatabaseResult<T & { id: string }>> {
     try {
-      console.log(`📖 Getting document: ${collectionPath}/${documentId}`);
+      Logger.debug(`📖 Getting document: ${collectionPath}/${documentId}`);
 
       const docRef = doc(db, collectionPath, documentId);
       const docSnap = await getDoc(docRef);
@@ -131,14 +132,14 @@ class RealDatabaseService {
       // Convert Firestore timestamps to JavaScript dates
       const convertedData = this.convertTimestamps(documentData);
 
-      console.log(`✅ Document retrieved successfully`);
+      Logger.debug(`✅ Document retrieved successfully`);
 
       return {
         success: true,
         data: convertedData,
       };
     } catch (error: any) {
-      console.error(`❌ Error getting document ${documentId}:`, error);
+      Logger.error(`❌ Error getting document ${documentId}:`, error);
 
       return {
         success: false,
@@ -157,7 +158,7 @@ class RealDatabaseService {
     data: Partial<T>
   ): Promise<DatabaseResult<T & { id: string }>> {
     try {
-      console.log(`✏️ Updating document: ${collectionPath}/${documentId}`);
+      Logger.debug(`✏️ Updating document: ${collectionPath}/${documentId}`);
 
       const docRef = doc(db, collectionPath, documentId);
 
@@ -173,11 +174,11 @@ class RealDatabaseService {
       // Get the updated document
       const updatedDoc = await this.getDocument<T>(collectionPath, documentId);
 
-      console.log(`✅ Document updated successfully`);
+      Logger.debug(`✅ Document updated successfully`);
 
       return updatedDoc;
     } catch (error: any) {
-      console.error(`❌ Error updating document ${documentId}:`, error);
+      Logger.error(`❌ Error updating document ${documentId}:`, error);
 
       return {
         success: false,
@@ -195,18 +196,18 @@ class RealDatabaseService {
     documentId: string
   ): Promise<DatabaseResult<void>> {
     try {
-      console.log(`🗑️ Deleting document: ${collectionPath}/${documentId}`);
+      Logger.debug(`🗑️ Deleting document: ${collectionPath}/${documentId}`);
 
       const docRef = doc(db, collectionPath, documentId);
       await deleteDoc(docRef);
 
-      console.log(`✅ Document deleted successfully`);
+      Logger.debug(`✅ Document deleted successfully`);
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error(`❌ Error deleting document ${documentId}:`, error);
+      Logger.error(`❌ Error deleting document ${documentId}:`, error);
 
       return {
         success: false,
@@ -224,7 +225,7 @@ class RealDatabaseService {
     options?: QueryOptions
   ): Promise<DatabaseResult<(T & { id: string })[]>> {
     try {
-      console.log(`📋 Getting documents from collection: ${collectionPath}`);
+      Logger.debug(`📋 Getting documents from collection: ${collectionPath}`);
 
       let q = query(collection(db, collectionPath));
 
@@ -263,14 +264,14 @@ class RealDatabaseService {
         documents.push(convertedData);
       });
 
-      console.log(`✅ Retrieved ${documents.length} documents`);
+      Logger.debug(`✅ Retrieved ${documents.length} documents`);
 
       return {
         success: true,
         data: documents,
       };
     } catch (error: any) {
-      console.error(`❌ Error getting documents from ${collectionPath}:`, error);
+      Logger.error(`❌ Error getting documents from ${collectionPath}:`, error);
 
       return {
         success: false,
@@ -288,7 +289,7 @@ class RealDatabaseService {
     documentId: string,
     callback: (data: (T & { id: string }) | null, error?: string) => void
   ): Unsubscribe {
-    console.log(`👂 Listening to document: ${collectionPath}/${documentId}`);
+    Logger.debug(`👂 Listening to document: ${collectionPath}/${documentId}`);
 
     const docRef = doc(db, collectionPath, documentId);
 
@@ -309,7 +310,7 @@ class RealDatabaseService {
         }
       },
       (error) => {
-        console.error(`❌ Error listening to document ${documentId}:`, error);
+        Logger.error(`❌ Error listening to document ${documentId}:`, error);
         callback(null, error.message);
       }
     );
@@ -323,7 +324,7 @@ class RealDatabaseService {
     callback: (data: (T & { id: string })[], error?: string) => void,
     options?: QueryOptions
   ): Unsubscribe {
-    console.log(`👂 Listening to collection: ${collectionPath}`);
+    Logger.debug(`👂 Listening to collection: ${collectionPath}`);
 
     let q = query(collection(db, collectionPath));
 
@@ -363,7 +364,7 @@ class RealDatabaseService {
         callback(documents);
       },
       (error) => {
-        console.error(`❌ Error listening to collection ${collectionPath}:`, error);
+        Logger.error(`❌ Error listening to collection ${collectionPath}:`, error);
         callback([], error.message);
       }
     );
@@ -381,7 +382,7 @@ class RealDatabaseService {
     }>
   ): Promise<DatabaseResult<void>> {
     try {
-      console.log(`📦 Executing batch operation with ${operations.length} operations`);
+      Logger.debug(`📦 Executing batch operation with ${operations.length} operations`);
 
       const batch = writeBatch(db);
 
@@ -423,13 +424,13 @@ class RealDatabaseService {
 
       await batch.commit();
 
-      console.log(`✅ Batch operation completed successfully`);
+      Logger.debug(`✅ Batch operation completed successfully`);
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error(`❌ Error in batch operation:`, error);
+      Logger.error(`❌ Error in batch operation:`, error);
 
       return {
         success: false,
@@ -449,7 +450,7 @@ class RealDatabaseService {
     options?: QueryOptions
   ): Promise<DatabaseResult<(T & { id: string })[]>> {
     try {
-      console.log(`🔍 Searching documents in ${collectionPath} for: ${searchTerm}`);
+      Logger.debug(`🔍 Searching documents in ${collectionPath} for: ${searchTerm}`);
 
       // Note: Firestore doesn't support full-text search natively
       // This is a basic implementation using string contains
@@ -466,7 +467,7 @@ class RealDatabaseService {
 
       return await this.getDocuments<T>(collectionPath, searchOptions);
     } catch (error: any) {
-      console.error(`❌ Error searching documents:`, error);
+      Logger.error(`❌ Error searching documents:`, error);
 
       return {
         success: false,
@@ -484,7 +485,7 @@ class RealDatabaseService {
       const user = await this.authService.getCurrentUser();
       return user?.uid || null;
     } catch (error) {
-      console.error('Error getting current user ID:', error);
+      Logger.error('Error getting current user ID:', error);
       return null;
     }
   }
@@ -533,7 +534,7 @@ class RealDatabaseService {
       const testDoc = await getDoc(doc(db, '_test', 'connection'));
       return true;
     } catch (error) {
-      console.error('❌ Database connection failed:', error);
+      Logger.error('❌ Database connection failed:', error);
       return false;
     }
   }

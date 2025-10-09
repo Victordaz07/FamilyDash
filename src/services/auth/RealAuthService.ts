@@ -19,6 +19,7 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from '../../config/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Logger from '../Logger';
 
 export interface AuthUser {
   uid: string;
@@ -109,7 +110,7 @@ class RealAuthService {
         await AsyncStorage.removeItem('user_data');
       }
     } catch (error) {
-      console.error('Error saving user to storage:', error);
+      Logger.error('Error saving user to storage:', error);
     }
   }
 
@@ -121,7 +122,7 @@ class RealAuthService {
       const userData = await AsyncStorage.getItem('user_data');
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
-      console.error('Error getting user from storage:', error);
+      Logger.error('Error getting user from storage:', error);
       return null;
     }
   }
@@ -166,7 +167,7 @@ class RealAuthService {
    */
   async signInWithEmail(credentials: LoginCredentials): Promise<AuthResult> {
     try {
-      console.log('🔐 Signing in with email:', credentials.email);
+      Logger.debug('🔐 Signing in with email:', credentials.email);
 
       const userCredential: UserCredential = await signInWithEmailAndPassword(
         auth,
@@ -176,14 +177,14 @@ class RealAuthService {
 
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
 
-      console.log('✅ Login successful:', user.displayName);
+      Logger.debug('✅ Login successful:', user.displayName);
 
       return {
         success: true,
         user,
       };
     } catch (error: any) {
-      console.error('❌ Login error:', error);
+      Logger.error('❌ Login error:', error);
 
       return {
         success: false,
@@ -198,7 +199,7 @@ class RealAuthService {
    */
   async registerWithEmail(credentials: RegisterCredentials): Promise<AuthResult> {
     try {
-      console.log('📝 Registering new user:', credentials.email);
+      Logger.debug('📝 Registering new user:', credentials.email);
 
       const userCredential: UserCredential = await createUserWithEmailAndPassword(
         auth,
@@ -215,14 +216,14 @@ class RealAuthService {
 
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
 
-      console.log('✅ Registration successful:', user.displayName);
+      Logger.debug('✅ Registration successful:', user.displayName);
 
       return {
         success: true,
         user,
       };
     } catch (error: any) {
-      console.error('❌ Registration error:', error);
+      Logger.error('❌ Registration error:', error);
 
       return {
         success: false,
@@ -237,19 +238,19 @@ class RealAuthService {
    */
   async signInWithGoogle(): Promise<AuthResult> {
     try {
-      console.log('🔐 Signing in with Google');
+      Logger.debug('🔐 Signing in with Google');
 
       const userCredential: UserCredential = await signInWithPopup(auth, googleProvider);
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
 
-      console.log('✅ Google login successful:', user.displayName);
+      Logger.debug('✅ Google login successful:', user.displayName);
 
       return {
         success: true,
         user,
       };
     } catch (error: any) {
-      console.error('❌ Google login error:', error);
+      Logger.error('❌ Google login error:', error);
 
       return {
         success: false,
@@ -264,17 +265,17 @@ class RealAuthService {
    */
   async signOut(): Promise<AuthResult> {
     try {
-      console.log('🚪 Signing out user');
+      Logger.debug('🚪 Signing out user');
 
       await signOut(auth);
 
-      console.log('✅ Sign out successful');
+      Logger.debug('✅ Sign out successful');
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error('❌ Sign out error:', error);
+      Logger.error('❌ Sign out error:', error);
 
       return {
         success: false,
@@ -295,20 +296,20 @@ class RealAuthService {
         throw new Error('No authenticated user');
       }
 
-      console.log('✏️ Updating user profile');
+      Logger.debug('✏️ Updating user profile');
 
       await updateProfile(currentUser, updates);
 
       const user = this.mapFirebaseUserToAuthUser(currentUser);
 
-      console.log('✅ Profile update successful');
+      Logger.debug('✅ Profile update successful');
 
       return {
         success: true,
         user,
       };
     } catch (error: any) {
-      console.error('❌ Profile update error:', error);
+      Logger.error('❌ Profile update error:', error);
 
       return {
         success: false,
@@ -329,20 +330,20 @@ class RealAuthService {
         throw new Error('No authenticated user');
       }
 
-      console.log('📧 Updating user email');
+      Logger.debug('📧 Updating user email');
 
       await updateEmail(currentUser, newEmail);
 
       const user = this.mapFirebaseUserToAuthUser(currentUser);
 
-      console.log('✅ Email update successful');
+      Logger.debug('✅ Email update successful');
 
       return {
         success: true,
         user,
       };
     } catch (error: any) {
-      console.error('❌ Email update error:', error);
+      Logger.error('❌ Email update error:', error);
 
       return {
         success: false,
@@ -363,17 +364,17 @@ class RealAuthService {
         throw new Error('No authenticated user');
       }
 
-      console.log('🔐 Updating user password');
+      Logger.debug('🔐 Updating user password');
 
       await updatePassword(currentUser, newPassword);
 
-      console.log('✅ Password update successful');
+      Logger.debug('✅ Password update successful');
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error('❌ Password update error:', error);
+      Logger.error('❌ Password update error:', error);
 
       return {
         success: false,
@@ -388,17 +389,17 @@ class RealAuthService {
    */
   async sendPasswordResetEmail(email: string): Promise<AuthResult> {
     try {
-      console.log('📧 Sending password reset email to:', email);
+      Logger.debug('📧 Sending password reset email to:', email);
 
       await sendPasswordResetEmail(auth, email);
 
-      console.log('✅ Password reset email sent');
+      Logger.debug('✅ Password reset email sent');
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error('❌ Password reset error:', error);
+      Logger.error('❌ Password reset error:', error);
 
       return {
         success: false,
@@ -419,17 +420,17 @@ class RealAuthService {
         throw new Error('No authenticated user');
       }
 
-      console.log('🗑️ Deleting user account');
+      Logger.debug('🗑️ Deleting user account');
 
       await sendPasswordResetEmail(auth, currentUser.email!);
 
-      console.log('✅ Account deletion initiated');
+      Logger.debug('✅ Account deletion initiated');
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error('❌ Account deletion error:', error);
+      Logger.error('❌ Account deletion error:', error);
 
       return {
         success: false,
@@ -490,7 +491,7 @@ class RealAuthService {
 
       return await currentUser.getIdToken();
     } catch (error) {
-      console.error('Error getting auth token:', error);
+      Logger.error('Error getting auth token:', error);
       return null;
     }
   }
@@ -508,7 +509,7 @@ class RealAuthService {
 
       return await currentUser.getIdToken(true); // Force refresh
     } catch (error) {
-      console.error('Error refreshing auth token:', error);
+      Logger.error('Error refreshing auth token:', error);
       return null;
     }
   }

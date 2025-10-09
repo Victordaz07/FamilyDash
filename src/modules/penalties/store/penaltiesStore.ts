@@ -13,6 +13,7 @@ import {
   trackEvent 
 } from '../../../services';
 import { schedulePenaltyNotification } from '../../../services/notificationService';
+import Logger from '../../../services/Logger';
 
 interface PenaltiesStore {
     penalties: Penalty[];
@@ -76,19 +77,19 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
         const { isInitialized } = get();
         
         if (isInitialized) {
-            console.log('⚖️ Penalties already initialized, skipping...');
+            Logger.debug('⚖️ Penalties already initialized, skipping...');
             return;
         }
 
         set({ isLoading: true, error: null });
 
         try {
-            console.log('⚖️ Initializing penalties with Firebase...');
+            Logger.debug('⚖️ Initializing penalties with Firebase...');
 
             // Check if user is authenticated
             const user = await RealAuthService.getCurrentUser();
             if (!user) {
-                console.log('⚠️ No authenticated user, initializing with empty state');
+                Logger.debug('⚠️ No authenticated user, initializing with empty state');
                 set({ penalties: [], familyMembers: [], isInitialized: true, isLoading: false });
                 return;
             }
@@ -96,7 +97,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
             // Check Firebase connection
             const isConnected = await RealDatabaseService.checkConnection();
             if (!isConnected) {
-                console.log('⚠️ Firebase connection failed, falling back to offline mode');
+                Logger.debug('⚠️ Firebase connection failed, falling back to offline mode');
                 set({ 
                     penalties: [], 
                     familyMembers: [],
@@ -115,10 +116,10 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 `families/${user.uid}/penalties`,
                 (penalties, error) => {
                     if (error) {
-                        console.error('❌ Error listening to penalties:', error);
+                        Logger.error('❌ Error listening to penalties:', error);
                         set({ error: error, isLoading: false });
                     } else {
-                        console.log(`⚖️ Real-time update: ${penalties.length} penalties received`);
+                        Logger.debug(`⚖️ Real-time update: ${penalties.length} penalties received`);
                         
                         // Update penalty timers
                         const updatedPenalties = penalties.map(penalty => {
@@ -158,9 +159,9 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
             // Store subscription for cleanup
             set({ subscription: unsubscribe });
 
-            console.log('✅ Penalties initialized with Firebase real-time updates');
+            Logger.debug('✅ Penalties initialized with Firebase real-time updates');
         } catch (error: any) {
-            console.error('❌ Error initializing penalties:', error);
+            Logger.error('❌ Error initializing penalties:', error);
             set({ 
                 error: error.message, 
                 isInitialized: true, 
@@ -178,7 +179,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 throw new Error('User not authenticated');
             }
 
-            console.log('⚖️ Adding penalty to Firebase...');
+            Logger.debug('⚖️ Adding penalty to Firebase...');
 
             const now = new Date();
             const endTime = new Date(now.getTime() + (penaltyData.durationDays * 24 * 60 * 60 * 1000));
@@ -227,11 +228,11 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 method: newPenalty.method
             });
 
-            console.log('✅ Penalty created successfully:', newPenalty.type);
+            Logger.debug('✅ Penalty created successfully:', newPenalty.type);
 
             return { success: true };
         } catch (error: any) {
-            console.error('❌ Error adding penalty:', error);
+            Logger.error('❌ Error adding penalty:', error);
             set({ isLoading: false, error: error.message });
             
             return { 
@@ -250,7 +251,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 throw new Error('User not authenticated');
             }
 
-            console.log('🏁 Ending penalty in Firebase...');
+            Logger.debug('🏁 Ending penalty in Firebase...');
 
             const updates: Partial< Penalty> = {
                 isActive: false,
@@ -289,11 +290,11 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 has_reflection: !!reflection
             });
 
-            console.log('✅ Penalty completed successfully:', id);
+            Logger.debug('✅ Penalty completed successfully:', id);
 
             return { success: true };
         } catch (error: any) {
-            console.error('❌ Error ending penalty:', error);
+            Logger.error('❌ Error ending penalty:', error);
             set({ isLoading: false, error: error.message });
             
             // Fallback to offline mode
@@ -315,7 +316,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 throw new Error('User not authenticated');
             }
 
-            console.log(`⏰ Adjusting penalty time in Firebase: ${days} days for ${id}`);
+            Logger.debug(`⏰ Adjusting penalty time in Firebase: ${days} days for ${id}`);
 
             const penalty = get().getPenaltyById(id);
             if (!penalty) {
@@ -360,11 +361,11 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 adjustment_days: days
             });
 
-            console.log('✅ Penalty time adjusted successfully:', id);
+            Logger.debug('✅ Penalty time adjusted successfully:', id);
 
             return { success: true };
         } catch (error: any) {
-            console.error('❌ Error adjusting penalty time:', error);
+            Logger.error('❌ Error adjusting penalty time:', error);
             set({ isLoading: false, error: error.message });
             
             return { 
@@ -383,7 +384,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 throw new Error('User not authenticated');
             }
 
-            console.log('💭 Adding reflection to penalty in Firebase...');
+            Logger.debug('💭 Adding reflection to penalty in Firebase...');
 
             const penalty = get().getPenaltyById(id);
             if (!penalty) {
@@ -420,11 +421,11 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 reflection_length: text.length
             });
 
-            console.log('✅ Reflection added successfully:', id);
+            Logger.debug('✅ Reflection added successfully:', id);
 
             return { success: true };
         } catch (error: any) {
-            console.error('❌ Error adding reflection:', error);
+            Logger.error('❌ Error adding reflection:', error);
             set({ isLoading: false, error: error.message });
             
             return { 
@@ -480,7 +481,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
         
         set((state) => ({ penalties: [...state.penalties, newPenalty] }));
         
-        console.log('⚖️ Penalty added offline, will sync when online:', newPenalty.type);
+        Logger.debug('⚖️ Penalty added offline, will sync when online:', newPenalty.type);
         
         // Schedule notification
         schedulePenaltyNotification({
@@ -514,7 +515,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
             ),
         }));
         
-        console.log('🏁 Penalty ended offline, will sync when online:', id);
+        Logger.debug('🏁 Penalty ended offline, will sync when online:', id);
     },
 
     adjustTimeOffline: (id, days) => {
@@ -545,7 +546,7 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
             ),
         }));
         
-        console.log('⏰ Penalty time adjusted offline, will sync when online:', id);
+        Logger.debug('⏰ Penalty time adjusted offline, will sync when online:', id);
     },
 
     updatePenaltyTimerOffline: () => {
@@ -557,11 +558,11 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
         const offlinePenalties = penalties.filter(penalty => penalty.id.startsWith('offline_penalty_'));
         
         if (offlinePenalties.length === 0) {
-            console.log('⚖️ No offline penalties to sync');
+            Logger.debug('⚖️ No offline penalties to sync');
             return;
         }
 
-        console.log(`📡 Syncing ${offlinePenalties.length} offline penalties...`);
+        Logger.debug(`📡 Syncing ${offlinePenalties.length} offline penalties...`);
         
         let successCount = 0;
         let errorCount = 0;
@@ -582,12 +583,12 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                     errorCount++;
                 }
             } catch (error) {
-                console.error('❌ Error syncing offline penalty:', penalty.id, error);
+                Logger.error('❌ Error syncing offline penalty:', penalty.id, error);
                 errorCount++;
             }
         }
 
-        console.log(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
+        Logger.debug(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
         
         trackEvent('offline_penalties_synced', { 
             successful: successCount,
@@ -617,10 +618,10 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
                 }));
 
                 set({ familyMembers });
-                console.log(`👨‍👩‍👧‍👦 Loaded ${familyMembers.length} family members for penalties`);
+                Logger.debug(`👨‍👩‍👧‍👦 Loaded ${familyMembers.length} family members for penalties`);
             }
         } catch (error) {
-            console.error('❌ Error loading family members:', error);
+            Logger.error('❌ Error loading family members:', error);
         }
     },
 
@@ -681,14 +682,14 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
         try {
             return await RealDatabaseService.checkConnection();
         } catch (error) {
-            console.error('❌ Connection check failed:', error);
+            Logger.error('❌ Connection check failed:', error);
             return false;
         }
     },
 
     reconnect: async () => {
         try {
-            console.log('🔄 Attempting to reconnect to Firebase...');
+            Logger.debug('🔄 Attempting to reconnect to Firebase...');
             set({ isLoading: true, error: null });
             
             // Cleanup existing subscription
@@ -700,9 +701,9 @@ export const usePenaltiesStoreWithFirebase = create<PenaltiesStore>((set, get) =
             // Reinitialize
             await get().initializePenalties();
             
-            console.log('✅ Reconnected to Firebase successfully');
+            Logger.debug('✅ Reconnected to Firebase successfully');
         } catch (error: any) {
-            console.error('❌ Reconnection failed:', error);
+            Logger.error('❌ Reconnection failed:', error);
             set({ 
                 error: error.message, 
                 isLoading: false 

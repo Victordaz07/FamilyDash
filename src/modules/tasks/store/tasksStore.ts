@@ -10,6 +10,7 @@ import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
 import { RealDatabaseService, RealAuthService, trackEvent } from '../../../services';
 import { scheduleTaskNotification } from '../../../services/notificationService';
 import { mockTasks } from '../mock/tasksData';
+import Logger from '../../../services/Logger';
 
 interface TasksState {
   tasks: Task[];
@@ -83,22 +84,22 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     const { isInitialized } = get();
 
     if (isInitialized) {
-      console.log('📋 Tasks already initialized, skipping...');
+      Logger.debug('Tasks already initialized, skipping...');
       return;
     }
 
     set({ isLoading: true, error: null });
 
     try {
-      console.log('📋 Initializing tasks...');
+      Logger.debug('📋 Initializing tasks...');
 
       // 🔥 FIREBASE REAL ACTIVATED
-      console.log('🔥 Firebase REAL mode activated - connecting to Firebase...');
+      Logger.debug('🔥 Firebase REAL mode activated - connecting to Firebase...');
 
       // Check Firebase connection
       const isConnected = await RealDatabaseService.checkConnection();
       if (!isConnected) {
-        console.log('⚠️ Firebase connection failed, falling back to offline mode');
+        Logger.debug('⚠️ Firebase connection failed, falling back to offline mode');
         set({
           tasks: [],
           isInitialized: true,
@@ -111,7 +112,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       // Get current user from Firebase Auth
       const currentUser = await RealAuthService.getCurrentUser();
       if (!currentUser) {
-        console.log('⚠️ No authenticated user, using empty state');
+        Logger.debug('⚠️ No authenticated user, using empty state');
         set({
           tasks: [],
           isInitialized: true,
@@ -126,10 +127,10 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         `families/${currentUser.uid}/tasks`,
         (tasks, error) => {
           if (error) {
-            console.error('❌ Error listening to tasks:', error);
+            Logger.error('❌ Error listening to tasks:', error);
             set({ error: error, isLoading: false });
           } else {
-            console.log(`📋 Real-time update: ${tasks.length} tasks received`);
+            Logger.debug(`📋 Real-time update: ${tasks.length} tasks received`);
             set({
               tasks,
               isInitialized: true,
@@ -152,9 +153,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       // Store subscription for cleanup
       set({ subscription: unsubscribe });
 
-      console.log('✅ Tasks initialized with Firebase real-time updates');
+      Logger.debug('✅ Tasks initialized with Firebase real-time updates');
     } catch (error: any) {
-      console.error('❌ Error initializing tasks:', error);
+      Logger.error('❌ Error initializing tasks:', error);
       set({
         error: error.message,
         isInitialized: true,
@@ -181,7 +182,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         throw new Error('User not authenticated');
       }
 
-      console.log('📝 Adding task to Firebase...');
+      Logger.debug('📝 Adding task to Firebase...');
 
       const taskWithMetadata = {
         ...taskData,
@@ -222,11 +223,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       //   assigned_to: newTask.assignedTo
       // });
 
-      console.log('✅ Task created successfully:', newTask.title);
+      Logger.debug('✅ Task created successfully:', newTask.title);
 
       return { success: true };
     } catch (error: any) {
-      console.error('❌ Error adding task:', error);
+      Logger.error('❌ Error adding task:', error);
       set({ isLoading: false, error: error.message });
 
       return {
@@ -245,7 +246,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         throw new Error('User not authenticated');
       }
 
-      console.log('✏️ Updating task in Firebase...');
+      Logger.debug('✏️ Updating task in Firebase...');
 
       const result = await RealDatabaseService.updateDocument<Task>(
         `families/${user.uid}/tasks`,
@@ -269,11 +270,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       //   updated_fields: Object.keys(updates)
       // });
 
-      console.log('✅ Task updated successfully:', id);
+      Logger.debug('✅ Task updated successfully:', id);
 
       return { success: true };
     } catch (error: any) {
-      console.error('❌ Error updating task:', error);
+      Logger.error('❌ Error updating task:', error);
       set({ isLoading: false, error: error.message });
 
       return {
@@ -299,7 +300,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         throw new Error('User not authenticated');
       }
 
-      console.log('🗑️ Deleting task from Firebase...');
+      Logger.debug('🗑️ Deleting task from Firebase...');
 
       const result = await RealDatabaseService.deleteDocument(
         `families/${user.uid}/tasks`,
@@ -318,11 +319,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       //   user_id: user.uid
       // });
 
-      console.log('✅ Task deleted successfully:', id);
+      Logger.debug('✅ Task deleted successfully:', id);
 
       return { success: true };
     } catch (error: any) {
-      console.error('❌ Error deleting task:', error);
+      Logger.error('❌ Error deleting task:', error);
       set({ isLoading: false, error: error.message });
 
       return {
@@ -343,7 +344,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
 
     set((state) => ({ tasks: [...state.tasks, newTask] }));
 
-    console.log('📝 Task added offline, will sync when online:', newTask.title);
+    Logger.debug('📝 Task added offline, will sync when online:', newTask.title);
 
     // Schedule notification (DISABLED - Service conflict)
     // scheduleTaskNotification({
@@ -363,7 +364,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       ),
     }));
 
-    console.log('✏️ Task updated offline, will sync when online:', id);
+    Logger.debug('✏️ Task updated offline, will sync when online:', id);
   },
 
   completeTaskOffline: (id) => {
@@ -379,7 +380,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       selectedTask: state.selectedTask?.id === id ? undefined : state.selectedTask,
     }));
 
-    console.log('🗑️ Task deleted offline, will sync when online:', id);
+    Logger.debug('🗑️ Task deleted offline, will sync when online:', id);
   },
 
   syncOfflineTasks: async () => {
@@ -387,11 +388,11 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     const offlineTasks = tasks.filter(task => task.id.startsWith('offline_task_'));
 
     if (offlineTasks.length === 0) {
-      console.log('📋 No offline tasks to sync');
+      Logger.debug('📋 No offline tasks to sync');
       return;
     }
 
-    console.log(`📡 Syncing ${offlineTasks.length} offline tasks...`);
+    Logger.debug(`📡 Syncing ${offlineTasks.length} offline tasks...`);
 
     let successCount = 0;
     let errorCount = 0;
@@ -410,12 +411,12 @@ export const useTasksStore = create<TasksState>((set, get) => ({
           errorCount++;
         }
       } catch (error) {
-        console.error('❌ Error syncing offline task:', task.id, error);
+        Logger.error('❌ Error syncing offline task:', task.id, error);
         errorCount++;
       }
     }
 
-    console.log(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
+    Logger.debug(`📡 Sync completed: ${successCount} successful, ${errorCount} errors`);
 
     // Track analytics (DISABLED - Service conflict)
     // trackEvent('offline_tasks_synced', { 
@@ -492,14 +493,14 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     try {
       return await RealDatabaseService.checkConnection();
     } catch (error) {
-      console.error('❌ Connection check failed:', error);
+      Logger.error('❌ Connection check failed:', error);
       return false;
     }
   },
 
   reconnect: async () => {
     try {
-      console.log('🔄 Attempting to reconnect to Firebase...');
+      Logger.debug('🔄 Attempting to reconnect to Firebase...');
       set({ isLoading: true, error: null });
 
       // Cleanup existing subscription
@@ -511,9 +512,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       // Reinitialize
       await get().initializeTasks();
 
-      console.log('✅ Reconnected to Firebase successfully');
+      Logger.debug('✅ Reconnected to Firebase successfully');
     } catch (error: any) {
-      console.error('❌ Reconnection failed:', error);
+      Logger.error('❌ Reconnection failed:', error);
       set({
         error: error.message,
         isLoading: false

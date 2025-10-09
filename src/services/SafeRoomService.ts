@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatabaseService, { DatabaseResult } from './DatabaseService';
+import Logger from './Logger';
 
 export interface SafeRoomMessage {
     id: string;
@@ -43,7 +44,7 @@ export const SafeRoomService = {
      */
     async addMessage(messageData: MessageInput): Promise<DatabaseResult<SafeRoomMessage>> {
         try {
-            console.log('💬 Adding SafeRoom message:', messageData);
+            Logger.debug('💬 Adding SafeRoom message:', messageData);
 
             const message: Omit<SafeRoomMessage, 'id'> = {
                 ...messageData,
@@ -59,11 +60,11 @@ export const SafeRoomService = {
             if (firebaseResult.success && firebaseResult.data) {
                 // Also save locally for offline access
                 await this.saveMessageLocally(firebaseResult.data);
-                console.log('✅ SafeRoom message added successfully');
+                Logger.debug('✅ SafeRoom message added successfully');
                 return firebaseResult;
             } else {
                 // If Firebase fails, save locally only
-                console.log('⚠️ Firebase failed, saving locally only');
+                Logger.debug('⚠️ Firebase failed, saving locally only');
                 const localMessage = {
                     ...message,
                     id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -72,7 +73,7 @@ export const SafeRoomService = {
                 return { success: true, data: localMessage };
             }
         } catch (error: any) {
-            console.error('❌ Error adding SafeRoom message:', error);
+            Logger.error('❌ Error adding SafeRoom message:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to add message'
@@ -85,7 +86,7 @@ export const SafeRoomService = {
      */
     async getMessages(): Promise<SafeRoomMessage[]> {
         try {
-            console.log('📖 Getting SafeRoom messages');
+            Logger.debug('📖 Getting SafeRoom messages');
 
             // Try Firebase first
             const firebaseResult = await DatabaseService.getAll<SafeRoomMessage>(COLLECTION, {
@@ -93,17 +94,17 @@ export const SafeRoomService = {
             });
 
             if (firebaseResult.success && firebaseResult.data) {
-                console.log(`✅ Retrieved ${firebaseResult.data.length} messages from Firebase`);
+                Logger.debug(`✅ Retrieved ${firebaseResult.data.length} messages from Firebase`);
                 // Update local storage with Firebase data
                 await this.updateLocalStorage(firebaseResult.data);
                 return firebaseResult.data;
             } else {
                 // Fallback to local storage
-                console.log('⚠️ Firebase failed, using local storage');
+                Logger.debug('⚠️ Firebase failed, using local storage');
                 return await this.getLocalMessages();
             }
         } catch (error) {
-            console.error('❌ Error getting messages:', error);
+            Logger.error('❌ Error getting messages:', error);
             return await this.getLocalMessages();
         }
     },
@@ -112,12 +113,12 @@ export const SafeRoomService = {
      * Listen to real-time message updates
      */
     listenToMessages(callback: (messages: SafeRoomMessage[]) => void): () => void {
-        console.log('👂 Setting up real-time SafeRoom message listener');
+        Logger.debug('👂 Setting up real-time SafeRoom message listener');
 
         return DatabaseService.listen<SafeRoomMessage>(
             COLLECTION,
             (messages) => {
-                console.log(`📡 Real-time update: ${messages.length} messages`);
+                Logger.debug(`📡 Real-time update: ${messages.length} messages`);
                 // Update local storage
                 this.updateLocalStorage(messages);
                 callback(messages);
@@ -133,7 +134,7 @@ export const SafeRoomService = {
      */
     async updateMessage(id: string, updates: Partial<MessageInput>): Promise<DatabaseResult<SafeRoomMessage>> {
         try {
-            console.log(`📝 Updating SafeRoom message ${id}:`, updates);
+            Logger.debug(`📝 Updating SafeRoom message ${id}:`, updates);
 
             const updateData = {
                 ...updates,
@@ -145,12 +146,12 @@ export const SafeRoomService = {
             if (result.success) {
                 // Update local storage
                 await this.updateLocalMessage(id, updateData);
-                console.log(`✅ SafeRoom message ${id} updated successfully`);
+                Logger.debug(`✅ SafeRoom message ${id} updated successfully`);
             }
 
             return result;
         } catch (error: any) {
-            console.error(`❌ Error updating SafeRoom message ${id}:`, error);
+            Logger.error(`❌ Error updating SafeRoom message ${id}:`, error);
             return {
                 success: false,
                 error: error.message || 'Failed to update message'
@@ -163,19 +164,19 @@ export const SafeRoomService = {
      */
     async deleteMessage(id: string): Promise<DatabaseResult> {
         try {
-            console.log(`🗑️ Deleting SafeRoom message ${id}`);
+            Logger.debug(`🗑️ Deleting SafeRoom message ${id}`);
 
             const result = await DatabaseService.remove(COLLECTION, id);
 
             if (result.success) {
                 // Remove from local storage
                 await this.removeLocalMessage(id);
-                console.log(`✅ SafeRoom message ${id} deleted successfully`);
+                Logger.debug(`✅ SafeRoom message ${id} deleted successfully`);
             }
 
             return result;
         } catch (error: any) {
-            console.error(`❌ Error deleting SafeRoom message ${id}:`, error);
+            Logger.error(`❌ Error deleting SafeRoom message ${id}:`, error);
             return {
                 success: false,
                 error: error.message || 'Failed to delete message'
@@ -188,7 +189,7 @@ export const SafeRoomService = {
      */
     async addSystemMessage(content: string): Promise<void> {
         try {
-            console.log('📢 Adding system message:', content);
+            Logger.debug('📢 Adding system message:', content);
 
             const systemMessage: MessageInput = {
                 type: 'text',
@@ -200,7 +201,7 @@ export const SafeRoomService = {
 
             await this.addMessage(systemMessage);
         } catch (error) {
-            console.error('❌ Error adding system message:', error);
+            Logger.error('❌ Error adding system message:', error);
         }
     },
 
@@ -209,14 +210,14 @@ export const SafeRoomService = {
      */
     async clearMessages(): Promise<void> {
         try {
-            console.log('🗑️ Clearing all SafeRoom messages');
+            Logger.debug('🗑️ Clearing all SafeRoom messages');
 
             // Clear Firebase (this would require batch delete in production)
             // For now, just clear local storage
             await AsyncStorage.removeItem(STORAGE_KEY);
-            console.log('✅ All SafeRoom messages cleared');
+            Logger.debug('✅ All SafeRoom messages cleared');
         } catch (error) {
-            console.error('❌ Error clearing messages:', error);
+            Logger.error('❌ Error clearing messages:', error);
         }
     },
 
@@ -228,7 +229,7 @@ export const SafeRoomService = {
             const messages = await this.getMessages();
             return messages.length;
         } catch (error) {
-            console.error('❌ Error getting message count:', error);
+            Logger.error('❌ Error getting message count:', error);
             return 0;
         }
     },
@@ -244,7 +245,7 @@ export const SafeRoomService = {
             const updated = [message, ...existing];
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         } catch (error) {
-            console.error('❌ Error saving message locally:', error);
+            Logger.error('❌ Error saving message locally:', error);
         }
     },
 
@@ -256,12 +257,12 @@ export const SafeRoomService = {
             const stored = await AsyncStorage.getItem(STORAGE_KEY);
             if (stored) {
                 const messages = JSON.parse(stored);
-                console.log(`📱 Retrieved ${messages.length} messages from local storage`);
+                Logger.debug(`📱 Retrieved ${messages.length} messages from local storage`);
                 return messages;
             }
             return [];
         } catch (error) {
-            console.error('❌ Error getting local messages:', error);
+            Logger.error('❌ Error getting local messages:', error);
             return [];
         }
     },
@@ -273,7 +274,7 @@ export const SafeRoomService = {
         try {
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
         } catch (error) {
-            console.error('❌ Error updating local storage:', error);
+            Logger.error('❌ Error updating local storage:', error);
         }
     },
 
@@ -288,7 +289,7 @@ export const SafeRoomService = {
             );
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
         } catch (error) {
-            console.error('❌ Error updating local message:', error);
+            Logger.error('❌ Error updating local message:', error);
         }
     },
 
@@ -301,7 +302,7 @@ export const SafeRoomService = {
             const updatedMessages = messages.filter(msg => msg.id !== id);
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages));
         } catch (error) {
-            console.error('❌ Error removing local message:', error);
+            Logger.error('❌ Error removing local message:', error);
         }
     },
 
@@ -317,10 +318,10 @@ export const SafeRoomService = {
 
             if (uniqueMessages.length !== messages.length) {
                 await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(uniqueMessages));
-                console.log(`🧹 Removed ${messages.length - uniqueMessages.length} duplicate messages`);
+                Logger.debug(`🧹 Removed ${messages.length - uniqueMessages.length} duplicate messages`);
             }
         } catch (error) {
-            console.error('❌ Error removing duplicates:', error);
+            Logger.error('❌ Error removing duplicates:', error);
         }
     }
 };
