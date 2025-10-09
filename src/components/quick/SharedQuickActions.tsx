@@ -19,6 +19,7 @@ type Props =
       onAddNewTask?: () => void;
       onAddPhotoTask?: () => void;
       onAddVideoTask?: () => void;
+      onOpenShoppingList?: () => void;
     }
   | {
       mode: "safe";
@@ -78,21 +79,39 @@ export const SharedQuickActions: React.FC<Props> = (props) => {
     <View style={styles.sheet}>
       <Text style={styles.title}>Quick Actions</Text>
 
-      {/* First Row */}
+      {/* Single Row - All buttons */}
       <View style={styles.row}>
         {props.mode === "task" ? (
           <>
             <ActionButton 
-              label="Add New Task" 
+              label="New Task" 
               color="#16a34a" 
               icon="➕" 
               onPress={props.onAddNewTask} 
             />
             <ActionButton 
-              label="Add Photo Task" 
+              label="Photo" 
               color="#6366f1" 
               icon="📷" 
               onPress={props.onAddPhotoTask} 
+            />
+            <ActionButton 
+              label="Video" 
+              color="#7c3aed" 
+              icon="🎬" 
+              onPress={props.onAddVideoTask} 
+            />
+            <ActionButton 
+              label="Shopping" 
+              color="#ef4444" 
+              icon="🛒" 
+              onPress={props.onOpenShoppingList} 
+            />
+            <ActionButton 
+              label="Audio" 
+              color="#f59e0b" 
+              icon="🎙️" 
+              onPress={() => setOpenVoice(true)} 
             />
           </>
         ) : (
@@ -103,36 +122,14 @@ export const SharedQuickActions: React.FC<Props> = (props) => {
               icon="💬" 
               onPress={props.onAddTextSafe} 
             />
-            <View style={styles.placeholder} />
-          </>
-        )}
-      </View>
-
-      {/* Second Row */}
-      <View style={styles.row}>
-        {props.mode === "task" ? (
-          <>
-            <ActionButton 
-              label="Video Instructions" 
-              color="#7c3aed" 
-              icon="🎬" 
-              onPress={props.onAddVideoTask} 
-            />
-            <ActionButton 
-              label="Audio Note" 
-              color="#f59e0b" 
-              icon="🎙️" 
-              onPress={() => setOpenVoice(true)} 
-            />
-          </>
-        ) : (
-          <>
             <ActionButton 
               label="Voice" 
               color="#7c3aed" 
               icon="🎙️" 
               onPress={() => setOpenVoice(true)} 
             />
+            <View style={styles.placeholder} />
+            <View style={styles.placeholder} />
             <View style={styles.placeholder} />
           </>
         )}
@@ -169,53 +166,53 @@ const ActionButton: React.FC<ActionButtonProps> = ({ label, color, icon, onPress
 
 const styles = StyleSheet.create({
   sheet: {
-    padding: 20,
-    borderRadius: 20,
+    padding: 16,
+    borderRadius: 16,
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
     marginHorizontal: 0,
     marginVertical: 0,
   },
   title: { 
     fontWeight: "800", 
-    fontSize: 20, 
-    marginBottom: 20, 
+    fontSize: 18, 
+    marginBottom: 12, 
     textAlign: "center",
     color: "#1F2937"
   },
   row: { 
     flexDirection: "row", 
-    gap: 16, 
-    marginBottom: 16 
+    gap: 8, 
+    marginBottom: 0 
   },
   btn: {
     flex: 1,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 90,
+    minHeight: 60,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    elevation: 2,
   },
   icon: { 
-    fontSize: 24,
-    marginBottom: 6
+    fontSize: 18,
+    marginBottom: 4
   },
   btnText: { 
     color: "#fff", 
     fontWeight: "700",
-    fontSize: 13,
+    fontSize: 10,
     textAlign: "center",
-    lineHeight: 16
+    lineHeight: 12
   },
   placeholder: {
     flex: 1,

@@ -12,6 +12,7 @@ import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/
 import { listenTasks, completeTask, restoreTask, deleteTask, Task, TaskStatus } from '../../services/tasks';
 import { EmptyState, TaskPreviewModal } from '../../components/ui';
 import { SharedQuickActions } from '../../components/quick/SharedQuickActions';
+import ShoppingListModal from '../../components/shopping/ShoppingListModal';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +34,8 @@ export default function TaskListScreen() {
     const [loading, setLoading] = useState(true);
     const [previewTask, setPreviewTask] = useState<Task | null>(null);
     const [showPreview, setShowPreview] = useState(false);
+    const [shoppingOpen, setShoppingOpen] = useState(false);
+    const [selectedTaskForShopping, setSelectedTaskForShopping] = useState<string | null>(null);
 
     useEffect(() => {
         console.log('📋 Setting up task listener for tab:', tab);
@@ -68,6 +71,13 @@ export default function TaskListScreen() {
         } catch (error) {
             console.error('❌ Error restoring task:', error);
         }
+    };
+
+    const handleOpenShoppingList = () => {
+        // Use the first task or create a default one
+        const taskId = tasks.length > 0 ? tasks[0].id : 'default_task';
+        setSelectedTaskForShopping(taskId);
+        setShoppingOpen(true);
     };
 
     const handleDeleteTask = async (taskId: string) => {
@@ -173,6 +183,7 @@ export default function TaskListScreen() {
                     onAddNewTask={() => navigation.navigate('AddTask' as never)}
                     onAddPhotoTask={() => navigation.navigate('AddPhotoTask' as never)}
                     onAddVideoTask={() => navigation.navigate('VideoInstructions' as never)}
+                    onOpenShoppingList={handleOpenShoppingList}
                 />
             </View>
         </View>
@@ -346,6 +357,17 @@ export default function TaskListScreen() {
                 onDelete={previewTask ? () => handleDeleteTask(previewTask.id) : undefined}
                 showActions={true}
             />
+
+            {/* Shopping List Modal */}
+            {selectedTaskForShopping && (
+                <ShoppingListModal
+                    visible={shoppingOpen}
+                    onClose={() => setShoppingOpen(false)}
+                    taskId={selectedTaskForShopping}
+                    familyId="default_family"
+                    userId="default_user"
+                />
+            )}
         </View>
     );
 }
