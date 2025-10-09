@@ -5,7 +5,7 @@ import * as Haptics from "expo-haptics";
 import { ShoppingItem, ShoppingList, ShoppingStore } from "../../types/shopping";
 import {
   addItem, cycleStatus, deleteStore, getOrCreateShoppingList, listItems,
-  removeItem, updateItem, upsertStore, loadList
+  removeItem, updateItem, updateList, upsertStore, loadList
 } from "../../services/shopping";
 import { findProductByBarcode, upsertProduct } from "../../services/shoppingProducts";
 import StorePickerModal from "./StorePickerModal";
