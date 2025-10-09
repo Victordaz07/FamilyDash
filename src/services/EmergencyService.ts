@@ -7,6 +7,22 @@ import { Alert } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import RealDatabaseService from './database/RealDatabaseService';
 
+// Check if we're running in Expo Go (SDK 53+ has issues with notifications)
+const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants &&
+  global.__expo.Constants.executionEnvironment === 'storeClient';
+
+// Additional check for SDK 53+ compatibility
+const isSDK53Plus = typeof global !== 'undefined' && global.__expo &&
+  global.__expo.Constants && global.__expo.Constants.expoVersion &&
+  parseInt(global.__expo.Constants.expoVersion.split('.')[0]) >= 53;
+
+// Check if we're in development mode with Expo Go
+const isDevelopment = __DEV__;
+const isExpoGoApp = typeof global !== 'undefined' && global.__expo && 
+  global.__expo.Constants && global.__expo.Constants.appOwnership === 'expo';
+
+const shouldDisableNotifications = isExpoGo || isSDK53Plus || (isDevelopment && isExpoGoApp);
+
 export interface EmergencyAlert {
   id: string;
   type: 'medical' | 'safety' | 'urgent' | 'custom';
@@ -47,6 +63,11 @@ class EmergencyService {
   }
 
   private async initializeNotifications() {
+    if (shouldDisableNotifications) {
+      console.log('🔇 Skipping emergency notification channel setup in Expo Go or SDK 53+');
+      return;
+    }
+
     // Configurar notificaciones de emergencia con prioridad alta
     await Notifications.setNotificationChannelAsync('emergency', {
       name: 'Emergency Alerts',
@@ -127,6 +148,11 @@ class EmergencyService {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       console.log('🚨 Activating emergency mode for:', userName);
+
+      if (shouldDisableNotifications) {
+        console.log('🔇 Skipping emergency mode notification in Expo Go or SDK 53+');
+        return { success: true };
+      }
 
       const alert: EmergencyAlert = {
         id: `emergency_mode_${Date.now()}`,
@@ -247,6 +273,11 @@ class EmergencyService {
     alert: EmergencyAlert
   ): Promise<void> {
     try {
+      if (shouldDisableNotifications) {
+        console.log('🔇 Skipping emergency push notification in Expo Go or SDK 53+');
+        return;
+      }
+
       await Notifications.scheduleNotificationAsync({
         content: {
           title: `🚨 EMERGENCY: ${alert.type.toUpperCase()}`,

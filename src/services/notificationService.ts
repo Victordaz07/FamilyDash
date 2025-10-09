@@ -12,7 +12,12 @@ const isSDK53Plus = typeof global !== 'undefined' && global.__expo &&
   global.__expo.Constants && global.__expo.Constants.expoVersion &&
   parseInt(global.__expo.Constants.expoVersion.split('.')[0]) >= 53;
 
-const shouldDisableNotifications = isExpoGo || isSDK53Plus;
+// Check if we're in development mode with Expo Go
+const isDevelopment = __DEV__;
+const isExpoGoApp = typeof global !== 'undefined' && global.__expo && 
+  global.__expo.Constants && global.__expo.Constants.appOwnership === 'expo';
+
+const shouldDisableNotifications = isExpoGo || isSDK53Plus || (isDevelopment && isExpoGoApp);
 
 if (!shouldDisableNotifications) {
   // Only configure notifications if not in Expo Go or SDK 53+
@@ -96,6 +101,11 @@ export async function requestNotificationPermissions(): Promise<boolean> {
  */
 export async function configureNotificationChannel(): Promise<void> {
   try {
+    if (shouldDisableNotifications) {
+      Logger.debug('🔇 Skipping notification channel configuration in Expo Go or SDK 53+');
+      return;
+    }
+
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('familydash-default', {
         name: 'FamilyDash Default',
@@ -158,6 +168,11 @@ export async function configureNotificationChannel(): Promise<void> {
  */
 export async function scheduleTaskNotification(task: TaskNotification): Promise<void> {
   try {
+    if (shouldDisableNotifications) {
+      Logger.debug('🔇 Skipping task notification in Expo Go or SDK 53+');
+      return;
+    }
+
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) return;
 
@@ -188,6 +203,11 @@ export async function scheduleTaskNotification(task: TaskNotification): Promise<
  */
 export async function scheduleGoalNotification(goal: GoalNotification): Promise<void> {
   try {
+    if (shouldDisableNotifications) {
+      Logger.debug('🔇 Skipping goal notification in Expo Go or SDK 53+');
+      return;
+    }
+
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) return;
 
@@ -219,6 +239,11 @@ export async function scheduleGoalNotification(goal: GoalNotification): Promise<
  */
 export async function schedulePenaltyNotification(penalty: PenaltyNotification): Promise<void> {
   try {
+    if (shouldDisableNotifications) {
+      Logger.debug('🔇 Skipping penalty notification in Expo Go or SDK 53+');
+      return;
+    }
+
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) return;
 
@@ -251,6 +276,11 @@ export async function schedulePenaltyNotification(penalty: PenaltyNotification):
  */
 export async function cancelAllNotifications(): Promise<void> {
   try {
+    if (shouldDisableNotifications) {
+      Logger.debug('🔇 Skipping cancel notifications in Expo Go or SDK 53+');
+      return;
+    }
+
     await Notifications.cancelAllScheduledNotificationsAsync();
     Logger.debug('Todas las notificaciones canceladas');
   } catch (error) {

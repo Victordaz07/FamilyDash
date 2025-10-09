@@ -8,6 +8,22 @@ import { Audio } from 'expo-av';
 import { Vibration, Platform } from 'react-native';
 import RealDatabaseService from './database/RealDatabaseService';
 
+// Check if we're running in Expo Go (SDK 53+ has issues with notifications)
+const isExpoGo = typeof global !== 'undefined' && global.__expo && global.__expo.Constants &&
+  global.__expo.Constants.executionEnvironment === 'storeClient';
+
+// Additional check for SDK 53+ compatibility
+const isSDK53Plus = typeof global !== 'undefined' && global.__expo &&
+  global.__expo.Constants && global.__expo.Constants.expoVersion &&
+  parseInt(global.__expo.Constants.expoVersion.split('.')[0]) >= 53;
+
+// Check if we're in development mode with Expo Go
+const isDevelopment = __DEV__;
+const isExpoGoApp = typeof global !== 'undefined' && global.__expo && 
+  global.__expo.Constants && global.__expo.Constants.appOwnership === 'expo';
+
+const shouldDisableNotifications = isExpoGo || isSDK53Plus || (isDevelopment && isExpoGoApp);
+
 export interface RingRequest {
   id: string;
   triggeredBy: string;
@@ -171,6 +187,11 @@ class DeviceRingService {
    * Iniciar el ring local en este dispositivo
    */
   public async startRinging(request: RingRequest): Promise<void> {
+    if (shouldDisableNotifications) {
+      console.log('🔇 Skipping device ring notification in Expo Go or SDK 53+');
+      return;
+    }
+
     if (this.activeRing) {
       console.log('⚠️ Ring already active, stopping previous ring');
       await this.stopRinging();
@@ -295,6 +316,11 @@ class DeviceRingService {
    */
   private async sendRingNotification(request: RingRequest): Promise<void> {
     try {
+      if (shouldDisableNotifications) {
+        console.log('🔇 Skipping ring notification in Expo Go or SDK 53+');
+        return;
+      }
+
       const message = request.targetUserName
         ? `${request.triggeredByName} is trying to reach ${request.targetUserName}`
         : `${request.triggeredByName} is trying to reach all family members`;
