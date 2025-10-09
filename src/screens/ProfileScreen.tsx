@@ -314,12 +314,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           onPress={() => navigation.navigate('SavedLocations')}
         />
         <ProfileItem
-          icon="time"
-          title="Family Schedules"
-          subtitle="Routines and schedules"
-          onPress={() => navigation.navigate('FamilySchedules')}
-        />
-        <ProfileItem
           icon="videocam"
           title="Video Test"
           subtitle="Test video player functionality"

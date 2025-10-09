@@ -195,6 +195,27 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         }
     ];
 
+    const familySchedules = [
+        {
+            id: '1',
+            title: 'Morning Routine',
+            time: 'Daily 7:00 AM',
+            details: 'Breakfast & School Prep • All Family Members'
+        },
+        {
+            id: '2',
+            title: 'Family Dinner',
+            time: 'Daily 6:30 PM',
+            details: 'Quality Time Together • Family Bonding'
+        },
+        {
+            id: '3',
+            title: 'Homework Time',
+            time: 'Weekdays 4:00 PM',
+            details: 'Study Session • Emma & Noah'
+        }
+    ];
+
     function getActivityIcon(type: string) {
         const icons: { [key: string]: string } = {
             'movie': 'film',
@@ -521,6 +542,35 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
 
                         <TouchableOpacity style={styles.manageNotificationsButton} onPress={() => Alert.alert('Notifications', 'Manage notifications')}>
                             <Text style={styles.manageNotificationsText}>Manage Notifications</Text>
+                        </TouchableOpacity>
+                    </LinearGradient>
+                </View>
+
+                {/* Family Schedules Section */}
+                <View style={styles.schedulesSection}>
+                    <LinearGradient
+                        colors={['#3B82F6', '#1D4ED8']}
+                        style={styles.schedulesCard}
+                    >
+                        <View style={styles.schedulesHeader}>
+                            <Text style={styles.schedulesTitle}>Family Schedules</Text>
+                            <Ionicons name="time" size={24} color="white" />
+                        </View>
+
+                        <View style={styles.schedulesList}>
+                            {familySchedules.map(schedule => (
+                                <View key={schedule.id} style={styles.scheduleItem}>
+                                    <View style={styles.scheduleHeader}>
+                                        <Text style={styles.scheduleTitle}>{schedule.title}</Text>
+                                        <Text style={styles.scheduleTime}>{schedule.time}</Text>
+                                    </View>
+                                    <Text style={styles.scheduleDetails}>{schedule.details}</Text>
+                                </View>
+                            ))}
+                        </View>
+
+                        <TouchableOpacity style={styles.manageSchedulesButton} onPress={() => navigation.navigate('FamilySchedules')}>
+                            <Text style={styles.manageSchedulesText}>Manage Schedules</Text>
                         </TouchableOpacity>
                     </LinearGradient>
                 </View>
@@ -903,6 +953,72 @@ const styles = StyleSheet.create({
         height: 6,
         borderRadius: 3,
         backgroundColor: '#8B5CF6',
+    },
+    // Family Schedules Styles
+    schedulesSection: {
+        paddingHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 80,
+    },
+    schedulesCard: {
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    schedulesHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    schedulesTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    schedulesList: {
+        gap: 12,
+        marginBottom: 16,
+    },
+    scheduleItem: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 12,
+        padding: 12,
+    },
+    scheduleHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    scheduleTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: 'white',
+    },
+    scheduleTime: {
+        fontSize: 14,
+        color: 'white',
+    },
+    scheduleDetails: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.8)',
+    },
+    manageSchedulesButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+    },
+    manageSchedulesText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
     },
 });
 
