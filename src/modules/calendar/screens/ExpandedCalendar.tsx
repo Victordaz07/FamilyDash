@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarEvent, FamilyMember, ActivityCategory } from '../types/calendarTypes';
 import { mockCalendarEvents, mockFamilyMembers, categoryConfig } from '../mock/expandedCalendarData';
 import EventCard from '../components/EventCard';
+import { useNotifications } from '../../../contexts/NotificationContext';
 
 interface ExpandedCalendarProps {
     navigation: any;
@@ -13,6 +14,7 @@ interface ExpandedCalendarProps {
 
 const ExpandedCalendar: React.FC<ExpandedCalendarProps> = ({ navigation }) => {
     const insets = useSafeAreaInsets();
+    const { unreadCount } = useNotifications();
     const [viewMode, setViewMode] = useState<'calendar' | 'agenda'>('calendar');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [events, setEvents] = useState<CalendarEvent[]>(mockCalendarEvents);
@@ -154,9 +156,18 @@ const ExpandedCalendar: React.FC<ExpandedCalendarProps> = ({ navigation }) => {
                             />
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.headerButton}>
+                        <TouchableOpacity 
+                            style={styles.headerButton}
+                            onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}
+                        >
                             <Ionicons name="notifications" size={20} color="white" />
-                            <View style={styles.notificationBadge} />
+                            {unreadCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationBadgeText}>
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -378,12 +389,20 @@ const styles = StyleSheet.create({
     },
     notificationBadge: {
         position: 'absolute',
-        top: 4,
-        right: 4,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
+        top: -2,
+        right: -2,
+        minWidth: 16,
+        height: 16,
+        borderRadius: 8,
         backgroundColor: '#EF4444',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 4,
+    },
+    notificationBadgeText: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
     content: {
         flex: 1,
