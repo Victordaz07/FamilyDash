@@ -136,37 +136,52 @@ export default function ShoppingListModal({
 
   return (
     <Modal visible={visible} onRequestClose={onClose} animationType="slide">
-      <View style={{ flex: 1, padding: 14, backgroundColor: "#fff" }}>
+      <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Lista de compras</Text>
-          <TouchableOpacity onPress={onClose}><Ionicons name="close" size={24} /></TouchableOpacity>
+          <View style={styles.headerContent}>
+            <View style={styles.headerIcon}>
+              <Ionicons name="cart" size={24} color="#fff" />
+            </View>
+            <View style={styles.headerText}>
+              <Text style={styles.title}>Lista de compras</Text>
+              <Text style={styles.subtitle}>Gestiona tus compras inteligentemente</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={24} color="#6b7280" />
+          </TouchableOpacity>
         </View>
 
         {/* Stores row */}
-        <View style={styles.storesRow}>
-          <TouchableOpacity
-            onPress={() => setFilterStore("all")}
-            style={[styles.storeChip, filterStore === "all" && styles.storeChipOn]}
-          >
-            <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>Todas</Text>
-          </TouchableOpacity>
-
-          {stores.map(s => (
+        <View style={styles.storesContainer}>
+          <Text style={styles.storesLabel}>Filtrar por tienda</Text>
+          <View style={styles.storesRow}>
             <TouchableOpacity
-              key={s.id}
-              onPress={() => setFilterStore(s.id)}
-              style={[styles.storeChip, filterStore === s.id && styles.storeChipOn]}
+              onPress={() => setFilterStore("all")}
+              style={[styles.storeChip, filterStore === "all" && styles.storeChipOn]}
             >
-              <Text style={[styles.storeChipTxt, filterStore === s.id && styles.storeChipTxtOn]}>
-                {s.name}
-              </Text>
+              <Ionicons name="list" size={16} color={filterStore === "all" ? "#fff" : "#6b7280"} />
+              <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>Todas</Text>
             </TouchableOpacity>
-          ))}
 
-          <TouchableOpacity onPress={() => setStoreModal({ open: true })} style={[styles.storeChip, styles.addStore]}>
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={[styles.storeChipTxt, styles.storeChipTxtOn]}>Tienda</Text>
-          </TouchableOpacity>
+            {stores.map(s => (
+              <TouchableOpacity
+                key={s.id}
+                onPress={() => setFilterStore(s.id)}
+                style={[styles.storeChip, filterStore === s.id && styles.storeChipOn]}
+              >
+                <Ionicons name="storefront" size={16} color={filterStore === s.id ? "#fff" : "#6b7280"} />
+                <Text style={[styles.storeChipTxt, filterStore === s.id && styles.storeChipTxtOn]}>
+                  {s.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            <TouchableOpacity onPress={() => setStoreModal({ open: true })} style={[styles.storeChip, styles.addStore]}>
+              <Ionicons name="add" size={16} color="#fff" />
+              <Text style={[styles.storeChipTxt, styles.storeChipTxtOn]}>Tienda</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Budget progress bar */}
@@ -175,78 +190,189 @@ export default function ShoppingListModal({
           if (!limit) return null;
           const spent = totals.byStore[filterStore] || 0;
           const pct = Math.min(1, spent / limit);
+          const storeName = stores.find(s=>s.id===filterStore)?.name;
           return (
-            <View style={{ marginTop: 6, marginBottom: 4 }}>
-              <View style={{ height: 8, backgroundColor:"#e5e7eb", borderRadius:6, overflow:"hidden" }}>
-                <View style={{ width: `${pct*100}%`, height: 8, backgroundColor: pct < .8 ? "#16a34a" : pct < 1 ? "#f59e0b" : "#ef4444" }} />
+            <View style={styles.budgetContainer}>
+              <View style={styles.budgetHeader}>
+                <View style={styles.budgetIconContainer}>
+                  <Ionicons name="wallet" size={16} color="#6b7280" />
+                </View>
+                <Text style={styles.budgetLabel}>Presupuesto - {storeName}</Text>
               </View>
-              <Text style={{ color:"#6b7280", marginTop: 4 }}>
-                {stores.find(s=>s.id===filterStore)?.name}: {list?.currency} {spent.toFixed(2)}{limit ? ` / ${list?.currency} ${limit.toFixed(2)}` : ""}
-              </Text>
+              <View style={styles.budgetBar}>
+                <View style={styles.budgetBarBackground}>
+                  <View style={[
+                    styles.budgetBarFill, 
+                    { 
+                      width: `${pct*100}%`, 
+                      backgroundColor: pct < .8 ? "#10b981" : pct < 1 ? "#f59e0b" : "#ef4444" 
+                    }
+                  ]} />
+                </View>
+              </View>
+              <View style={styles.budgetTextContainer}>
+                <Text style={styles.budgetSpent}>
+                  {list?.currency} {spent.toFixed(2)}
+                </Text>
+                <Text style={styles.budgetLimit}>
+                  de {list?.currency} {limit.toFixed(2)}
+                </Text>
+                <Text style={styles.budgetPercentage}>
+                  ({Math.round(pct*100)}%)
+                </Text>
+              </View>
             </View>
           );
         })()}
 
         {/* Banner de alerta si se supera */}
         {banner && (
-          <View style={{ backgroundColor:"#fee2e2", borderRadius:10, padding:10, marginBottom:8 }}>
-            <Text style={{ color:"#991b1b", fontWeight:"800" }}>{banner}</Text>
+          <View style={styles.alertBanner}>
+            <View style={styles.alertIcon}>
+              <Ionicons name="warning" size={20} color="#dc2626" />
+            </View>
+            <Text style={styles.alertText}>{banner}</Text>
           </View>
         )}
 
-        {/* Add item row */}
-        <View style={styles.addRow}>
-          <TextInput
-            value={text}
-            onChangeText={setText}
-            placeholder="Ej: Leche descremada"
-            style={[styles.input, { flex: 1 }]}
-          />
-          <TextInput value={qty} onChangeText={setQty} placeholder="1" keyboardType="decimal-pad" style={[styles.input, styles.small]} />
-          <TextInput value={unit} onChangeText={setUnit} placeholder="u" style={[styles.input, styles.small]} />
-          <TextInput value={price} onChangeText={setPrice} placeholder="$" keyboardType="decimal-pad" style={[styles.input, styles.small]} />
-          <TouchableOpacity onPress={add} style={styles.addBtn}><Text style={styles.addBtnTxt}>+</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => setScanOpen(true)} style={[styles.addBtn, { backgroundColor:"#7c3aed" }]}>
-            <Ionicons name="barcode-outline" size={20} color="#fff" />
-          </TouchableOpacity>
+        {/* Add item section */}
+        <View style={styles.addSection}>
+          <Text style={styles.addSectionLabel}>Agregar producto</Text>
+          <View style={styles.addRow}>
+            <TextInput
+              value={text}
+              onChangeText={setText}
+              placeholder="Ej: Leche descremada"
+              style={[styles.input, styles.nameInput]}
+              placeholderTextColor="#9ca3af"
+            />
+            <TextInput 
+              value={qty} 
+              onChangeText={setQty} 
+              placeholder="1" 
+              keyboardType="decimal-pad" 
+              style={[styles.input, styles.smallInput]} 
+              placeholderTextColor="#9ca3af"
+            />
+            <TextInput 
+              value={unit} 
+              onChangeText={setUnit} 
+              placeholder="u" 
+              style={[styles.input, styles.smallInput]} 
+              placeholderTextColor="#9ca3af"
+            />
+            <TextInput 
+              value={price} 
+              onChangeText={setPrice} 
+              placeholder="$" 
+              keyboardType="decimal-pad" 
+              style={[styles.input, styles.smallInput]} 
+              placeholderTextColor="#9ca3af"
+            />
+          </View>
+          <View style={styles.addButtons}>
+            <TouchableOpacity onPress={add} style={styles.addBtn}>
+              <Ionicons name="add" size={20} color="#fff" />
+              <Text style={styles.addBtnTxt}>Agregar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setScanOpen(true)} style={styles.scanBtn}>
+              <Ionicons name="barcode-outline" size={20} color="#fff" />
+              <Text style={styles.scanBtnTxt}>Escanear</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* List */}
-        <FlatList
-          data={visibleItems}
-          keyExtractor={(i) => i.id}
-          renderItem={({ item }) => (
-            <View style={styles.itemRow}>
-              <TouchableOpacity onPress={() => toggle(item)} style={styles.checkCell}>
-                {statusIcon(item.status)}
-              </TouchableOpacity>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemMeta}>
-                  {item.qty} {item.unit || "u"}{item.price ? ` • ${list?.currency} ${(item.price * item.qty).toFixed(2)}` : ""}
-                  {item.storeId ? ` • ${stores.find(s=>s.id===item.storeId)?.name}` : ""}
-                </Text>
+        <View style={styles.listContainer}>
+          <Text style={styles.listLabel}>
+            Productos {filterStore === "all" ? "" : `- ${stores.find(s => s.id === filterStore)?.name}`}
+          </Text>
+          <FlatList
+            data={visibleItems}
+            keyExtractor={(i) => i.id}
+            renderItem={({ item }) => (
+              <View style={styles.itemCard}>
+                <TouchableOpacity onPress={() => toggle(item)} style={styles.statusButton}>
+                  {statusIcon(item.status)}
+                </TouchableOpacity>
+                <View style={styles.itemContent}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <View style={styles.itemDetails}>
+                    <View style={styles.itemDetailItem}>
+                      <Ionicons name="layers" size={14} color="#6b7280" />
+                      <Text style={styles.itemDetailText}>
+                        {item.qty} {item.unit || "u"}
+                      </Text>
+                    </View>
+                    {item.price && (
+                      <View style={styles.itemDetailItem}>
+                        <Ionicons name="cash" size={14} color="#6b7280" />
+                        <Text style={styles.itemDetailText}>
+                          {list?.currency} {(item.price * item.qty).toFixed(2)}
+                        </Text>
+                      </View>
+                    )}
+                    {item.storeId && (
+                      <View style={styles.itemDetailItem}>
+                        <Ionicons name="storefront" size={14} color="#6b7280" />
+                        <Text style={styles.itemDetailText}>
+                          {stores.find(s=>s.id===item.storeId)?.name}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => del(item)} style={styles.deleteButton}>
+                  <Ionicons name="trash-outline" size={18} color="#ef4444" />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => del(item)} style={styles.trash}>
-                <Ionicons name="trash-outline" size={22} color="#ef4444" />
-              </TouchableOpacity>
-            </View>
-          )}
-          ListEmptyComponent={<Text style={{ color: "#6b7280", textAlign: "center", marginTop: 16 }}>Sin productos en esta vista.</Text>}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          contentContainerStyle={{ paddingBottom: 24 }}
-        />
+            )}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Ionicons name="basket-outline" size={48} color="#d1d5db" />
+                <Text style={styles.emptyText}>Sin productos en esta vista</Text>
+                <Text style={styles.emptySubtext}>Agrega productos para comenzar tu lista</Text>
+              </View>
+            }
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+            contentContainerStyle={{ paddingBottom: 24 }}
+          />
+        </View>
 
         {/* Totales */}
-        <View style={styles.totals}>
-          {Object.entries(totals.byStore).map(([sid, val]) => (
-            <Text key={sid} style={styles.totalLine}>
-              {stores.find(s => s.id === sid)?.name || "Tienda"}: {list?.currency} {val.toFixed(2)}
+        <View style={styles.totalsContainer}>
+          <View style={styles.totalsHeader}>
+            <Ionicons name="calculator" size={20} color="#6b7280" />
+            <Text style={styles.totalsTitle}>Resumen de gastos</Text>
+          </View>
+          
+          {Object.entries(totals.byStore).length > 0 && (
+            <View style={styles.storeTotals}>
+              {Object.entries(totals.byStore).map(([sid, val]) => (
+                <View key={sid} style={styles.storeTotalItem}>
+                  <View style={styles.storeTotalIcon}>
+                    <Ionicons name="storefront" size={16} color="#6b7280" />
+                  </View>
+                  <Text style={styles.storeTotalName}>
+                    {stores.find(s => s.id === sid)?.name || "Tienda"}
+                  </Text>
+                  <Text style={styles.storeTotalAmount}>
+                    {list?.currency} {val.toFixed(2)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+          
+          <View style={styles.grandTotal}>
+            <View style={styles.grandTotalIcon}>
+              <Ionicons name="wallet" size={20} color="#10b981" />
+            </View>
+            <Text style={styles.grandTotalLabel}>Total general</Text>
+            <Text style={styles.grandTotalAmount}>
+              {list?.currency} {totals.total.toFixed(2)}
             </Text>
-          ))}
-          <Text style={[styles.totalLine, styles.totalStrong]}>
-            Total: {list?.currency} {totals.total.toFixed(2)}
-          </Text>
+          </View>
         </View>
 
         {/* Modales de tienda */}
@@ -280,29 +406,435 @@ export default function ShoppingListModal({
 }
 
 const styles = StyleSheet.create({
-  header:{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginBottom:8 },
-  title:{ fontWeight:"800", fontSize:18 },
-  storesRow:{ flexDirection:"row", flexWrap:"wrap", gap:8, marginBottom:10 },
-  storeChip:{ paddingHorizontal:10, paddingVertical:8, borderRadius:10, backgroundColor:"#e5e7eb", flexDirection:"row", alignItems:"center", gap:6 },
-  storeChipOn:{ backgroundColor:"#2563eb" },
-  storeChipTxt:{ color:"#111827", fontWeight:"700" },
-  storeChipTxtOn:{ color:"#fff", fontWeight:"800" },
-  addStore:{ backgroundColor:"#7c3aed" },
+  container: {
+    flex: 1,
+    backgroundColor: "#f8fafc",
+  },
+  header: {
+    backgroundColor: "#7c3aed",
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+    marginBottom: 20,
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  headerIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  headerText: {
+    flex: 1,
+  },
+  title: {
+    fontWeight: "800",
+    fontSize: 20,
+    color: "#fff",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "rgba(255,255,255,0.8)",
+    fontWeight: "500",
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-  addRow:{ flexDirection:"row", gap:8, alignItems:"center", marginBottom:10 },
-  input:{ backgroundColor:"#f3f4f6", borderRadius:10, paddingHorizontal:10, paddingVertical:10 },
-  small:{ width:72 },
-  addBtn:{ backgroundColor:"#16a34a", paddingHorizontal:12, paddingVertical:10, borderRadius:10 },
-  addBtnTxt:{ color:"#fff", fontWeight:"800" },
+  storesContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  storesLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+    marginBottom: 12,
+  },
+  storesRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  storeChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#f3f4f6",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    borderWidth: 2,
+    borderColor: "transparent",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  storeChipOn: {
+    backgroundColor: "#2563eb",
+    borderColor: "#1d4ed8",
+  },
+  storeChipTxt: {
+    color: "#374151",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  storeChipTxtOn: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+  addStore: {
+    backgroundColor: "#7c3aed",
+    borderColor: "#6d28d9",
+  },
 
-  itemRow:{ flexDirection:"row", alignItems:"center", backgroundColor:"#f9fafb", borderRadius:12, padding:10 },
-  checkCell:{ width:30, alignItems:"center" },
-  itemName:{ fontWeight:"700", color:"#111827" },
-  itemMeta:{ color:"#6b7280" },
-  trash:{ paddingHorizontal:8, paddingVertical:6 },
+  budgetContainer: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  budgetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  budgetIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
+  budgetLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+  },
+  budgetBar: {
+    marginBottom: 12,
+  },
+  budgetBarBackground: {
+    height: 8,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  budgetBarFill: {
+    height: 8,
+    borderRadius: 6,
+  },
+  budgetTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  budgetSpent: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#111827",
+  },
+  budgetLimit: {
+    fontSize: 14,
+    color: "#6b7280",
+  },
+  budgetPercentage: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6b7280",
+  },
 
-  totals:{ marginTop:8, borderTopWidth:1, borderTopColor:"#e5e7eb", paddingTop:8 },
-  totalLine:{ color:"#111827", fontWeight:"700" },
-  totalStrong:{ fontSize:16 },
+  alertBanner: {
+    backgroundColor: "#fef2f2",
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ef4444",
+  },
+  alertIcon: {
+    marginRight: 12,
+  },
+  alertText: {
+    flex: 1,
+    color: "#dc2626",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+
+  addSection: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  addSectionLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+    marginBottom: 12,
+  },
+  addRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  input: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    fontSize: 14,
+    color: "#111827",
+  },
+  nameInput: {
+    flex: 1,
+  },
+  smallInput: {
+    width: 60,
+    textAlign: "center",
+  },
+  addButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  addBtn: {
+    flex: 1,
+    backgroundColor: "#10b981",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  addBtnTxt: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  scanBtn: {
+    flex: 1,
+    backgroundColor: "#7c3aed",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  scanBtnTxt: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+
+  listContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  listLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+    marginBottom: 12,
+  },
+  itemCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  statusButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemName: {
+    fontWeight: "700",
+    fontSize: 16,
+    color: "#111827",
+    marginBottom: 6,
+  },
+  itemDetails: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  itemDetailItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  itemDetailText: {
+    fontSize: 12,
+    color: "#6b7280",
+    fontWeight: "500",
+  },
+  deleteButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#fef2f2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#6b7280",
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#9ca3af",
+  },
+
+  totalsContainer: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  totalsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  totalsTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+    marginLeft: 8,
+  },
+  storeTotals: {
+    marginBottom: 16,
+  },
+  storeTotalItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  storeTotalIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
+  storeTotalName: {
+    flex: 1,
+    fontSize: 14,
+    color: "#6b7280",
+  },
+  storeTotalAmount: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#111827",
+  },
+  grandTotal: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  grandTotalIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#ecfdf5",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  grandTotalLabel: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+  },
+  grandTotalAmount: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#10b981",
+  },
 });
 
