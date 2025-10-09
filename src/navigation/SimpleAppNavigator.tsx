@@ -41,6 +41,7 @@ import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
 // Import Profile module screens
 import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '../modules/profile/screens';
 import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
+import FamilyRoleManagementScreen from '../screens/FamilyRoleManagementScreen';
 
 // Import Support screens
 import HelpScreen from '../screens/Support/HelpScreen';
@@ -160,6 +161,7 @@ const ProfileStack = () => (
     <Stack.Screen name="MainHome" component={MainHomeScreen as any} />
     <Stack.Screen name="SavedLocations" component={SavedLocationsScreen as any} />
     <Stack.Screen name="FamilySchedules" component={FamilySchedulesScreen as any} />
+    <Stack.Screen name="FamilyRoles" component={FamilyRoleManagementScreen as any} />
 
     {/* Support screens */}
     <Stack.Screen name="Help" component={HelpScreen as any} />

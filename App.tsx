@@ -7,6 +7,7 @@ import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { SettingsProvider } from './src/contexts/SettingsContext';
 import { FamilyProvider } from './src/contexts/FamilyContext';
+import { RoleProvider } from './src/contexts/RoleContext';
 import { useFamilyDashStore } from './src/state/store';
 
 function AppContent() {
@@ -31,11 +32,13 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <SettingsProvider>
-          <FamilyProvider>
-            <AppContent />
-          </FamilyProvider>
-        </SettingsProvider>
+        <RoleProvider>
+          <SettingsProvider>
+            <FamilyProvider>
+              <AppContent />
+            </FamilyProvider>
+          </SettingsProvider>
+        </RoleProvider>
       </AuthProvider>
     </ThemeProvider>
   );

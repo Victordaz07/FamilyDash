@@ -302,6 +302,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           onPress={() => navigation.navigate('MainHome')}
         />
         <ProfileItem
+          icon="people"
+          title="Roles & Permissions"
+          subtitle="Manage family roles and permissions"
+          onPress={() => navigation.navigate('FamilyRoles')}
+        />
+        <ProfileItem
           icon="location"
           title="Saved Locations"
           subtitle="Frequent places"
