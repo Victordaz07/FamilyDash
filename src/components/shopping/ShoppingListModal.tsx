@@ -9,7 +9,7 @@ import {
 } from "../../services/shopping";
 import { findProductByBarcode, upsertProduct } from "../../services/shoppingProducts";
 import StorePickerModal from "./StorePickerModal";
-import BarcodeScannerModal from "./BarcodeScannerModal";
+import BarcodeScannerFallback from "./BarcodeScannerFallback";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {
   if (s === "pending") return <Ionicons name="square-outline" size={22} />;
@@ -269,7 +269,7 @@ export default function ShoppingListModal({
         )}
 
         {/* Modal de escaneo */}
-        <BarcodeScannerModal
+        <BarcodeScannerFallback
           visible={scanOpen}
           onClose={() => setScanOpen(false)}
           onScanned={onScanned}

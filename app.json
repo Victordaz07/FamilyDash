@@ -58,12 +58,6 @@
         }
       ],
       [
-        "expo-barcode-scanner",
-        {
-          "cameraPermission": "Allow FamilyDash to access your camera to scan barcodes for shopping lists."
-        }
-      ],
-      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow FamilyDash to use your location to show stores on the map."
