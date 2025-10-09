@@ -149,7 +149,7 @@ export default function ShoppingListModal({
   return (
     <Modal visible={visible} onRequestClose={onClose} animationType="slide">
       <View style={styles.container}>
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.contentContainer}>
           <View style={styles.header}>
             <View style={styles.headerContent}>
               <View style={styles.headerIcon}>
@@ -477,11 +477,31 @@ export default function ShoppingListModal({
                 >
                   <Text style={styles.budgetModalBtnTextCancel}>Cancelar</Text>
                 </TouchableOpacity>
+                
+                {list?.budgetLimit && (
+                  <TouchableOpacity 
+                    onPress={async () => {
+                      if (list) {
+                        await updateList(list.id!, { budgetLimit: undefined });
+                        const updatedList = await loadList(list.id!);
+                        setList(updatedList);
+                      }
+                      setBudgetModal({ open: false });
+                    }} 
+                    style={[styles.budgetModalBtn, styles.budgetModalBtnDelete]}
+                  >
+                    <Text style={styles.budgetModalBtnTextDelete}>Eliminar</Text>
+                  </TouchableOpacity>
+                )}
+                
                 <TouchableOpacity 
                   onPress={async () => {
                     const numValue = parseFloat(budgetInput) || 0;
-                    if (list && numValue > 0) {
+                    if (list && numValue >= 0) {
                       await updateList(list.id!, { budgetLimit: numValue });
+                      // Reload the list to get updated budget
+                      const updatedList = await loadList(list.id!);
+                      setList(updatedList);
                     }
                     setBudgetModal({ open: false });
                   }} 
@@ -493,7 +513,7 @@ export default function ShoppingListModal({
             </View>
           </View>
         </Modal>
-        </ScrollView>
+        </View>
       </View>
     </Modal>
     );
@@ -504,7 +524,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8fafc",
   },
-  scrollContainer: {
+  contentContainer: {
     flex: 1,
   },
   header: {
@@ -1071,6 +1091,9 @@ const styles = StyleSheet.create({
   budgetModalBtnSave: {
     backgroundColor: "#7c3aed",
   },
+  budgetModalBtnDelete: {
+    backgroundColor: "#ef4444",
+  },
   budgetModalBtnText: {
     color: "#fff",
     fontWeight: "700",
@@ -1078,6 +1101,11 @@ const styles = StyleSheet.create({
   },
   budgetModalBtnTextCancel: {
     color: "#374151",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  budgetModalBtnTextDelete: {
+    color: "#fff",
     fontWeight: "700",
     fontSize: 14,
   },
