@@ -804,7 +804,7 @@ const styles = StyleSheet.create({
     },
     remindersSection: {
         paddingHorizontal: 16,
-        marginTop: 16,
+        marginTop: 0,
         marginBottom: 80,
     },
     remindersCard: {
@@ -965,7 +965,7 @@ const styles = StyleSheet.create({
     schedulesSection: {
         paddingHorizontal: 16,
         marginTop: 16,
-        marginBottom: 80,
+        marginBottom: 12,
     },
     schedulesCard: {
         borderRadius: 16,
