@@ -165,36 +165,61 @@ export default function ShoppingListModal({
             </TouchableOpacity>
           </View>
 
-        {/* Total Budget Section */}
-        <View style={styles.budgetSection}>
-          <View style={styles.budgetHeader}>
-            <Text style={styles.budgetSectionLabel}>Presupuesto Total</Text>
+        {/* Budget & Totals Section - Compact */}
+        <View style={styles.budgetTotalsSection}>
+          <View style={styles.budgetTotalsHeader}>
+            <Text style={styles.budgetTotalsLabel}>Resumen</Text>
             <TouchableOpacity 
               onPress={() => setBudgetModal({ open: true })}
               style={styles.editBudgetButton}
             >
-              <Ionicons name="create-outline" size={16} color="#7c3aed" />
+              <Ionicons name="create-outline" size={14} color="#7c3aed" />
             </TouchableOpacity>
           </View>
           
-          {list?.budgetLimit ? (
-            <BudgetProgressBar 
-              spent={totals.total}
-              budget={list.budgetLimit}
-              currency={list.currency}
-            />
-          ) : (
-            <View style={styles.noBudgetContainer}>
-              <Text style={styles.noBudgetText}>Sin presupuesto establecido</Text>
-              <TouchableOpacity 
-                onPress={() => setBudgetModal({ open: true })}
-                style={styles.setBudgetButton}
-              >
-                <Ionicons name="add" size={16} color="#fff" />
-                <Text style={styles.setBudgetText}>Establecer</Text>
-              </TouchableOpacity>
+          <View style={styles.budgetTotalsContent}>
+            {/* Budget Row */}
+            <View style={styles.budgetRow}>
+              <View style={styles.budgetInfo}>
+                <Ionicons name="wallet" size={16} color="#6b7280" />
+                <Text style={styles.budgetLabel}>Presupuesto</Text>
+              </View>
+              <View style={styles.budgetValues}>
+                {list?.budgetLimit ? (
+                  <>
+                    <Text style={styles.budgetSpent}>
+                      {list.currency} {totals.total.toFixed(2)}
+                    </Text>
+                    <Text style={styles.budgetLimit}>
+                      / {list.currency} {list.budgetLimit.toFixed(2)}
+                    </Text>
+                    <Text style={styles.budgetPercentage}>
+                      ({Math.round((totals.total / list.budgetLimit) * 100)}%)
+                    </Text>
+                  </>
+                ) : (
+                  <TouchableOpacity 
+                    onPress={() => setBudgetModal({ open: true })}
+                    style={styles.setBudgetButtonSmall}
+                  >
+                    <Ionicons name="add" size={12} color="#fff" />
+                    <Text style={styles.setBudgetTextSmall}>Establecer</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-          )}
+
+            {/* Total Row */}
+            <View style={styles.totalRow}>
+              <View style={styles.totalInfo}>
+                <Ionicons name="calculator" size={16} color="#6b7280" />
+                <Text style={styles.totalLabel}>Total</Text>
+              </View>
+              <Text style={styles.totalAmount}>
+                {list?.currency} {totals.total.toFixed(2)}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Stores row */}
@@ -384,41 +409,6 @@ export default function ShoppingListModal({
           />
         </View>
 
-        {/* Totales */}
-        <View style={styles.totalsContainer}>
-          <View style={styles.totalsHeader}>
-            <Ionicons name="calculator" size={20} color="#6b7280" />
-            <Text style={styles.totalsTitle}>Resumen de gastos</Text>
-          </View>
-          
-          {Object.entries(totals.byStore).length > 0 && (
-            <View style={styles.storeTotals}>
-              {Object.entries(totals.byStore).map(([sid, val]) => (
-                <View key={sid} style={styles.storeTotalItem}>
-                  <View style={styles.storeTotalIcon}>
-                    <Ionicons name="storefront" size={16} color="#6b7280" />
-                  </View>
-                  <Text style={styles.storeTotalName}>
-                    {stores.find(s => s.id === sid)?.name || "Tienda"}
-                  </Text>
-                  <Text style={styles.storeTotalAmount}>
-                    {list?.currency} {val.toFixed(2)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-          
-          <View style={styles.grandTotal}>
-            <View style={styles.grandTotalIcon}>
-              <Ionicons name="wallet" size={20} color="#10b981" />
-            </View>
-            <Text style={styles.grandTotalLabel}>Total general</Text>
-            <Text style={styles.grandTotalAmount}>
-              {list?.currency} {totals.total.toFixed(2)}
-            </Text>
-          </View>
-        </View>
 
         {/* Modales de tienda */}
         {list && (
@@ -875,144 +865,111 @@ const styles = StyleSheet.create({
     color: "#9ca3af",
   },
 
-  totalsContainer: {
-    backgroundColor: "#fff",
-    marginHorizontal: 20,
-    marginBottom: 20,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  totalsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  totalsTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#374151",
-    marginLeft: 8,
-  },
-  storeTotals: {
-    marginBottom: 16,
-  },
-  storeTotalItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  storeTotalIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#f3f4f6",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  storeTotalName: {
-    flex: 1,
-    fontSize: 14,
-    color: "#6b7280",
-  },
-  storeTotalAmount: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#111827",
-  },
-  grandTotal: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-  },
-  grandTotalIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#ecfdf5",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  grandTotalLabel: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#374151",
-  },
-  grandTotalAmount: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#10b981",
-  },
 
-  // Budget Section Styles
-  budgetSection: {
+  // Budget & Totals Section - Compact Styles
+  budgetTotalsSection: {
     backgroundColor: "#fff",
     marginHorizontal: 20,
-    marginBottom: 16,
-    borderRadius: 16,
-    padding: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    padding: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  budgetHeader: {
+  budgetTotalsHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  budgetSectionLabel: {
-    fontSize: 16,
+  budgetTotalsLabel: {
+    fontSize: 14,
     fontWeight: "700",
     color: "#374151",
   },
   editBudgetButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: "#f3f4f6",
     alignItems: "center",
     justifyContent: "center",
   },
-  noBudgetContainer: {
+  budgetTotalsContent: {
+    gap: 8,
+  },
+  budgetRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#f9fafb",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
   },
-  noBudgetText: {
+  budgetInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  budgetLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  budgetValues: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  budgetSpent: {
     fontSize: 14,
-    color: "#6b7280",
-    fontStyle: "italic",
+    fontWeight: "700",
+    color: "#111827",
   },
-  setBudgetButton: {
+  budgetLimit: {
+    fontSize: 12,
+    color: "#6b7280",
+  },
+  budgetPercentage: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#6b7280",
+  },
+  totalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  totalInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  totalLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  totalAmount: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#10b981",
+  },
+  setBudgetButtonSmall: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#7c3aed",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    gap: 2,
   },
-  setBudgetText: {
+  setBudgetTextSmall: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "600",
   },
 
