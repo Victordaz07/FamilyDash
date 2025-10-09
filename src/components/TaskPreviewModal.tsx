@@ -2,7 +2,7 @@
  * TaskPreviewModal - Modal for previewing task details with media
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -24,10 +24,39 @@ const { width, height } = Dimensions.get('window');
 
 // Video Preview Component using expo-video
 const VideoPreview: React.FC<{ uri: string; onPress: () => void }> = ({ uri, onPress }) => {
+    const [hasError, setHasError] = useState(false);
+    
     const player = useVideoPlayer(uri, (player) => {
         player.loop = false;
         player.muted = true;
     });
+
+    // Handle video errors
+    useEffect(() => {
+        const subscription = player.addListener('statusChange', (status) => {
+            if (status.error) {
+                console.error('Video preview error:', status.error);
+                setHasError(true);
+            }
+        });
+
+        return () => subscription?.remove();
+    }, [player]);
+
+    if (hasError) {
+        return (
+            <TouchableOpacity
+                style={styles.videoContainer}
+                onPress={onPress}
+                activeOpacity={0.8}
+            >
+                <View style={styles.errorContainer}>
+                    <Ionicons name="videocam-off" size={32} color="#666" />
+                    <Text style={styles.errorText}>Video no disponible</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
 
     return (
         <TouchableOpacity
@@ -595,5 +624,18 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         // Additional styles for delete button if needed
+    },
+    errorContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+        borderRadius: 8,
+    },
+    errorText: {
+        marginTop: 8,
+        fontSize: 12,
+        color: '#666',
+        textAlign: 'center',
     },
 });

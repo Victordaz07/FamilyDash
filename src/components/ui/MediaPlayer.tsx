@@ -55,7 +55,7 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
     // Create video player instance
     const player = useVideoPlayer(uri, (player) => {
         player.loop = false;
-        player.muted = false;
+        player.muted = type === 'video' ? false : true; // Mute audio files by default
     });
 
     const [isPlaying, setIsPlaying] = useState(autoPlay);
@@ -108,7 +108,11 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
 
     // Handle video events
     useEffect(() => {
+        console.log('Setting up video player for URI:', uri);
+        
         const subscription = player.addListener('statusChange', (status) => {
+            console.log('Video status change:', status);
+            
             if (status.isLoaded) {
                 setIsLoading(false);
                 setCurrentTime(status.currentTime || 0);
@@ -121,14 +125,21 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
             }
             
             if (status.error) {
+                console.error('Video player error:', status.error);
                 setError(status.error);
                 setIsLoading(false);
                 onError?.(status.error);
             }
         });
 
-        return () => subscription?.remove();
-    }, [player, duration, onEnd, onError]);
+        return () => {
+            try {
+                subscription?.remove();
+            } catch (err) {
+                console.error('Error removing video listener:', err);
+            }
+        };
+    }, [player, duration, onEnd, onError, uri]);
 
     // Get styles based on size
     const getPlayerStyles = () => {

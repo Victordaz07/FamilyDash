@@ -319,6 +319,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           subtitle="Routines and schedules"
           onPress={() => navigation.navigate('FamilySchedules')}
         />
+        <ProfileItem
+          icon="videocam"
+          title="Video Test"
+          subtitle="Test video player functionality"
+          onPress={() => navigation.navigate('VideoTest')}
+        />
       </Card>
 
       {/* App Info */}
