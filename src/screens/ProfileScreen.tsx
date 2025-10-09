@@ -108,15 +108,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         </View>
         <View style={styles.profileContent}>
           <Text style={styles.profileTitle}>{title}</Text>
-          {subtitle && <Text style={styles.profileSubtitle}>{subtitle}</Text>}
+          {subtitle ? <Text style={styles.profileSubtitle}>{subtitle}</Text> : null}
         </View>
       </View>
       <View style={styles.profileRight}>
-        {badge && (
+        {badge ? (
           <View style={styles.profileBadge}>
             <Text style={styles.profileBadgeText}>{badge}</Text>
           </View>
-        )}
+        ) : null}
         <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
       </View>
     </TouchableOpacity>
@@ -213,18 +213,18 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
               <Text style={[styles.achievementTitle, !achievement.earned && styles.achievementTitleLocked]}>
                 {achievement.title}
               </Text>
-              {achievement.earned && (
+              {achievement.earned ? (
                 <View style={styles.achievementBadge}>
                   <Ionicons name="checkmark" size={12} color="white" />
                 </View>
-              )}
+              ) : null}
             </TouchableOpacity>
           ))}
         </View>
       </Card>
 
       {/* Empty State - Connection Options */}
-      {!currentUser && (
+      {!currentUser ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>Welcome to FamilyDash!</Text>
           <Text style={styles.emptySubtitle}>Connect with other apps to get started</Text>
@@ -249,7 +249,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
             />
           </View>
         </View>
-      )}
+      ) : null}
 
       {/* Enhanced Quick Actions */}
       <Card style={styles.section}>
