@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking, Alert, Platform } from 'react-native';
+import Logger from '../Logger';
 
 export interface NotificationChannel {
   id: string;
@@ -200,16 +201,16 @@ export class AdvancedNotificationService {
     try {
       // In a real app, you would use expo-notifications
       // For now, we'll simulate permission request
-      console.log('Requesting notification permissions...');
+      Logger.debug('Requesting notification permissions...');
       
       // Simulate permission result
       const hasPermission = Math.random() > 0.2; // 80% success rate
       
       if (hasPermission) {
-        console.log('Notification permissions granted');
+        Logger.debug('Notification permissions granted');
         return true;
       } else {
-        console.log('Notification permissions denied');
+        Logger.debug('Notification permissions denied');
         Alert.alert(
           'Notification Permissions',
           'To receive family updates and reminders, please enable notifications in your device settings.',
@@ -218,7 +219,7 @@ export class AdvancedNotificationService {
         return false;
       }
     } catch (error) {
-      console.error('Error requesting notification permissions:', error);
+      Logger.error('Error requesting notification permissions:', error);
       return false;
     }
   }
@@ -231,20 +232,20 @@ export class AdvancedNotificationService {
       // Check permissions first
       const hasPermission = await this.checkPermissions();
       if (!hasPermission) {
-        console.log('Notification permission not granted');
+        Logger.debug('Notification permission not granted');
         return false;
       }
 
       // Validate channel
       const channel = this.channels.get(notification.channelId);
       if (!channel || !channel.enabled) {
-        console.log(`Channel ${notification.channelId} not available or disabled`);
+        Logger.debug(`Channel ${notification.channelId} not available or disabled`);
         return false;
       }
 
       // Check user preferences
       if (!this.isNotificationAllowed(notification)) {
-        console.log('Notification blocked by user preferences');
+        Logger.debug('Notification blocked by user preferences');
         return false;
       }
 
@@ -257,7 +258,7 @@ export class AdvancedNotificationService {
       return this.sendImmediateNotification(notification);
       
     } catch (error) {
-      console.error('Error sending notification:', error);
+      Logger.error('Error sending notification:', error);
       return false;
     }
   }
@@ -276,11 +277,11 @@ export class AdvancedNotificationService {
 
       this.scheduledNotifications.set(notification.id, timer);
       
-      console.log(`Notification scheduled for ${new Date(notification.scheduledFor!)}`);
+      Logger.debug(`Notification scheduled for ${new Date(notification.scheduledFor!)}`);
       return true;
       
     } catch (error) {
-      console.error('Error scheduling notification:', error);
+      Logger.error('Error scheduling notification:', error);
       return false;
     }
   }
@@ -299,7 +300,7 @@ export class AdvancedNotificationService {
       }
 
       // Send notification (simulated)
-      console.log(`📱 Sending notification:
+      Logger.debug(`📱 Sending notification:
         Title: ${notification.title}
         Body: ${notification.body}
         Channel: ${channel.name}
@@ -321,7 +322,7 @@ export class AdvancedNotificationService {
       return true;
       
     } catch (error) {
-      console.error('Error sending immediate notification:', error);
+      Logger.error('Error sending immediate notification:', error);
       return false;
     }
   }
@@ -343,7 +344,7 @@ export class AdvancedNotificationService {
       // Normal case: quiet hours don't cross midnight
       if (minutesFromMidnight >= smartTiming.quietHours.start && 
           minutesFromMidnight <= smartTiming.quietHours.end) {
-        console.log('Notification delayed due to quiet hours');
+        Logger.debug('Notification delayed due to quiet hours');
         // Schedule for after quiet hours
         const nextAvailableTime = new Date(now);
         nextAvailableTime.setHours(Math.floor(smartTiming.quietHours.end / 60));
@@ -357,7 +358,7 @@ export class AdvancedNotificationService {
     if (smartTiming.maxFrequency > 0) {
       const todayNotifications = await this.getTodayNotificationCount();
       if (todayNotifications >= smartTiming.maxFrequency) {
-        console.log('Notification blocked due to frequency limit');
+        Logger.debug('Notification blocked due to frequency limit');
         throw new Error('Frequency limit exceeded');
       }
     }
@@ -377,13 +378,13 @@ export class AdvancedNotificationService {
         // Handle deep link navigation
         if (notification.screen && notification.params) {
           // Navigate to specific screen
-          console.log(`🔗 Deep linking to: ${notification.screen}`, notification.params);
+          Logger.debug(`🔗 Deep linking to: ${notification.screen}`, notification.params);
         } else {
           // Generic deep link
-          console.log(`🔗 Generic deep link: ${notification.deepLink}`);
+          Logger.debug(`🔗 Generic deep link: ${notification.deepLink}`);
         }
       } catch (error) {
-        console.error('Error handling deep link:', error);
+        Logger.error('Error handling deep link:', error);
       }
     };
 
@@ -406,11 +407,11 @@ export class AdvancedNotificationService {
         return true;
       }
       
-      console.log(`No handler found for notification: ${notificationId}`);
+      Logger.debug(`No handler found for notification: ${notificationId}`);
       return false;
       
     } catch (error) {
-      console.error('Error handling notification interaction:', error);
+      Logger.error('Error handling notification interaction:', error);
       return false;
     }
   }
@@ -485,11 +486,11 @@ export class AdvancedNotificationService {
 
       // Store categories (in real app, register with native notification system)
       categories.forEach(category => {
-        console.log(`Registered notification category: ${category.id}`);
+        Logger.debug(`Registered notification category: ${category.id}`);
       });
       
     } catch (error) {
-      console.error('Error creating notification categories:', error);
+      Logger.error('Error creating notification categories:', error);
     }
   }
 
@@ -592,7 +593,7 @@ export class AdvancedNotificationService {
       const storedCount = await AsyncStorage.getItem(`notification_count_${today}`);
       return storedCount ? parseInt(storedCount, 10) : 0;
     } catch (error) {
-      console.error('Error getting today notification count:', error);
+      Logger.error('Error getting today notification count:', error);
       return 0;
     }
   }
@@ -604,7 +605,7 @@ export class AdvancedNotificationService {
       const currentCount = await this.getTodayNotificationCount();
       await AsyncStorage.setItem(`notification_count_${today}`, `${currentCount + 1}`);
     } catch (error) {
-      console.error('Error updating user frequency:', error);
+      Logger.error('Error updating user frequency:', error);
     }
   }
 
@@ -631,7 +632,7 @@ export class AdvancedNotificationService {
         };
       }
     } catch (error) {
-      console.error('Error loading user preferences:', error);
+      Logger.error('Error loading user preferences:', error);
     }
   }
 
@@ -645,7 +646,7 @@ export class AdvancedNotificationService {
         });
       }
     } catch (error) {
-      console.error('Error loading analytics:', error);
+      Logger.error('Error loading analytics:', error);
     }
   }
 
@@ -654,7 +655,7 @@ export class AdvancedNotificationService {
       const data = Object.fromEntries(this.analytics.entries());
       await AsyncStorage.setItem('notification_analytics', JSON.stringify(data));
     } catch (error) {
-      console.error('Error saving analytics:', error);
+      Logger.error('Error saving analytics:', error);
     }
   }
 
@@ -689,7 +690,7 @@ export class AdvancedNotificationService {
       }
       return true;
     } catch (error) {
-      console.error('Error canceling notification:', error);
+      Logger.error('Error canceling notification:', error);
       return false;
     }
   }
@@ -699,7 +700,7 @@ export class AdvancedNotificationService {
       this.scheduledNotifications.forEach(timer => clearTimeout(timer));
       this.scheduledNotifications.clear();
     } catch (error) {
-      console.error('Error canceling all notifications:', error);
+      Logger.error('Error canceling all notifications:', error);
     }
   }
 }

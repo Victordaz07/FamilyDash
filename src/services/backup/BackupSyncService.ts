@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
+import Logger from '../Logger';
 
 export interface BackupData {
   backupId: string;
@@ -139,9 +140,9 @@ export class BackupSyncService {
       // Monitor network status
       this.monitorNetworkStatus();
       
-      console.log('💾 Backup & Sync Service initialized');
+      Logger.debug('💾 Backup & Sync Service initialized');
     } catch (error) {
-      console.error('Error initializing backup sync service:', error);
+      Logger.error('Error initializing backup sync service:', error);
     }
   }
 
@@ -159,7 +160,7 @@ export class BackupSyncService {
     } = {}
   ): Promise<BackupData> {
     try {
-      console.log(`💾 Creating backup for family ${familyId}`);
+      Logger.debug(`💾 Creating backup for family ${familyId}`);
       
       const backupId = `backup_${familyId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const startTime = Date.now();
@@ -233,12 +234,12 @@ export class BackupSyncService {
         await this.uploadBackupToCloud(backup);
       }
       
-      console.log(`💾 Backup created: ${backupId} (${backupSize} bytes) in ${Date.now() - startTime}ms`);
+      Logger.debug(`💾 Backup created: ${backupId} (${backupSize} bytes) in ${Date.now() - startTime}ms`);
       
       return backup;
       
     } catch (error) {
-      console.error('Error creating backup:', error);
+      Logger.error('Error creating backup:', error);
       throw error;
     }
   }
@@ -255,7 +256,7 @@ export class BackupSyncService {
     } = {}
   ): Promise<boolean> {
     try {
-      console.log(`🔄 Restoring from backup: ${backupId}`);
+      Logger.debug(`🔄 Restoring from backup: ${backupId}`);
       
       // Load backup data
       const backup = await this.loadBackupData(backupId);
@@ -286,7 +287,7 @@ export class BackupSyncService {
         // Clear restore checkpoint
         await this.clearRestoreCheckpoint();
         
-        console.log(`🔄 Successfully restored ${modulesToRestore.length} modules from backup ${backupId}`);
+        Logger.debug(`🔄 Successfully restored ${modulesToRestore.length} modules from backup ${backupId}`);
         return true;
         
       } catch (restoreError) {
@@ -296,7 +297,7 @@ export class BackupSyncService {
       }
       
     } catch (error) {
-      console.error('Error restoring from backup:', error);
+      Logger.error('Error restoring from backup:', error);
       return false;
     }
   }
@@ -310,7 +311,7 @@ export class BackupSyncService {
     forceSync: boolean = false
   ): Promise<SyncStatus> {
     try {
-      console.log(`🔄 Synchronizing data for family ${familyId}`);
+      Logger.debug(`🔄 Synchronizing data for family ${familyId}`);
       
       // Create sync status
       const syncId = `sync_${familyId}_${Date.now()}`;
@@ -380,7 +381,7 @@ export class BackupSyncService {
         syncStatus.completedAt = Date.now();
         syncStatus.progress = 100;
         
-        console.log(`🔄 Sync completed: ${syncId}`);
+        Logger.debug(`🔄 Sync completed: ${syncId}`);
         
         return syncStatus;
         
@@ -398,7 +399,7 @@ export class BackupSyncService {
       }
       
     } catch (error) {
-      console.error('Error synchronizing data:', error);
+      Logger.error('Error synchronizing data:', error);
       throw error;
     }
   }
@@ -444,12 +445,12 @@ export class BackupSyncService {
       conflict.resolvedAt = Date.now();
       conflict.resolvedBy = userId;
       
-      console.log(`✅ Conflict ${conflictId} resolved with strategy: ${resolution}`);
+      Logger.debug(`✅ Conflict ${conflictId} resolved with strategy: ${resolution}`);
       
       return true;
       
     } catch (error) {
-      console.error('Error resolving conflict:', error);
+      Logger.error('Error resolving conflict:', error);
       return false;
     }
   }
@@ -470,12 +471,12 @@ export class BackupSyncService {
       // Save configuration
       await AsyncStorage.setItem('backup_cloud_config', JSON.stringify(config));
       
-      console.log(`☁️ Cloud storage configured: ${config.provider}`);
+      Logger.debug(`☁️ Cloud storage configured: ${config.provider}`);
       
       return true;
       
     } catch (error) {
-      console.error('Error configuring cloud storage:', error);
+      Logger.error('Error configuring cloud storage:', error);
       return false;
     }
   }
@@ -487,7 +488,7 @@ export class BackupSyncService {
     this.syncRules.set(module, rule);
     await AsyncStorage.setItem('backup_sync_rules', JSON.stringify(Object.fromEntries(this.syncRules.entries())));
     
-    console.log(`⚙️ Sync rule set for module: ${module}`);
+    Logger.debug(`⚙️ Sync rule set for module: ${module}`);
   }
 
   /**
@@ -512,7 +513,7 @@ export class BackupSyncService {
       const backups = await AsyncStorage.getItem(`backups_${familyId}`);
       return backups ? JSON.parse(backups) : [];
     } catch (error) {
-      console.error('Error getting available backups:', error);
+      Logger.error('Error getting available backups:', error);
       return [];
     }
   }
@@ -532,7 +533,7 @@ export class BackupSyncService {
       timestamp: Date.now() + 5 * 60 * 1000, // Schedule for 5 minutes from now
     });
     
-    console.log(`⏰ Automatic sync scheduled for family ${familyId}`);
+    Logger.debug(`⏰ Automatic sync scheduled for family ${familyId}`);
   }
 
   /**
@@ -540,7 +541,7 @@ export class BackupSyncService {
    */
   cancelScheduledSync(familyId: string): void {
     this.syncQueue = this.syncQueue.filter(item => item.familyId !== familyId);
-    console.log(`❌ Scheduled sync cancelled for family ${familyId}`);
+    Logger.debug(`❌ Scheduled sync cancelled for family ${familyId}`);
   }
 
   /**
@@ -570,7 +571,7 @@ export class BackupSyncService {
       return mockData;
       
     } catch (error) {
-      console.error('Error collecting module data:', error);
+      Logger.error('Error collecting module data:', error);
       throw error;
     }
   }
@@ -592,7 +593,7 @@ export class BackupSyncService {
       
       await AsyncStorage.setItem(`backups_${backup.familyId}`, JSON.stringify(currentBackups));
     } catch (error) {
-      console.error('Error storing backup locally:', error);
+      Logger.error('Error storing backup locally:', error);
       throw error;
     }
   }
@@ -600,11 +601,11 @@ export class BackupSyncService {
   private async uploadBackupToCloud(backup: BackupData): Promise<void> {
     try {
       // Mock cloud upload - in real app would use actual cloud storage API
-      console.log(`☁️ Uploading backup ${backup.backupId} to cloud storage`);
+      Logger.debug(`☁️ Uploading backup ${backup.backupId} to cloud storage`);
       // Simulate upload delay
       await new Promise(resolve => setTimeout(resolve, 2000));
     } catch (error) {
-      console.error('Error uploading backup to cloud:', error);
+      Logger.error('Error uploading backup to cloud:', error);
       throw error;
     }
   }
@@ -630,7 +631,7 @@ export class BackupSyncService {
         },
       };
     } catch (error) {
-      console.error('Error loading backup data:', error);
+      Logger.error('Error loading backup data:', error);
       return null;
     }
   }
@@ -704,7 +705,7 @@ export class BackupSyncService {
         });
       }
     } catch (error) {
-      console.error('Error loading configuration:', error);
+      Logger.error('Error loading configuration:', error);
     }
   }
 
@@ -747,27 +748,27 @@ export class BackupSyncService {
 
   private async uploadLocalChanges(familyId: string): Promise<void> {
     // Mock local changes upload
-    console.log(`📤 Uploading local changes for family ${familyId}`);
+    Logger.debug(`📤 Uploading local changes for family ${familyId}`);
   }
 
   private async createRestoreCheckpoint(): Promise<void> {
     // Mock restore checkpoint creation
-    console.log('📦 Created restore checkpoint');
+    Logger.debug('📦 Created restore checkpoint');
   }
 
   private async clearRestoreCheckpoint(): Promise<void> {
     // Mock restore checkpoint clearing
-    console.log('🗑️ Cleared restore checkpoint');
+    Logger.debug('🗑️ Cleared restore checkpoint');
   }
 
   private async restoreFromCheckpoint(): Promise<void> {
     // Mock restore from checkpoint
-    console.log('🔙 Restored from checkpoint');
+    Logger.debug('🔙 Restored from checkpoint');
   }
 
   private async restoreModuleData(moduleData: any, mergeStrategy: string): Promise<void> {
     // Mock module data restore
-    console.log(`🔄 Restored module ${moduleData.module} with strategy: ${mergeStrategy}`);
+    Logger.debug(`🔄 Restored module ${moduleData.module} with strategy: ${mergeStrategy}`);
   }
 
   private async mergeConflictingData(localData: any, remoteData: any): Promise<any> {
@@ -777,7 +778,7 @@ export class BackupSyncService {
 
   private async applyResolvedData(module: string, recordId: string, data: any): Promise<void> {
     // Mock resolved data application
-    console.log(`✅ Applied resolved data for ${module}:${recordId}`);
+    Logger.debug(`✅ Applied resolved data for ${module}:${recordId}`);
   }
 
   private async testCloudConnection(): Promise<boolean> {

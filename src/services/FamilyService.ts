@@ -4,6 +4,7 @@
  */
 
 import DatabaseService, { DatabaseResult } from './DatabaseService';
+import Logger from './Logger';
 
 export interface FamilyMember {
     id: string;
@@ -91,7 +92,7 @@ export const FamilyService = {
      * Add a family member
      */
     async addMember(memberData: Omit<FamilyMember, 'id' | 'joinedAt' | 'lastActiveAt'>): Promise<DatabaseResult<FamilyMember>> {
-        console.log('👥 Adding family member:', memberData);
+        Logger.debug('👥 Adding family member:', memberData);
 
         const member: Omit<FamilyMember, 'id'> = {
             ...memberData,
@@ -106,7 +107,7 @@ export const FamilyService = {
      * Get all family members
      */
     async getMembers(): Promise<DatabaseResult<FamilyMember[]>> {
-        console.log('👥 Getting all family members');
+        Logger.debug('👥 Getting all family members');
         return await DatabaseService.getAll<FamilyMember>(COLLECTIONS.MEMBERS, {
             orderBy: [{ field: 'joinedAt', direction: 'asc' }]
         });
@@ -116,7 +117,7 @@ export const FamilyService = {
      * Update family member
      */
     async updateMember(id: string, updates: Partial<FamilyMember>): Promise<DatabaseResult<FamilyMember>> {
-        console.log(`👥 Updating family member ${id}:`, updates);
+        Logger.debug(`👥 Updating family member ${id}:`, updates);
         return await DatabaseService.update<FamilyMember>(COLLECTIONS.MEMBERS, id, updates);
     },
 
@@ -124,7 +125,7 @@ export const FamilyService = {
      * Remove family member
      */
     async removeMember(id: string): Promise<DatabaseResult> {
-        console.log(`👥 Removing family member ${id}`);
+        Logger.debug(`👥 Removing family member ${id}`);
         return await DatabaseService.remove(COLLECTIONS.MEMBERS, id);
     },
 
@@ -132,7 +133,7 @@ export const FamilyService = {
      * Listen to family members changes
      */
     listenToMembers(callback: (members: FamilyMember[]) => void): () => void {
-        console.log('👂 Setting up real-time family members listener');
+        Logger.debug('👂 Setting up real-time family members listener');
         return DatabaseService.listen<FamilyMember>(
             COLLECTIONS.MEMBERS,
             callback,
@@ -146,7 +147,7 @@ export const FamilyService = {
      * Create a new family vision/goal
      */
     async createVision(visionData: Omit<FamilyVision, 'id' | 'createdAt' | 'updatedAt'>): Promise<DatabaseResult<FamilyVision>> {
-        console.log('🎯 Creating family vision:', visionData);
+        Logger.debug('🎯 Creating family vision:', visionData);
 
         const vision: Omit<FamilyVision, 'id'> = {
             ...visionData,
@@ -161,7 +162,7 @@ export const FamilyService = {
      * Get all family visions
      */
     async getVisions(status?: FamilyVision['status']): Promise<DatabaseResult<FamilyVision[]>> {
-        console.log('🎯 Getting family visions with status:', status);
+        Logger.debug('🎯 Getting family visions with status:', status);
 
         const options = {
             orderBy: [{ field: 'createdAt', direction: 'desc' as const }]
@@ -178,7 +179,7 @@ export const FamilyService = {
      * Update family vision
      */
     async updateVision(id: string, updates: Partial<FamilyVision>): Promise<DatabaseResult<FamilyVision>> {
-        console.log(`🎯 Updating family vision ${id}:`, updates);
+        Logger.debug(`🎯 Updating family vision ${id}:`, updates);
         return await DatabaseService.update<FamilyVision>(COLLECTIONS.VISION, id, updates);
     },
 
@@ -186,7 +187,7 @@ export const FamilyService = {
      * Update vision progress
      */
     async updateVisionProgress(id: string, progress: number, milestoneId?: string): Promise<DatabaseResult<FamilyVision>> {
-        console.log(`🎯 Updating vision ${id} progress to ${progress}%`);
+        Logger.debug(`🎯 Updating vision ${id} progress to ${progress}%`);
 
         const updates: Partial<FamilyVision> = { progress };
 
@@ -211,7 +212,7 @@ export const FamilyService = {
      * Listen to family visions changes
      */
     listenToVisions(callback: (visions: FamilyVision[]) => void): () => void {
-        console.log('👂 Setting up real-time family visions listener');
+        Logger.debug('👂 Setting up real-time family visions listener');
         return DatabaseService.listen<FamilyVision>(
             COLLECTIONS.VISION,
             callback,
@@ -225,7 +226,7 @@ export const FamilyService = {
      * Create a new family vote
      */
     async createVote(voteData: Omit<FamilyVote, 'id' | 'createdAt' | 'updatedAt' | 'results'>): Promise<DatabaseResult<FamilyVote>> {
-        console.log('🗳️ Creating family vote:', voteData);
+        Logger.debug('🗳️ Creating family vote:', voteData);
 
         const vote: Omit<FamilyVote, 'id'> = {
             ...voteData,
@@ -244,7 +245,7 @@ export const FamilyService = {
      * Get all family votes
      */
     async getVotes(status?: FamilyVote['status']): Promise<DatabaseResult<FamilyVote[]>> {
-        console.log('🗳️ Getting family votes with status:', status);
+        Logger.debug('🗳️ Getting family votes with status:', status);
 
         const options = {
             orderBy: [{ field: 'createdAt', direction: 'desc' as const }]
@@ -261,7 +262,7 @@ export const FamilyService = {
      * Cast a vote
      */
     async castVote(voteId: string, optionId: string, userId: string): Promise<DatabaseResult<FamilyVote>> {
-        console.log(`🗳️ User ${userId} voting for option ${optionId} in vote ${voteId}`);
+        Logger.debug(`🗳️ User ${userId} voting for option ${optionId} in vote ${voteId}`);
 
         try {
             // Get current vote
@@ -313,7 +314,7 @@ export const FamilyService = {
 
             return await DatabaseService.update<FamilyVote>(COLLECTIONS.VOTES, voteId, updates);
         } catch (error: any) {
-            console.error('❌ Error casting vote:', error);
+            Logger.error('❌ Error casting vote:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to cast vote'
@@ -325,7 +326,7 @@ export const FamilyService = {
      * Listen to family votes changes
      */
     listenToVotes(callback: (votes: FamilyVote[]) => void): () => void {
-        console.log('👂 Setting up real-time family votes listener');
+        Logger.debug('👂 Setting up real-time family votes listener');
         return DatabaseService.listen<FamilyVote>(
             COLLECTIONS.VOTES,
             callback,
@@ -339,7 +340,7 @@ export const FamilyService = {
      * Add a family reflection
      */
     async addReflection(reflectionData: Omit<FamilyReflection, 'id' | 'createdAt' | 'updatedAt'>): Promise<DatabaseResult<FamilyReflection>> {
-        console.log('💭 Adding family reflection:', reflectionData);
+        Logger.debug('💭 Adding family reflection:', reflectionData);
 
         const reflection: Omit<FamilyReflection, 'id'> = {
             ...reflectionData,
@@ -354,7 +355,7 @@ export const FamilyService = {
      * Get family reflections
      */
     async getReflections(sharedOnly: boolean = false): Promise<DatabaseResult<FamilyReflection[]>> {
-        console.log('💭 Getting family reflections, shared only:', sharedOnly);
+        Logger.debug('💭 Getting family reflections, shared only:', sharedOnly);
 
         const options = {
             orderBy: [{ field: 'createdAt', direction: 'desc' as const }]
@@ -371,7 +372,7 @@ export const FamilyService = {
      * Listen to family reflections changes
      */
     listenToReflections(callback: (reflections: FamilyReflection[]) => void): () => void {
-        console.log('👂 Setting up real-time family reflections listener');
+        Logger.debug('👂 Setting up real-time family reflections listener');
         return DatabaseService.listen<FamilyReflection>(
             COLLECTIONS.REFLECTIONS,
             callback,
@@ -396,7 +397,7 @@ export const FamilyService = {
         sharedReflections: number;
     }>> {
         try {
-            console.log('📊 Getting family statistics');
+            Logger.debug('📊 Getting family statistics');
 
             const [membersResult, visionsResult, votesResult, reflectionsResult] = await Promise.all([
                 this.getMembers(),
@@ -422,10 +423,10 @@ export const FamilyService = {
                 sharedReflections: reflections.filter(r => r.isShared).length
             };
 
-            console.log('📊 Family statistics:', stats);
+            Logger.debug('📊 Family statistics:', stats);
             return { success: true, data: stats };
         } catch (error: any) {
-            console.error('❌ Error getting family statistics:', error);
+            Logger.error('❌ Error getting family statistics:', error);
             return {
                 success: false,
                 error: error.message || 'Failed to get family statistics'

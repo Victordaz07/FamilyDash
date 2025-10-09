@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import Logger from './Logger';
 import * as Device from 'expo-device';
 
 // Check if we're running in Expo Go (SDK 53+ has issues with notifications)
@@ -28,7 +29,7 @@ if (!shouldDisableNotifications) {
   }
 } else {
   console.warn('⚠️ Notifications disabled - Running in Expo Go or SDK 53+');
-  console.log('🔇 Notifications disabled in Expo Go (use development build for push notifications)');
+  Logger.debug('🔇 Notifications disabled in Expo Go (use development build for push notifications)');
 }
 
 // Tipos para las notificaciones
@@ -60,7 +61,7 @@ export interface PenaltyNotification {
 export async function requestNotificationPermissions(): Promise<boolean> {
   // Skip notification setup in Expo Go or SDK 53+
   if (shouldDisableNotifications) {
-    console.log('🔇 Skipping notification permissions in Expo Go or SDK 53+');
+    Logger.debug('🔇 Skipping notification permissions in Expo Go or SDK 53+');
     return false;
   }
 
@@ -75,17 +76,17 @@ export async function requestNotificationPermissions(): Promise<boolean> {
       }
 
       if (finalStatus !== 'granted') {
-        console.log('Permisos de notificación denegados');
+        Logger.debug('Permisos de notificación denegados');
         return false;
       }
 
       return true;
     } else {
-      console.log('Debe usar un dispositivo físico para las notificaciones');
+      Logger.debug('Debe usar un dispositivo físico para las notificaciones');
       return false;
     }
   } catch (error) {
-    console.error('Error solicitando permisos de notificación:', error);
+    Logger.error('Error solicitando permisos de notificación:', error);
     return false;
   }
 }
@@ -148,7 +149,7 @@ export async function configureNotificationChannel(): Promise<void> {
       });
     }
   } catch (error) {
-    console.error('Error configurando canales de notificación:', error);
+    Logger.error('Error configurando canales de notificación:', error);
   }
 }
 
@@ -176,9 +177,9 @@ export async function scheduleTaskNotification(task: TaskNotification): Promise<
       trigger: { seconds: 2 }, // 2 segundos después para testing
     });
 
-    console.log(`Notificación de tarea programada: ${task.title}`);
+    Logger.debug(`Notificación de tarea programada: ${task.title}`);
   } catch (error) {
-    console.error('Error programando notificación de tarea:', error);
+    Logger.error('Error programando notificación de tarea:', error);
   }
 }
 
@@ -207,9 +208,9 @@ export async function scheduleGoalNotification(goal: GoalNotification): Promise<
       trigger: { seconds: 2 }, // 2 segundos después para testing
     });
 
-    console.log(`Notificación de meta programada: ${goal.title}`);
+    Logger.debug(`Notificación de meta programada: ${goal.title}`);
   } catch (error) {
-    console.error('Error programando notificación de meta:', error);
+    Logger.error('Error programando notificación de meta:', error);
   }
 }
 
@@ -239,9 +240,9 @@ export async function schedulePenaltyNotification(penalty: PenaltyNotification):
       trigger: { seconds: 2 }, // 2 segundos después para testing
     });
 
-    console.log(`Notificación de pena programada: ${penalty.title}`);
+    Logger.debug(`Notificación de pena programada: ${penalty.title}`);
   } catch (error) {
-    console.error('Error programando notificación de pena:', error);
+    Logger.error('Error programando notificación de pena:', error);
   }
 }
 
@@ -251,9 +252,9 @@ export async function schedulePenaltyNotification(penalty: PenaltyNotification):
 export async function cancelAllNotifications(): Promise<void> {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
-    console.log('Todas las notificaciones canceladas');
+    Logger.debug('Todas las notificaciones canceladas');
   } catch (error) {
-    console.error('Error cancelando notificaciones:', error);
+    Logger.error('Error cancelando notificaciones:', error);
   }
 }
 
@@ -263,7 +264,7 @@ export async function cancelAllNotifications(): Promise<void> {
 export async function getNotificationToken(): Promise<string | null> {
   try {
     if (!Device.isDevice) {
-      console.log('Debe usar un dispositivo físico para obtener el token');
+      Logger.debug('Debe usar un dispositivo físico para obtener el token');
       return null;
     }
 
@@ -272,7 +273,7 @@ export async function getNotificationToken(): Promise<string | null> {
     // return token.data;
     return null;
   } catch (error) {
-    console.error('Error obteniendo token de notificación:', error);
+    Logger.error('Error obteniendo token de notificación:', error);
     return null;
   }
 }
@@ -282,7 +283,7 @@ export async function getNotificationToken(): Promise<string | null> {
  */
 export async function initializeNotifications(): Promise<boolean> {
   try {
-    console.log('Inicializando sistema de notificaciones...');
+    Logger.debug('Inicializando sistema de notificaciones...');
 
     // Configurar canales
     await configureNotificationChannel();
@@ -291,14 +292,14 @@ export async function initializeNotifications(): Promise<boolean> {
     const hasPermission = await requestNotificationPermissions();
 
     if (hasPermission) {
-      console.log('✅ Sistema de notificaciones inicializado correctamente');
+      Logger.debug('✅ Sistema de notificaciones inicializado correctamente');
       return true;
     } else {
-      console.log('❌ No se pudieron obtener permisos de notificación');
+      Logger.debug('❌ No se pudieron obtener permisos de notificación');
       return false;
     }
   } catch (error) {
-    console.error('Error inicializando notificaciones:', error);
+    Logger.error('Error inicializando notificaciones:', error);
     return false;
   }
 }
