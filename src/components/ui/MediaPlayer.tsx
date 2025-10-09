@@ -8,7 +8,7 @@ import {
     ViewStyle,
     Modal,
 } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, AdvancedCard } from '../ui';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -51,9 +51,13 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
     thumbnail,
 }) => {
     const theme = useTheme();
-    const videoRef = useRef<Video>(null);
+    
+    // Create video player instance
+    const player = useVideoPlayer(uri, (player) => {
+        player.loop = false;
+        player.muted = false;
+    });
 
-    const [status, setStatus] = useState<any>({});
     const [isPlaying, setIsPlaying] = useState(autoPlay);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -70,21 +74,19 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
 
     // Get progress percentage
     const getProgress = (): number => {
-        if (!status.isLoaded || duration === 0) return 0;
+        if (duration === 0) return 0;
         return (currentTime / duration) * 100;
     };
 
     // Play/Pause controls
-    const handlePlayPause = async () => {
+    const handlePlayPause = () => {
         try {
-            if (!videoRef.current || !status.isLoaded) return;
-
             if (isPlaying) {
-                await videoRef.current.pauseAsync();
+                player.pause();
                 setIsPlaying(false);
                 onPause?.();
             } else {
-                await videoRef.current.playAsync();
+                player.play();
                 setIsPlaying(true);
                 onPlay?.();
             }
@@ -96,36 +98,37 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
     };
 
     // Seek to specific time
-    const handleSeek = async (timeMs: number) => {
+    const handleSeek = (timeMs: number) => {
         try {
-            if (!videoRef.current || !status.isLoaded) return;
-            await videoRef.current.setPositionAsync(timeMs);
+            player.seekTo(timeMs);
         } catch (err) {
             console.error('Error seeking:', err);
         }
     };
 
-    // Status change handler
-    const onPlaybackStatusUpdate = (playbackStatus: any) => {
-        setStatus(playbackStatus);
-
-        if (playbackStatus.isLoaded) {
-            setIsLoading(false);
-            setCurrentTime(playbackStatus.positionMillis || 0);
-
-            if (playbackStatus.didJustFinish) {
-                setIsPlaying(false);
-                setCurrentTime(duration);
-                onEnd?.();
+    // Handle video events
+    useEffect(() => {
+        const subscription = player.addListener('statusChange', (status) => {
+            if (status.isLoaded) {
+                setIsLoading(false);
+                setCurrentTime(status.currentTime || 0);
+                
+                if (status.didJustFinish) {
+                    setIsPlaying(false);
+                    setCurrentTime(duration);
+                    onEnd?.();
+                }
             }
-        }
+            
+            if (status.error) {
+                setError(status.error);
+                setIsLoading(false);
+                onError?.(status.error);
+            }
+        });
 
-        if (playbackStatus.error) {
-            setError(playbackStatus.error);
-            setIsLoading(false);
-            onError?.(playbackStatus.error);
-        }
-    };
+        return () => subscription?.remove();
+    }, [player, duration, onEnd, onError]);
 
     // Get styles based on size
     const getPlayerStyles = () => {
@@ -238,16 +241,11 @@ export const MediaPlayer: React.FC<MediaPlayerProps> = ({
                 style={[styles.videoContainer, style]}
             >
                 <View style={styles.videoWrapper}>
-                    <Video
-                        ref={videoRef}
+                    <VideoView
                         style={[styles.videoPlayer, playerStyles.player]}
-                        source={{ uri }}
-                        resizeMode={ResizeMode.CONTAIN}
-                        shouldPlay={isPlaying}
-                        isLooping={false}
-                        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-                        onLoadStart={() => setIsLoading(true)}
-                        onLoad={() => setIsLoading(false)}
+                        player={player}
+                        nativeControls={false}
+                        contentFit="contain"
                     />
 
                     {/* Loading overlay */}

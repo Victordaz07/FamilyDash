@@ -166,14 +166,70 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         navigation.navigate('DeviceTools');
     }, [navigation]);
 
-    const handleRingDevice = useCallback((memberName: string) => {
-        Alert.alert('Ring Device', `Ringing ${memberName}'s phone...`);
-    }, []);
+    const handleRingDevice = useCallback(async (memberName: string, memberId?: string) => {
+        if (!memberId) {
+            Alert.alert('Error', 'Member ID not available');
+            return;
+        }
 
-    const handleRingAllDevices = useCallback(() => {
-        Alert.alert('Ring All Devices', 'Ringing all family devices...');
-        setLastRingTime(0);
-    }, []);
+        Alert.alert(
+            'Ring Device',
+            `Ring ${memberName}'s phone?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Ring',
+                    onPress: async () => {
+                        const { default: DeviceRingService } = await import('../services/DeviceRingService');
+                        const result = await DeviceRingService.ringDevice(
+                            memberId,
+                            memberName,
+                            currentUser?.uid || 'unknown',
+                            currentUser?.name || 'Family Member',
+                            currentUser?.familyId || 'default_family',
+                            30 // 30 seconds
+                        );
+
+                        if (result.success) {
+                            Alert.alert('✅ Ringing', `${memberName}'s device is ringing`);
+                            setLastRingTime(0);
+                        } else {
+                            Alert.alert('❌ Error', result.error || 'Failed to ring device');
+                        }
+                    }
+                }
+            ]
+        );
+    }, [currentUser]);
+
+    const handleRingAllDevices = useCallback(async () => {
+        Alert.alert(
+            'Ring All Devices',
+            'Ring all family devices?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Ring All',
+                    onPress: async () => {
+                        const { default: DeviceRingService } = await import('../services/DeviceRingService');
+                        const result = await DeviceRingService.ringAllDevices(
+                            currentUser?.uid || 'unknown',
+                            currentUser?.name || 'Family Member',
+                            currentUser?.familyId || 'default_family',
+                            30 // 30 seconds
+                        );
+
+                        if (result.success) {
+                            Alert.alert('✅ Ringing', 'All family devices are ringing');
+                            setLastRingTime(0);
+                        } else {
+                            Alert.alert('❌ Error', result.error || 'Failed to ring devices');
+                        }
+                    }
+                }
+            ]
+        );
+    }, [currentUser]);
 
     const handleVote = useCallback((activityId: string) => {
         Alert.alert('Vote', `Voting on activity ${activityId}...`);
@@ -278,7 +334,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                                         <Text style={styles.memberName}>{member.name}</Text>
                                         <TouchableOpacity
                                             style={styles.ringButton}
-                                            onPress={() => handleRingDevice(member.name)}
+                                            onPress={() => handleRingDevice(member.name, member.id)}
                                         >
                                             <Ionicons name="call" size={12} color="white" />
                                             <Text style={styles.ringButtonText}>Ring</Text>

@@ -16,11 +16,37 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Video } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
 import { Task } from '../services/tasks';
 
 const { width, height } = Dimensions.get('window');
+
+// Video Preview Component using expo-video
+const VideoPreview: React.FC<{ uri: string; onPress: () => void }> = ({ uri, onPress }) => {
+    const player = useVideoPlayer(uri, (player) => {
+        player.loop = false;
+        player.muted = true;
+    });
+
+    return (
+        <TouchableOpacity
+            style={styles.videoContainer}
+            onPress={onPress}
+            activeOpacity={0.8}
+        >
+            <VideoView
+                style={styles.mediaVideo}
+                player={player}
+                nativeControls={false}
+                contentFit="cover"
+            />
+            <View style={styles.mediaOverlay}>
+                <Ionicons name="play" size={32} color="white" />
+            </View>
+        </TouchableOpacity>
+    );
+};
 
 interface TaskPreviewModalProps {
     visible: boolean;
@@ -219,22 +245,10 @@ export default function TaskPreviewModal({
                                                 </View>
                                             </TouchableOpacity>
                                         ) : (
-                                            <TouchableOpacity
-                                                style={styles.videoContainer}
+                                            <VideoPreview
+                                                uri={attachment.url}
                                                 onPress={() => handleVideoPress(attachment.url)}
-                                                activeOpacity={0.8}
-                                            >
-                                                <Video
-                                                    source={{ uri: attachment.url }}
-                                                    style={styles.mediaVideo}
-                                                    resizeMode="cover"
-                                                    shouldPlay={false}
-                                                    isLooping={false}
-                                                />
-                                                <View style={styles.mediaOverlay}>
-                                                    <Ionicons name="play" size={32} color="white" />
-                                                </View>
-                                            </TouchableOpacity>
+                                            />
                                         )}
                                         <Text style={[styles.mediaLabel, { color: colors.textSecondary, fontSize: fonts.caption }]}>
                                             {attachment.kind.toUpperCase()}

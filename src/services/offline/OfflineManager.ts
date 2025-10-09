@@ -42,6 +42,7 @@ export class OfflineManager {
         isInternetReachable: false,
     };
     private listeners: Array<(status: NetworkStatus) => void> = [];
+    private netInfoUnsubscribe: (() => void) | null = null;
 
     private constructor() {
         this.initializeNetworkListener();
@@ -57,15 +58,38 @@ export class OfflineManager {
 
     private async initializeNetworkListener(): Promise<void> {
         try {
-            // Mock network state for now - NetInfo temporarily disabled
-            const mockState = {
-                isConnected: true,
-                type: 'wifi',
-                isInternetReachable: true
-            };
-            this.updateNetworkStatus(mockState);
+            // Real network state detection with NetInfo
+            try {
+                const NetInfo = require('@react-native-community/netinfo').default;
+                
+                // Get initial state
+                const initialState = await NetInfo.fetch();
+                this.updateNetworkStatus({
+                    isConnected: initialState.isConnected ?? false,
+                    type: initialState.type || 'unknown',
+                    isInternetReachable: initialState.isInternetReachable ?? false
+                });
 
-            console.log('📡 Network listener initialized (mock mode)');
+                // Subscribe to network state updates
+                this.netInfoUnsubscribe = NetInfo.addEventListener((state: any) => {
+                    this.updateNetworkStatus({
+                        isConnected: state.isConnected ?? false,
+                        type: state.type || 'unknown',
+                        isInternetReachable: state.isInternetReachable ?? false
+                    });
+                });
+
+                console.log('📡 Network listener initialized (real NetInfo)');
+            } catch (error) {
+                console.warn('⚠️ NetInfo not available, using mock state:', error);
+                // Fallback to mock state if NetInfo is not available
+                const mockState = {
+                    isConnected: true,
+                    type: 'wifi',
+                    isInternetReachable: true
+                };
+                this.updateNetworkStatus(mockState);
+            }
         } catch (error) {
             console.error('Error initializing network listener:', error);
         }
