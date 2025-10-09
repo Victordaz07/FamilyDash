@@ -20,7 +20,7 @@ import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/The
 import { Task } from '../services/tasks';
 import { VideoErrorBoundary } from '../video/VideoErrorBoundary';
 import { VideoPlayerViewSimple } from '../video/VideoPlayerViewSimple';
-import ShoppingListModal from './shopping/ShoppingListModal';
+import ShoppingListModalNew from './shopping/ShoppingListModalNew';
 
 const { width, height } = Dimensions.get('window');
 
@@ -487,7 +487,7 @@ export default function TaskPreviewModal({
             </Modal>
             
             {/* Shopping List Modal */}
-            <ShoppingListModal
+            <ShoppingListModalNew
                 visible={shoppingOpen}
                 onClose={() => setShoppingOpen(false)}
                 taskId={task?.id || ''}

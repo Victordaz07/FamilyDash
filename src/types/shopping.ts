@@ -1,3 +1,5 @@
+export type PriceMode = "unit" | "total";
+export type UnitKey = "u" | "dozen" | "half_dozen" | "pack" | "pack_4" | "pack_6" | "pack_12" | "lb" | "kg" | "g" | "L" | "mL";
 export type ShoppingStatus = "pending" | "in_cart" | "purchased";
 
 export type ShoppingStore = {
@@ -15,14 +17,19 @@ export type ShoppingItem = {
   id: string;
   name: string;
   qty: number;
-  unit?: string;              // u, kg, L, pack
+  unit?: UnitKey;             // u, dozen, half_dozen, pack, pack_4, pack_6, pack_12, lb, kg, g, L, mL
+  packSize?: number | null;   // para unit="pack"
   category?: string;          // frutas, lácteos…
   note?: string;
-  price?: number;             // por unidad
   status: ShoppingStatus;
   storeId?: string;           // asignada a una tienda
   createdAt?: any;
   updatedAt?: any;
+  // pricing:
+  priceMode?: PriceMode;      // "unit" | "total"
+  unitPrice?: number | null;  // precio por unidad (lb, kg, u, etc.)
+  totalPrice?: number | null; // precio total del item
+  price?: number;             // LEGACY - para compatibilidad
 };
 
 export type ShoppingList = {
@@ -32,7 +39,6 @@ export type ShoppingList = {
   title: string;
   stores: ShoppingStore[];
   currency: string;           // "USD", "DOP"…
-  budgetLimit?: number;       // NEW: Total budget limit for the entire list
   createdBy: string;          // userId
   createdAt?: any;
   updatedAt?: any;
@@ -43,7 +49,7 @@ export type ShoppingProduct = {
   familyId: string;
   barcode: string;             // EAN/UPC
   name: string;
-  defaultUnit?: string;        // "u", "kg", "L"…
+  defaultUnit?: UnitKey;       // "u", "kg", "L"…
   lastPrice?: number;          // último precio visto
   lastStoreId?: string;
   updatedAt?: any;
@@ -64,5 +70,19 @@ export type ShoppingHistory = {
   completedAt: any;            // Timestamp de cuando se completó
   completedBy: string;         // userId que completó la compra
   notes?: string;              // Notas adicionales sobre la compra
+};
+
+export type PriceObservation = {
+  id?: string;
+  familyId: string;
+  barcode: string;
+  storeId?: string;
+  unitPrice?: number;
+  totalPrice?: number;
+  currency: string;
+  userId: string;
+  qty?: number;
+  unit?: UnitKey;
+  observedAt: any;
 };
 

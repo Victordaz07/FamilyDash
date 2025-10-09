@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { ShoppingStore } from "../../types/shopping";
-import MapPickerFallback from "./MapPickerFallback";
+import MapPicker from "./MapPicker";
 import { openInMaps } from "../../utils/maps";
 
 export default function StorePickerModal({
@@ -47,8 +47,8 @@ export default function StorePickerModal({
               style={styles.input} 
             />
 
-            <Text style={styles.label}>Ubicación (coordenadas manuales)</Text>
-            <MapPickerFallback
+            <Text style={styles.label}>Location</Text>
+            <MapPicker
               initial={initial?.lat && initial?.lng ? { lat: initial.lat, lng: initial.lng } : undefined}
               onPick={(p)=> setPos(p)}
             />

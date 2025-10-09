@@ -63,7 +63,8 @@
           "locationAlwaysAndWhenInUsePermission": "Allow FamilyDash to use your location to show stores on the map."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-barcode-scanner"
     ],
     "web": {
       "favicon": "./assets/favicon.png"
