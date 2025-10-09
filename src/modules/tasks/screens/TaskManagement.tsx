@@ -8,7 +8,7 @@ import { mockFamilyMembers } from '../mock/tasksData';
 import TaskFilter from '../components/TaskFilter';
 import TaskTabs from '../components/TaskTabs';
 import TaskCard from '../components/TaskCard';
-import QuickActions from '../components/QuickActions';
+import { SharedQuickActions } from '../../../components/quick/SharedQuickActions';
 import { TaskStatus } from '../types/taskTypes';
 import { theme } from '../../../styles/simpleTheme';
 
@@ -235,11 +235,14 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
         </View>
 
         {/* Quick Actions */}
-        <QuickActions
-          onAddTask={handleAddTask}
+        <SharedQuickActions
+          mode="task"
+          familyId="default_family"
+          userId="default_user"
+          taskId="current_task"
+          onAddNewTask={handleAddTask}
           onAddPhotoTask={handleAddPhotoTask}
-          onAddVideoInstructions={handleAddVideoInstructions}
-          onAddReward={handleAddReward}
+          onAddVideoTask={handleAddVideoInstructions}
         />
 
         <View style={{ height: insets.bottom + 100 }} />

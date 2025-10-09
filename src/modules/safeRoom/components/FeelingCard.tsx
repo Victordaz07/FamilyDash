@@ -1,15 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Feeling } from '../mock/safeRoomData';
+import SafeRoomAttachmentsList from './SafeRoomAttachmentsList';
+import SafeRoomMediaModal from './SafeRoomMediaModal';
+import { SafeRoomAttachment, SafeRoomMessage } from '../types/safeRoomTypes';
 
 interface FeelingCardProps {
     feeling: Feeling;
     onReaction: (feelingId: string, reactionType: 'heart' | 'clap' | 'star' | 'support') => void;
     onSupport: (feelingId: string) => void;
+    onMediaPress?: (attachment: SafeRoomAttachment, message: SafeRoomMessage) => void;
 }
 
-const FeelingCard: React.FC<FeelingCardProps> = ({ feeling, onReaction, onSupport }) => {
+const FeelingCard: React.FC<FeelingCardProps> = ({ feeling, onReaction, onSupport, onMediaPress }) => {
+    const [mediaModalVisible, setMediaModalVisible] = useState(false);
+    const [selectedAttachment, setSelectedAttachment] = useState<SafeRoomAttachment | null>(null);
+
+    const handleAttachmentPress = (attachment: SafeRoomAttachment) => {
+        setSelectedAttachment(attachment);
+        setMediaModalVisible(true);
+        onMediaPress?.(attachment, convertFeelingToMessage(feeling));
+    };
+
+    const convertFeelingToMessage = (feeling: Feeling): SafeRoomMessage => {
+        return {
+            id: feeling.id,
+            type: feeling.type as any,
+            content: feeling.content,
+            sender: feeling.author,
+            senderId: feeling.authorId || 'unknown',
+            timestamp: feeling.timestamp,
+            mood: feeling.mood,
+            attachments: feeling.attachments || [],
+            reactions: feeling.reactions || [],
+        };
+    };
+
     const getMoodColor = (mood: string) => {
         const colors = {
             happy: '#4CAF50',
@@ -48,6 +75,7 @@ const FeelingCard: React.FC<FeelingCardProps> = ({ feeling, onReaction, onSuppor
     };
 
     return (
+        <>
         <View style={[styles.card, { borderLeftColor: getMoodColor(feeling.mood) }]}>
             {/* Header */}
             <View style={styles.header}>
@@ -142,7 +170,31 @@ const FeelingCard: React.FC<FeelingCardProps> = ({ feeling, onReaction, onSuppor
                     {feeling.type.charAt(0).toUpperCase() + feeling.type.slice(1)} Message
                 </Text>
             </View>
+
+            {/* Attachments */}
+            {feeling.attachments && feeling.attachments.length > 0 && (
+                <SafeRoomAttachmentsList
+                    attachments={feeling.attachments}
+                    onAttachmentPress={handleAttachmentPress}
+                    compact={true}
+                />
+            )}
         </View>
+
+        {/* Media Modal */}
+        <SafeRoomMediaModal
+            visible={mediaModalVisible}
+            message={selectedAttachment ? convertFeelingToMessage(feeling) : null}
+            attachment={selectedAttachment}
+            onClose={() => {
+                setMediaModalVisible(false);
+                setSelectedAttachment(null);
+            }}
+            onReaction={(messageId, reactionType) => {
+                onReaction(messageId, reactionType as any);
+            }}
+        />
+    </>
     );
 };
 

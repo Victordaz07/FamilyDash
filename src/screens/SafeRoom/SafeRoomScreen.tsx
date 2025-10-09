@@ -11,10 +11,11 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RealDatabaseService from '../../services/database/RealDatabaseService';
+import { SharedQuickActions } from '../../components/quick/SharedQuickActions';
 
 const { width } = Dimensions.get('window');
 
@@ -30,9 +31,15 @@ interface SafeRoomMessage {
 
 export default function SafeRoomScreen() {
     const navigation = useNavigation();
+    const route = useRoute();
     const colors = useThemeColors();
     const fonts = useThemeFonts();
     const gradient = useThemeGradient();
+
+    // Get route parameters or use defaults for SafeRoom context
+    const familyId = route.params?.familyId || 'default_family';
+    const safeRoomId = route.params?.safeRoomId || 'default_safe_room';
+    const userId = route.params?.userId || 'default_user';
 
     const [messages, setMessages] = useState<SafeRoomMessage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +109,8 @@ export default function SafeRoomScreen() {
                 navigation.navigate('TextMessage' as never);
                 break;
             case 'voice':
-                navigation.navigate('VoiceMessage' as never);
+                // Voice handling is now done by SharedQuickActions with AudioNoteModal
+                console.log('Voice action handled by SharedQuickActions');
                 break;
             case 'mood':
                 navigation.navigate('MoodTest' as never);
@@ -240,41 +248,14 @@ export default function SafeRoomScreen() {
                 </View>
             </View>
 
-            {/* Action Buttons */}
-            <View style={styles.actionsContainer}>
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: '#3b82f6' }]}
-                    onPress={() => handleActionPress('text')}
-                    activeOpacity={0.8}
-                >
-                    <Ionicons name="chatbubble" size={32} color="white" />
-                    <Text style={[styles.actionButtonText, { fontSize: fonts.button }]}>
-                        Text
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: '#8b5cf6' }]}
-                    onPress={() => handleActionPress('voice')}
-                    activeOpacity={0.8}
-                >
-                    <Ionicons name="mic" size={32} color="white" />
-                    <Text style={[styles.actionButtonText, { fontSize: fonts.button }]}>
-                        Voice
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: '#f59e0b' }]}
-                    onPress={() => handleActionPress('mood')}
-                    activeOpacity={0.8}
-                >
-                    <Ionicons name="settings" size={32} color="white" />
-                    <Text style={[styles.actionButtonText, { fontSize: fonts.button }]}>
-                        Test
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            {/* Quick Actions */}
+            <SharedQuickActions
+                mode="safe"
+                familyId={familyId}
+                userId={userId}
+                safeRoomId={safeRoomId}
+                onAddTextSafe={() => handleActionPress('text')}
+            />
 
             {/* Messages List */}
             <View style={styles.messagesContainer}>

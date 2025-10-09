@@ -184,6 +184,10 @@ const SafeRoomTabs: React.FC<SafeRoomTabsProps> = ({ navigation, route }) => {
                     feeling={feeling}
                     onReaction={addReaction}
                     onSupport={(feelingId) => addReaction(feelingId, 'support')}
+                    onMediaPress={(attachment, message) => {
+                        console.log('SafeRoom media pressed:', attachment, message);
+                        // The modal will be handled by FeelingCard
+                    }}
                 />
             ))}
 
