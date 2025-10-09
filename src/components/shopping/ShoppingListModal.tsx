@@ -402,7 +402,8 @@ export default function ShoppingListModal({
           onScanned={onScanned}
         />
         </ScrollView>
-      </Modal>
+      </View>
+    </Modal>
     );
   }
 
