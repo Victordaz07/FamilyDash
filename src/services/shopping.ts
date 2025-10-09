@@ -22,9 +22,25 @@ export async function getOrCreateShoppingList(taskId: string, familyId: string, 
 }
 
 export async function listItems(listId: string) {
-  const q = query(collection(db, ITEMS), where("listId", "==", listId), orderBy("createdAt", "asc"));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ShoppingItem & { listId: string })[];
+  try {
+    // Try with orderBy first (requires composite index)
+    const q = query(collection(db, ITEMS), where("listId", "==", listId), orderBy("createdAt", "asc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ShoppingItem & { listId: string })[];
+  } catch (error) {
+    // Fallback: query without orderBy (no index needed)
+    console.warn("Composite index missing, using fallback query:", error);
+    const q = query(collection(db, ITEMS), where("listId", "==", listId));
+    const snap = await getDocs(q);
+    const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ShoppingItem & { listId: string })[];
+    
+    // Sort manually by createdAt
+    return items.sort((a, b) => {
+      const aTime = a.createdAt?.seconds || 0;
+      const bTime = b.createdAt?.seconds || 0;
+      return aTime - bTime;
+    });
+  }
 }
 
 export async function addItem(listId: string, item: Omit<ShoppingItem, "id">) {
