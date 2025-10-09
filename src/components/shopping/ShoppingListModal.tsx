@@ -12,6 +12,8 @@ import StorePickerModal from "./StorePickerModal";
 import BudgetProgressBar from "./BudgetProgressBar";
 import BarcodeScannerFallback from "./BarcodeScannerFallback";
 import EditItemModal from "./EditItemModal";
+import ShoppingHistoryModal from "./ShoppingHistoryModal";
+import CompletePurchaseModal from "./CompletePurchaseModal";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {
   if (s === "pending") return <Ionicons name="square-outline" size={22} />;
@@ -39,6 +41,8 @@ export default function ShoppingListModal({
   const [adding, setAdding] = useState(false);
   const [editModal, setEditModal] = useState<{ open: boolean; item?: ShoppingItem }>({ open: false });
   const [showUnitPicker, setShowUnitPicker] = useState(false);
+  const [historyModal, setHistoryModal] = useState(false);
+  const [completeModal, setCompleteModal] = useState(false);
 
   // Available unit options
   const unitOptions = [
@@ -243,17 +247,22 @@ export default function ShoppingListModal({
       <View style={styles.container}>
         <View style={styles.contentContainer}>
           <View style={styles.header}>
-            <View style={styles.headerContent}>
-              <View style={styles.headerLeft}>
-                <View style={styles.headerIcon}>
-                  <Ionicons name="cart" size={20} color="#fff" />
+                <View style={styles.headerContent}>
+                  <View style={styles.headerLeft}>
+                    <View style={styles.headerIcon}>
+                      <Ionicons name="cart" size={20} color="#fff" />
+                    </View>
+                    <Text style={styles.title}>Shopping List</Text>
+                  </View>
+                  <View style={styles.headerRight}>
+                    <TouchableOpacity onPress={() => setHistoryModal(true)} style={styles.historyButton}>
+                      <Ionicons name="time" size={20} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                      <Ionicons name="close" size={20} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <Text style={styles.title}>Shopping List</Text>
-              </View>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Ionicons name="close" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
           </View>
 
         {/* Budget & Totals Section - Compact with Store Filters */}
@@ -512,6 +521,18 @@ export default function ShoppingListModal({
           />
         </View>
 
+        {/* Complete Purchase Button */}
+        {items.length > 0 && (
+          <View style={styles.completePurchaseSection}>
+            <TouchableOpacity 
+              style={styles.completePurchaseButton}
+              onPress={() => setCompleteModal(true)}
+            >
+              <Ionicons name="checkmark-circle" size={24} color="#fff" />
+              <Text style={styles.completePurchaseText}>Complete Purchase</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Modales de tienda */}
         {list && (
@@ -656,6 +677,31 @@ export default function ShoppingListModal({
             </View>
           </TouchableOpacity>
         </Modal>
+
+        {/* Shopping History Modal */}
+        <ShoppingHistoryModal
+          visible={historyModal}
+          onClose={() => setHistoryModal(false)}
+          familyId={familyId}
+        />
+
+        {/* Complete Purchase Modal */}
+        {list && (
+          <CompletePurchaseModal
+            visible={completeModal}
+            onClose={() => setCompleteModal(false)}
+            list={list}
+            items={items}
+            estimatedTotal={totals.total}
+            storeName={filterStore !== "all" ? stores.find(s => s.id === filterStore)?.name : undefined}
+            onComplete={() => {
+              // Refresh the list after completing purchase
+              setCompleteModal(false);
+            }}
+            familyId={familyId}
+            userId={userId}
+          />
+        )}
         </View>
       </View>
     </Modal>
@@ -708,6 +754,19 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  historyButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -905,6 +964,29 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  completePurchaseSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  completePurchaseButton: {
+    backgroundColor: "#10b981",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    borderRadius: 16,
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  completePurchaseText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 16,
   },
   listLabel: {
     fontSize: 16,

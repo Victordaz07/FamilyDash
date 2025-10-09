@@ -50,3 +50,19 @@ export type ShoppingProduct = {
   createdAt?: any;
 };
 
+export type ShoppingHistory = {
+  id?: string;
+  familyId: string;
+  taskId: string;
+  listTitle: string;
+  storeName?: string;
+  estimatedTotal: number;      // Total estimado de la lista
+  actualTotal: number;         // Total real pagado
+  taxes: number;               // Impuestos pagados
+  currency: string;
+  items: ShoppingItem[];       // Items que se compraron
+  completedAt: any;            // Timestamp de cuando se completó
+  completedBy: string;         // userId que completó la compra
+  notes?: string;              // Notas adicionales sobre la compra
+};
+
