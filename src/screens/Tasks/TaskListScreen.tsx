@@ -3,7 +3,7 @@
  * Real-time task list with Quick Actions and filtering
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
 import { listenTasks, completeTask, restoreTask, deleteTask, Task, TaskStatus } from '../../services/tasks';
 import { EmptyState, TaskPreviewModal } from '../../components/ui';
+import { SharedQuickActions } from '../../components/quick/SharedQuickActions';
 
 const { width } = Dimensions.get('window');
 
@@ -92,6 +93,63 @@ export default function TaskListScreen() {
         setShowPreview(false);
         navigation.navigate('EditTask' as never, { task: previewTask } as never);
     };
+
+    // Create ListHeaderComponent with title, filters, and Quick Actions
+    const ListHeader = useMemo(() => (
+        <View style={styles.headerWrap}>
+            {/* Title and subtitle */}
+            <Text style={[styles.title, { color: colors.text, fontSize: fonts.h1 }]}>Tasks</Text>
+            <Text style={[styles.sub, { color: colors.textSecondary, fontSize: fonts.body }]}>
+                {tasks.length} tasks
+            </Text>
+
+            {/* Filter tabs */}
+            <View style={styles.filtersRow}>
+                <FlatList
+                    data={[
+                        { key: 'all', label: 'All', count: tasks.length },
+                        { key: 'pending', label: 'Pending', count: tasks.filter(t => t.status === 'pending').length },
+                        { key: 'completed', label: 'Completed', count: tasks.filter(t => t.status === 'completed').length },
+                        { key: 'overdue', label: 'Overdue', count: tasks.filter(t => t.status === 'overdue').length },
+                        { key: 'archived', label: 'Archived', count: tasks.filter(t => t.status === 'archived').length },
+                    ]}
+                    horizontal
+                    keyExtractor={(item) => item.key}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            style={[
+                                styles.filterTab,
+                                tab === item.key && { backgroundColor: colors.accent }
+                            ]}
+                            onPress={() => setTab(item.key as FilterTab)}
+                        >
+                            <Text style={[
+                                styles.filterTabText,
+                                tab === item.key && { color: 'white' },
+                                { color: colors.textSecondary, fontSize: fonts.caption }
+                            ]}>
+                                {item.label} ({item.count})
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.tabsContent}
+                />
+            </View>
+
+            {/* Quick Actions */}
+            <View style={styles.qaWrap}>
+                <SharedQuickActions
+                    mode="task"
+                    familyId="default_family"
+                    userId="default_user"
+                    taskId={undefined}
+                    onAddNewTask={() => navigation.navigate('AddTask' as never)}
+                    onAddPhotoTask={() => navigation.navigate('AddPhotoTask' as never)}
+                    onAddVideoTask={() => navigation.navigate('VideoInstructions' as never)}
+                />
+            </View>
+        </View>
+    ), [tasks, tab, colors, fonts, navigation]);
 
     const renderTask = ({ item }: { item: Task }) => (
         <TouchableOpacity
@@ -232,123 +290,23 @@ export default function TaskListScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Header */}
-            <LinearGradient
-                colors={gradient}
-                style={styles.header}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            >
-                <View style={styles.headerContent}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons name="arrow-back" size={24} color="white" />
-                    </TouchableOpacity>
-                    <View style={styles.headerTextContainer}>
-                        <Text style={[styles.headerTitle, { color: colors.textInverse }]}>Tasks</Text>
-                        <Text style={[styles.headerSubtitle, { color: colors.textInverseSecondary }]}>
-                            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
-                        </Text>
-                    </View>
-                </View>
-            </LinearGradient>
-
-            {/* Filter Tabs */}
-            <View style={[styles.tabsContainer, { backgroundColor: colors.surface }]}>
-                <FlatList
-                    data={tabs}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item) => item.key}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={[
-                                styles.tab,
-                                { backgroundColor: tab === item.key ? colors.primary : colors.border },
-                                tab === item.key && styles.tabActive
-                            ]}
-                            onPress={() => setTab(item.key)}
-                        >
-                            <Ionicons
-                                name={item.icon}
-                                size={16}
-                                color={tab === item.key ? 'white' : colors.textSecondary}
-                            />
-                            <Text style={[
-                                styles.tabText,
-                                {
-                                    color: tab === item.key ? 'white' : colors.textSecondary,
-                                    fontSize: fonts.caption
-                                }
-                            ]}>
-                                {item.label}
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                    contentContainerStyle={styles.tabsContent}
-                />
-            </View>
 
             {/* Task List */}
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id}
                 renderItem={renderTask}
+                ListHeaderComponent={ListHeader}
                 ListEmptyComponent={renderEmpty}
                 contentContainerStyle={[
-                    styles.listContainer,
+                    styles.flatListContent,
                     tasks.length === 0 && styles.emptyListContainer
                 ]}
                 showsVerticalScrollIndicator={false}
                 refreshing={loading}
                 onRefresh={() => setLoading(true)}
+                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
             />
-
-            {/* Quick Actions */}
-            <View style={[styles.quickActionsCard, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.quickActionsTitle, { color: colors.text, fontSize: fonts.h3 }]}>
-                    Quick Actions
-                </Text>
-
-                <View style={styles.quickActionsRow}>
-                    <TouchableOpacity
-                        style={[styles.quickActionButton, { backgroundColor: '#17a673' }]}
-                        onPress={() => navigation.navigate('AddTask' as never)}
-                    >
-                        <Ionicons name="add-circle" size={24} color="white" />
-                        <Text style={[styles.quickActionText, { fontSize: fonts.caption }]}>Add New Task</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.quickActionButton, { backgroundColor: '#6C63FF' }]}
-                        onPress={() => navigation.navigate('AddPhotoTask' as never)}
-                    >
-                        <Ionicons name="camera" size={24} color="white" />
-                        <Text style={[styles.quickActionText, { fontSize: fonts.caption }]}>Add Photo Task</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.quickActionsRow}>
-                    <TouchableOpacity
-                        style={[styles.quickActionButton, { backgroundColor: '#7c4dff' }]}
-                        onPress={() => navigation.navigate('VideoInstructions' as never)}
-                    >
-                        <Ionicons name="videocam" size={24} color="white" />
-                        <Text style={[styles.quickActionText, { fontSize: fonts.caption }]}>Video Instructions</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.quickActionButton, { backgroundColor: '#f0a500' }]}
-                        onPress={() => navigation.navigate('AddReward' as never)}
-                    >
-                        <Ionicons name="star" size={24} color="white" />
-                        <Text style={[styles.quickActionText, { fontSize: fonts.caption }]}>Add Reward</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
 
             {/* Task Preview Modal */}
             <TaskPreviewModal
@@ -368,6 +326,38 @@ export default function TaskListScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    flatListContent: {
+        paddingBottom: 32,
+    },
+    headerWrap: {
+        padding: 16,
+        paddingBottom: 12,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: '800',
+        marginBottom: 4,
+    },
+    sub: {
+        marginBottom: 16,
+    },
+    filtersRow: {
+        marginBottom: 16,
+    },
+    qaWrap: {
+        marginTop: 8,
+    },
+    filterTab: {
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 20,
+        marginRight: 8,
+        backgroundColor: '#f3f4f6',
+    },
+    filterTabText: {
+        fontSize: 12,
+        fontWeight: '600',
     },
     header: {
         paddingTop: 50,
