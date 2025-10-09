@@ -10,7 +10,7 @@ import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/The
 import { useSettings } from '../contexts/SettingsContext';
 import { RealAuthService } from '../services/auth/RealAuthService';
 import RealDatabaseService from '../services/database/RealDatabaseService';
-import NotificationsModal from './settings/NotificationsModal';
+import NotificationsModal from './Settings/NotificationsModal';
 
 interface SettingsScreenProps {
   navigation: any;

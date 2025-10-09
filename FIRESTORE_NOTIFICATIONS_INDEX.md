@@ -53,7 +53,7 @@ If you want to add Firestore security rules:
 ```javascript
 // Firestore Security Rules
 match /notification_settings/{documentId} {
-  allow read, write: if request.auth != null 
+  allow read, write: if request.auth != null
     && request.auth.uid == resource.data.userId
     && request.auth.uid == request.resource.data.userId;
 }

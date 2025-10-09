@@ -189,7 +189,7 @@ const LinkRow = ({ title, subtitle, onPress }:{ title:string; subtitle?:string; 
       <Text style={styles.title}>{title}</Text>
       {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
     </View>
-    <Text style={styles.chev}>›</Text>
+    <Text style={styles.chev}>&#8250;</Text>
   </TouchableOpacity>
 );
 
