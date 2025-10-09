@@ -15,6 +15,7 @@ import {
 } from 'firebase/storage';
 import { storage } from '../../config/firebase';
 import { RealAuthService } from '../auth/RealAuthService';
+import Logger from '../Logger';
 
 export interface StorageFile {
   url: string;
@@ -58,7 +59,7 @@ class RealStorageService {
     options?: StorageOptions
   ): Promise<StorageResult<StorageFile>> {
     try {
-      console.log(`📤 Uploading file to: ${path}`);
+      Logger.debug(`📤 Uploading file to: ${path}`);
 
       // Create storage reference
       const storageRef = ref(storage, path);
@@ -90,7 +91,7 @@ class RealStorageService {
             }
           },
           (error) => {
-            console.error('❌ Upload error:', error);
+            Logger.error('❌ Upload error:', error);
           },
           async () => {
             // Upload completed
@@ -105,7 +106,7 @@ class RealStorageService {
               metadata: uploadTask.snapshot.metadata,
             };
 
-            console.log(`✅ File uploaded successfully: ${path}`);
+            Logger.debug(`✅ File uploaded successfully: ${path}`);
             
             return {
               success: true,
@@ -162,7 +163,7 @@ class RealStorageService {
           metadata: snapshot.metadata,
         };
 
-        console.log(`✅ File uploaded successfully: ${path}`);
+        Logger.debug(`✅ File uploaded successfully: ${path}`);
 
         return {
           success: true,
@@ -170,7 +171,7 @@ class RealStorageService {
         };
       }
     } catch (error: any) {
-      console.error(`❌ Error uploading file to ${path}:`, error);
+      Logger.error(`❌ Error uploading file to ${path}:`, error);
       
       return {
         success: false,
@@ -184,19 +185,19 @@ class RealStorageService {
    */
   async getDownloadURL(path: string): Promise<StorageResult<string>> {
     try {
-      console.log(`📥 Getting download URL for: ${path}`);
+      Logger.debug(`📥 Getting download URL for: ${path}`);
 
       const storageRef = ref(storage, path);
       const downloadURL = await getDownloadURL(storageRef);
 
-      console.log(`✅ Download URL retrieved successfully`);
+      Logger.debug(`✅ Download URL retrieved successfully`);
 
       return {
         success: true,
         data: downloadURL,
       };
     } catch (error: any) {
-      console.error(`❌ Error getting download URL for ${path}:`, error);
+      Logger.error(`❌ Error getting download URL for ${path}:`, error);
       
       return {
         success: false,
@@ -210,18 +211,18 @@ class RealStorageService {
    */
   async deleteFile(path: string): Promise<StorageResult<void>> {
     try {
-      console.log(`🗑️ Deleting file: ${path}`);
+      Logger.debug(`🗑️ Deleting file: ${path}`);
 
       const storageRef = ref(storage, path);
       await deleteObject(storageRef);
 
-      console.log(`✅ File deleted successfully`);
+      Logger.debug(`✅ File deleted successfully`);
 
       return {
         success: true,
       };
     } catch (error: any) {
-      console.error(`❌ Error deleting file ${path}:`, error);
+      Logger.error(`❌ Error deleting file ${path}:`, error);
       
       return {
         success: false,
@@ -235,7 +236,7 @@ class RealStorageService {
    */
   async listFiles(folderPath: string): Promise<StorageResult<StorageFile[]>> {
     try {
-      console.log(`📋 Listing files in folder: ${folderPath}`);
+      Logger.debug(`📋 Listing files in folder: ${folderPath}`);
 
       const folderRef = ref(storage, folderPath);
       const listResult = await listAll(folderRef);
@@ -263,14 +264,14 @@ class RealStorageService {
         }
       }
 
-      console.log(`✅ Listed ${files.length} files`);
+      Logger.debug(`✅ Listed ${files.length} files`);
 
       return {
         success: true,
         data: files,
       };
     } catch (error: any) {
-      console.error(`❌ Error listing files in ${folderPath}:`, error);
+      Logger.error(`❌ Error listing files in ${folderPath}:`, error);
       
       return {
         success: false,
@@ -284,19 +285,19 @@ class RealStorageService {
    */
   async getFileMetadata(path: string): Promise<StorageResult<any>> {
     try {
-      console.log(`📝 Getting metadata for: ${path}`);
+      Logger.debug(`📝 Getting metadata for: ${path}`);
 
       const storageRef = ref(storage, path);
       const metadata = await getMetadata(storageRef);
 
-      console.log(`✅ Metadata retrieved successfully`);
+      Logger.debug(`✅ Metadata retrieved successfully`);
 
       return {
         success: true,
         data: metadata,
       };
     } catch (error: any) {
-      console.error(`❌ Error getting metadata for ${path}:`, error);
+      Logger.error(`❌ Error getting metadata for ${path}:`, error);
       
       return {
         success: false,
@@ -313,7 +314,7 @@ class RealStorageService {
     newMetadata: any
   ): Promise<StorageResult<any>> {
     try {
-      console.log(`✏️ Updating metadata for: ${path}`);
+      Logger.debug(`✏️ Updating metadata for: ${path}`);
 
       const storageRef = ref(storage, path);
       const updatedMetadata = {
@@ -324,14 +325,14 @@ class RealStorageService {
 
       await updateMetadata(storageRef, updatedMetadata);
 
-      console.log(`✅ Metadata updated successfully`);
+      Logger.debug(`✅ Metadata updated successfully`);
 
       return {
         success: true,
         data: updatedMetadata,
       };
     } catch (error: any) {
-      console.error(`❌ Error updating metadata for ${path}:`, error);
+      Logger.error(`❌ Error updating metadata for ${path}:`, error);
       
       return {
         success: false,
@@ -354,7 +355,7 @@ class RealStorageService {
       
       return await this.uploadFile(imageFile, path, options);
     } catch (error: any) {
-      console.error(`❌ Error uploading profile image for user ${userId}:`, error);
+      Logger.error(`❌ Error uploading profile image for user ${userId}:`, error);
       
       return {
         success: false,
@@ -378,7 +379,7 @@ class RealStorageService {
       
       return await this.uploadFile(documentFile, path, options);
     } catch (error: any) {
-      console.error(`❌ Error uploading family document:`, error);
+      Logger.error(`❌ Error uploading family document:`, error);
       
       return {
         success: false,
@@ -401,7 +402,7 @@ class RealStorageService {
       
       return await this.uploadFile(attachmentFile, path, options);
     } catch (error: any) {
-      console.error(`❌ Error uploading task attachment:`, error);
+      Logger.error(`❌ Error uploading task attachment:`, error);
       
       return {
         success: false,
@@ -424,7 +425,7 @@ class RealStorageService {
       
       return await this.uploadFile(attachmentFile, path, options);
     } catch (error: any) {
-      console.error(`❌ Error uploading event attachment:`, error);
+      Logger.error(`❌ Error uploading event attachment:`, error);
       
       return {
         success: false,
@@ -441,7 +442,7 @@ class RealStorageService {
       const user = await this.authService.getCurrentUser();
       return user?.uid || null;
     } catch (error) {
-      console.error('Error getting current user ID:', error);
+      Logger.error('Error getting current user ID:', error);
       return null;
     }
   }
@@ -456,7 +457,7 @@ class RealStorageService {
       await listAll(rootRef);
       return true;
     } catch (error) {
-      console.error('❌ Storage connection failed:', error);
+      Logger.error('❌ Storage connection failed:', error);
       return false;
     }
   }
@@ -491,7 +492,7 @@ class RealStorageService {
         },
       };
     } catch (error: any) {
-      console.error('❌ Error getting storage usage:', error);
+      Logger.error('❌ Error getting storage usage:', error);
       
       return {
         success: false,

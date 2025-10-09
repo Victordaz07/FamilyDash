@@ -10,6 +10,7 @@ import {
   RealAuthService,
   trackEvent
 } from '../../../services';
+import Logger from '../../../services/Logger';
 
 export interface CalendarEvent {
   id?: string;
@@ -73,12 +74,12 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      console.log('📅 Initializing calendar with Firebase...');
+      Logger.debug('📅 Initializing calendar with Firebase...');
 
       // Check Firebase connection
       const isConnected = await RealDatabaseService.checkConnection();
       if (!isConnected) {
-        console.log('⚠️ Firebase connection failed, calendar offline');
+        Logger.debug('⚠️ Firebase connection failed, calendar offline');
         set({
           events: [],
           isLoading: false,
@@ -90,7 +91,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       // Get current user
       const user = await RealAuthService.getCurrentUser();
       if (!user) {
-        console.log('⚠️ No user authenticated for calendar');
+        Logger.debug('⚠️ No user authenticated for calendar');
         set({ isLoading: false, error: 'User not authenticated' });
         return;
       }
@@ -100,10 +101,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         `families/${user.uid}/calendar`,
         (events, error) => {
           if (error) {
-            console.error('❌ Error listening to calendar events:', error);
+            Logger.error('❌ Error listening to calendar events:', error);
             set({ error: error, isLoading: false });
           } else {
-            console.log(`📅 Real-time update: ${events.length} events received`);
+            Logger.debug(`📅 Real-time update: ${events.length} events received`);
 
             // Format events with proper date handling
             const formattedEvents = events.map(doc => ({
@@ -131,10 +132,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         timestamp: new Date().toISOString()
       });
 
-      console.log('✅ Calendar initialized with Firebase successfully');
+      Logger.debug('✅ Calendar initialized with Firebase successfully');
 
     } catch (error) {
-      console.error('❌ Error initializing calendar:', error);
+      Logger.error('❌ Error initializing calendar:', error);
       set({
         isLoading: false,
         error: `Calendar initialization failed: ${error.message}`
@@ -182,11 +183,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       });
 
       set({ isLoading: false });
-      console.log('✅ Event created successfully:', result.data.id);
+      Logger.debug('✅ Event created successfully:', result.data.id);
 
       return { success: true };
     } catch (error) {
-      console.error('❌ Error creating event:', error);
+      Logger.error('❌ Error creating event:', error);
       set({ isLoading: false, error: error.message });
       return { success: false, error: error.message };
     }
@@ -211,11 +212,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       });
 
       set({ isLoading: false });
-      console.log('✅ Event updated successfully:', id);
+      Logger.debug('✅ Event updated successfully:', id);
 
       return { success: true };
     } catch (error) {
-      console.error('❌ Error updating event:', error);
+      Logger.error('❌ Error updating event:', error);
       set({ isLoading: false, error: error.message });
       return { success: false, error: error.message };
     }
@@ -239,11 +240,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       });
 
       set({ isLoading: false });
-      console.log('✅ Event deleted successfully:', id);
+      Logger.debug('✅ Event deleted successfully:', id);
 
       return { success: true };
     } catch (error) {
-      console.error('❌ Error deleting event:', error);
+      Logger.error('❌ Error deleting event:', error);
       set({ isLoading: false, error: error.message });
       return { success: false, error: error.message };
     }
@@ -273,10 +274,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         optionId
       });
 
-      console.log('✅ Vote recorded successfully');
+      Logger.debug('✅ Vote recorded successfully');
       return { success: true };
     } catch (error) {
-      console.error('❌ Error voting on event:', error);
+      Logger.error('❌ Error voting on event:', error);
       return { success: false, error: error.message };
     }
   },
@@ -307,10 +308,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         task
       });
 
-      console.log('✅ Responsibility assigned successfully');
+      Logger.debug('✅ Responsibility assigned successfully');
       return { success: true };
     } catch (error) {
-      console.error('❌ Error assigning responsibility:', error);
+      Logger.error('❌ Error assigning responsibility:', error);
       return { success: false, error: error.message };
     }
   },
@@ -334,7 +335,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     try {
       return await RealDatabaseService.checkConnection();
     } catch (error) {
-      console.error('❌ Error checking calendar connection:', error);
+      Logger.error('❌ Error checking calendar connection:', error);
       return false;
     }
   },
@@ -348,7 +349,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
     set({ subscription: undefined, error: null });
     await get().initializeCalendar();
-    console.log('🔄 Calendar reconnected to Firebase');
+    Logger.debug('🔄 Calendar reconnected to Firebase');
   },
 }));
 

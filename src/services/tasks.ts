@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Logger from './Logger';
 
 export type TaskStatus = 'pending' | 'completed' | 'overdue';
 export type TaskType = 'text' | 'photo';
@@ -62,7 +63,7 @@ export function listenTasks(opts: {
     archived?: boolean;
     onData: (docs: Task[]) => void;
 }) {
-    console.log('📋 Setting up tasks listener with options:', opts);
+    Logger.debug('📋 Setting up tasks listener with options:', opts);
 
     const base = collection(db, TASKS);
 
@@ -92,11 +93,11 @@ export function listenTasks(opts: {
                 return bTime.getTime() - aTime.getTime();
             });
 
-            console.log(`📋 Received ${items.length} tasks from Firebase (filtered from ${snapshot.docs.length} total)`);
+            Logger.debug(`📋 Received ${items.length} tasks from Firebase (filtered from ${snapshot.docs.length} total)`);
             opts.onData(items);
         },
         (error) => {
-            console.error('📋 Error listening to tasks:', error);
+            Logger.error('📋 Error listening to tasks:', error);
             // If even fetching all documents fails, there's a deeper issue
             opts.onData([]);
         }
@@ -107,7 +108,7 @@ export function listenTasks(opts: {
  * Create a new task
  */
 export async function createTask(input: TaskInput): Promise<string> {
-    console.log('📋 Creating new task:', input.title);
+    Logger.debug('📋 Creating new task:', input.title);
 
     const payload = {
         title: input.title,
@@ -126,19 +127,19 @@ export async function createTask(input: TaskInput): Promise<string> {
 
     try {
         const docRef = await addDoc(collection(db, TASKS), payload);
-        console.log('✅ Task created successfully:', docRef.id);
+        Logger.debug('✅ Task created successfully:', docRef.id);
         return docRef.id;
     } catch (error) {
-        console.error('❌ Error creating task:', error);
+        Logger.error('❌ Error creating task:', error);
 
         // Fallback offline - save to AsyncStorage
         try {
             const pending = JSON.parse((await AsyncStorage.getItem('pending_tasks')) || '[]');
             pending.push({ ...payload, id: `pending_${Date.now()}` });
             await AsyncStorage.setItem('pending_tasks', JSON.stringify(pending));
-            console.log('💾 Task saved offline, will retry when online');
+            Logger.debug('💾 Task saved offline, will retry when online');
         } catch (storageError) {
-            console.error('❌ Failed to save task offline:', storageError);
+            Logger.error('❌ Failed to save task offline:', storageError);
         }
 
         throw error;
@@ -149,7 +150,7 @@ export async function createTask(input: TaskInput): Promise<string> {
  * Update an existing task
  */
 export async function updateTask(taskId: string, updates: Partial<TaskInput>): Promise<void> {
-    console.log('📝 Updating task:', taskId, updates);
+    Logger.debug('📝 Updating task:', taskId, updates);
 
     try {
         const updateData: any = {
@@ -167,9 +168,9 @@ export async function updateTask(taskId: string, updates: Partial<TaskInput>): P
         if (updates.attachments !== undefined) updateData.attachments = updates.attachments;
 
         await updateDoc(doc(db, TASKS, taskId), updateData);
-        console.log('✅ Task updated successfully');
+        Logger.debug('✅ Task updated successfully');
     } catch (error) {
-        console.error('❌ Error updating task:', error);
+        Logger.error('❌ Error updating task:', error);
         throw error;
     }
 }
@@ -178,7 +179,7 @@ export async function updateTask(taskId: string, updates: Partial<TaskInput>): P
  * Mark task as completed and archive it
  */
 export async function completeTask(taskId: string): Promise<void> {
-    console.log('✅ Completing and archiving task:', taskId);
+    Logger.debug('✅ Completing and archiving task:', taskId);
 
     try {
         await updateDoc(doc(db, TASKS, taskId), {
@@ -187,9 +188,9 @@ export async function completeTask(taskId: string): Promise<void> {
             archivedAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
         });
-        console.log('✅ Task completed and archived successfully');
+        Logger.debug('✅ Task completed and archived successfully');
     } catch (error) {
-        console.error('❌ Error completing task:', error);
+        Logger.error('❌ Error completing task:', error);
         throw error;
     }
 }
@@ -198,7 +199,7 @@ export async function completeTask(taskId: string): Promise<void> {
  * Restore an archived task (unarchive it)
  */
 export async function restoreTask(taskId: string): Promise<void> {
-    console.log('🔄 Restoring archived task:', taskId);
+    Logger.debug('🔄 Restoring archived task:', taskId);
 
     try {
         await updateDoc(doc(db, TASKS, taskId), {
@@ -206,9 +207,9 @@ export async function restoreTask(taskId: string): Promise<void> {
             archivedAt: null,
             updatedAt: serverTimestamp(),
         });
-        console.log('✅ Task restored successfully');
+        Logger.debug('✅ Task restored successfully');
     } catch (error) {
-        console.error('❌ Error restoring task:', error);
+        Logger.error('❌ Error restoring task:', error);
         throw error;
     }
 }
@@ -217,7 +218,7 @@ export async function restoreTask(taskId: string): Promise<void> {
  * Delete a task permanently
  */
 export async function deleteTask(taskId: string): Promise<void> {
-    console.log('🗑️ Deleting task permanently:', taskId);
+    Logger.debug('🗑️ Deleting task permanently:', taskId);
 
     try {
         await updateDoc(doc(db, TASKS, taskId), {
@@ -225,9 +226,9 @@ export async function deleteTask(taskId: string): Promise<void> {
             archivedAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
         });
-        console.log('✅ Task deleted successfully');
+        Logger.debug('✅ Task deleted successfully');
     } catch (error) {
-        console.error('❌ Error deleting task:', error);
+        Logger.error('❌ Error deleting task:', error);
         throw error;
     }
 }
@@ -242,37 +243,37 @@ export async function uploadPhotoAndCreateTask(params: {
     assignedTo?: string | null;
     points?: number;
 }): Promise<string> {
-    console.log('📸 Uploading photo and creating task:', params.title);
-    console.log('📸 Local URI:', params.localUri);
+    Logger.debug('📸 Uploading photo and creating task:', params.title);
+    Logger.debug('📸 Local URI:', params.localUri);
 
     try {
         // Upload image to Firebase Storage
         const fileName = `tasks/${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-        console.log('📸 Storage file name:', fileName);
+        Logger.debug('📸 Storage file name:', fileName);
 
         const storageRef = ref(storage, fileName);
-        console.log('📸 Storage ref created');
+        Logger.debug('📸 Storage ref created');
 
-        console.log('📸 Fetching image from local URI...');
+        Logger.debug('📸 Fetching image from local URI...');
         const response = await fetch(params.localUri);
-        console.log('📸 Fetch response status:', response.status);
+        Logger.debug('📸 Fetch response status:', response.status);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
         }
 
         const blob = await response.blob();
-        console.log('📸 Blob created, size:', blob.size);
+        Logger.debug('📸 Blob created, size:', blob.size);
 
-        console.log('📸 Uploading to Firebase Storage...');
+        Logger.debug('📸 Uploading to Firebase Storage...');
         await uploadBytes(storageRef, blob);
-        console.log('📸 Upload completed');
+        Logger.debug('📸 Upload completed');
 
         const url = await getDownloadURL(storageRef);
-        console.log('📸 Photo uploaded successfully:', url);
+        Logger.debug('📸 Photo uploaded successfully:', url);
 
         // Create task with photo attachment
-        console.log('📸 Creating task in Firestore...');
+        Logger.debug('📸 Creating task in Firestore...');
         const taskId = await createTask({
             title: params.title,
             description: params.description,
@@ -282,11 +283,11 @@ export async function uploadPhotoAndCreateTask(params: {
             attachments: [{ kind: 'photo', url }],
         });
 
-        console.log('✅ Photo task created with ID:', taskId);
+        Logger.debug('✅ Photo task created with ID:', taskId);
         return taskId;
     } catch (error) {
-        console.error('❌ Error uploading photo task:', error);
-        console.error('❌ Error details:', {
+        Logger.error('❌ Error uploading photo task:', error);
+        Logger.error('❌ Error details:', {
             message: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,
             params
@@ -304,7 +305,7 @@ export async function uploadVideoAndCreateTask(params: {
     description?: string;
     points?: number;
 }): Promise<string> {
-    console.log('🎥 Uploading video and creating task:', params.title);
+    Logger.debug('🎥 Uploading video and creating task:', params.title);
 
     try {
         // Upload video to Firebase Storage
@@ -317,7 +318,7 @@ export async function uploadVideoAndCreateTask(params: {
         await uploadBytes(storageRef, blob);
         const url = await getDownloadURL(storageRef);
 
-        console.log('🎥 Video uploaded successfully:', url);
+        Logger.debug('🎥 Video uploaded successfully:', url);
 
         // Create task with video attachment
         return await createTask({
@@ -328,7 +329,7 @@ export async function uploadVideoAndCreateTask(params: {
             attachments: [{ kind: 'video', url }],
         });
     } catch (error) {
-        console.error('❌ Error uploading video task:', error);
+        Logger.error('❌ Error uploading video task:', error);
         throw error;
     }
 }
@@ -337,7 +338,7 @@ export async function uploadVideoAndCreateTask(params: {
  * Create a new reward
  */
 export async function createReward(name: string, points: number): Promise<string> {
-    console.log('🏆 Creating new reward:', name, 'worth', points, 'points');
+    Logger.debug('🏆 Creating new reward:', name, 'worth', points, 'points');
 
     try {
         const docRef = await addDoc(collection(db, REWARDS), {
@@ -346,10 +347,10 @@ export async function createReward(name: string, points: number): Promise<string
             active: true,
             createdAt: serverTimestamp(),
         });
-        console.log('✅ Reward created successfully:', docRef.id);
+        Logger.debug('✅ Reward created successfully:', docRef.id);
         return docRef.id;
     } catch (error) {
-        console.error('❌ Error creating reward:', error);
+        Logger.error('❌ Error creating reward:', error);
         throw error;
     }
 }
@@ -358,7 +359,7 @@ export async function createReward(name: string, points: number): Promise<string
  * Listen to rewards in real-time
  */
 export function listenRewards(onData: (rewards: Reward[]) => void) {
-    console.log('🏆 Setting up rewards listener');
+    Logger.debug('🏆 Setting up rewards listener');
 
     const q = query(
         collection(db, REWARDS),
@@ -369,11 +370,11 @@ export function listenRewards(onData: (rewards: Reward[]) => void) {
     return onSnapshot(q,
         (snapshot) => {
             const rewards = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Reward));
-            console.log(`🏆 Received ${rewards.length} rewards from Firebase`);
+            Logger.debug(`🏆 Received ${rewards.length} rewards from Firebase`);
             onData(rewards);
         },
         (error) => {
-            console.error('🏆 Error listening to rewards:', error);
+            Logger.error('🏆 Error listening to rewards:', error);
             onData([]);
         }
     );
@@ -387,25 +388,25 @@ export async function retryPendingTasks(): Promise<void> {
         const pending = JSON.parse((await AsyncStorage.getItem('pending_tasks')) || '[]');
 
         if (pending.length === 0) {
-            console.log('📋 No pending tasks to retry');
+            Logger.debug('📋 No pending tasks to retry');
             return;
         }
 
-        console.log(`📋 Retrying ${pending.length} pending tasks`);
+        Logger.debug(`📋 Retrying ${pending.length} pending tasks`);
 
         for (const task of pending) {
             try {
                 await createTask(task);
-                console.log('✅ Retried task successfully:', task.title);
+                Logger.debug('✅ Retried task successfully:', task.title);
             } catch (error) {
-                console.error('❌ Failed to retry task:', task.title, error);
+                Logger.error('❌ Failed to retry task:', task.title, error);
             }
         }
 
         // Clear pending tasks after retry
         await AsyncStorage.removeItem('pending_tasks');
-        console.log('📋 Cleared pending tasks after retry');
+        Logger.debug('📋 Cleared pending tasks after retry');
     } catch (error) {
-        console.error('❌ Error retrying pending tasks:', error);
+        Logger.error('❌ Error retrying pending tasks:', error);
     }
 }
