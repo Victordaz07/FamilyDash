@@ -151,6 +151,18 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
         </View>
       </LinearGradient>
 
+      {/* Task Status Tabs - Outside ScrollView */}
+      <TaskTabs
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        counts={{
+          all: filteredTasks.length,
+          pending: filteredTasks.filter(t => t.status === 'pending').length,
+          completed: filteredTasks.filter(t => t.status === 'completed').length,
+          overdue: filteredTasks.filter(t => t.status === 'overdue').length,
+        }}
+      />
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Filter by Member */}
         <View style={styles.filterContainer}>
@@ -181,18 +193,6 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
             </View>
           )}
         </View>
-
-        {/* Task Status Tabs */}
-        <TaskTabs
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          counts={{
-            all: filteredTasks.length,
-            pending: filteredTasks.filter(t => t.status === 'pending').length,
-            completed: filteredTasks.filter(t => t.status === 'completed').length,
-            overdue: filteredTasks.filter(t => t.status === 'overdue').length,
-          }}
-        />
 
         {/* Selected Member Tasks */}
         <View style={styles.section}>
@@ -304,7 +304,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    marginTop: -12,
     paddingTop: 8,
   },
   filterContainer: {
