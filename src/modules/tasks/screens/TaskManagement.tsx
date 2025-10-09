@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -124,6 +124,54 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
     return getMemberAvatar(filters.memberId);
   };
 
+  // Create ListHeaderComponent
+  const ListHeader = useMemo(() => (
+    <View style={styles.headerContent}>
+      {/* Filter by Member */}
+      <View style={styles.filterContainer}>
+        <View style={styles.filterHeader}>
+          <Text style={styles.filterTitle}>Filter by Member</Text>
+          {filters.memberId && (
+            <TouchableOpacity
+              style={styles.clearFilterButton}
+              onPress={() => setFilter({ memberId: undefined })}
+            >
+              <Ionicons name="close-circle" size={20} color={theme.colors.gray} />
+              <Text style={styles.clearFilterText}>Clear</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        {mockFamilyMembers.length > 0 ? (
+          <TaskFilter
+            members={mockFamilyMembers}
+            selectedMemberId={filters.memberId}
+            onMemberSelect={handleMemberSelect}
+            taskCounts={memberTaskCounts}
+          />
+        ) : (
+          <View style={styles.emptyMembersContainer}>
+            <Ionicons name="people-outline" size={32} color={theme.colors.gray} />
+            <Text style={styles.emptyMembersText}>No family members yet</Text>
+            <Text style={styles.emptyMembersSubtext}>Add family members to filter tasks</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Quick Actions */}
+      <View style={styles.quickActionsContainer}>
+        <SharedQuickActions
+          mode="task"
+          familyId="default_family"
+          userId="default_user"
+          taskId="current_task"
+          onAddNewTask={handleAddTask}
+          onAddPhotoTask={handleAddPhotoTask}
+          onAddVideoTask={handleAddVideoInstructions}
+        />
+      </View>
+    </View>
+  ), [filters.memberId, mockFamilyMembers, memberTaskCounts, handleMemberSelect, setFilter, handleAddTask, handleAddPhotoTask, handleAddVideoInstructions]);
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -163,90 +211,36 @@ const TaskManagement: React.FC<TaskManagementProps> = ({ navigation }) => {
         }}
       />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Filter by Member */}
-        <View style={styles.filterContainer}>
-          <View style={styles.filterHeader}>
-            <Text style={styles.filterTitle}>Filter by Member</Text>
-            {filters.memberId && (
-              <TouchableOpacity
-                style={styles.clearFilterButton}
-                onPress={() => setFilter({ memberId: undefined })}
-              >
-                <Ionicons name="close-circle" size={20} color={theme.colors.gray} />
-                <Text style={styles.clearFilterText}>Clear</Text>
-              </TouchableOpacity>
-            )}
+      <FlatList
+        data={tasksByTab}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TaskCard
+            task={item}
+            memberName={getMemberName(item.assignedTo)}
+            memberAvatar={getMemberAvatar(item.assignedTo)}
+            onPress={() => handleTaskPress(item.id)}
+            onComplete={() => handleCompleteTask(item.id)}
+            onStart={() => handleStartTask(item.id)}
+          />
+        )}
+        ListHeaderComponent={ListHeader}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyState}>
+            <Ionicons name="checkmark-circle-outline" size={80} color="#D1D5DB" />
+            <Text style={styles.emptyTitle}>No Tasks Found</Text>
+            <Text style={styles.emptySubtitle}>
+              {activeTab === 'all'
+                ? 'No tasks match your current filters.'
+                : `No ${activeTab} tasks found.`
+              }
+            </Text>
           </View>
-          {mockFamilyMembers.length > 0 ? (
-            <TaskFilter
-              members={mockFamilyMembers}
-              selectedMemberId={filters.memberId}
-              onMemberSelect={handleMemberSelect}
-              taskCounts={memberTaskCounts}
-            />
-          ) : (
-            <View style={styles.emptyMembersContainer}>
-              <Ionicons name="people-outline" size={32} color={theme.colors.gray} />
-              <Text style={styles.emptyMembersText}>No family members yet</Text>
-              <Text style={styles.emptyMembersSubtext}>Add family members to filter tasks</Text>
-            </View>
-          )}
-        </View>
-
-        {/* Selected Member Tasks */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleContainer}>
-              {getSelectedMemberAvatar() && (
-                <Image source={{ uri: getSelectedMemberAvatar()! }} style={styles.sectionAvatar} />
-              )}
-              <Text style={styles.sectionTitle}>{getSelectedMemberName()}</Text>
-            </View>
-            <View style={styles.taskCountBadge}>
-              <Text style={styles.taskCountText}>{tasksByTab.length}</Text>
-            </View>
-          </View>
-
-          {tasksByTab.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="checkmark-circle-outline" size={80} color="#D1D5DB" />
-              <Text style={styles.emptyTitle}>No Tasks Found</Text>
-              <Text style={styles.emptySubtitle}>
-                {activeTab === 'all'
-                  ? 'No tasks match your current filters.'
-                  : `No ${activeTab} tasks found.`
-                }
-              </Text>
-            </View>
-          ) : (
-            tasksByTab.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                memberName={getMemberName(task.assignedTo)}
-                memberAvatar={getMemberAvatar(task.assignedTo)}
-                onPress={() => handleTaskPress(task.id)}
-                onComplete={() => handleCompleteTask(task.id)}
-                onStart={() => handleStartTask(task.id)}
-              />
-            ))
-          )}
-        </View>
-
-        {/* Quick Actions */}
-        <SharedQuickActions
-          mode="task"
-          familyId="default_family"
-          userId="default_user"
-          taskId="current_task"
-          onAddNewTask={handleAddTask}
-          onAddPhotoTask={handleAddPhotoTask}
-          onAddVideoTask={handleAddVideoInstructions}
-        />
-
-        <View style={{ height: insets.bottom + 100 }} />
-      </ScrollView>
+        )}
+        contentContainerStyle={styles.flatListContent}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+      />
     </View>
   );
 };
@@ -302,9 +296,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
-  content: {
-    flex: 1,
+  flatListContent: {
+    paddingBottom: 100,
+  },
+  headerContent: {
     paddingTop: 8,
+  },
+  quickActionsContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   filterContainer: {
     marginBottom: 20,
