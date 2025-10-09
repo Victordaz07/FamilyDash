@@ -9,6 +9,7 @@ import {
 } from "../../services/shopping";
 import { findProductByBarcode, upsertProduct } from "../../services/shoppingProducts";
 import StorePickerModal from "./StorePickerModal";
+import BudgetProgressBar from "./BudgetProgressBar";
 import BarcodeScannerFallback from "./BarcodeScannerFallback";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {
@@ -30,6 +31,7 @@ export default function ShoppingListModal({
   const [price, setPrice] = useState("");
 
   const [storeModal, setStoreModal] = useState<{ open: boolean; editing?: ShoppingStore }>({ open: false });
+  const [budgetModal, setBudgetModal] = useState<{ open: boolean }>({ open: false });
   const [scanOpen, setScanOpen] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
 
@@ -152,6 +154,38 @@ export default function ShoppingListModal({
               <Ionicons name="close" size={16} color="#6b7280" />
             </TouchableOpacity>
           </View>
+
+        {/* Total Budget Section */}
+        <View style={styles.budgetSection}>
+          <View style={styles.budgetHeader}>
+            <Text style={styles.budgetSectionLabel}>Presupuesto Total</Text>
+            <TouchableOpacity 
+              onPress={() => setBudgetModal({ open: true })}
+              style={styles.editBudgetButton}
+            >
+              <Ionicons name="create-outline" size={16} color="#7c3aed" />
+            </TouchableOpacity>
+          </View>
+          
+          {list?.budgetLimit ? (
+            <BudgetProgressBar 
+              spent={totals.total}
+              budget={list.budgetLimit}
+              currency={list.currency}
+            />
+          ) : (
+            <View style={styles.noBudgetContainer}>
+              <Text style={styles.noBudgetText}>Sin presupuesto establecido</Text>
+              <TouchableOpacity 
+                onPress={() => setBudgetModal({ open: true })}
+                style={styles.setBudgetButton}
+              >
+                <Ionicons name="add" size={16} color="#fff" />
+                <Text style={styles.setBudgetText}>Establecer</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
 
         {/* Stores row */}
         <View style={styles.storesContainer}>
@@ -401,6 +435,53 @@ export default function ShoppingListModal({
           onClose={() => setScanOpen(false)}
           onScanned={onScanned}
         />
+
+        {/* Budget Modal */}
+        <Modal visible={budgetModal.open} transparent animationType="slide" onRequestClose={() => setBudgetModal({ open: false })}>
+          <View style={styles.modalBackdrop}>
+            <View style={styles.budgetModalCard}>
+              <Text style={styles.budgetModalTitle}>Establecer Presupuesto Total</Text>
+              
+              <View style={styles.budgetInputContainer}>
+                <Text style={styles.budgetInputLabel}>Monto del presupuesto:</Text>
+                <TextInput
+                  value={list?.budgetLimit ? String(list.budgetLimit) : ""}
+                  onChangeText={(value) => {
+                    const numValue = parseFloat(value) || 0;
+                    if (list) {
+                      updateList(list.id!, { budgetLimit: numValue });
+                    }
+                  }}
+                  placeholder="Ej: 500.00"
+                  keyboardType="decimal-pad"
+                  style={styles.budgetInput}
+                  placeholderTextColor="#9ca3af"
+                />
+                <Text style={styles.budgetCurrency}>{list?.currency}</Text>
+              </View>
+
+              <Text style={styles.budgetHelpText}>
+                Establece un presupuesto total para esta lista de compras. 
+                La barra de progreso te mostrará cuánto has gastado.
+              </Text>
+
+              <View style={styles.budgetModalFooter}>
+                <TouchableOpacity 
+                  onPress={() => setBudgetModal({ open: false })} 
+                  style={[styles.budgetModalBtn, styles.budgetModalBtnCancel]}
+                >
+                  <Text style={styles.budgetModalBtnTextCancel}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => setBudgetModal({ open: false })} 
+                  style={[styles.budgetModalBtn, styles.budgetModalBtnSave]}
+                >
+                  <Text style={styles.budgetModalBtnText}>Guardar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
         </ScrollView>
       </View>
     </Modal>
@@ -839,6 +920,155 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
     color: "#10b981",
+  },
+
+  // Budget Section Styles
+  budgetSection: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  budgetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  budgetSectionLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+  },
+  editBudgetButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noBudgetContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#f9fafb",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  noBudgetText: {
+    fontSize: 14,
+    color: "#6b7280",
+    fontStyle: "italic",
+  },
+  setBudgetButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#7c3aed",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  setBudgetText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  // Budget Modal Styles
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  budgetModalCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 24,
+    width: "85%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  budgetModalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  budgetInputContainer: {
+    marginBottom: 16,
+  },
+  budgetInputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
+  },
+  budgetInput: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    fontSize: 16,
+    color: "#111827",
+    textAlign: "center",
+  },
+  budgetCurrency: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    marginTop: 4,
+  },
+  budgetHelpText: {
+    fontSize: 12,
+    color: "#6b7280",
+    textAlign: "center",
+    lineHeight: 16,
+    marginBottom: 20,
+  },
+  budgetModalFooter: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  budgetModalBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  budgetModalBtnCancel: {
+    backgroundColor: "#f3f4f6",
+  },
+  budgetModalBtnSave: {
+    backgroundColor: "#7c3aed",
+  },
+  budgetModalBtnText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  budgetModalBtnTextCancel: {
+    color: "#374151",
+    fontWeight: "700",
+    fontSize: 14,
   },
 });
 
