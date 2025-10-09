@@ -140,7 +140,7 @@ export default function ShoppingListModal({
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.headerIcon}>
-              <Ionicons name="cart" size={24} color="#fff" />
+              <Ionicons name="cart" size={20} color="#fff" />
             </View>
             <View style={styles.headerText}>
               <Text style={styles.title}>Lista de compras</Text>
@@ -148,7 +148,7 @@ export default function ShoppingListModal({
             </View>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="#6b7280" />
+            <Ionicons name="close" size={18} color="#6b7280" />
           </TouchableOpacity>
         </View>
 
@@ -412,17 +412,17 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#7c3aed",
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
-    marginBottom: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+    marginBottom: 16,
   },
   headerContent: {
     flexDirection: "row",
@@ -430,32 +430,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    marginRight: 10,
   },
   headerText: {
     flex: 1,
   },
   title: {
     fontWeight: "800",
-    fontSize: 20,
+    fontSize: 18,
     color: "#fff",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: "rgba(255,255,255,0.8)",
     fontWeight: "500",
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
