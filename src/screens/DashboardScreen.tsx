@@ -13,6 +13,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import { DeveloperModeToggle } from '../components/DeveloperModeToggle';
 import { DeveloperPanel } from '../components/DeveloperPanel';
 import RealDatabaseService from '../services/database/RealDatabaseService';
+import Logger from '../services/Logger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -53,7 +54,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                     setLastSyncTime(new Date());
                 }
             } catch (error) {
-                console.log('Connection check failed:', error);
+                Logger.warn('Connection check failed', error);
                 setIsConnected(false);
             }
         };
@@ -136,7 +137,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
             await new Promise(resolve => setTimeout(resolve, 1000));
             setLastSyncTime(new Date());
         } catch (error) {
-            console.log('Refresh failed:', error);
+            Logger.error('Refresh failed', error);
         } finally {
             setRefreshing(false);
         }

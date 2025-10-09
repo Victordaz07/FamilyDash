@@ -64,19 +64,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   const handleAchievements = () => {
-    Alert.alert('Achievements', `You have ${achievements.filter(a => a.earned).length} achievements unlocked!`);
+    navigation.navigate('Achievements');
   };
 
   const handleRecentActivity = () => {
-    Alert.alert('Recent Activity', `Last active: ${lastActive.toLocaleString()}`);
+    navigation.navigate('RecentActivity');
   };
 
   const handleStatistics = () => {
-    Alert.alert('Statistics',
-      `Tasks: ${userStats.completedTasks}/${userStats.totalTasks}\n` +
-      `Streak: ${userStats.currentStreak} days\n` +
-      `Level: ${userStats.level}`
-    );
+    navigation.navigate('Statistics');
   };
 
   // Real-time status updates

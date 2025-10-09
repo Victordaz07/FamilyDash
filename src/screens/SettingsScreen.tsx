@@ -332,13 +332,19 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             icon="time"
             title="Reminders"
             subtitle="Configure notification schedules"
-            onPress={() => Alert.alert('Reminders', 'Reminder configuration')}
+            onPress={() => {
+              // TODO: Navigate to Reminders configuration screen
+              Alert.alert('Reminders', 'Set up notification reminders for tasks, events, and family activities');
+            }}
           />
           <SettingItem
             icon="volume-high"
             title="Sounds"
             subtitle="Configure notification sounds"
-            onPress={() => Alert.alert('Sounds', 'Sound configuration')}
+            onPress={() => {
+              // TODO: Navigate to Sound settings screen
+              Alert.alert('Sounds', 'Customize notification sounds and vibration patterns');
+            }}
           />
         </Card>
 
@@ -362,13 +368,19 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             icon="bluetooth"
             title="Connected Devices"
             subtitle="Manage linked devices"
-            onPress={() => Alert.alert('Devices', 'Connected devices list')}
+            onPress={() => {
+              // TODO: Navigate to Connected Devices screen
+              Alert.alert('Connected Devices', 'View and manage all family devices. Feature coming soon!');
+            }}
           />
           <SettingItem
             icon="location"
             title="Family Location"
             subtitle="Share location between family members"
-            onPress={() => Alert.alert('Location', 'Location configuration')}
+            onPress={() => {
+              // TODO: Navigate to Location sharing settings
+              Alert.alert('Family Location', 'Enable real-time location sharing with family members. Feature coming soon!');
+            }}
           />
         </Card>
 

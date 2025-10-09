@@ -67,13 +67,13 @@ const AndroidWidgetsScreen: React.FC<AndroidWidgetsScreenProps> = ({ navigation 
 
         switch (widget.type) {
             case 'tasks':
-                return <TasksWidget data={data} onPress={() => { }} />;
+                return <TasksWidget data={data} onPress={() => navigation.navigate('Tasks')} />;
             case 'calendar':
-                return <CalendarWidget data={data} onPress={() => { }} />;
+                return <CalendarWidget data={data} onPress={() => navigation.navigate('Calendar')} />;
             case 'weather':
-                return <WeatherWidget data={data} onPress={() => { }} />;
+                return <WeatherWidget data={data} onPress={() => Alert.alert('Weather', 'Opening weather details...')} />;
             case 'family_stats':
-                return <FamilyStatsWidget data={data} onPress={() => { }} />;
+                return <FamilyStatsWidget data={data} onPress={() => navigation.navigate('Statistics')} />;
             default:
                 return null;
         }
