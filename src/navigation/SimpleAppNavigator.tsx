@@ -77,10 +77,10 @@ import DebugDashboard from '../screens/DebugDashboard';
 import TestingReports from '../screens/TestingReports';
 
 // Import Quick Actions module screens
-import FamilyMembersScreen from '../modules/quickActions/screens/FamilyMembersScreen';
-import AchievementsScreen from '../modules/quickActions/screens/AchievementsScreen';
-import RecentActivityScreen from '../modules/quickActions/screens/RecentActivityScreen';
-import StatisticsScreen from '../modules/quickActions/screens/StatisticsScreen';
+import { FamilyMembersScreen } from '../modules/quickActions/screens/FamilyMembersScreen';
+import { AchievementsScreen } from '../modules/quickActions/screens/AchievementsScreen';
+import { RecentActivityScreen } from '../modules/quickActions/screens/RecentActivityScreen';
+import { StatisticsScreen } from '../modules/quickActions/screens/StatisticsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -185,11 +185,11 @@ const ProfileStack = () => (
 
     {/* Tasks screens - moved to TasksStack */}
 
-    {/* Quick Actions screens */}
-    <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen as any} />
-    <Stack.Screen name="Achievements" component={AchievementsScreen as any} />
-    <Stack.Screen name="RecentActivity" component={RecentActivityScreen as any} />
-    <Stack.Screen name="Statistics" component={StatisticsScreen as any} />
+        {/* Quick Actions screens */}
+        <Stack.Screen name="FamilyMembers" component={FamilyMembersScreen} />
+        <Stack.Screen name="Achievements" component={AchievementsScreen} />
+        <Stack.Screen name="RecentActivity" component={RecentActivityScreen} />
+        <Stack.Screen name="Statistics" component={StatisticsScreen} />
   </Stack.Navigator>
 );
 

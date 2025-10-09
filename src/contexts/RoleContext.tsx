@@ -51,8 +51,11 @@ export const RoleProvider: React.FC<RoleProviderProps> = ({ children }) => {
               joinedAt: userData.joinedAt || new Date().toISOString(),
             };
 
-            roleStore.setUser(user);
-            Logger.info('User role loaded successfully', { role: user.role });
+            // Solo actualizar si el usuario cambió
+            if (!roleStore.user || roleStore.user.id !== user.id || roleStore.user.role !== user.role) {
+              roleStore.setUser(user);
+              Logger.info('User role loaded successfully', { role: user.role });
+            }
           } else {
             // Usuario no tiene documento en Firestore, crear uno por defecto
             Logger.warn('User not found in Firestore, creating default viewer role');
@@ -73,27 +76,37 @@ export const RoleProvider: React.FC<RoleProviderProps> = ({ children }) => {
               lastActive: new Date().toISOString(),
             });
 
-            roleStore.setUser(defaultUser);
+            // Solo actualizar si el usuario cambió
+            if (!roleStore.user || roleStore.user.id !== defaultUser.id) {
+              roleStore.setUser(defaultUser);
+            }
           }
         } catch (error) {
           Logger.error('Failed to load user role', error);
           
           // Fallback: crear usuario temporal con rol viewer
-          roleStore.setUser({
+          const fallbackUser: User = {
             id: authUser.uid,
             name: authUser.displayName || 'User',
             email: authUser.email || undefined,
             role: 'viewer',
-          });
+          };
+
+          // Solo actualizar si el usuario cambió
+          if (!roleStore.user || roleStore.user.id !== fallbackUser.id) {
+            roleStore.setUser(fallbackUser);
+          }
         }
       } else {
         // Usuario no autenticado
-        roleStore.resetUser();
+        if (roleStore.user) {
+          roleStore.resetUser();
+        }
       }
     };
 
     loadUserRole();
-  }, [authUser, roleStore]);
+  }, [authUser?.uid]); // Solo depender del UID, no del objeto completo
 
   /**
    * Actualizar rol del usuario en Firebase
