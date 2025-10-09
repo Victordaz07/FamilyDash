@@ -228,7 +228,7 @@ export default function ShoppingListModal({
                 <View style={styles.headerIcon}>
                   <Ionicons name="cart" size={20} color="#fff" />
                 </View>
-                <Text style={styles.title}>Lista de compras</Text>
+                <Text style={styles.title}>Shopping List</Text>
               </View>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Ionicons name="close" size={20} color="#fff" />
@@ -239,7 +239,7 @@ export default function ShoppingListModal({
         {/* Budget & Totals Section - Compact with Store Filters */}
         <View style={styles.budgetTotalsSection}>
           <View style={styles.budgetTotalsHeader}>
-            <Text style={styles.budgetTotalsLabel}>Resumen</Text>
+            <Text style={styles.budgetTotalsLabel}>Summary</Text>
             <TouchableOpacity 
               onPress={() => setBudgetModal({ open: true })}
               style={styles.editBudgetButton}
@@ -253,7 +253,7 @@ export default function ShoppingListModal({
             <View style={styles.budgetRow}>
               <View style={styles.budgetInfo}>
                 <Ionicons name="wallet" size={16} color="#6b7280" />
-                <Text style={styles.budgetLabel}>Presupuesto</Text>
+                <Text style={styles.budgetLabel}>Budget</Text>
               </View>
               <View style={styles.budgetValues}>
                 {list?.budgetLimit ? (
@@ -274,7 +274,7 @@ export default function ShoppingListModal({
                     style={styles.setBudgetButtonSmall}
                   >
                     <Ionicons name="add" size={12} color="#fff" />
-                    <Text style={styles.setBudgetTextSmall}>Establecer</Text>
+                    <Text style={styles.setBudgetTextSmall}>Set</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -293,14 +293,14 @@ export default function ShoppingListModal({
 
             {/* Store Filters Row - Inside Budget Section */}
             <View style={styles.storeFiltersRow}>
-              <Text style={styles.storeFiltersLabel}>Tiendas:</Text>
+              <Text style={styles.storeFiltersLabel}>Stores:</Text>
               <View style={styles.storesRow}>
                 <TouchableOpacity
                   onPress={() => setFilterStore("all")}
                   style={[styles.storeChip, filterStore === "all" && styles.storeChipOn]}
                 >
                   <Ionicons name="list" size={14} color={filterStore === "all" ? "#fff" : "#6b7280"} />
-                  <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>Todas</Text>
+                  <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>All</Text>
                 </TouchableOpacity>
 
                 {stores.map(s => (
@@ -378,12 +378,12 @@ export default function ShoppingListModal({
 
         {/* Add item section */}
         <View style={styles.addSection}>
-          <Text style={styles.addSectionLabel}>Agregar producto</Text>
+          <Text style={styles.addSectionLabel}>Add Product</Text>
           <View style={styles.addRow}>
             <TextInput
               value={text}
               onChangeText={setText}
-              placeholder="Ej: Leche descremada"
+              placeholder="Ex: Skim milk"
               style={[styles.input, styles.nameInput]}
               placeholderTextColor="#9ca3af"
             />
@@ -418,11 +418,11 @@ export default function ShoppingListModal({
               disabled={adding}
             >
               <Ionicons name={adding ? "hourglass-outline" : "add"} size={16} color="#fff" />
-              <Text style={styles.addBtnTxt}>{adding ? "Agregando..." : "Agregar"}</Text>
+              <Text style={styles.addBtnTxt}>{adding ? "Adding..." : "Add"}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setScanOpen(true)} style={styles.scanBtn}>
               <Ionicons name="barcode-outline" size={20} color="#fff" />
-              <Text style={styles.scanBtnTxt}>Escanear</Text>
+              <Text style={styles.scanBtnTxt}>Scan</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -430,7 +430,7 @@ export default function ShoppingListModal({
         {/* List */}
         <View style={styles.listContainer}>
           <Text style={styles.listLabel}>
-            Productos {filterStore === "all" ? "" : `- ${stores.find(s => s.id === filterStore)?.name}`}
+            Products {filterStore === "all" ? "" : `- ${stores.find(s => s.id === filterStore)?.name}`}
           </Text>
           <FlatList
             data={visibleItems}
@@ -483,8 +483,8 @@ export default function ShoppingListModal({
             ListEmptyComponent={
               <View style={styles.emptyState}>
                 <Ionicons name="basket-outline" size={48} color="#d1d5db" />
-                <Text style={styles.emptyText}>Sin productos en esta vista</Text>
-                <Text style={styles.emptySubtext}>Agrega productos para comenzar tu lista</Text>
+                <Text style={styles.emptyText}>No products in this view</Text>
+                <Text style={styles.emptySubtext}>Add products to start your list</Text>
               </View>
             }
             ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
@@ -523,14 +523,14 @@ export default function ShoppingListModal({
         <Modal visible={budgetModal.open} transparent animationType="slide" onRequestClose={() => setBudgetModal({ open: false })}>
           <View style={styles.modalBackdrop}>
             <View style={styles.budgetModalCard}>
-              <Text style={styles.budgetModalTitle}>Establecer Presupuesto Total</Text>
+                    <Text style={styles.budgetModalTitle}>Set Total Budget</Text>
               
               <View style={styles.budgetInputContainer}>
-                <Text style={styles.budgetInputLabel}>Monto del presupuesto:</Text>
+                <Text style={styles.budgetInputLabel}>Budget amount:</Text>
                 <TextInput
                   value={budgetInput}
                   onChangeText={setBudgetInput}
-                  placeholder="Ej: 500.00"
+                  placeholder="Ex: 500.00"
                   keyboardType="decimal-pad"
                   style={styles.budgetInput}
                   placeholderTextColor="#9ca3af"
@@ -539,8 +539,8 @@ export default function ShoppingListModal({
               </View>
 
               <Text style={styles.budgetHelpText}>
-                Establece un presupuesto total para esta lista de compras. 
-                La barra de progreso te mostrará cuánto has gastado.
+                Set a total budget for this shopping list. 
+                The progress bar will show how much you've spent.
               </Text>
 
               <View style={styles.budgetModalFooter}>
@@ -548,7 +548,7 @@ export default function ShoppingListModal({
                   onPress={() => setBudgetModal({ open: false })} 
                   style={[styles.budgetModalBtn, styles.budgetModalBtnCancel]}
                 >
-                  <Text style={styles.budgetModalBtnTextCancel}>Cancelar</Text>
+                  <Text style={styles.budgetModalBtnTextCancel}>Cancel</Text>
                 </TouchableOpacity>
                 
                 {list?.budgetLimit && (
@@ -563,7 +563,7 @@ export default function ShoppingListModal({
                     }} 
                     style={[styles.budgetModalBtn, styles.budgetModalBtnDelete]}
                   >
-                    <Text style={styles.budgetModalBtnTextDelete}>Eliminar</Text>
+                    <Text style={styles.budgetModalBtnTextDelete}>Delete</Text>
                   </TouchableOpacity>
                 )}
                 
@@ -580,7 +580,7 @@ export default function ShoppingListModal({
                   }} 
                   style={[styles.budgetModalBtn, styles.budgetModalBtnSave]}
                 >
-                  <Text style={styles.budgetModalBtnText}>Guardar</Text>
+                  <Text style={styles.budgetModalBtnText}>Save</Text>
                 </TouchableOpacity>
               </View>
             </View>

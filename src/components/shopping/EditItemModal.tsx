@@ -68,7 +68,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <View style={styles.header}>
-            <Text style={styles.title}>Editar Producto</Text>
+            <Text style={styles.title}>Edit Product</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={24} color="#6b7280" />
             </TouchableOpacity>
@@ -77,11 +77,11 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
           <ScrollView style={styles.content}>
             {/* Product Name */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nombre del producto</Text>
+              <Text style={styles.label}>Product name</Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Ej: Leche de coco"
+                placeholder="Ex: Coconut milk"
                 style={styles.input}
                 placeholderTextColor="#9ca3af"
               />
@@ -90,7 +90,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
             {/* Quantity and Unit Row */}
             <View style={styles.row}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Cantidad</Text>
+                <Text style={styles.label}>Quantity</Text>
                 <TextInput
                   value={qty}
                   onChangeText={setQty}
@@ -101,7 +101,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
                 />
               </View>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Unidad</Text>
+                <Text style={styles.label}>Unit</Text>
                 <TextInput
                   value={unit}
                   onChangeText={setUnit}
@@ -114,7 +114,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
 
             {/* Price */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Precio (opcional)</Text>
+              <Text style={styles.label}>Price (optional)</Text>
               <TextInput
                 value={price}
                 onChangeText={setPrice}
@@ -127,7 +127,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
 
             {/* Store Selection */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Tienda</Text>
+              <Text style={styles.label}>Store</Text>
               <View style={styles.storeOptions}>
                 <TouchableOpacity
                   onPress={() => setSelectedStoreId("none")}
@@ -140,7 +140,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
                     styles.storeOptionText,
                     selectedStoreId === "none" && styles.storeOptionTextSelected
                   ]}>
-                    Sin tienda específica
+                    No specific store
                   </Text>
                 </TouchableOpacity>
                 {stores.map(store => (
@@ -171,7 +171,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
               disabled={saving}
             >
               <Ionicons name="trash" size={20} color="#fff" />
-              <Text style={styles.buttonText}>Eliminar</Text>
+              <Text style={styles.buttonText}>Delete</Text>
             </TouchableOpacity>
             
             <View style={styles.spacer} />
@@ -181,7 +181,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
               style={[styles.button, styles.cancelButton]}
               disabled={saving}
             >
-              <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancelar</Text>
+              <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancel</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
@@ -190,7 +190,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
               disabled={saving}
             >
               <Ionicons name={saving ? "hourglass" : "checkmark"} size={20} color="#fff" />
-              <Text style={styles.buttonText}>{saving ? "Guardando..." : "Guardar"}</Text>
+              <Text style={styles.buttonText}>{saving ? "Saving..." : "Save"}</Text>
             </TouchableOpacity>
           </View>
         </View>
