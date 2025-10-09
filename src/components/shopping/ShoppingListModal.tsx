@@ -32,6 +32,7 @@ export default function ShoppingListModal({
 
   const [storeModal, setStoreModal] = useState<{ open: boolean; editing?: ShoppingStore }>({ open: false });
   const [budgetModal, setBudgetModal] = useState<{ open: boolean }>({ open: false });
+  const [budgetInput, setBudgetInput] = useState("");
   const [scanOpen, setScanOpen] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
 
@@ -44,6 +45,15 @@ export default function ShoppingListModal({
       setItems(it as any);
     })();
   }, [visible, taskId, familyId, userId]);
+
+  // Initialize budget input when modal opens
+  useEffect(() => {
+    if (budgetModal.open && list?.budgetLimit) {
+      setBudgetInput(String(list.budgetLimit));
+    } else if (budgetModal.open) {
+      setBudgetInput("");
+    }
+  }, [budgetModal.open, list?.budgetLimit]);
 
   const onScanned = async ({ barcode }: { barcode: string }) => {
     if (!list) return;
@@ -445,13 +455,8 @@ export default function ShoppingListModal({
               <View style={styles.budgetInputContainer}>
                 <Text style={styles.budgetInputLabel}>Monto del presupuesto:</Text>
                 <TextInput
-                  value={list?.budgetLimit ? String(list.budgetLimit) : ""}
-                  onChangeText={(value) => {
-                    const numValue = parseFloat(value) || 0;
-                    if (list) {
-                      updateList(list.id!, { budgetLimit: numValue });
-                    }
-                  }}
+                  value={budgetInput}
+                  onChangeText={setBudgetInput}
                   placeholder="Ej: 500.00"
                   keyboardType="decimal-pad"
                   style={styles.budgetInput}
@@ -473,7 +478,13 @@ export default function ShoppingListModal({
                   <Text style={styles.budgetModalBtnTextCancel}>Cancelar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  onPress={() => setBudgetModal({ open: false })} 
+                  onPress={async () => {
+                    const numValue = parseFloat(budgetInput) || 0;
+                    if (list && numValue > 0) {
+                      await updateList(list.id!, { budgetLimit: numValue });
+                    }
+                    setBudgetModal({ open: false });
+                  }} 
                   style={[styles.budgetModalBtn, styles.budgetModalBtnSave]}
                 >
                   <Text style={styles.budgetModalBtnText}>Guardar</Text>
