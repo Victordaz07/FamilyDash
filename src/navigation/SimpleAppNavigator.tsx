@@ -129,6 +129,7 @@ const CalendarStack = () => (
     <Stack.Screen name="CalendarVoting" component={CalendarVotingScreen as any} />
     <Stack.Screen name="Voting" component={VotingScreen as any} />
     <Stack.Screen name="EventEditor" component={EventEditorScreen as any} />
+    <Stack.Screen name="FamilySchedules" component={FamilySchedulesScreen as any} />
   </Stack.Navigator>
 );
 
