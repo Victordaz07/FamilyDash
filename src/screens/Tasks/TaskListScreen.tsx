@@ -96,15 +96,40 @@ export default function TaskListScreen() {
 
     // Create ListHeaderComponent with title, filters, and Quick Actions
     const ListHeader = useMemo(() => (
-        <View style={styles.headerWrap}>
-            {/* Title and subtitle */}
-            <Text style={[styles.title, { color: colors.text, fontSize: fonts.h1 }]}>Tasks</Text>
-            <Text style={[styles.sub, { color: colors.textSecondary, fontSize: fonts.body }]}>
-                {tasks.length} tasks
-            </Text>
+        <View style={styles.headerContainer}>
+            {/* Header with gradient */}
+            <LinearGradient
+                colors={gradient}
+                style={styles.headerGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
+                <View style={styles.headerContent}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => navigation.goBack()}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="white" />
+                    </TouchableOpacity>
+                    <View style={styles.headerTextContainer}>
+                        <Text style={styles.headerTitle}>Tasks</Text>
+                        <Text style={styles.headerSubtitle}>
+                            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+                        </Text>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => navigation.navigate('AddTask' as never)}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="add" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+            </LinearGradient>
 
             {/* Filter tabs */}
-            <View style={styles.filtersRow}>
+            <View style={[styles.filtersContainer, { backgroundColor: colors.surface }]}>
                 <FlatList
                     data={[
                         { key: 'all', label: 'All', count: tasks.length },
@@ -119,25 +144,27 @@ export default function TaskListScreen() {
                         <TouchableOpacity
                             style={[
                                 styles.filterTab,
-                                tab === item.key && { backgroundColor: colors.accent }
+                                tab === item.key && styles.filterTabActive,
+                                { borderColor: colors.border }
                             ]}
                             onPress={() => setTab(item.key as FilterTab)}
                         >
                             <Text style={[
                                 styles.filterTabText,
-                                tab === item.key && { color: 'white' },
-                                { color: colors.textSecondary, fontSize: fonts.caption }
+                                tab === item.key && styles.filterTabTextActive,
+                                { color: colors.textSecondary }
                             ]}>
                                 {item.label} ({item.count})
                             </Text>
                         </TouchableOpacity>
                     )}
                     contentContainerStyle={styles.tabsContent}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
 
             {/* Quick Actions */}
-            <View style={styles.qaWrap}>
+            <View style={styles.quickActionsWrapper}>
                 <SharedQuickActions
                     mode="task"
                     familyId="default_family"
@@ -149,7 +176,7 @@ export default function TaskListScreen() {
                 />
             </View>
         </View>
-    ), [tasks, tab, colors, fonts, navigation]);
+    ), [tasks, tab, colors, fonts, navigation, gradient]);
 
     const renderTask = ({ item }: { item: Task }) => (
         <TouchableOpacity
@@ -326,38 +353,101 @@ export default function TaskListScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#F8FAFC',
     },
     flatListContent: {
         paddingBottom: 32,
     },
-    headerWrap: {
-        padding: 16,
-        paddingBottom: 12,
+    headerContainer: {
+        marginBottom: 16,
     },
-    title: {
-        fontSize: 28,
+    headerGradient: {
+        paddingTop: 50,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTextContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    headerTitle: {
+        fontSize: 24,
         fontWeight: '800',
+        color: 'white',
         marginBottom: 4,
     },
-    sub: {
-        marginBottom: 16,
+    headerSubtitle: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '500',
     },
-    filtersRow: {
-        marginBottom: 16,
+    addButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    qaWrap: {
-        marginTop: 8,
+    filtersContainer: {
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+        marginTop: -12,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     filterTab: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginRight: 8,
-        backgroundColor: '#f3f4f6',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 25,
+        marginRight: 12,
+        backgroundColor: '#F1F5F9',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    filterTabActive: {
+        backgroundColor: '#3B82F6',
+        borderColor: '#3B82F6',
     },
     filterTabText: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: '600',
+        color: '#64748B',
+    },
+    filterTabTextActive: {
+        color: 'white',
+    },
+    tabsContent: {
+        paddingHorizontal: 4,
+    },
+    quickActionsWrapper: {
+        paddingHorizontal: 16,
+        paddingTop: 8,
     },
     header: {
         paddingTop: 50,

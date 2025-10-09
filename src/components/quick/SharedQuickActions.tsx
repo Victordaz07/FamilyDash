@@ -169,53 +169,53 @@ const ActionButton: React.FC<ActionButtonProps> = ({ label, color, icon, onPress
 
 const styles = StyleSheet.create({
   sheet: {
-    padding: 16,
-    borderRadius: 16,
+    padding: 20,
+    borderRadius: 20,
     backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+    marginHorizontal: 0,
+    marginVertical: 0,
   },
   title: { 
     fontWeight: "800", 
-    fontSize: 18, 
-    marginBottom: 16, 
+    fontSize: 20, 
+    marginBottom: 20, 
     textAlign: "center",
     color: "#1F2937"
   },
   row: { 
     flexDirection: "row", 
-    gap: 12, 
-    marginBottom: 12 
+    gap: 16, 
+    marginBottom: 16 
   },
   btn: {
     flex: 1,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 60,
+    minHeight: 90,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    elevation: 3,
   },
   icon: { 
-    fontSize: 20,
-    marginBottom: 4
+    fontSize: 24,
+    marginBottom: 6
   },
   btnText: { 
     color: "#fff", 
     fontWeight: "700",
-    fontSize: 12,
+    fontSize: 13,
     textAlign: "center",
-    lineHeight: 14
+    lineHeight: 16
   },
   placeholder: {
     flex: 1,
