@@ -101,7 +101,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         try {
             // Simulate data refresh
             await new Promise(resolve => setTimeout(resolve, 1000));
-            setLastSyncTime(new Date());
         } catch (error) {
             Logger.error('Refresh failed', error);
         } finally {
