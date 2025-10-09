@@ -16,59 +16,33 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { VideoView, useVideoPlayer } from 'expo-video';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
 import { Task } from '../services/tasks';
+import { VideoErrorBoundary } from '../video/VideoErrorBoundary';
+import { VideoPlayerViewSimple } from '../video/VideoPlayerViewSimple';
 
 const { width, height } = Dimensions.get('window');
 
-// Video Preview Component using expo-video
+// Video Preview Component using the new robust VideoPlayerView
 const VideoPreview: React.FC<{ uri: string; onPress: () => void }> = ({ uri, onPress }) => {
-    const [hasError, setHasError] = useState(false);
-    
-    const player = useVideoPlayer(uri, (player) => {
-        player.loop = false;
-        player.muted = true;
-    });
-
-    // Handle video errors
-    useEffect(() => {
-        const subscription = player.addListener('statusChange', (status) => {
-            if (status.error) {
-                console.error('Video preview error:', status.error);
-                setHasError(true);
-            }
-        });
-
-        return () => subscription?.remove();
-    }, [player]);
-
-    if (hasError) {
-        return (
-            <TouchableOpacity
-                style={styles.videoContainer}
-                onPress={onPress}
-                activeOpacity={0.8}
-            >
-                <View style={styles.errorContainer}>
-                    <Ionicons name="videocam-off" size={32} color="#666" />
-                    <Text style={styles.errorText}>Video no disponible</Text>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-
     return (
         <TouchableOpacity
             style={styles.videoContainer}
             onPress={onPress}
             activeOpacity={0.8}
         >
-            <VideoView
+            <VideoPlayerViewSimple
+                uri={uri}
+                visible={true}
+                autoPlay={false}
+                loop={false}
+                muted={true}
+                stallTimeoutMs={12000}
+                maxRetries={2}
+                onError={(error) => {
+                    console.warn('Video preview error:', error);
+                }}
                 style={styles.mediaVideo}
-                player={player}
-                nativeControls={false}
-                contentFit="cover"
             />
             <View style={styles.mediaOverlay}>
                 <Ionicons name="play" size={32} color="white" />
@@ -101,6 +75,10 @@ export default function TaskPreviewModal({
     const colors = useThemeColors();
     const fonts = useThemeFonts();
     const themeGradient = useThemeGradient();
+
+    // Video modal state - Hooks must be at the top
+    const [videoModalVisible, setVideoModalVisible] = useState(false);
+    const [selectedVideoUri, setSelectedVideoUri] = useState<string | null>(null);
 
     // Ensure gradient has at least 2 colors for LinearGradient
     const gradient = themeGradient.length >= 2
@@ -142,11 +120,16 @@ export default function TaskPreviewModal({
     };
 
     const handleVideoPress = (videoUrl: string) => {
-        Alert.alert(
-            'Video Preview',
-            'Full screen video player would open here',
-            [{ text: 'OK' }]
-        );
+        console.log('Opening video modal with URL:', videoUrl);
+        console.log('Video URL type:', typeof videoUrl);
+        console.log('Video URL length:', videoUrl?.length);
+        setSelectedVideoUri(videoUrl);
+        setVideoModalVisible(true);
+    };
+
+    const closeVideoModal = () => {
+        setVideoModalVisible(false);
+        setSelectedVideoUri(null);
     };
 
     return (
@@ -274,10 +257,24 @@ export default function TaskPreviewModal({
                                                 </View>
                                             </TouchableOpacity>
                                         ) : (
-                                            <VideoPreview
-                                                uri={attachment.url}
-                                                onPress={() => handleVideoPress(attachment.url)}
-                                            />
+                                            <VideoErrorBoundary
+                                                fallback={
+                                                    <View style={styles.videoContainer}>
+                                                        <View style={styles.errorContainer}>
+                                                            <Ionicons name="videocam-off" size={32} color="#666" />
+                                                            <Text style={styles.errorText}>Error de video</Text>
+                                                        </View>
+                                                    </View>
+                                                }
+                                                onError={(error, errorInfo) => {
+                                                    console.error('Video Error Boundary triggered:', error, errorInfo);
+                                                }}
+                                            >
+                                                <VideoPreview
+                                                    uri={attachment.url}
+                                                    onPress={() => handleVideoPress(attachment.url)}
+                                                />
+                                            </VideoErrorBoundary>
                                         )}
                                         <Text style={[styles.mediaLabel, { color: colors.textSecondary, fontSize: fonts.caption }]}>
                                             {attachment.kind.toUpperCase()}
@@ -392,6 +389,75 @@ export default function TaskPreviewModal({
                     )}
                 </ScrollView>
             </View>
+
+            {/* Video Player Modal */}
+            <Modal
+                visible={videoModalVisible}
+                animationType="slide"
+                presentationStyle="fullScreen"
+                onRequestClose={closeVideoModal}
+            >
+                <View style={styles.videoModalContainer}>
+                    {/* Close button */}
+                    <TouchableOpacity
+                        style={styles.videoModalCloseButton}
+                        onPress={closeVideoModal}
+                        activeOpacity={0.8}
+                    >
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)']}
+                            style={styles.videoModalCloseButtonGradient}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                        >
+                            <Ionicons name="close" size={24} color="white" />
+                        </LinearGradient>
+                    </TouchableOpacity>
+
+                    {/* Video Player */}
+                    <VideoErrorBoundary
+                        fallback={
+                            <View style={styles.videoModalFallback}>
+                                <Ionicons name="videocam-off" size={64} color="#666" />
+                                <Text style={styles.videoModalFallbackText}>
+                                    No se pudo reproducir el video
+                                </Text>
+                                <TouchableOpacity
+                                    style={styles.videoModalRetryButton}
+                                    onPress={closeVideoModal}
+                                >
+                                    <Text style={styles.videoModalRetryButtonText}>Cerrar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        }
+                        onError={(error, errorInfo) => {
+                            console.error('Video Modal Error Boundary triggered:', error, errorInfo);
+                        }}
+                    >
+                        {selectedVideoUri && (
+                            <VideoPlayerViewSimple
+                                uri={selectedVideoUri}
+                                visible={videoModalVisible}
+                                autoPlay={true}
+                                loop={false}
+                                muted={false}
+                                stallTimeoutMs={15000}
+                                maxRetries={3}
+                                onError={(error) => {
+                                    console.error('Video modal error:', error);
+                                    console.error('Video URI:', selectedVideoUri);
+                                    console.error('Error details:', JSON.stringify(error, null, 2));
+                                }}
+                                onReady={() => {
+                                    console.log('Video modal is ready to play');
+                                    console.log('Video URI:', selectedVideoUri);
+                                }}
+                                style={styles.videoModalPlayer}
+                            />
+                        )}
+                    </VideoErrorBoundary>
+                </View>
+            </Modal>
         </Modal>
     );
 }
@@ -631,11 +697,69 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#f5f5f5',
         borderRadius: 8,
+        padding: 16,
     },
     errorText: {
         marginTop: 8,
         fontSize: 12,
         color: '#666',
         textAlign: 'center',
+        fontWeight: '500',
+    },
+    // Video Modal Styles
+    videoModalContainer: {
+        flex: 1,
+        backgroundColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    videoModalCloseButton: {
+        position: 'absolute',
+        top: 50,
+        right: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        zIndex: 1000,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 6,
+    },
+    videoModalCloseButtonGradient: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    videoModalPlayer: {
+        width: '100%',
+        height: '100%',
+    },
+    videoModalFallback: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 40,
+    },
+    videoModalFallbackText: {
+        marginTop: 20,
+        fontSize: 18,
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 30,
+    },
+    videoModalRetryButton: {
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    videoModalRetryButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
