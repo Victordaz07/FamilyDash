@@ -7,6 +7,7 @@ import ActivityCard from '../components/ActivityCard';
 import NewEventModal from '../components/NewEventModal';
 import { WeatherWidget } from '../../../components/WeatherWidget';
 import { listSchedules } from '../../../services/schedules';
+import { listReminders } from '../../../services/reminders';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -79,6 +80,41 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         return details || 'Family routine';
     };
 
+    // Load real family reminders from Firebase
+    const loadFamilyReminders = async () => {
+        try {
+            const reminderData = await listReminders('default_family');
+            const formattedReminders = reminderData.map(reminder => ({
+                id: reminder.id,
+                title: reminder.title,
+                time: reminder.timeUntilEvent,
+                details: formatReminderDetails(reminder)
+            }));
+            setReminders(formattedReminders);
+        } catch (error) {
+            console.error('Error loading family reminders:', error);
+            // Keep mock data on error
+        }
+    };
+
+    const formatReminderDetails = (reminder: any) => {
+        let details = '';
+        if (reminder.description) {
+            details = reminder.description;
+        }
+        if (reminder.participants && reminder.participants.length > 0) {
+            const names = reminder.participants.slice(0, 2).join(' & ');
+            details += (details ? ' • ' : '') + `${names}${reminder.participants.length > 2 ? ' & others' : ''}`;
+        }
+        if (reminder.location) {
+            details += (details ? ' • ' : '') + reminder.location;
+        }
+        const date = new Date(reminder.scheduledFor);
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        details += (details ? ' • ' : '') + `${timeStr} today`;
+        return details || 'Reminder';
+    };
+
     useEffect(() => {
         // Entrance animations
         Animated.parallel([
@@ -115,14 +151,16 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
             useNativeDriver: true,
         }).start();
 
-        // Load family schedules on mount
+        // Load family schedules and reminders on mount
         loadFamilySchedules();
+        loadFamilyReminders();
     }, []);
 
-    // Reload schedules when screen comes into focus
+    // Reload schedules and reminders when screen comes into focus
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             loadFamilySchedules();
+            loadFamilyReminders();
         });
 
         return unsubscribe;
@@ -228,7 +266,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
         action: getActivityAction(activity.status)
     }));
 
-    const reminders = [
+    const [reminders, setReminders] = useState([
         {
             id: '1',
             title: 'Piano lesson reminder',
@@ -241,7 +279,7 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
             time: 'in 4 hours',
             details: 'Family shopping • 6:30 PM today'
         }
-    ];
+    ]);
 
     const [familySchedules, setFamilySchedules] = useState([
         {
@@ -623,7 +661,13 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                             ))}
                         </View>
 
-                        <TouchableOpacity style={styles.manageNotificationsButton} onPress={() => Alert.alert('Notifications', 'Manage notifications')}>
+                        <TouchableOpacity 
+                            style={styles.manageNotificationsButton} 
+                            onPress={() => navigation.navigate('FamilyReminders', { 
+                                familyId: 'default_family', 
+                                userId: 'default_user' 
+                            })}
+                        >
                             <Text style={styles.manageNotificationsText}>Manage Notifications</Text>
                         </TouchableOpacity>
                     </LinearGradient>

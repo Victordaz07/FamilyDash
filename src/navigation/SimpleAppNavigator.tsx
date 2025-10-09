@@ -21,6 +21,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import MainHomeScreen from '../screens/MainHomeScreen';
 import SavedLocationsScreen from '../screens/SavedLocationsScreen';
 import FamilySchedulesScreen from '../screens/schedules/FamilySchedulesScreen';
+import FamilyRemindersScreen from '../screens/reminders/FamilyRemindersScreen';
 
 // Import Auth screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -130,6 +131,7 @@ const CalendarStack = () => (
     <Stack.Screen name="Voting" component={VotingScreen as any} />
     <Stack.Screen name="EventEditor" component={EventEditorScreen as any} />
     <Stack.Screen name="FamilySchedules" component={FamilySchedulesScreen as any} />
+    <Stack.Screen name="FamilyReminders" component={FamilyRemindersScreen as any} />
   </Stack.Navigator>
 );
 
