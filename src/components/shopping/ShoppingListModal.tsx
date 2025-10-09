@@ -11,6 +11,7 @@ import { findProductByBarcode, upsertProduct } from "../../services/shoppingProd
 import StorePickerModal from "./StorePickerModal";
 import BudgetProgressBar from "./BudgetProgressBar";
 import BarcodeScannerFallback from "./BarcodeScannerFallback";
+import EditItemModal from "./EditItemModal";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {
   if (s === "pending") return <Ionicons name="square-outline" size={22} />;
@@ -36,6 +37,7 @@ export default function ShoppingListModal({
   const [scanOpen, setScanOpen] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [editModal, setEditModal] = useState<{ open: boolean; item?: ShoppingItem }>({ open: false });
 
   useEffect(() => {
     if (!visible) return;
@@ -161,6 +163,24 @@ export default function ShoppingListModal({
   const del = async (item: ShoppingItem) => {
     await removeItem(item.id);
     setItems(prev => prev.filter(p => p.id !== item.id));
+  };
+
+  const handleEditItem = async (itemId: string, updates: Partial<ShoppingItem>) => {
+    await updateItem(itemId, updates);
+    
+    // Refresh items list
+    if (list) {
+      const it = await listItems(list.id!);
+      setItems(it as any);
+    }
+    
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    await removeItem(itemId);
+    setItems(prev => prev.filter(p => p.id !== itemId));
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const stores = useMemo(() => list?.stores ?? [], [list]);
@@ -447,9 +467,17 @@ export default function ShoppingListModal({
                     )}
                   </View>
                 </View>
-                <TouchableOpacity onPress={() => del(item)} style={styles.deleteButton}>
-                  <Ionicons name="trash-outline" size={18} color="#ef4444" />
-                </TouchableOpacity>
+                <View style={styles.itemActions}>
+                  <TouchableOpacity 
+                    onPress={() => setEditModal({ open: true, item })} 
+                    style={styles.editButton}
+                  >
+                    <Ionicons name="create-outline" size={18} color="#7c3aed" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => del(item)} style={styles.deleteButton}>
+                    <Ionicons name="trash-outline" size={18} color="#ef4444" />
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
             ListEmptyComponent={
@@ -558,6 +586,18 @@ export default function ShoppingListModal({
             </View>
           </View>
         </Modal>
+
+        {/* Edit Item Modal */}
+        {editModal.item && (
+          <EditItemModal
+            visible={editModal.open}
+            onClose={() => setEditModal({ open: false })}
+            item={editModal.item}
+            stores={stores}
+            onSave={handleEditItem}
+            onDelete={handleDeleteItem}
+          />
+        )}
         </View>
       </View>
     </Modal>
@@ -847,6 +887,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#6b7280",
     fontWeight: "500",
+  },
+  itemActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  editButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
   },
   deleteButton: {
     width: 36,
