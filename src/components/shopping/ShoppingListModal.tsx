@@ -165,7 +165,7 @@ export default function ShoppingListModal({
             </TouchableOpacity>
           </View>
 
-        {/* Budget & Totals Section - Compact */}
+        {/* Budget & Totals Section - Compact with Store Filters */}
         <View style={styles.budgetTotalsSection}>
           <View style={styles.budgetTotalsHeader}>
             <Text style={styles.budgetTotalsLabel}>Resumen</Text>
@@ -219,38 +219,38 @@ export default function ShoppingListModal({
                 {list?.currency} {totals.total.toFixed(2)}
               </Text>
             </View>
-          </View>
-        </View>
 
-        {/* Stores row */}
-        <View style={styles.storesContainer}>
-          <Text style={styles.storesLabel}>Filtrar por tienda</Text>
-          <View style={styles.storesRow}>
-            <TouchableOpacity
-              onPress={() => setFilterStore("all")}
-              style={[styles.storeChip, filterStore === "all" && styles.storeChipOn]}
-            >
-              <Ionicons name="list" size={16} color={filterStore === "all" ? "#fff" : "#6b7280"} />
-              <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>Todas</Text>
-            </TouchableOpacity>
+            {/* Store Filters Row - Inside Budget Section */}
+            <View style={styles.storeFiltersRow}>
+              <Text style={styles.storeFiltersLabel}>Tiendas:</Text>
+              <View style={styles.storesRow}>
+                <TouchableOpacity
+                  onPress={() => setFilterStore("all")}
+                  style={[styles.storeChip, filterStore === "all" && styles.storeChipOn]}
+                >
+                  <Ionicons name="list" size={14} color={filterStore === "all" ? "#fff" : "#6b7280"} />
+                  <Text style={[styles.storeChipTxt, filterStore === "all" && styles.storeChipTxtOn]}>Todas</Text>
+                </TouchableOpacity>
 
-            {stores.map(s => (
-              <TouchableOpacity
-                key={s.id}
-                onPress={() => setFilterStore(s.id)}
-                style={[styles.storeChip, filterStore === s.id && styles.storeChipOn]}
-              >
-                <Ionicons name="storefront" size={16} color={filterStore === s.id ? "#fff" : "#6b7280"} />
-                <Text style={[styles.storeChipTxt, filterStore === s.id && styles.storeChipTxtOn]}>
-                  {s.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                {stores.map(s => (
+                  <TouchableOpacity
+                    key={s.id}
+                    onPress={() => setFilterStore(s.id)}
+                    style={[styles.storeChip, filterStore === s.id && styles.storeChipOn]}
+                  >
+                    <Ionicons name="storefront" size={14} color={filterStore === s.id ? "#fff" : "#6b7280"} />
+                    <Text style={[styles.storeChipTxt, filterStore === s.id && styles.storeChipTxtOn]}>
+                      {s.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
 
-            <TouchableOpacity onPress={() => setStoreModal({ open: true })} style={[styles.storeChip, styles.addStore]}>
-              <Ionicons name="add" size={16} color="#fff" />
-              <Text style={[styles.storeChipTxt, styles.storeChipTxtOn]}>Tienda</Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => setStoreModal({ open: true })} style={[styles.storeChip, styles.addStore]}>
+                  <Ionicons name="add" size={14} color="#fff" />
+                  <Text style={[styles.storeChipTxt, styles.storeChipTxtOn]}>+</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
 
@@ -567,54 +567,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  storesContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  storesLabel: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#374151",
-    marginBottom: 12,
-  },
-  storesRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  storeChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: "#f3f4f6",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    borderWidth: 2,
-    borderColor: "transparent",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  storeChipOn: {
-    backgroundColor: "#2563eb",
-    borderColor: "#1d4ed8",
-  },
-  storeChipTxt: {
-    color: "#374151",
-    fontWeight: "600",
-    fontSize: 13,
-  },
-  storeChipTxtOn: {
-    color: "#fff",
-    fontWeight: "700",
-  },
-  addStore: {
-    backgroundColor: "#7c3aed",
-    borderColor: "#6d28d9",
-  },
 
   budgetContainer: {
     backgroundColor: "#fff",
@@ -971,6 +923,59 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 10,
     fontWeight: "600",
+  },
+  storeFiltersRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+    gap: 8,
+  },
+  storeFiltersLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#6b7280",
+    minWidth: 60,
+  },
+  storesRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    flex: 1,
+  },
+  storeChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: "#f3f4f6",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderWidth: 1,
+    borderColor: "transparent",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  storeChipOn: {
+    backgroundColor: "#2563eb",
+    borderColor: "#1d4ed8",
+  },
+  storeChipTxt: {
+    color: "#374151",
+    fontWeight: "500",
+    fontSize: 11,
+  },
+  storeChipTxtOn: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  addStore: {
+    backgroundColor: "#7c3aed",
+    borderColor: "#6d28d9",
   },
 
   // Budget Modal Styles
