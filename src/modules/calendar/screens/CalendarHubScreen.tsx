@@ -517,6 +517,41 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                     </View>
                 </View>
 
+                {/* Family Schedules Section */}
+                <View style={styles.schedulesSection}>
+                    <LinearGradient
+                        colors={['#3B82F6', '#1D4ED8']}
+                        style={styles.schedulesCard}
+                    >
+                        <View style={styles.schedulesHeader}>
+                            <Text style={styles.schedulesTitle}>Family Schedules</Text>
+                            <Ionicons name="time" size={24} color="white" />
+                        </View>
+
+                        <View style={styles.schedulesList}>
+                            {familySchedules.map(schedule => (
+                                <View key={schedule.id} style={styles.scheduleItem}>
+                                    <View style={styles.scheduleHeader}>
+                                        <Text style={styles.scheduleTitle}>{schedule.title}</Text>
+                                        <Text style={styles.scheduleTime}>{schedule.time}</Text>
+                                    </View>
+                                    <Text style={styles.scheduleDetails}>{schedule.details}</Text>
+                                </View>
+                            ))}
+                        </View>
+
+                        <TouchableOpacity 
+                            style={styles.manageSchedulesButton} 
+                            onPress={() => navigation.navigate('FamilySchedules', { 
+                                familyId: 'default_family', 
+                                userId: 'default_user' 
+                            })}
+                        >
+                            <Text style={styles.manageSchedulesText}>Manage Schedules</Text>
+                        </TouchableOpacity>
+                    </LinearGradient>
+                </View>
+
                 {/* Reminders */}
                 <View style={styles.remindersSection}>
                     <LinearGradient
@@ -546,34 +581,6 @@ const CalendarHubScreen: React.FC<CalendarHubScreenProps> = ({ navigation }) => 
                     </LinearGradient>
                 </View>
 
-                {/* Family Schedules Section */}
-                <View style={styles.schedulesSection}>
-                    <LinearGradient
-                        colors={['#3B82F6', '#1D4ED8']}
-                        style={styles.schedulesCard}
-                    >
-                        <View style={styles.schedulesHeader}>
-                            <Text style={styles.schedulesTitle}>Family Schedules</Text>
-                            <Ionicons name="time" size={24} color="white" />
-                        </View>
-
-                        <View style={styles.schedulesList}>
-                            {familySchedules.map(schedule => (
-                                <View key={schedule.id} style={styles.scheduleItem}>
-                                    <View style={styles.scheduleHeader}>
-                                        <Text style={styles.scheduleTitle}>{schedule.title}</Text>
-                                        <Text style={styles.scheduleTime}>{schedule.time}</Text>
-                                    </View>
-                                    <Text style={styles.scheduleDetails}>{schedule.details}</Text>
-                                </View>
-                            ))}
-                        </View>
-
-                        <TouchableOpacity style={styles.manageSchedulesButton} onPress={() => navigation.navigate('FamilySchedules')}>
-                            <Text style={styles.manageSchedulesText}>Manage Schedules</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                </View>
 
                 {/* Bottom spacing for navigation */}
                 <View style={styles.bottomSpacing} />

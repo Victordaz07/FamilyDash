@@ -20,7 +20,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MainHomeScreen from '../screens/MainHomeScreen';
 import SavedLocationsScreen from '../screens/SavedLocationsScreen';
-import FamilySchedulesScreen from '../screens/FamilySchedulesScreen';
+import FamilySchedulesScreen from '../screens/schedules/FamilySchedulesScreen';
 
 // Import Auth screens
 import { LoginScreen } from '../screens/LoginScreen';
