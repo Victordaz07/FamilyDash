@@ -11,7 +11,7 @@ import {
   where,
   Timestamp 
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db } from "../../config/firebase";
 import { AudioNoteDoc } from "../../types/entries";
 
 /**
