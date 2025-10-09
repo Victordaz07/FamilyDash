@@ -152,17 +152,16 @@ export default function ShoppingListModal({
         <View style={styles.contentContainer}>
           <View style={styles.header}>
             <View style={styles.headerContent}>
-              <View style={styles.headerIcon}>
-                <Ionicons name="cart" size={16} color="#fff" />
-              </View>
-              <View style={styles.headerText}>
+              <View style={styles.headerLeft}>
+                <View style={styles.headerIcon}>
+                  <Ionicons name="cart" size={20} color="#fff" />
+                </View>
                 <Text style={styles.title}>Lista de compras</Text>
-                <Text style={styles.subtitle}>Gestiona tus compras inteligentemente</Text>
               </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Ionicons name="close" size={20} color="#fff" />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={16} color="#6b7280" />
-            </TouchableOpacity>
           </View>
 
         {/* Budget & Totals Section - Compact with Store Filters */}
@@ -519,49 +518,45 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#7c3aed",
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
-    elevation: 1,
-    marginBottom: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 16,
   },
   headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
   },
   headerIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
-  },
-  headerText: {
-    flex: 1,
+    marginRight: 12,
   },
   title: {
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 18,
     color: "#fff",
-    marginBottom: 0,
-  },
-  subtitle: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.8)",
-    fontWeight: "500",
   },
   closeButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
