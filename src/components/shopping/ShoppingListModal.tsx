@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
+import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { ShoppingItem, ShoppingList, ShoppingStore } from "../../types/shopping";
@@ -137,20 +137,21 @@ export default function ShoppingListModal({
   return (
     <Modal visible={visible} onRequestClose={onClose} animationType="slide">
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.headerIcon}>
-              <Ionicons name="cart" size={20} color="#fff" />
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={styles.headerContent}>
+              <View style={styles.headerIcon}>
+                <Ionicons name="cart" size={16} color="#fff" />
+              </View>
+              <View style={styles.headerText}>
+                <Text style={styles.title}>Lista de compras</Text>
+                <Text style={styles.subtitle}>Gestiona tus compras inteligentemente</Text>
+              </View>
             </View>
-            <View style={styles.headerText}>
-              <Text style={styles.title}>Lista de compras</Text>
-              <Text style={styles.subtitle}>Gestiona tus compras inteligentemente</Text>
-            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close" size={16} color="#6b7280" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={18} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
 
         {/* Stores row */}
         <View style={styles.storesContainer}>
@@ -400,29 +401,33 @@ export default function ShoppingListModal({
           onClose={() => setScanOpen(false)}
           onScanned={onScanned}
         />
-      </View>
-    </Modal>
-  );
-}
+        </View>
+        </ScrollView>
+      </Modal>
+    );
+  }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
   },
+  scrollContainer: {
+    flex: 1,
+  },
   header: {
     backgroundColor: "#7c3aed",
-    paddingTop: 12,
-    paddingBottom: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    marginBottom: 16,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+    marginBottom: 12,
   },
   headerContent: {
     flexDirection: "row",
@@ -430,32 +435,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
+    marginRight: 8,
   },
   headerText: {
     flex: 1,
   },
   title: {
-    fontWeight: "800",
-    fontSize: 18,
+    fontWeight: "700",
+    fontSize: 16,
     color: "#fff",
-    marginBottom: 2,
+    marginBottom: 0,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: "rgba(255,255,255,0.8)",
     fontWeight: "500",
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
