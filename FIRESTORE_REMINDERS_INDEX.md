@@ -17,8 +17,9 @@ To fix any "Failed to load reminders" errors, you need to create a composite ind
 **Collection ID**: `family_reminders`
 
 **Fields to index**:
+
 1. `familyId` - Ascending
-2. `isActive` - Ascending  
+2. `isActive` - Ascending
 3. `scheduledFor` - Ascending
 
 ### Alternative: Use Direct Links
@@ -28,6 +29,7 @@ If you get index errors, the error message will provide direct links to create t
 ### Fallback Solution
 
 The code includes a fallback that:
+
 1. Uses a simple query without `orderBy` when index is missing
 2. Sorts the results in memory
 3. Works without requiring the composite index immediately

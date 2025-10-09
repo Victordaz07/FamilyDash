@@ -10,6 +10,7 @@ import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/The
 import { useSettings } from '../contexts/SettingsContext';
 import { RealAuthService } from '../services/auth/RealAuthService';
 import RealDatabaseService from '../services/database/RealDatabaseService';
+import NotificationsModal from './settings/NotificationsModal';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -31,6 +32,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
   const [appVersion] = useState('1.3.0');
   const [buildNumber] = useState('4');
+  const [openNotif, setOpenNotif] = useState(false);
 
   // Theme options
   const themeOptions = [
@@ -329,12 +331,21 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
             }
           />
           <SettingItem
+            icon="settings"
+            title="Notification Settings"
+            subtitle="Configure all notification preferences"
+            onPress={() => setOpenNotif(true)}
+          />
+          <SettingItem
             icon="time"
             title="Reminders"
             subtitle="Configure notification schedules"
             onPress={() => {
-              // TODO: Navigate to Reminders configuration screen
-              Alert.alert('Reminders', 'Set up notification reminders for tasks, events, and family activities');
+              setOpenNotif(false);
+              navigation.navigate('FamilyReminders', { 
+                familyId: 'default_family', 
+                userId: user?.uid || 'default_user' 
+              });
             }}
           />
           <SettingItem
@@ -475,6 +486,25 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           <Text style={styles.footerSubtext}>Keeping families connected</Text>
         </View>
       </ScrollView>
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        visible={openNotif}
+        onClose={() => setOpenNotif(false)}
+        familyId="default_family"
+        userId={user?.uid || 'default_user'}
+        onOpenReminders={() => {
+          setOpenNotif(false);
+          navigation.navigate('FamilyReminders', { 
+            familyId: 'default_family', 
+            userId: user?.uid || 'default_user' 
+          });
+        }}
+        onOpenSounds={() => {
+          // TODO: Navigate to Sound settings screen
+          Alert.alert('Sounds', 'Customize notification sounds and vibration patterns');
+        }}
+      />
     </View>
   );
 };
