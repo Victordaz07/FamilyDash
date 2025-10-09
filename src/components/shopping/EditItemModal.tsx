@@ -71,13 +71,21 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
     try {
       setSaving(true);
       
-      const updates: Partial<ShoppingItem> = {
+      const updates: any = {
         name: name.trim(),
         qty: parseFloat(qty) || 1,
         unit: unit || "u",
-        price: price ? parseFloat(price) : undefined,
-        storeId: selectedStoreId !== "none" ? selectedStoreId : undefined,
       };
+
+      // Only add price if it exists and is valid
+      if (price && !isNaN(parseFloat(price))) {
+        updates.price = parseFloat(price);
+      }
+
+      // Only add storeId if a specific store is selected
+      if (selectedStoreId !== "none") {
+        updates.storeId = selectedStoreId;
+      }
 
       await onSave(item.id, updates);
       onClose();
