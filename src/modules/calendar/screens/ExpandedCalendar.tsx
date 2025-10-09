@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarEvent, FamilyMember, ActivityCategory } from '../types/calendarTypes';
 import { mockCalendarEvents, mockFamilyMembers, categoryConfig } from '../mock/expandedCalendarData';
 import EventCard from '../components/EventCard';
-import { useNotifications } from '../../../contexts/NotificationContext';
+import { useNotifications } from '../../../hooks/useNotifications';
 
 interface ExpandedCalendarProps {
     navigation: any;
