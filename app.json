@@ -55,7 +55,8 @@
           "cameraPermission": "Allow FamilyDash to access your camera to take photos."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-barcode-scanner"
     ],
     "web": {
       "favicon": "./assets/favicon.png"

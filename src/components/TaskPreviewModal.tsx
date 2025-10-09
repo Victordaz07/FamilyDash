@@ -20,6 +20,7 @@ import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/The
 import { Task } from '../services/tasks';
 import { VideoErrorBoundary } from '../video/VideoErrorBoundary';
 import { VideoPlayerViewSimple } from '../video/VideoPlayerViewSimple';
+import ShoppingListModal from './shopping/ShoppingListModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -79,6 +80,9 @@ export default function TaskPreviewModal({
     // Video modal state - Hooks must be at the top
     const [videoModalVisible, setVideoModalVisible] = useState(false);
     const [selectedVideoUri, setSelectedVideoUri] = useState<string | null>(null);
+    
+    // Shopping list modal state
+    const [shoppingOpen, setShoppingOpen] = useState(false);
 
     // Ensure gradient has at least 2 colors for LinearGradient
     const gradient = themeGradient.length >= 2
@@ -384,6 +388,29 @@ export default function TaskPreviewModal({
                                         </LinearGradient>
                                     </TouchableOpacity>
                                 )}
+                                
+                                {/* Shopping List Button */}
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.shoppingButton]}
+                                    onPress={() => setShoppingOpen(true)}
+                                    activeOpacity={0.8}
+                                >
+                                    <LinearGradient
+                                        colors={['#7c3aed', '#6d28d9']}
+                                        style={styles.actionButtonGradient}
+                                        start={{ x: 0, y: 0 }}
+                                        end={{ x: 1, y: 0 }}
+                                    >
+                                        <View style={styles.actionButtonContent}>
+                                            <View style={styles.actionIconContainer}>
+                                                <Ionicons name="cart" size={20} color="white" />
+                                            </View>
+                                            <Text style={[styles.actionButtonText, { fontSize: fonts.body }]}>
+                                                Shopping List
+                                            </Text>
+                                        </View>
+                                    </LinearGradient>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     )}
@@ -458,6 +485,15 @@ export default function TaskPreviewModal({
                     </VideoErrorBoundary>
                 </View>
             </Modal>
+            
+            {/* Shopping List Modal */}
+            <ShoppingListModal
+                visible={shoppingOpen}
+                onClose={() => setShoppingOpen(false)}
+                taskId={task?.id || ''}
+                familyId="default_family"
+                userId="default_user"
+            />
         </Modal>
     );
 }
@@ -690,6 +726,9 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         // Additional styles for delete button if needed
+    },
+    shoppingButton: {
+        // Additional styles for shopping button if needed
     },
     errorContainer: {
         flex: 1,
