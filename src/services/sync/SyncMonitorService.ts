@@ -4,6 +4,7 @@
  */
 
 import { RealDatabaseService, RealAuthService } from '../index';
+import Logger from '../Logger';
 
 export interface SyncEvent {
   id: string;
@@ -66,7 +67,7 @@ class SyncMonitorService {
         return;
       }
 
-      console.log('🔄 Initializing Sync Monitor Service...');
+      Logger.debug('🔄 Initializing Sync Monitor Service...');
 
       // Set up real-time sync listeners for each module
       await this.setupModuleListeners();
@@ -77,10 +78,10 @@ class SyncMonitorService {
       // Start conflict detection
       await this.setupConflictDetection();
 
-      console.log('✅ Sync Monitor Service initialized successfully');
+      Logger.debug('✅ Sync Monitor Service initialized successfully');
 
     } catch (error) {
-      console.error('❌ Error initializing sync monitoring:', error);
+      Logger.error('❌ Error initializing sync monitoring:', error);
       throw error;
     }
   }
@@ -129,10 +130,10 @@ class SyncMonitorService {
         );
 
         this.syncSubscriptions.set(module, unsubscribe);
-        console.log(`📡 Sync listener active for: ${module}`);
+        Logger.debug(`📡 Sync listener active for: ${module}`);
 
       } catch (error) {
-        console.error(`❌ Failed to set up sync listener for ${module}:`, error);
+        Logger.error(`❌ Failed to set up sync listener for ${module}:`, error);
       }
     }
   }
@@ -162,10 +163,10 @@ class SyncMonitorService {
         this.updateDeviceHeartbeat();
       }, 30000); // Every 30 seconds
 
-      console.log('📱 Device tracking active');
+      Logger.debug('📱 Device tracking active');
 
     } catch (error) {
-      console.error('❌ Failed to track online devices:', error);
+      Logger.error('❌ Failed to track online devices:', error);
     }
   }
 
@@ -173,7 +174,7 @@ class SyncMonitorService {
   private async setupConflictDetection(): Promise<void> {
     // This would detect conflicts by comparing document versions
     // and checking for simultaneous updates
-    console.log('🔍 Conflict detection system active');
+    Logger.debug('🔍 Conflict detection system active');
   }
 
   // Add sync event
@@ -197,7 +198,7 @@ class SyncMonitorService {
     // Notify listeners
     this.listeners.forEach(listener => listener(syncEvent));
 
-    console.log(`🔄 Sync Event: ${syncEvent.type} ${syncEvent.module} - ${syncEvent.status}`);
+    Logger.debug(`🔄 Sync Event: ${syncEvent.type} ${syncEvent.module} - ${syncEvent.status}`);
   }
 
   // Update statistics
@@ -304,7 +305,7 @@ class SyncMonitorService {
       return onlineDevices;
 
     } catch (error) {
-      console.error('❌ Failed to get online devices:', error);
+      Logger.error('❌ Failed to get online devices:', error);
       return [];
     }
   }
@@ -331,7 +332,7 @@ class SyncMonitorService {
           break;
         case 'remote_wins':
           // Keep remote data, update local store
-          console.log('Using remote data for conflict resolution');
+          Logger.debug('Using remote data for conflict resolution');
           break;
         case 'merge':
           // Custom merge logic would go here
@@ -349,12 +350,12 @@ class SyncMonitorService {
       // Notify listeners
       this.conflictListeners.forEach(listener => listener(conflict));
 
-      console.log(`✅ Conflict resolved: ${conflictId}`);
+      Logger.debug(`✅ Conflict resolved: ${conflictId}`);
 
       return true;
 
     } catch (error) {
-      console.error('❌ Failed to resolve conflict:', error);
+      Logger.error('❌ Failed to resolve conflict:', error);
       return false;
     }
   }
@@ -406,12 +407,12 @@ class SyncMonitorService {
 
   // Cleanup
   async cleanup(): Promise<void> {
-    console.log('🧹 Cleaning up sync monitor...');
+    Logger.debug('🧹 Cleaning up sync monitor...');
 
     // Unsubscribe from all listeners
     this.syncSubscriptions.forEach((unsubscribe, module) => {
       unsubscribe();
-      console.log(`📡 Unsubscribed from: ${module}`);
+      Logger.debug(`📡 Unsubscribed from: ${module}`);
     });
     this.syncSubscriptions.clear();
 
@@ -435,7 +436,7 @@ class SyncMonitorService {
       }
     }
 
-    console.log('✅ Sync monitor cleanup completed');
+    Logger.debug('✅ Sync monitor cleanup completed');
   }
 }
 

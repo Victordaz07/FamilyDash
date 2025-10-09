@@ -4,6 +4,7 @@
  */
 
 import { RealDatabaseService, RealAuthService } from '../../../services';
+import Logger from '../../../services/Logger';
 
 export interface FirebaseActivity {
   id?: string;
@@ -66,10 +67,10 @@ class RealCalendarService {
         throw new Error('Failed to create activity');
       }
 
-      console.log('✅ Activity created in Firebase:', result.data.id);
+      Logger.debug('✅ Activity created in Firebase:', result.data.id);
       return result.data.id;
     } catch (error) {
-      console.error('❌ Error creating activity:', error);
+      Logger.error('❌ Error creating activity:', error);
       throw error;
     }
   }
@@ -85,9 +86,9 @@ class RealCalendarService {
         { ...updates, updatedAt: new Date() }
       );
 
-      console.log('✅ Activity updated in Firebase:', activityId);
+      Logger.debug('✅ Activity updated in Firebase:', activityId);
     } catch (error) {
-      console.error('❌ Error updating activity:', error);
+      Logger.error('❌ Error updating activity:', error);
       throw error;
     }
   }
@@ -102,9 +103,9 @@ class RealCalendarService {
         activityId
       );
 
-      console.log('✅ Activity deleted from Firebase:', activityId);
+      Logger.debug('✅ Activity deleted from Firebase:', activityId);
     } catch (error) {
-      console.error('❌ Error deleting activity:', error);
+      Logger.error('❌ Error deleting activity:', error);
       throw error;
     }
   }
@@ -119,7 +120,7 @@ class RealCalendarService {
       );
 
       if (!result.success || !result.data) {
-        console.error('Failed to get activities:', result.error);
+        Logger.error('Failed to get activities:', result.error);
         return [];
       }
 
@@ -130,7 +131,7 @@ class RealCalendarService {
         updatedAt: doc.updatedAt || new Date(),
       })) as FirebaseActivity[];
     } catch (error) {
-      console.error('❌ Error getting activities:', error);
+      Logger.error('❌ Error getting activities:', error);
       return []; // Return empty array on error
     }
   }
@@ -142,7 +143,7 @@ class RealCalendarService {
         .filter(a => a.date === date)
         .sort((a, b) => a.time.localeCompare(b.time));
     } catch (error) {
-      console.error('❌ Error getting activities by date:', error);
+      Logger.error('❌ Error getting activities by date:', error);
       return [];
     }
   }
@@ -152,7 +153,7 @@ class RealCalendarService {
       const activities = await this.getActivities();
       return activities.filter(a => a.status === status);
     } catch (error) {
-      console.error('❌ Error getting activities by status:', error);
+      Logger.error('❌ Error getting activities by status:', error);
       return [];
     }
   }
@@ -161,7 +162,7 @@ class RealCalendarService {
     try {
       return await this.getActivitiesByStatus('voting');
     } catch (error) {
-      console.error('❌ Error getting voting activities:', error);
+      Logger.error('❌ Error getting voting activities:', error);
       return [];
     }
   }
@@ -184,9 +185,9 @@ class RealCalendarService {
         vote
       );
 
-      console.log('✅ Vote recorded in Firebase');
+      Logger.debug('✅ Vote recorded in Firebase');
     } catch (error) {
-      console.error('❌ Error voting on activity:', error);
+      Logger.error('❌ Error voting on activity:', error);
       throw error;
     }
   }
@@ -210,9 +211,9 @@ class RealCalendarService {
         responsibility
       );
 
-      console.log('✅ Responsibility assigned in Firebase');
+      Logger.debug('✅ Responsibility assigned in Firebase');
     } catch (error) {
-      console.error('❌ Error assigning responsibility:', error);
+      Logger.error('❌ Error assigning responsibility:', error);
       throw error;
     }
   }
@@ -228,13 +229,13 @@ class RealCalendarService {
         return () => { };
       }
 
-      console.log('🗓️ Setting up calendar real-time subscription for user:', user.uid);
+      Logger.debug('🗓️ Setting up calendar real-time subscription for user:', user.uid);
 
       const unsubscribe = RealDatabaseService.listenToCollection<FirebaseActivity>(
         `families/${user.uid}/calendar_activities`,
         (activities, error) => {
           if (error) {
-            console.error('❌ Error in real-time activities subscription:', error);
+            Logger.error('❌ Error in real-time activities subscription:', error);
           } else {
             const formattedActivities = activities.map(doc => ({
               id: doc.id,
@@ -244,7 +245,7 @@ class RealCalendarService {
             })) as FirebaseActivity[];
 
             callback(formattedActivities);
-            console.log('📅 Real-time calendar update:', formattedActivities.length, 'activities');
+            Logger.debug('📅 Real-time calendar update:', formattedActivities.length, 'activities');
           }
         }
       );
@@ -252,7 +253,7 @@ class RealCalendarService {
       this.unsubscribeCallback = unsubscribe;
       return unsubscribe;
     } catch (error) {
-      console.error('❌ Error setting up real-time subscription:', error);
+      Logger.error('❌ Error setting up real-time subscription:', error);
       // Return empty callback instead of throwing error
       callback([]);
       return () => { };
@@ -263,7 +264,7 @@ class RealCalendarService {
     if (this.unsubscribeCallback) {
       this.unsubscribeCallback();
       this.unsubscribeCallback = undefined;
-      console.log('🧹 Calendar service cleanup completed');
+      Logger.debug('🧹 Calendar service cleanup completed');
     }
   }
 }

@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Logger from '../Logger';
 
 // Types
 export interface SmartDevice {
@@ -157,9 +158,9 @@ export class SmartHomeManager {
             // Update status
             await this.updateStatus();
 
-            console.log('SmartHomeManager initialized successfully');
+            Logger.debug('SmartHomeManager initialized successfully');
         } catch (error) {
-            console.error('Error initializing SmartHomeManager:', error);
+            Logger.error('Error initializing SmartHomeManager:', error);
         }
     }
 
@@ -179,7 +180,7 @@ export class SmartHomeManager {
 
             return deviceId;
         } catch (error) {
-            console.error('Error adding device:', error);
+            Logger.error('Error adding device:', error);
             throw error;
         }
     }
@@ -194,7 +195,7 @@ export class SmartHomeManager {
                 await this.updateStatus();
             }
         } catch (error) {
-            console.error('Error updating device:', error);
+            Logger.error('Error updating device:', error);
         }
     }
 
@@ -204,7 +205,7 @@ export class SmartHomeManager {
             await this.saveDevices();
             await this.updateStatus();
         } catch (error) {
-            console.error('Error removing device:', error);
+            Logger.error('Error removing device:', error);
         }
     }
 
@@ -259,13 +260,13 @@ export class SmartHomeManager {
                     }
                     break;
                 default:
-                    console.log(`Unsupported action: ${action}`);
+                    Logger.debug(`Unsupported action: ${action}`);
                     return false;
             }
 
             return true;
         } catch (error) {
-            console.error('Error controlling device:', error);
+            Logger.error('Error controlling device:', error);
             return false;
         }
     }
@@ -284,7 +285,7 @@ export class SmartHomeManager {
 
             return roomId;
         } catch (error) {
-            console.error('Error adding room:', error);
+            Logger.error('Error adding room:', error);
             throw error;
         }
     }
@@ -298,7 +299,7 @@ export class SmartHomeManager {
                 await this.saveRooms();
             }
         } catch (error) {
-            console.error('Error updating room:', error);
+            Logger.error('Error updating room:', error);
         }
     }
 
@@ -325,7 +326,7 @@ export class SmartHomeManager {
 
             return automationId;
         } catch (error) {
-            console.error('Error adding automation:', error);
+            Logger.error('Error adding automation:', error);
             throw error;
         }
     }
@@ -339,7 +340,7 @@ export class SmartHomeManager {
                 await this.saveAutomations();
             }
         } catch (error) {
-            console.error('Error updating automation:', error);
+            Logger.error('Error updating automation:', error);
         }
     }
 
@@ -352,7 +353,7 @@ export class SmartHomeManager {
                 await this.saveAutomations();
             }
         } catch (error) {
-            console.error('Error toggling automation:', error);
+            Logger.error('Error toggling automation:', error);
         }
     }
 
@@ -384,7 +385,7 @@ export class SmartHomeManager {
 
             return commandId;
         } catch (error) {
-            console.error('Error adding voice command:', error);
+            Logger.error('Error adding voice command:', error);
             throw error;
         }
     }
@@ -415,7 +416,7 @@ export class SmartHomeManager {
 
             return "I didn't understand that command. Try saying 'turn on lights' or 'set temperature to 72'";
         } catch (error) {
-            console.error('Error executing voice command:', error);
+            Logger.error('Error executing voice command:', error);
             return "Sorry, I encountered an error processing your command.";
         }
     }
@@ -449,7 +450,7 @@ export class SmartHomeManager {
 
             await this.saveStatus();
         } catch (error) {
-            console.error('Error updating status:', error);
+            Logger.error('Error updating status:', error);
         }
     }
 
@@ -730,7 +731,7 @@ export class SmartHomeManager {
             const devicesObj = Object.fromEntries(this.devices);
             await AsyncStorage.setItem(this.STORAGE_KEYS.DEVICES, JSON.stringify(devicesObj));
         } catch (error) {
-            console.error('Error saving devices:', error);
+            Logger.error('Error saving devices:', error);
         }
     }
 
@@ -742,7 +743,7 @@ export class SmartHomeManager {
                 this.devices = new Map(Object.entries(devicesObj));
             }
         } catch (error) {
-            console.error('Error loading devices:', error);
+            Logger.error('Error loading devices:', error);
         }
     }
 
@@ -751,7 +752,7 @@ export class SmartHomeManager {
             const roomsObj = Object.fromEntries(this.rooms);
             await AsyncStorage.setItem(this.STORAGE_KEYS.ROOMS, JSON.stringify(roomsObj));
         } catch (error) {
-            console.error('Error saving rooms:', error);
+            Logger.error('Error saving rooms:', error);
         }
     }
 
@@ -763,7 +764,7 @@ export class SmartHomeManager {
                 this.rooms = new Map(Object.entries(roomsObj));
             }
         } catch (error) {
-            console.error('Error loading rooms:', error);
+            Logger.error('Error loading rooms:', error);
         }
     }
 
@@ -772,7 +773,7 @@ export class SmartHomeManager {
             const automationsObj = Object.fromEntries(this.automations);
             await AsyncStorage.setItem(this.STORAGE_KEYS.AUTOMATIONS, JSON.stringify(automationsObj));
         } catch (error) {
-            console.error('Error saving automations:', error);
+            Logger.error('Error saving automations:', error);
         }
     }
 
@@ -784,7 +785,7 @@ export class SmartHomeManager {
                 this.automations = new Map(Object.entries(automationsObj));
             }
         } catch (error) {
-            console.error('Error loading automations:', error);
+            Logger.error('Error loading automations:', error);
         }
     }
 
@@ -793,7 +794,7 @@ export class SmartHomeManager {
             const commandsObj = Object.fromEntries(this.voiceCommands);
             await AsyncStorage.setItem(this.STORAGE_KEYS.VOICE_COMMANDS, JSON.stringify(commandsObj));
         } catch (error) {
-            console.error('Error saving voice commands:', error);
+            Logger.error('Error saving voice commands:', error);
         }
     }
 
@@ -805,7 +806,7 @@ export class SmartHomeManager {
                 this.voiceCommands = new Map(Object.entries(commandsObj));
             }
         } catch (error) {
-            console.error('Error loading voice commands:', error);
+            Logger.error('Error loading voice commands:', error);
         }
     }
 
@@ -813,7 +814,7 @@ export class SmartHomeManager {
         try {
             await AsyncStorage.setItem(this.STORAGE_KEYS.STATUS, JSON.stringify(this.status));
         } catch (error) {
-            console.error('Error saving status:', error);
+            Logger.error('Error saving status:', error);
         }
     }
 
@@ -824,7 +825,7 @@ export class SmartHomeManager {
                 this.status = JSON.parse(data);
             }
         } catch (error) {
-            console.error('Error loading status:', error);
+            Logger.error('Error loading status:', error);
         }
     }
 

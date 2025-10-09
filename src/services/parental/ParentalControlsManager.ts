@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import Logger from '../Logger';
 
 // Types
 export interface ParentalControlSettings {
@@ -145,9 +146,9 @@ export class ParentalControlsManager {
             await this.loadViolations();
             await this.loadReports();
 
-            console.log('ParentalControlsManager initialized successfully');
+            Logger.debug('ParentalControlsManager initialized successfully');
         } catch (error) {
-            console.error('Error initializing ParentalControlsManager:', error);
+            Logger.error('Error initializing ParentalControlsManager:', error);
         }
     }
 
@@ -160,9 +161,9 @@ export class ParentalControlsManager {
             this.settings.set(childId, updatedSettings);
             await this.saveSettings();
 
-            console.log(`Parental settings updated for child ${childId}`);
+            Logger.debug(`Parental settings updated for child ${childId}`);
         } catch (error) {
-            console.error('Error setting parental controls:', error);
+            Logger.error('Error setting parental controls:', error);
         }
     }
 
@@ -235,7 +236,7 @@ export class ParentalControlsManager {
             await this.checkViolations(activity);
 
         } catch (error) {
-            console.error('Error logging activity:', error);
+            Logger.error('Error logging activity:', error);
         }
     }
 
@@ -306,7 +307,7 @@ export class ParentalControlsManager {
 
     private async sendViolationAlert(violation: ViolationReport): Promise<void> {
         // Simulate sending notification
-        console.log(`Violation Alert: ${violation.description} for child ${violation.childId}`);
+        Logger.debug(`Violation Alert: ${violation.description} for child ${violation.childId}`);
 
         // In real implementation, send push notification to parent devices
     }
@@ -519,7 +520,7 @@ export class ParentalControlsManager {
         };
 
         // Send emergency notification to parents
-        console.log('Emergency Alert:', emergencyAlert);
+        Logger.debug('Emergency Alert:', emergencyAlert);
 
         // In real implementation, send immediate push notification and SMS to emergency contacts
     }
@@ -535,7 +536,7 @@ export class ParentalControlsManager {
             const settingsObj = Object.fromEntries(this.settings);
             await AsyncStorage.setItem(this.STORAGE_KEYS.PARENTAL_SETTINGS, JSON.stringify(settingsObj));
         } catch (error) {
-            console.error('Error saving parental settings:', error);
+            Logger.error('Error saving parental settings:', error);
         }
     }
 
@@ -547,7 +548,7 @@ export class ParentalControlsManager {
                 this.settings = new Map(Object.entries(settingsObj));
             }
         } catch (error) {
-            console.error('Error loading parental settings:', error);
+            Logger.error('Error loading parental settings:', error);
         }
     }
 
@@ -555,7 +556,7 @@ export class ParentalControlsManager {
         try {
             await AsyncStorage.setItem(this.STORAGE_KEYS.ACTIVITY_LOGS, JSON.stringify(this.activityLogs));
         } catch (error) {
-            console.error('Error saving activity logs:', error);
+            Logger.error('Error saving activity logs:', error);
         }
     }
 
@@ -566,7 +567,7 @@ export class ParentalControlsManager {
                 this.activityLogs = JSON.parse(data);
             }
         } catch (error) {
-            console.error('Error loading activity logs:', error);
+            Logger.error('Error loading activity logs:', error);
         }
     }
 
@@ -574,7 +575,7 @@ export class ParentalControlsManager {
         try {
             await AsyncStorage.setItem(this.STORAGE_KEYS.VIOLATIONS, JSON.stringify(this.violations));
         } catch (error) {
-            console.error('Error saving violations:', error);
+            Logger.error('Error saving violations:', error);
         }
     }
 
@@ -585,7 +586,7 @@ export class ParentalControlsManager {
                 this.violations = JSON.parse(data);
             }
         } catch (error) {
-            console.error('Error loading violations:', error);
+            Logger.error('Error loading violations:', error);
         }
     }
 
@@ -593,7 +594,7 @@ export class ParentalControlsManager {
         try {
             await AsyncStorage.setItem(this.STORAGE_KEYS.REPORTS, JSON.stringify(this.reports));
         } catch (error) {
-            console.error('Error saving reports:', error);
+            Logger.error('Error saving reports:', error);
         }
     }
 
@@ -604,7 +605,7 @@ export class ParentalControlsManager {
                 this.reports = JSON.parse(data);
             }
         } catch (error) {
-            console.error('Error loading reports:', error);
+            Logger.error('Error loading reports:', error);
         }
     }
 
