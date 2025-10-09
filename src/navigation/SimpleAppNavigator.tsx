@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // i18n removed - using hardcoded English labels
 
 // Import screens
-import DashboardScreen from '../screens/DashboardScreen';
+import HomeScreen from '../screens/HomeScreen';
 import { FirebaseTest } from '../screens/FirebaseTest';
 // import TasksScreen from '../modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
@@ -88,9 +88,9 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // Stack Navigators for each tab
-const DashboardStack = () => (
+const HomeStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="DashboardMain" component={DashboardScreen} />
+    <Stack.Screen name="HomeMain" component={HomeScreen} />
     <Stack.Screen name="FirebaseTest" component={FirebaseTest as any} />
     <Stack.Screen name="FirebaseTestLive" component={FirebaseTestLive as any} />
     <Stack.Screen name="SyncTesting" component={SyncTestingScreen as any} />
@@ -204,7 +204,8 @@ const AppNavigator = () => {
   // Hardcoded English labels (i18n removed)
   const getTabLabel = (tabName: string) => {
     const labels = {
-      Dashboard: 'Dashboard',
+      Dashboard: 'Home',
+      Home: 'Home',
       Tasks: 'Tasks',
       Calendar: 'Calendar',
       Vision: 'Vision',
@@ -223,7 +224,7 @@ const AppNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
 
-          if (route.name === 'Dashboard') {
+          if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Tasks') {
             iconName = focused ? 'checkmark-circle' : 'checkmark-circle-outline';
@@ -261,9 +262,9 @@ const AppNavigator = () => {
       })}
     >
       <Tab.Screen
-        name="Dashboard"
-        component={DashboardStack}
-        options={{ tabBarLabel: getTabLabel('Dashboard') }}
+        name="Home"
+        component={HomeStack}
+        options={{ tabBarLabel: getTabLabel('Home') }}
       />
       <Tab.Screen
         name="Tasks"

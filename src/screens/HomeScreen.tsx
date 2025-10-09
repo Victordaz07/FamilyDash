@@ -17,11 +17,11 @@ import Logger from '../services/Logger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-interface DashboardScreenProps {
+interface HomeScreenProps {
     navigation: any;
 }
 
-const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     // Real data connections
     const { currentUser } = useProfileStore();
     const { tasks, addTask, updateTask } = useTasksStore();
@@ -33,7 +33,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
     // State management
     const [refreshing, setRefreshing] = useState(false);
     const [showDeveloperPanel, setShowDeveloperPanel] = useState(false);
-    const [lastRingTime, setLastRingTime] = useState(0);
     const [penaltyTime, setPenaltyTime] = useState(0);
     const [quickActions, setQuickActions] = useState([
         { id: 'add-task', title: 'Add Task', icon: 'add-circle', color: '#10B981' },
@@ -170,34 +169,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         );
     }, [currentUser]);
 
-    const handleRingAllDevices = useCallback(async () => {
-        Alert.alert(
-            'Ring All Devices',
-            'Ring all family devices?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Ring All',
-                    onPress: async () => {
-                        const { default: DeviceRingService } = await import('../services/DeviceRingService');
-                        const result = await DeviceRingService.ringAllDevices(
-                            currentUser?.uid || 'unknown',
-                            currentUser?.name || 'Family Member',
-                            currentUser?.familyId || 'default_family',
-                            30 // 30 seconds
-                        );
-
-                        if (result.success) {
-                            Alert.alert('✅ Ringing', 'All family devices are ringing');
-                            setLastRingTime(0);
-                        } else {
-                            Alert.alert('❌ Error', result.error || 'Failed to ring devices');
-                        }
-                    }
-                }
-            ]
-        );
-    }, [currentUser]);
 
     const handleVote = useCallback((activityId: string) => {
         Alert.alert('Vote', `Voting on activity ${activityId}...`);
@@ -239,7 +210,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                         <View style={styles.headerIcon}>
                             <Ionicons name="home" size={20} color="white" />
                         </View>
-                        <Text style={styles.headerTitle}>Family Dashboard</Text>
+                        <Text style={styles.headerTitle}>Home</Text>
                     </View>
                     <View style={styles.headerRight}>
                         <TouchableOpacity style={styles.notificationButton} onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}>
@@ -378,16 +349,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
                             <Ionicons name="phone-portrait" size={24} color="white" />
                         </View>
 
-                        <TouchableOpacity style={styles.ringAllButton} onPress={handleRingAllDevices}>
-                            <View style={styles.ringAllIcon}>
-                                <Ionicons name="call" size={20} color="white" />
-                            </View>
-                            <Text style={styles.ringAllText}>Ring All Devices</Text>
-                        </TouchableOpacity>
-
-                        <Text style={styles.lastRingText}>
-                            Last ring: {lastRingTime === 0 ? 'Just now' : `${lastRingTime} min ago`}
-                        </Text>
                     </LinearGradient>
                 </View>
 
@@ -837,33 +798,6 @@ const styles = StyleSheet.create({
         fontWeight: theme.typography.fontWeight.bold,
         color: 'white',
     },
-    ringAllButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        gap: 12,
-    },
-    ringAllIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    ringAllText: {
-        fontSize: 18,
-        fontWeight: theme.typography.fontWeight.bold,
-        color: 'white',
-    },
-    lastRingText: {
-        fontSize: 14,
-        color: 'rgba(255, 255, 255, 0.8)',
-        textAlign: 'center',
-    },
     tasksContainer: {
         gap: 12,
     },
@@ -1239,4 +1173,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DashboardScreen;
+export default HomeScreen;
