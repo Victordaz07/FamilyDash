@@ -43,6 +43,7 @@ export default function ShoppingListModal({
   const [showUnitPicker, setShowUnitPicker] = useState(false);
   const [historyModal, setHistoryModal] = useState(false);
   const [completeModal, setCompleteModal] = useState(false);
+  const [showTotalPrice, setShowTotalPrice] = useState(false);
 
   // Available unit options
   const unitOptions = [
@@ -451,7 +452,7 @@ export default function ShoppingListModal({
             <TextInput 
               value={price} 
               onChangeText={setPrice} 
-              placeholder="$" 
+              placeholder="Price/unit" 
               keyboardType="decimal-pad" 
               style={[styles.input, styles.smallInput]} 
               placeholderTextColor="#9ca3af"
@@ -496,12 +497,24 @@ export default function ShoppingListModal({
                       </Text>
                     </View>
                     {item.price && (
-                      <View style={styles.itemDetailItem}>
+                      <TouchableOpacity 
+                        style={styles.itemDetailItem}
+                        onPress={() => setShowTotalPrice(!showTotalPrice)}
+                      >
                         <Ionicons name="cash" size={14} color="#6b7280" />
                         <Text style={styles.itemDetailText}>
-                          {list?.currency} {(item.price * item.qty).toFixed(2)}
+                          {showTotalPrice 
+                            ? `${list?.currency} ${(item.price * item.qty).toFixed(2)} total`
+                            : `${list?.currency} ${item.price.toFixed(2)}/${item.unit || "u"}`
+                          }
                         </Text>
-                      </View>
+                        <Ionicons 
+                          name="swap-horizontal" 
+                          size={12} 
+                          color="#9ca3af" 
+                          style={{ marginLeft: 4 }}
+                        />
+                      </TouchableOpacity>
                     )}
                     {item.storeId && (
                       <View style={styles.itemDetailItem}>

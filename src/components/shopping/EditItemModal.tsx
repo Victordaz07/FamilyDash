@@ -159,11 +159,11 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
 
             {/* Price */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Price (optional)</Text>
+              <Text style={styles.label}>Price per unit (optional)</Text>
               <TextInput
                 value={price}
                 onChangeText={setPrice}
-                placeholder="0.00"
+                placeholder="Price per unit"
                 keyboardType="decimal-pad"
                 style={styles.input}
                 placeholderTextColor="#9ca3af"
