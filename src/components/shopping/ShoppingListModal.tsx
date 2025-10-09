@@ -140,17 +140,16 @@ export default function ShoppingListModal({
         <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <View style={styles.headerContent}>
-              <View style={styles.headerIcon}>
-                <Ionicons name="cart" size={16} color="#fff" />
-              </View>
+            <View style={styles.headerIcon}>
+              <Ionicons name="cart" size={14} color="#fff" />
+            </View>
               <View style={styles.headerText}>
                 <Text style={styles.title}>Lista de compras</Text>
-                <Text style={styles.subtitle}>Gestiona tus compras inteligentemente</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={16} color="#6b7280" />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={14} color="#6b7280" />
+          </TouchableOpacity>
           </View>
 
         {/* Stores row */}
@@ -417,17 +416,16 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#7c3aed",
-    paddingTop: 8,
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-    marginBottom: 12,
+    shadowOpacity: 0.03,
+    shadowRadius: 1,
+    elevation: 1,
+    marginBottom: 6,
   },
   headerContent: {
     flexDirection: "row",
@@ -435,9 +433,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
@@ -447,8 +445,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontWeight: "700",
-    fontSize: 16,
+    fontWeight: "600",
+    fontSize: 14,
     color: "#fff",
     marginBottom: 0,
   },
@@ -458,9 +456,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   closeButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
