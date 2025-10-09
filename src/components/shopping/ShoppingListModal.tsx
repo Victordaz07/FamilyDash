@@ -86,28 +86,46 @@ export default function ShoppingListModal({
       // Show loading feedback
       await Haptics.selectionAsync();
 
-      const newItem = {
+      const newItem: any = {
         name: text.trim(),
         qty: parseFloat(qty) || 1,
         unit: unit || "u",
-        price: price ? parseFloat(price) : undefined,
         status: "pending" as const,
-        storeId: filterStore !== "all" ? filterStore : undefined,
       };
+
+      // Only add price if it exists
+      if (price && !isNaN(parseFloat(price))) {
+        newItem.price = parseFloat(price);
+      }
+
+      // Only add storeId if a specific store is selected
+      if (filterStore !== "all") {
+        newItem.storeId = filterStore;
+      }
 
       await addItem(list.id!, newItem);
       
       // si proviene de escaneo con nombre "Producto <code>" también registra el producto
       const maybeCode = text.match(/^Producto\s+(\d[\d\- ]*)$/)?.[1];
-      if (maybeCode || price) {
-        await upsertProduct({
+      if (maybeCode || (price && !isNaN(parseFloat(price)))) {
+        const productData: any = {
           familyId,
-          barcode: maybeCode ?? "", // si no tienes code exacto, puedes omitir
+          barcode: maybeCode || "",
           name: text.replace(/^Producto\s+\d[\d\- ]*\s*/,""),
           defaultUnit: unit,
-          lastPrice: price ? parseFloat(price) : undefined,
-          lastStoreId: filterStore !== "all" ? filterStore : undefined
-        });
+        };
+
+        // Only add lastPrice if it exists and is valid
+        if (price && !isNaN(parseFloat(price))) {
+          productData.lastPrice = parseFloat(price);
+        }
+
+        // Only add lastStoreId if a specific store is selected
+        if (filterStore !== "all") {
+          productData.lastStoreId = filterStore;
+        }
+
+        await upsertProduct(productData);
       }
       
       // Refresh items list
