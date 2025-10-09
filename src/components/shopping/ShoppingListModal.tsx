@@ -35,6 +35,7 @@ export default function ShoppingListModal({
   const [budgetInput, setBudgetInput] = useState("");
   const [scanOpen, setScanOpen] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (!visible) return;
@@ -72,32 +73,65 @@ export default function ShoppingListModal({
   };
 
   const add = async () => {
-    if (!list || !text.trim()) return;
-    await addItem(list.id!, {
-      name: text.trim(),
-      qty: parseFloat(qty) || 1,
-      unit: unit || "u",
-      price: price ? parseFloat(price) : undefined,
-      status: "pending",
-      storeId: filterStore !== "all" ? filterStore : undefined,
-    } as any);
+    if (adding) return; // Prevent multiple clicks
     
-    // si proviene de escaneo con nombre "Producto <code>" también registra el producto
-    const maybeCode = text.match(/^Producto\s+(\d[\d\- ]*)$/)?.[1];
-    if (maybeCode || price) {
-      await upsertProduct({
-        familyId,
-        barcode: maybeCode ?? "", // si no tienes code exacto, puedes omitir
-        name: text.replace(/^Producto\s+\d[\d\- ]*\s*/,""),
-        defaultUnit: unit,
-        lastPrice: price ? parseFloat(price) : undefined,
-        lastStoreId: filterStore !== "all" ? filterStore : undefined
-      });
+    try {
+      if (!list || !text.trim()) {
+        // Show feedback for empty name
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return;
+      }
+
+      setAdding(true);
+      // Show loading feedback
+      await Haptics.selectionAsync();
+
+      const newItem = {
+        name: text.trim(),
+        qty: parseFloat(qty) || 1,
+        unit: unit || "u",
+        price: price ? parseFloat(price) : undefined,
+        status: "pending" as const,
+        storeId: filterStore !== "all" ? filterStore : undefined,
+      };
+
+      await addItem(list.id!, newItem);
+      
+      // si proviene de escaneo con nombre "Producto <code>" también registra el producto
+      const maybeCode = text.match(/^Producto\s+(\d[\d\- ]*)$/)?.[1];
+      if (maybeCode || price) {
+        await upsertProduct({
+          familyId,
+          barcode: maybeCode ?? "", // si no tienes code exacto, puedes omitir
+          name: text.replace(/^Producto\s+\d[\d\- ]*\s*/,""),
+          defaultUnit: unit,
+          lastPrice: price ? parseFloat(price) : undefined,
+          lastStoreId: filterStore !== "all" ? filterStore : undefined
+        });
+      }
+      
+      // Refresh items list
+      const it = await listItems(list.id!);
+      setItems(it as any);
+      
+      // Clear form fields
+      setText(""); 
+      setQty("1"); 
+      setUnit("u"); 
+      setPrice("");
+
+      // Show success feedback
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
+    } catch (error) {
+      console.error("Error adding item:", error);
+      // Show error feedback
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      // You could also show an alert here if needed
+      // Alert.alert("Error", "No se pudo agregar el producto. Inténtalo de nuevo.");
+    } finally {
+      setAdding(false);
     }
-    
-    const it = await listItems(list.id!);
-    setItems(it as any);
-    setText(""); setPrice("");
   };
 
   const toggle = async (item: ShoppingItem) => {
@@ -340,9 +374,13 @@ export default function ShoppingListModal({
             />
           </View>
           <View style={styles.addButtons}>
-            <TouchableOpacity onPress={add} style={styles.addBtn}>
-              <Ionicons name="add" size={20} color="#fff" />
-              <Text style={styles.addBtnTxt}>Agregar</Text>
+            <TouchableOpacity 
+              onPress={add} 
+              style={[styles.addBtn, adding && styles.addBtnDisabled]}
+              disabled={adding}
+            >
+              <Ionicons name={adding ? "hourglass-outline" : "add"} size={16} color="#fff" />
+              <Text style={styles.addBtnTxt}>{adding ? "Agregando..." : "Agregar"}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setScanOpen(true)} style={styles.scanBtn}>
               <Ionicons name="barcode-outline" size={20} color="#fff" />
@@ -711,6 +749,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     fontSize: 12,
+  },
+  addBtnDisabled: {
+    backgroundColor: "#9ca3af",
+    opacity: 0.7,
   },
   scanBtn: {
     flex: 1,
