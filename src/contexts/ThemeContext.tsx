@@ -15,6 +15,9 @@ export interface ColorTheme {
         surface: string;
         text: string;
         textSecondary: string;
+        textInverse: string;
+        textInverseSecondary: string;
+        inputBackground: string;
         border: string;
         accent: string;
         success: string;
@@ -29,6 +32,9 @@ export interface ColorTheme {
         surface: string;
         text: string;
         textSecondary: string;
+        textInverse: string;
+        textInverseSecondary: string;
+        inputBackground: string;
         border: string;
         accent: string;
         success: string;
@@ -84,6 +90,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#667eea',
             success: '#22c55e',
@@ -98,6 +107,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#8b5cf6',
             success: '#10b981',
@@ -117,6 +129,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#3b82f6',
             success: '#22c55e',
@@ -131,6 +146,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#60a5fa',
             success: '#10b981',
@@ -150,6 +168,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#22c55e',
             success: '#22c55e',
@@ -164,6 +185,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#10b981',
             success: '#10b981',
@@ -183,6 +207,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#f59e0b',
             success: '#22c55e',
@@ -197,6 +224,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#f59e0b',
             success: '#10b981',
@@ -216,6 +246,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#ec4899',
             success: '#22c55e',
@@ -230,6 +263,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#f472b6',
             success: '#10b981',
@@ -249,6 +285,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#ffffff',
             text: '#1e293b',
             textSecondary: '#64748b',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#f1f5f9',
             border: '#e2e8f0',
             accent: '#ef4444',
             success: '#22c55e',
@@ -263,6 +302,9 @@ export const colorThemes: ColorTheme[] = [
             surface: '#1e293b',
             text: '#f1f5f9',
             textSecondary: '#94a3b8',
+            textInverse: '#ffffff',
+            textInverseSecondary: '#e2e8f0',
+            inputBackground: '#1e293b',
             border: '#334155',
             accent: '#f87171',
             success: '#10b981',
