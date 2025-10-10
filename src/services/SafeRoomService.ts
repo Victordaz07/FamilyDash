@@ -16,7 +16,8 @@ export interface SafeRoomMessage {
     timestamp: number;
     createdAt: Date;
     updatedAt: Date;
-    duration?: number; // For voice messages
+    duration?: number; // For voice and video messages
+    videoUrl?: string; // For video messages
     isSystemMessage?: boolean;
     metadata?: {
         fileSize?: number;

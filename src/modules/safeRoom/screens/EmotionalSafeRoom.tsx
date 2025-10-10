@@ -7,13 +7,26 @@ import { useEmotionalStore, EmotionalMessage } from '../store/emotionalStore';
 import { mediaService } from '../services/mediaService';
 import { useFocusEffect } from '@react-navigation/native';
 import SafeRoomService, { SafeRoomMessage } from '../../../services/SafeRoomService';
-import { VoiceComposer, VoiceMessageCard, listenVoiceNotes, deleteVoiceNote, VoiceNote } from '../../voice';
+import { 
+  VoiceComposer, 
+  VoiceMessageCard, 
+  VoiceMessageCardEnhanced,
+  listenVoiceNotes, 
+  deleteVoiceNote, 
+  addVoiceNoteReaction,
+  removeVoiceNoteReaction,
+  VoiceNote 
+} from '../../voice';
+import { VideoPlayer, VideoNote } from '../../video';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '../../../config/firebase';
 
 const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
     const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
     const [messageText, setMessageText] = useState('');
     const [safeRoomMessages, setSafeRoomMessages] = useState<SafeRoomMessage[]>([]);
     const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);
+    const [videoNotes, setVideoNotes] = useState<VideoNote[]>([]);
     const [showVoiceComposer, setShowVoiceComposer] = useState(false);
     const { messages, addReply, addHeart, loadMessages } = useEmotionalStore();
 
@@ -49,12 +62,62 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
 
     // Load voice notes
     useEffect(() => {
+        // console.log('🎤 useEffect for voice notes listener triggered');
+        
         const familyId = 'default-family'; // You might want to get this from context or params
         const roomId = 'safe-room'; // You might want to get this from params
         
-        const unsubscribe = listenVoiceNotes(familyId, "safe", roomId, setVoiceNotes);
+        // console.log('🎤 Setting up voice notes listener with:', { familyId, context: "safe", roomId });
         
-        return () => unsubscribe();
+        try {
+            const unsubscribe = listenVoiceNotes(familyId, "safe", roomId, (notes) => {
+                // console.log('🎤 Voice notes received in callback:', notes);
+                setVoiceNotes(notes);
+            });
+            
+            // console.log('🎤 Voice notes listener set up successfully');
+            
+            return () => {
+                // console.log('🎤 Unsubscribing from voice notes listener');
+                unsubscribe();
+            };
+        } catch (error) {
+            console.error('🎤 Error setting up voice notes listener:', error);
+        }
+    }, []);
+
+    // Load video notes
+    useEffect(() => {
+        console.log('🎥 Setting up video notes listener');
+        
+        const familyId = "default-family";
+        const context = "safe";
+        const parentId = "emotional-entry";
+        
+        const q = query(
+            collection(db, "video_notes"),
+            where("familyId", "==", familyId),
+            where("context", "==", context),
+            where("parentId", "==", parentId),
+            orderBy("createdAt", "desc")
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const videos = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as VideoNote[];
+            
+            console.log('🎥 Video notes received:', videos.length, 'videos');
+            setVideoNotes(videos);
+        }, (error) => {
+            console.error('🎥 Error listening to video notes:', error);
+        });
+
+        return () => {
+            console.log('🎥 Cleaning up video notes listener');
+            unsubscribe();
+        };
     }, []);
 
     const handleBack = () => {
@@ -85,27 +148,47 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
 
     const handleDeleteVoiceNote = async (note: VoiceNote) => {
         Alert.alert(
-            'Delete Voice Note',
-            'Are you sure you want to delete this voice note?',
+            'Eliminar Nota de Voz',
+            '¿Estás seguro de que quieres eliminar esta nota de voz?',
             [
                 {
-                    text: 'Cancel',
+                    text: 'Cancelar',
                     style: 'cancel'
                 },
                 {
-                    text: 'Delete',
+                    text: 'Eliminar',
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             await deleteVoiceNote(note);
-                            Alert.alert('Success', 'Voice note deleted successfully');
+                            Alert.alert('Éxito', 'Nota de voz eliminada correctamente');
                         } catch (error) {
-                            Alert.alert('Error', 'Failed to delete voice note');
+                            Alert.alert('Error', 'No se pudo eliminar la nota de voz');
                         }
                     }
                 }
             ]
         );
+    };
+
+    const handleAddReaction = async (noteId: string, emoji: string) => {
+        try {
+            await addVoiceNoteReaction(noteId, {
+                userId: "current-user-id", // TODO: Get from auth context
+                userDisplayName: "Usuario Actual", // TODO: Get from auth context
+                emoji,
+            });
+        } catch (error) {
+            console.error('Error adding reaction:', error);
+        }
+    };
+
+    const handleRemoveReaction = async (noteId: string) => {
+        try {
+            await removeVoiceNoteReaction(noteId, "current-user-id"); // TODO: Get from auth context
+        } catch (error) {
+            console.error('Error removing reaction:', error);
+        }
     };
 
     const handleTextShare = () => {
@@ -199,12 +282,26 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                             {isEmotionalMode ? 'We\'re here for you' : 'Emotional Support Space'}
                         </Text>
                     </View>
-                    <TouchableOpacity
-                        style={styles.headerButton}
-                        onPress={() => navigation.navigate('NewEmotionalEntry')}
-                    >
-                        <Ionicons name="add" size={20} color="white" />
-                    </TouchableOpacity>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity
+                            style={styles.headerButton}
+                            onPress={() => setShowVoiceComposer(true)}
+                        >
+                            <Ionicons name="mic" size={20} color="white" />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.headerButton}
+                            onPress={() => navigation.navigate('TextMessage')}
+                        >
+                            <Ionicons name="chatbubble" size={20} color="white" />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.headerButton}
+                            onPress={() => navigation.navigate('NewEmotionalEntry')}
+                        >
+                            <Ionicons name="add" size={20} color="white" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </LinearGradient>
 
@@ -263,20 +360,89 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                 </View>
             </View>
 
+
             {/* Messages Section */}
             <View style={styles.messagesSection}>
                 <Card style={styles.messagesCard}>
+                    {/* Video Notes Section */}
+                    {videoNotes.length > 0 && (
+                        <View style={styles.videoMessagesSection}>
+                            <Text style={styles.sectionTitle}>Video Messages</Text>
+                            {videoNotes.map((video) => (
+                                <View key={video.id} style={styles.videoMessageCard}>
+                                    <View style={styles.videoMessageHeader}>
+                                        <Ionicons
+                                            name="videocam"
+                                            size={20}
+                                            color="#EC4899"
+                                        />
+                                        <Text style={styles.videoMessageSender}>
+                                            {video.userDisplayName || 'Family Member'}
+                                        </Text>
+                                        <Text style={styles.videoMessageTime}>
+                                            {video.createdAt?.toDate?.() ? 
+                                                new Date(video.createdAt.toDate()).toLocaleTimeString([], {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                }) : 
+                                                'Just now'
+                                            }
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={styles.deleteButton}
+                                            onPress={() => {
+                                                console.log('Delete video:', video.id);
+                                            }}
+                                        >
+                                            <Ionicons name="trash-outline" size={16} color="#9CA3AF" />
+                                        </TouchableOpacity>
+                                    </View>
+                                    
+                                    <View style={styles.videoMessageContent}>
+                                        <VideoPlayer
+                                            uri={video.url}
+                                            duration={video.durationMs ? video.durationMs / 1000 : 0}
+                                            showControls={true}
+                                            onDelete={() => {
+                                                console.log('Delete video from player:', video.id);
+                                            }}
+                                        />
+                                        {video.userRole && (
+                                            <Text style={styles.videoMessageRole}>
+                                                {video.userRole === 'parent' ? '👨‍👩‍👧‍👦 Parent' : '👶 Child'}
+                                            </Text>
+                                        )}
+                                    </View>
+                                    
+                                    {/* Reactions */}
+                                    {video.reactions && video.reactions.length > 0 && (
+                                        <View style={styles.reactionsContainer}>
+                                            {video.reactions.map((reaction, index) => (
+                                                <View key={index} style={styles.reactionItem}>
+                                                    <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
+                                                </View>
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+                            ))}
+                        </View>
+                    )}
+
                     {/* Voice Notes Section */}
                     {voiceNotes.length > 0 && (
                         <View style={styles.voiceNotesSection}>
                             <Text style={styles.sectionTitle}>Voice Messages</Text>
-                            {voiceNotes.map((note) => (
-                                <VoiceMessageCard
-                                    key={note.id}
-                                    note={note}
-                                    onDelete={() => handleDeleteVoiceNote(note)}
-                                />
-                            ))}
+                        {voiceNotes.map((note) => (
+                            <VoiceMessageCardEnhanced
+                                key={note.id}
+                                note={note}
+                                onDelete={() => handleDeleteVoiceNote(note)}
+                                currentUserId="current-user-id" // TODO: Get from auth context
+                                onAddReaction={handleAddReaction}
+                                onRemoveReaction={handleRemoveReaction}
+                            />
+                        ))}
                         </View>
                     )}
 
@@ -323,9 +489,39 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                                             </View>
                                         )}
                                     </View>
-                                    <Text style={styles.messageContent}>
-                                        {message.content}
-                                    </Text>
+                                    {/* Check message type and render appropriate component */}
+                                    {message.type === 'video' && message.videoUrl ? (
+                                        <View style={styles.videoMessageContainer}>
+                                            <VideoPlayer 
+                                                uri={message.videoUrl}
+                                                duration={message.duration || 0}
+                                                showControls={true}
+                                                onDelete={() => handleDeleteMessage(message.id)}
+                                            />
+                                            <Text style={styles.videoMessageText}>{message.content}</Text>
+                                        </View>
+                                    ) : message.type === 'voice' || message.content?.includes('.m4a') || message.content?.includes('file://') ? (
+                                        <View style={styles.audioMessageContainer}>
+                                            <VoiceMessageCard
+                                                note={{
+                                                    id: message.id,
+                                                    familyId: 'default-family',
+                                                    context: 'safe' as const,
+                                                    parentId: 'safe-room',
+                                                    userId: message.sender || 'unknown',
+                                                    url: message.content,
+                                                    storagePath: '',
+                                                    durationMs: 0,
+                                                    createdAt: message.timestamp
+                                                }}
+                                                onDelete={() => handleDeleteMessage(message.id)}
+                                            />
+                                        </View>
+                                    ) : (
+                                        <Text style={styles.messageContent}>
+                                            {message.content}
+                                        </Text>
+                                    )}
                                 </View>
                             ))}
                         </View>
@@ -389,6 +585,15 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
             <View style={styles.bottomSpacing} />
         </ScrollView>
 
+        {/* Voice Notes Debug - Commented out for production */}
+        {/* <VoiceNotesDebug 
+          voiceNotes={voiceNotes}
+          familyId="default-family"
+          context="safe"
+          parentId="safe-room"
+        />
+
+
         {/* Voice Composer */}
         {showVoiceComposer && (
             <View style={styles.composerOverlay}>
@@ -397,6 +602,8 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                     context="safe"
                     parentId="safe-room"
                     userId="current-user"
+                    userDisplayName="Usuario Actual"
+                    userRole="parent"
                     onSaved={handleVoiceNoteSaved}
                     onCancel={() => setShowVoiceComposer(false)}
                 />
@@ -456,6 +663,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+    },
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
     },
     headerButton: {
         width: 40,
@@ -882,6 +1094,70 @@ const styles = StyleSheet.create({
         backgroundColor: '#F0F9FF',
         borderLeftColor: '#0EA5E9',
     },
+    // Video Notes Styles
+    videoMessagesSection: {
+        marginBottom: 16,
+    },
+    videoMessageCard: {
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    videoMessageHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    videoMessageSender: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginLeft: 8,
+        flex: 1,
+    },
+    videoMessageTime: {
+        fontSize: 12,
+        color: '#9CA3AF',
+        marginLeft: 8,
+    },
+    videoMessageContent: {
+        marginBottom: 8,
+    },
+    videoMessageRole: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginTop: 8,
+        fontStyle: 'italic',
+    },
+    deleteButton: {
+        padding: 4,
+    },
+    reactionsContainer: {
+        flexDirection: 'row',
+        marginTop: 8,
+        flexWrap: 'wrap',
+    },
+    reactionItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        marginRight: 8,
+        marginBottom: 4,
+    },
+    reactionCount: {
+        fontSize: 12,
+        color: '#6B7280',
+        fontWeight: '500',
+    },
     // Voice Notes Styles
     voiceNotesSection: {
         marginBottom: 16,
@@ -903,6 +1179,18 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 16,
+    },
+    audioMessageContainer: {
+        marginTop: 8,
+    },
+    videoMessageContainer: {
+        marginTop: 8,
+    },
+    videoMessageText: {
+        fontSize: 14,
+        color: '#6b7280',
+        marginTop: 8,
+        fontStyle: 'italic',
     },
 });
 

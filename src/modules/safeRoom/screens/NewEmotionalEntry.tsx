@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Card } from '../../../components/ui/WorkingComponents';
 import { useEmotionalStore } from '../store/emotionalStore';
 import { mediaService } from '../services/mediaService';
+import { VideoPlayer, saveVideoNote, VideoNote } from '../../video';
+import WorkingVideoRecorder from '../../video/WorkingVideoRecorder';
 
 interface Emotion {
     id: string;
@@ -21,6 +23,9 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [selectedType, setSelectedType] = useState<'text' | 'audio' | 'video'>('text');
     const [isRecording, setIsRecording] = useState(false);
     const [recordingDuration, setRecordingDuration] = useState(0);
+    const [showVideoRecorder, setShowVideoRecorder] = useState(false);
+    const [recordedVideo, setRecordedVideo] = useState<VideoNote | null>(null);
+    const scrollViewRef = useRef<ScrollView>(null);
     const { addMessage } = useEmotionalStore();
 
     const emotions: Emotion[] = [
@@ -44,6 +49,58 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
 
     const handleTypeSelect = (type: 'text' | 'audio' | 'video') => {
         setSelectedType(type);
+        if (type === 'video') {
+            setShowVideoRecorder(true);
+        }
+    };
+
+    const handleVideoRecorded = async (uri: string, duration: number) => {
+        try {
+            const videoNote = await saveVideoNote({
+                familyId: "default-family",
+                context: "safe",
+                parentId: "emotional-entry",
+                userId: "current-user",
+                userDisplayName: "Usuario Actual",
+                userRole: "parent",
+                fileUri: uri,
+                durationMs: duration * 1000
+            });
+
+            setRecordedVideo(videoNote);
+            setShowVideoRecorder(false);
+            
+            // Add to emotional messages store
+            if (selectedEmotion) {
+                addMessage({
+                    id: videoNote.id || Date.now().toString(),
+                    type: 'video',
+                    content: `Video grabado: ${duration}s`,
+                    emotion: selectedEmotion.name,
+                    timestamp: new Date(),
+                    videoUrl: videoNote.url,
+                    duration: duration
+                });
+            }
+            
+            Alert.alert(
+                'Video Guardado',
+                'Tu mensaje de video se ha guardado correctamente.',
+                [{ text: 'OK', onPress: () => {
+                    // Scroll to bottom after alert is dismissed
+                    setTimeout(() => {
+                        scrollViewRef.current?.scrollToEnd({ animated: true });
+                    }, 100);
+                }}]
+            );
+        } catch (error) {
+            console.error('Error saving video:', error);
+            Alert.alert('Error', 'No se pudo guardar el video');
+        }
+    };
+
+    const handleVideoCancel = () => {
+        setShowVideoRecorder(false);
     };
 
     const handleSend = async () => {
@@ -223,7 +280,8 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+        <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
             {/* Header */}
             <LinearGradient
                 colors={['#EC4899', '#DB2777']}
@@ -404,17 +462,32 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
                             )}
                         </View>
                     ) : (
-                        <View style={styles.recordingPlaceholder}>
-                            <Ionicons name="videocam" size={48} color="#EC4899" />
-                            <Text style={styles.recordingText}>
-                                Video recording functionality coming soon
-                            </Text>
-                            <TouchableOpacity
-                                style={styles.recordingButton}
-                                onPress={() => Alert.alert('Coming Soon', 'Video recording will be available soon')}
-                            >
-                                <Text style={styles.recordingButtonText}>Start Video</Text>
-                            </TouchableOpacity>
+                        <View style={styles.recordingContainer}>
+                            {recordedVideo ? (
+                                <View style={styles.videoPreview}>
+                                    <VideoPlayer 
+                                        uri={recordedVideo.url}
+                                        duration={recordedVideo.durationMs / 1000}
+                                        onDelete={() => setRecordedVideo(null)}
+                                    />
+                                    <Text style={styles.videoInfo}>
+                                        Video grabado: {Math.round(recordedVideo.durationMs / 1000)}s
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View style={styles.recordingPlaceholder}>
+                                    <Ionicons name="videocam" size={48} color="#EC4899" />
+                                    <Text style={styles.recordingText}>
+                                        Graba un mensaje de video
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.recordingButton}
+                                        onPress={() => setShowVideoRecorder(true)}
+                                    >
+                                        <Text style={styles.recordingButtonText}>Iniciar Video</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     )}
                 </View>
@@ -443,6 +516,35 @@ const NewEmotionalEntry: React.FC<{ navigation: any }> = ({ navigation }) => {
             {/* Bottom spacing */}
             <View style={styles.bottomSpacing} />
         </ScrollView>
+
+        {/* Video Recorder Modal */}
+        {showVideoRecorder && (
+            <WorkingVideoRecorder
+                onVideoRecorded={handleVideoRecorded}
+                onCancel={handleVideoCancel}
+                maxDuration={60}
+            />
+        )}
+
+        {/* Floating Share Button when video is recorded */}
+        {recordedVideo && (
+            <View style={styles.floatingShareButton}>
+                <TouchableOpacity
+                    style={styles.shareButton}
+                    onPress={handleSend}
+                    disabled={!selectedEmotion}
+                >
+                    <LinearGradient
+                        colors={selectedEmotion ? selectedEmotion.gradient as any : ['#9CA3AF', '#6B7280']}
+                        style={styles.shareButtonGradient}
+                    >
+                        <Ionicons name="heart" size={20} color="white" />
+                        <Text style={styles.shareButtonText}>Share with Family</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </View>
+        )}
+        </View>
     );
 };
 
@@ -734,6 +836,47 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 20,
+    },
+    recordingContainer: {
+        padding: 20,
+    },
+    videoPreview: {
+        alignItems: 'center',
+    },
+    videoInfo: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    floatingShareButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        right: 20,
+        zIndex: 999,
+    },
+    shareButton: {
+        borderRadius: 12,
+        overflow: 'hidden',
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+    },
+    shareButtonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+    },
+    shareButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 8,
     },
 });
 

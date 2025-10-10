@@ -1,31 +1,30 @@
+/**
+ * VoiceComposer with direct file upload to Firebase Storage
+ * Alternative implementation that avoids ArrayBuffer/Blob conversion issues
+ */
+
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { Audio } from "expo-av";
-// import * as FileSystem from "expo-file-system/legacy"; // No longer needed
 import { Ionicons } from "@expo/vector-icons";
 import { mmss } from "./useAudioPlayer";
 import { saveVoiceNote } from "../../services/voice.service";
-// import { useAudioPermissions } from "../../components/audio/AudioPermissionHandler";
 
 interface VoiceComposerProps {
   familyId: string;
   context: "task" | "safe";
   parentId: string;
   userId: string;
-  userDisplayName?: string;
-  userRole?: string;
   onSaved?: () => void;
   onCancel?: () => void;
 }
 
 export default function VoiceComposer({
-  familyId, 
-  context, 
-  parentId, 
+  familyId,
+  context,
+  parentId,
   userId,
-  userDisplayName,
-  userRole,
-  onSaved, 
+  onSaved,
   onCancel,
 }: VoiceComposerProps) {
   const recRef = useRef<Audio.Recording | null>(null);
@@ -33,9 +32,6 @@ export default function VoiceComposer({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Use audio permissions hook
-  // const { hasPermission, requestPermissions } = useAudioPermissions();
 
   useEffect(() => {
     const setupAudio = async () => {
@@ -57,7 +53,7 @@ export default function VoiceComposer({
     }, 200);
   };
 
-  const stopTimer = () => { 
+  const stopTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
@@ -69,7 +65,7 @@ export default function VoiceComposer({
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
-          'Permission Required', 
+          'Permission Required',
           'Microphone permission is required to record voice notes. Please enable it in your device settings.'
         );
         return;
@@ -77,11 +73,9 @@ export default function VoiceComposer({
 
       // Set audio mode
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true, 
+        allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
-        // interruptionModeIOS: Audio.InterruptionModeIOS.DoNotMix,
-        // interruptionModeAndroid: Audio.InterruptionModeAndroid.DoNotMix,
         shouldDuckAndroid: true,
       });
 
@@ -90,13 +84,13 @@ export default function VoiceComposer({
       await rec.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
       await rec.startAsync();
       recRef.current = rec;
-      setIsRecording(true); 
-      setDuration(0); 
+      setIsRecording(true);
+      setDuration(0);
       startTimer();
     } catch (error) {
       console.error('Error starting recording:', error);
       Alert.alert(
-        'Recording Error', 
+        'Recording Error',
         `Failed to start recording: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
@@ -113,7 +107,8 @@ export default function VoiceComposer({
       
       const uri = recRef.current.getURI()!;
       
-      console.log('🎤 Saving voice note with params:', { 
+      // Direct upload without conversion - let Firebase handle the file
+      await saveVoiceNote({ 
         familyId, 
         context, 
         parentId, 
@@ -122,33 +117,17 @@ export default function VoiceComposer({
         durationMs: duration 
       });
       
-      const result = await saveVoiceNote({ 
-        familyId, 
-        context, 
-        parentId, 
-        userId,
-        userDisplayName,
-        userRole,
-        fileUri: uri, 
-        durationMs: duration 
-      });
-      
-      // console.log('🎤 Voice note saved successfully:', result);
-      Alert.alert(
-        'Nota Guardada',
-        'Tu mensaje de voz se ha guardado correctamente en el SafeRoom.\n\nNota: En Expo Go, las grabaciones se guardan temporalmente. Para almacenamiento permanente, instala la app desde el build APK.',
-        [{ text: 'OK', onPress: () => onSaved?.() }]
-      );
+      onSaved?.();
     } catch (e) {
       console.error('Error saving voice note:', e);
       Alert.alert(
-        'Save Error', 
+        'Save Error',
         `Failed to save voice note: ${e instanceof Error ? e.message : 'Unknown error'}`
       );
     } finally {
       setIsLoading(false);
-      try { 
-        // await recRef.current?.unloadAsync(); 
+      try {
+        // await recRef.current?.unloadAsync();
       } catch {}
       recRef.current = null;
     }
@@ -160,98 +139,42 @@ export default function VoiceComposer({
 
       <View style={styles.controls}>
         {!isRecording ? (
-          <TouchableOpacity 
-            onPress={start} 
-            style={[styles.btn, styles.rec]}
-            disabled={isLoading}
-          >
+          <TouchableOpacity onPress={start} style={[styles.btn, styles.rec]}>
             <Ionicons name="mic" size={18} color="#fff" />
             <Text style={styles.btnTxt}>Record</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity 
-            onPress={stop} 
-            style={[styles.btn, styles.stop]}
-            disabled={isLoading}
-          >
+          <TouchableOpacity onPress={stop} style={[styles.btn, styles.stop]}>
             <Ionicons name="stop" size={18} color="#fff" />
             <Text style={styles.btnTxt}>Stop & Save</Text>
           </TouchableOpacity>
         )}
-        
         <Text style={styles.timer}>{mmss(duration)}</Text>
-        
-        <TouchableOpacity 
-          onPress={onCancel} 
-          style={[styles.btn, styles.ghost]}
-          disabled={isLoading}
-        >
+        <TouchableOpacity onPress={onCancel} style={[styles.btn, styles.ghost]}>
           <Text style={styles.ghostTxt}>Cancel</Text>
         </TouchableOpacity>
       </View>
-      
+
       {isLoading && (
-        <Text style={styles.loadingText}>Saving voice note...</Text>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Saving...</Text>
+        </View>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { 
-    backgroundColor: "#fff", 
-    borderRadius: 14, 
-    padding: 12, 
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  title: { 
-    fontWeight: "800", 
-    color: "#111827", 
-    marginBottom: 6 
-  },
-  controls: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    gap: 10 
-  },
-  btn: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    gap: 6, 
-    paddingHorizontal: 12, 
-    paddingVertical: 10, 
-    borderRadius: 12 
-  },
-  rec: { 
-    backgroundColor: "#7c3aed" 
-  }, 
-  stop: { 
-    backgroundColor: "#16a34a" 
-  },
-  btnTxt: { 
-    color: "#fff", 
-    fontWeight: "800" 
-  },
-  ghost: { 
-    backgroundColor: "#eef2ff" 
-  }, 
-  ghostTxt: { 
-    color: "#111827", 
-    fontWeight: "800" 
-  },
-  timer: { 
-    marginLeft: "auto", 
-    fontWeight: "800", 
-    color: "#111827" 
-  },
-  loadingText: {
-    color: "#6b7280",
-    textAlign: "center",
-    marginTop: 8,
-    fontWeight: "600"
-  },
+  wrap: { backgroundColor: "#fff", borderRadius: 14, padding: 12, elevation: 2 },
+  title: { fontWeight: "800", color: "#111827", marginBottom: 6 },
+  controls: { flexDirection: "row", alignItems: "center", gap: 10 },
+  btn: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12 },
+  rec: { backgroundColor: "#7c3aed" }, 
+  stop: { backgroundColor: "#16a34a" },
+  btnTxt: { color: "#fff", fontWeight: "800" },
+  ghost: { backgroundColor: "#eef2ff" }, 
+  ghostTxt: { color: "#111827", fontWeight: "800" },
+  timer: { marginLeft: "auto", fontWeight: "800", color: "#111827" },
+  loadingContainer: { marginTop: 8, alignItems: 'center' },
+  loadingText: { color: '#666', fontSize: 12 },
 });

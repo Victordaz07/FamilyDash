@@ -33,6 +33,8 @@ export default function VoiceMessageCard({
     return Math.min(1, positionMs / durationMs);
   }, [positionMs, durationMs]);
 
+  // console.log('🎵 VoiceMessageCard state:', { isLoaded, isPlaying, durationMs, positionMs, error });
+
   return (
     <View style={styles.card}>
       <View style={styles.row}>

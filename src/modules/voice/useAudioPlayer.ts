@@ -18,48 +18,60 @@ export function useAudioPlayer(uri?: string) {
     positionMs: 0,
   });
 
+
   // carga
   useEffect(() => {
     let mounted = true;
 
+
     async function load() {
-      if (!uri) return;
+      if (!uri) {
+        setState(p => ({ ...p, isLoaded: false, isPlaying: false, error: "No audio URI" }));
+        return;
+      }
+      
       
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: false,
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-      });
-
-      const sound = new Audio.Sound();
-      soundRef.current = sound;
-
-      sound.setOnPlaybackStatusUpdate((s: AVPlaybackStatus) => {
-        if (!mounted) return;
-        if (!s.isLoaded) {
-          setState((p) => ({ 
-            ...p, 
-            isLoaded: false, 
-            isPlaying: false, 
-            error: (s as any).error 
-          }));
-          return;
-        }
-        setState({
-          isLoaded: true,
-          isPlaying: s.isPlaying,
-          durationMs: s.durationMillis ?? 0,
-          positionMs: s.positionMillis ?? 0,
-          error: undefined,
-        });
       });
 
       try {
-        await sound.loadAsync({ uri }, { progressUpdateIntervalMillis: 250 });
+        
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          { uri },
+          {
+            progressUpdateIntervalMillis: 250,
+            shouldPlay: false,
+          },
+          (s: AVPlaybackStatus) => {
+            if (!mounted) return;
+            
+            if (!s.isLoaded) {
+              setState((p) => ({ 
+                ...p, 
+                isLoaded: false, 
+                isPlaying: false, 
+                error: (s as any).error 
+              }));
+              return;
+            }
+            
+            setState({
+              isLoaded: true,
+              isPlaying: s.isPlaying || false,
+              durationMs: s.durationMillis ?? 0,
+              positionMs: s.positionMillis ?? 0,
+              error: undefined,
+            });
+          }
+        );
+        
+        soundRef.current = newSound;
       } catch (e: any) {
+        console.error('🎵 Load error:', e);
         setState((p) => ({ ...p, error: e?.message ?? "Load error" }));
       }
     }
@@ -70,16 +82,44 @@ export function useAudioPlayer(uri?: string) {
       mounted = false;
       (async () => {
         try { 
-          await soundRef.current?.unloadAsync(); 
+          if (soundRef.current) {
+            await soundRef.current.unloadAsync();
+          }
         } catch {}
         soundRef.current = null;
       })();
     };
   }, [uri]);
 
-  const play = async () => state.isLoaded && (await soundRef.current?.playAsync());
-  const pause = async () => state.isLoaded && (await soundRef.current?.pauseAsync());
-  const seek = async (ms: number) => state.isLoaded && (await soundRef.current?.setPositionAsync(ms));
+  const play = async () => {
+    if (state.isLoaded && soundRef.current) {
+      try {
+        await soundRef.current.playAsync();
+      } catch (error) {
+        console.error('🎵 Play error:', error);
+      }
+    }
+  };
+  
+  const pause = async () => {
+    if (state.isLoaded && soundRef.current) {
+      try {
+        await soundRef.current.pauseAsync();
+      } catch (error) {
+        console.error('🎵 Pause error:', error);
+      }
+    }
+  };
+  
+  const seek = async (ms: number) => {
+    if (state.isLoaded && soundRef.current) {
+      try {
+        await soundRef.current.setPositionAsync(ms);
+      } catch (error) {
+        console.error('🎵 Seek error:', error);
+      }
+    }
+  };
 
   return { ...state, play, pause, seek };
 }

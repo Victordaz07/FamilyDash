@@ -2,7 +2,7 @@
 
 A comprehensive family management app built with **React Native + Expo** and **TypeScript**. FamilyDash provides a complete solution for family organization, communication, and growth through modern technology.
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/Victordaz07/FamilyDash)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/Victordaz07/FamilyDash)
 [![Build Status](https://img.shields.io/badge/build-passing-green.svg)](https://github.com/Victordaz07/FamilyDash)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue.svg)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.81.4-61DAFB.svg)](https://reactnative.dev/)
@@ -27,7 +27,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 
 ---
 
-## 🚀 **Latest Updates (v1.3.0)**
+## 🚀 **Latest Updates (v1.4.0)**
 
 ### 🎥 **Advanced Video System**
 - **Robust video player** with `expo-video` integration
@@ -37,12 +37,15 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Format validation** and retry mechanisms
 - **Fullscreen video modal** with controls
 
-### 🎵 **Audio Notes System**
-- **Voice recording** with `expo-av`
-- **Audio playback** with progress controls
+### 🎵 **Complete Audio & Video System**
+- **Voice recording** with `expo-av` (HIGH_QUALITY .m4a format)
+- **Audio playback** with progress controls and seek functionality
+- **Video recording** with `expo-camera` (front/back camera support)
+- **Video playback** with `expo-video` integration
 - **Context-aware storage** (Tasks vs Safe Room)
-- **Firebase integration** for audio files
-- **Real-time audio visualization**
+- **Firebase integration** for both audio and video files
+- **Real-time audio visualization** and video thumbnails
+- **Offline functionality** with local storage
 
 ### 🔄 **Shared Quick Actions**
 - **Unified component** for Tasks and Safe Room

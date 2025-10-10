@@ -1,42 +1,66 @@
-# Firestore Index Instructions for Family Schedules
+# Firestore Indexes Required for FamilyDash
 
-## Required Composite Index
+## Voice Notes Indexes
 
-To fix the "Failed to load schedules" error, you need to create a composite index in Firestore Console.
+The voice_notes collection requires the following composite indexes for the `listenVoiceNotes` query:
 
-### Steps:
+### Required Index: voice_notes
 
-1. **Go to Firebase Console**: https://console.firebase.google.com/
-2. **Select your project**: `family-dash-15944`
-3. **Navigate to Firestore Database**
-4. **Go to Indexes tab**
-5. **Click "Create Index"**
-
-### Index Configuration:
-
-**Collection ID**: `family_schedules`
-
-**Fields to index**:
-
-1. `familyId` - Ascending
-2. `timeISO` - Ascending
-
-### Alternative: Use the Direct Link
-
-The error message provides a direct link to create the index:
-
-```
-https://console.firebase.google.com/v1/r/project/family-dash-15944/firestore/indexes?create_composite=Clpwcm9qZWN0cy9mYW1pbHktZGFzaC0xNTk0NC9kYXRhYmZzZXMvKGR1ZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvZmFtaWx5X3NjaGVkdWxlcy9pbmRleGVzL18QAROMCghmYW1pbHlJZBABGgsKB3RpbWVJU08QAROMCghfX25hbWWfXxAB
+```javascript
+// Collection: voice_notes
+// Fields:
+// - familyId (Ascending)
+// - context (Ascending)
+// - parentId (Ascending)
+// - createdAt (Descending)
 ```
 
-### Fallback Solution
+### How to Create the Index:
 
-If you can't create the index immediately, the code now includes a fallback that:
+1. **Option 1: Use the Firebase Console Link**
 
-1. Uses a simple query without `orderBy`
-2. Sorts the results in memory
-3. Works without requiring the composite index
+   - Click on the URL provided in the error message:
+     `https://console.firebase.google.com/v1/r/project/family-dash-15944/firestore/indexes?create_compos...`
+   - This will automatically create the required index
 
-### After Creating the Index
+2. **Option 2: Manual Creation in Firebase Console**
 
-Once the index is created (it may take a few minutes), the app will automatically use the more efficient indexed query instead of the fallback.
+   - Go to [Firebase Console](https://console.firebase.google.com/project/family-dash-15944/firestore/indexes)
+   - Click "Create Index"
+   - Select collection: `voice_notes`
+   - Add fields:
+     - `familyId` (Ascending)
+     - `context` (Ascending)
+     - `parentId` (Ascending)
+     - `createdAt` (Descending)
+   - Click "Create"
+
+3. **Option 3: Firebase CLI (if you have it configured)**
+   ```bash
+   firebase deploy --only firestore:indexes
+   ```
+
+### Additional Indexes for FamilyDash+ (Future)
+
+```javascript
+// Emergency logs
+emergency_logs: [familyId, createdAt];
+emergency_logs: [familyId, fromUid, createdAt];
+
+// Calls
+calls: [familyId, status, createdAt];
+calls: [familyId, fromUid, createdAt];
+
+// Locations
+locations: [familyId, lastUpdated];
+location_history: [userId, timestamp];
+
+// Analytics
+analytics: [familyId, event, timestamp];
+```
+
+## Priority
+
+**URGENT**: Create the voice_notes index immediately to fix the SafeRoom audio issue.
+
+The other indexes can be created when implementing FamilyDash+ features.
