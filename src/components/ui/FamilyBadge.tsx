@@ -14,35 +14,35 @@ const badgeConfig = {
     newcomer: {
         label: 'Newcomer',
         icon: 'leaf' as keyof typeof Ionicons.glyphMap,
-        gradient: ['#94a3b8', '#64748b'],
+        gradient: ['#94a3b8', '#64748b'] as const,
         emoji: '🌱',
         description: 'Getting started'
     },
     active: {
         label: 'Active',
         icon: 'flash' as keyof typeof Ionicons.glyphMap,
-        gradient: ['#3b82f6', '#1d4ed8'],
+        gradient: ['#3b82f6', '#1d4ed8'] as const,
         emoji: '⚡',
         description: 'Making progress'
     },
     leader: {
         label: 'Family Leader',
         icon: 'crown' as keyof typeof Ionicons.glyphMap,
-        gradient: ['#f59e0b', '#d97706'],
+        gradient: ['#f59e0b', '#d97706'] as const,
         emoji: '👑',
         description: 'Leading the family'
     },
     master: {
         label: 'Cool Master',
         icon: 'star' as keyof typeof Ionicons.glyphMap,
-        gradient: ['#8b5cf6', '#7c3aed'],
+        gradient: ['#8b5cf6', '#7c3aed'] as const,
         emoji: '⭐',
         description: 'Family expert'
     },
     guardian: {
         label: 'Safe Guardian',
         icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap,
-        gradient: ['#10b981', '#059669'],
+        gradient: ['#10b981', '#059669'] as const,
         emoji: '🛡️',
         description: 'Protecting family'
     }

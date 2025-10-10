@@ -117,7 +117,7 @@ export default function VideoInstructionsScreen() {
         >
             {/* Header */}
             <LinearGradient
-                colors={gradient}
+                colors={gradient as readonly [string, string]}
                 style={styles.header}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -325,7 +325,7 @@ export default function VideoInstructionsScreen() {
                     disabled={loading || !title.trim() || !videoUri}
                 >
                     <LinearGradient
-                        colors={gradient}
+                        colors={gradient as readonly [string, string]}
                         style={[
                             styles.createButtonGradient,
                             (!title.trim() || !videoUri || loading) && styles.createButtonDisabled

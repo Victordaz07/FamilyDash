@@ -19,7 +19,7 @@ export const FamilyProgressBar: React.FC<FamilyProgressBarProps> = ({
     subtitle,
     showIcon = true,
     icon = 'people',
-    gradientColors = ['#667eea', '#764ba2'],
+    gradientColors = ['#667eea', '#764ba2'] as const,
     animated = true
 }) => {
     const clampedProgress = Math.max(0, Math.min(100, progress));

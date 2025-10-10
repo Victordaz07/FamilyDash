@@ -271,7 +271,7 @@ export default function AddRewardScreen() {
                     disabled={loading || !name.trim() || Number(points) <= 0}
                 >
                     <LinearGradient
-                        colors={gradient}
+                        colors={gradient as readonly [string, string]}
                         style={[
                             styles.createButtonGradient,
                             (!name.trim() || Number(points) <= 0 || loading) && styles.createButtonDisabled

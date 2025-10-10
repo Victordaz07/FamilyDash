@@ -42,7 +42,7 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   icon,
   iconColor = '#8B5CF6',
   gradient = false,
-  colors = ['#8B5CF6', '#A855F7'],
+  colors = ['#8B5CF6', '#A855F7'] as const,
   onPress,
   style,
   titleStyle,

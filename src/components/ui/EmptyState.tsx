@@ -21,7 +21,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     motivationalMessage,
     buttonText,
     onButtonPress,
-    gradientColors = ['#667eea', '#764ba2'],
+    gradientColors = ['#667eea', '#764ba2'] as const,
     iconColor = '#667eea'
 }) => {
     return (

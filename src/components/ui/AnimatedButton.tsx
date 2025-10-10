@@ -196,7 +196,7 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     const gradientColors = colors || [
       variantStyles.backgroundColor,
       variantStyles.backgroundColor + 'DD',
-    ];
+    ] as const;
 
     return (
       <Animated.View style={animatedStyle}>

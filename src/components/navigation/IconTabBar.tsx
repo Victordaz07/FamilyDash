@@ -27,7 +27,7 @@ export const IconTabBar: React.FC<IconTabBarProps> = ({
         <View style={styles.container}>
             {tabs.map((tab) => {
                 const isActive = activeTab === tab.key;
-                const gradientColors = tab.gradientColors || ['#667eea', '#764ba2'];
+                const gradientColors = tab.gradientColors || ['#667eea', '#764ba2'] as const;
 
                 return (
                     <TouchableOpacity
