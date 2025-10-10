@@ -5,9 +5,7 @@
 
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { AudioNoteModal } from "../audio/AudioNoteModal";
-import { uploadAudioAndCreateDoc } from "../../services/storage/audioStorage";
-import { EntryCtx } from "../../types/entries";
+import { VoiceComposer } from "../../modules/voice";
 
 // Props with discriminated union to ensure context separation
 type Props =
@@ -32,41 +30,10 @@ type Props =
 export const SharedQuickActions: React.FC<Props> = (props) => {
   const [openVoice, setOpenVoice] = useState(false);
 
-  // Create context object based on mode - TypeScript ensures correct fields
-  const getCtx = (): EntryCtx =>
-    props.mode === "task"
-      ? { 
-          context: "task", 
-          familyId: props.familyId, 
-          userId: props.userId, 
-          taskId: props.taskId 
-        }
-      : { 
-          context: "safe", 
-          familyId: props.familyId, 
-          userId: props.userId, 
-          safeRoomId: props.safeRoomId 
-        };
 
-  const handleSaveVoice = async (localUri: string) => {
-    try {
-      const ctx = getCtx();
-      console.log(`🎵 Saving voice note for ${ctx.context} context:`, {
-        taskId: ctx.context === "task" ? ctx.taskId : undefined,
-        safeRoomId: ctx.context === "safe" ? ctx.safeRoomId : undefined,
-      });
-      
-      await uploadAudioAndCreateDoc(localUri, ctx);
-      setOpenVoice(false);
-      
-      // Show success message
-      console.log(`✅ Voice note saved successfully for ${ctx.context}`);
-      
-    } catch (error) {
-      console.error("❌ Error saving voice note:", error);
-      // Error is handled by the modal
-      throw error;
-    }
+  const handleVoiceSaved = () => {
+    setOpenVoice(false);
+    console.log('✅ Voice note saved successfully');
   };
 
   const getVoiceTitle = () => {
@@ -135,13 +102,17 @@ export const SharedQuickActions: React.FC<Props> = (props) => {
         )}
       </View>
 
-      {/* Audio Note Modal - Same for both contexts */}
-      <AudioNoteModal
-        visible={openVoice}
-        onClose={() => setOpenVoice(false)}
-        title={getVoiceTitle()}
-        onSaved={handleSaveVoice}
-      />
+      {/* Voice Composer - Same for both contexts */}
+      {openVoice && (
+        <VoiceComposer
+          familyId={props.familyId}
+          context={props.mode}
+          parentId={props.mode === "task" ? props.taskId : props.safeRoomId}
+          userId={props.userId}
+          onSaved={handleVoiceSaved}
+          onCancel={() => setOpenVoice(false)}
+        />
+      )}
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../../../components/ui/WorkingComponents';
@@ -7,11 +7,14 @@ import { useEmotionalStore, EmotionalMessage } from '../store/emotionalStore';
 import { mediaService } from '../services/mediaService';
 import { useFocusEffect } from '@react-navigation/native';
 import SafeRoomService, { SafeRoomMessage } from '../../../services/SafeRoomService';
+import { VoiceComposer, VoiceMessageCard, listenVoiceNotes, deleteVoiceNote, VoiceNote } from '../../voice';
 
 const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
     const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
     const [messageText, setMessageText] = useState('');
     const [safeRoomMessages, setSafeRoomMessages] = useState<SafeRoomMessage[]>([]);
+    const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);
+    const [showVoiceComposer, setShowVoiceComposer] = useState(false);
     const { messages, addReply, addHeart, loadMessages } = useEmotionalStore();
 
     // Check if we're in emotional support mode
@@ -44,6 +47,16 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
         }, [loadMessages])
     );
 
+    // Load voice notes
+    useEffect(() => {
+        const familyId = 'default-family'; // You might want to get this from context or params
+        const roomId = 'safe-room'; // You might want to get this from params
+        
+        const unsubscribe = listenVoiceNotes(familyId, "safe", roomId, setVoiceNotes);
+        
+        return () => unsubscribe();
+    }, []);
+
     const handleBack = () => {
         navigation.goBack();
     };
@@ -62,27 +75,41 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
         }
     };
 
-    const handleVoicePlay = async (message: SafeRoomMessage | EmotionalMessage) => {
-        if (message.type === 'voice' || message.type === 'audio') {
-            try {
-                const duration = 'duration' in message ? message.duration : undefined;
-                const sender = 'sender' in message ? message.sender : message.sender;
-                Alert.alert('Voice Message', `Playing voice message from ${sender}${duration ? ` (${duration}s)` : ''}`);
-                // TODO: Implement actual audio playback using expo-av
-            } catch (error) {
-                Alert.alert('Error', 'Could not play voice message');
-            }
-        } else {
-            Alert.alert('Voice Message', 'No voice data available');
-        }
+    const handleVoiceShare = () => {
+        setShowVoiceComposer(true);
+    };
+
+    const handleVoiceNoteSaved = () => {
+        setShowVoiceComposer(false);
+    };
+
+    const handleDeleteVoiceNote = async (note: VoiceNote) => {
+        Alert.alert(
+            'Delete Voice Note',
+            'Are you sure you want to delete this voice note?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await deleteVoiceNote(note);
+                            Alert.alert('Success', 'Voice note deleted successfully');
+                        } catch (error) {
+                            Alert.alert('Error', 'Failed to delete voice note');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const handleTextShare = () => {
         navigation.navigate('TextMessage');
-    };
-
-    const handleVoiceShare = () => {
-        navigation.navigate('VoiceMessage');
     };
 
     const handleDeleteMessage = async (messageId: string) => {
@@ -153,7 +180,8 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
 
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
             {/* Header */}
             <LinearGradient
                 colors={['#EC4899', '#DB2777']}
@@ -238,23 +266,24 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
             {/* Messages Section */}
             <View style={styles.messagesSection}>
                 <Card style={styles.messagesCard}>
-                    {safeRoomMessages.length === 0 ? (
-                        <View style={styles.emptyStateContainer}>
-                            <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
-                            <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
-                            <Text style={styles.emptyStateText}>
-                                Start sharing your feelings with your family
-                            </Text>
-                            <TouchableOpacity
-                                style={styles.startSharingButton}
-                                onPress={handleTextShare}
-                                activeOpacity={0.8}
-                            >
-                                <Text style={styles.startSharingText}>Start Sharing</Text>
-                            </TouchableOpacity>
+                    {/* Voice Notes Section */}
+                    {voiceNotes.length > 0 && (
+                        <View style={styles.voiceNotesSection}>
+                            <Text style={styles.sectionTitle}>Voice Messages</Text>
+                            {voiceNotes.map((note) => (
+                                <VoiceMessageCard
+                                    key={note.id}
+                                    note={note}
+                                    onDelete={() => handleDeleteVoiceNote(note)}
+                                />
+                            ))}
                         </View>
-                    ) : (
-                        <ScrollView style={styles.messagesList} showsVerticalScrollIndicator={false}>
+                    )}
+
+                    {/* Text Messages Section */}
+                    {safeRoomMessages.length > 0 && (
+                        <View style={styles.textMessagesSection}>
+                            <Text style={styles.sectionTitle}>Text Messages</Text>
                             {safeRoomMessages.map((message) => (
                                 <View key={message.id} style={[
                                     styles.messageCard,
@@ -262,9 +291,9 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                                 ]}>
                                     <View style={styles.messageHeader}>
                                         <Ionicons
-                                            name={message.type === 'voice' ? 'mic-outline' : 'chatbubble-outline'}
+                                            name="chatbubble-outline"
                                             size={20}
-                                            color={message.type === 'voice' ? '#8B5CF6' : '#3B82F6'}
+                                            color="#3B82F6"
                                         />
                                         <Text style={styles.messageSender}>
                                             {message.sender || 'Anonymous'}
@@ -295,24 +324,29 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
                                         )}
                                     </View>
                                     <Text style={styles.messageContent}>
-                                        {message.type === 'voice'
-                                            ? `🎧 Voice message${message.duration ? ` (${Math.round(message.duration)}s)` : ''}`
-                                            : message.content
-                                        }
+                                        {message.content}
                                     </Text>
-                                    {message.type === 'voice' && (
-                                        <TouchableOpacity
-                                            style={styles.playButton}
-                                            onPress={() => handleVoicePlay(message)}
-                                            activeOpacity={0.8}
-                                        >
-                                            <Ionicons name="play" size={16} color="#8B5CF6" />
-                                            <Text style={styles.playButtonText}>Play</Text>
-                                        </TouchableOpacity>
-                                    )}
                                 </View>
                             ))}
-                        </ScrollView>
+                        </View>
+                    )}
+
+                    {/* Empty State */}
+                    {voiceNotes.length === 0 && safeRoomMessages.length === 0 && (
+                        <View style={styles.emptyStateContainer}>
+                            <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
+                            <Text style={styles.emptyStateTitle}>No Messages Yet</Text>
+                            <Text style={styles.emptyStateText}>
+                                Start sharing your feelings with your family
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.startSharingButton}
+                                onPress={handleTextShare}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={styles.startSharingText}>Start Sharing</Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </Card>
             </View>
@@ -354,6 +388,22 @@ const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigat
             {/* Bottom spacing */}
             <View style={styles.bottomSpacing} />
         </ScrollView>
+
+        {/* Voice Composer */}
+        {showVoiceComposer && (
+            <View style={styles.composerOverlay}>
+                <VoiceComposer
+                    familyId="default-family"
+                    context="safe"
+                    parentId="safe-room"
+                    userId="current-user"
+                    onSaved={handleVoiceNoteSaved}
+                    onCancel={() => setShowVoiceComposer(false)}
+                />
+            </View>
+        )}
+
+        </View>
     );
 };
 
@@ -361,6 +411,39 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F9FAFB',
+    },
+    scrollContainer: {
+        flex: 1,
+    },
+    messagesList: {
+        flex: 1,
+        paddingHorizontal: 16,
+    },
+    messageCard: {
+        backgroundColor: 'white',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    messageHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    messageSender: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+    },
+    messageTime: {
+        fontSize: 12,
+        color: '#6B7280',
     },
     header: {
         paddingHorizontal: 16,
@@ -496,19 +579,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#EC4899',
         fontWeight: '600',
-    },
-    messagesList: {
-        marginBottom: 16,
-    },
-    messageCard: {
-        padding: 16,
-        marginBottom: 16,
-        borderLeftWidth: 4,
-    },
-    messageHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
     },
     avatar: {
         width: 40,
@@ -796,26 +866,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
-    playButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 8,
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        backgroundColor: '#F3F4F6',
-        borderRadius: 8,
-        alignSelf: 'flex-start',
-    },
     playButtonText: {
         fontSize: 14,
         color: '#8B5CF6',
         marginLeft: 4,
         fontWeight: '500',
-    },
-    messageActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginLeft: 'auto',
     },
     actionButton: {
         padding: 8,
@@ -826,6 +881,28 @@ const styles = StyleSheet.create({
     systemMessageCard: {
         backgroundColor: '#F0F9FF',
         borderLeftColor: '#0EA5E9',
+    },
+    // Voice Notes Styles
+    voiceNotesSection: {
+        marginBottom: 16,
+    },
+    textMessagesSection: {
+        marginTop: 16,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#1F2937',
+        marginBottom: 12,
+        paddingHorizontal: 4,
+    },
+    composerOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 16,
     },
 });
 

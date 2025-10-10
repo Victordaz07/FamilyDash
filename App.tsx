@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import ConditionalNavigator from './src/navigation/ConditionalNavigator';
+import SimpleNavigator from './src/navigation/SimpleNavigator';
+import MinimalNavigator from './src/navigation/MinimalNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { SettingsProvider } from './src/contexts/SettingsContext';

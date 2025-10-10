@@ -41,36 +41,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             console.log('🔐 AuthContext: Firebase auth state changed:', firebaseUser ? `User logged in: ${firebaseUser.email}` : 'User logged out');
 
-            if (firebaseUser) {
-                console.log('🔐 AuthContext: User found, setting user state and saving to storage');
-                const userData = {
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email || '',
-                    displayName: firebaseUser.displayName || '',
-                };
+            try {
+                if (firebaseUser) {
+                    console.log('🔐 AuthContext: User found, setting user state and saving to storage');
+                    const userData = {
+                        uid: firebaseUser.uid,
+                        email: firebaseUser.email || '',
+                        displayName: firebaseUser.displayName || '',
+                    };
 
-                setUser(userData);
+                    setUser(userData);
 
-                // Save user data to AsyncStorage for persistence
-                try {
-                    await AsyncStorage.setItem('user', JSON.stringify(userData));
-                    console.log('🔐 AuthContext: User data saved to AsyncStorage');
-                } catch (error) {
-                    console.error('🔐 AuthContext: Failed to save user to AsyncStorage:', error);
+                    // Save user data to AsyncStorage for persistence
+                    try {
+                        await AsyncStorage.setItem('user', JSON.stringify(userData));
+                        console.log('🔐 AuthContext: User data saved to AsyncStorage');
+                    } catch (error) {
+                        console.error('🔐 AuthContext: Failed to save user to AsyncStorage:', error);
+                    }
+                } else {
+                    console.log('🔐 AuthContext: No authenticated user found, clearing storage');
+                    setUser(null);
+
+                    // Clear user data from AsyncStorage
+                    try {
+                        await AsyncStorage.removeItem('user');
+                        console.log('🔐 AuthContext: User data cleared from AsyncStorage');
+                    } catch (error) {
+                        console.error('🔐 AuthContext: Failed to clear user from AsyncStorage:', error);
+                    }
                 }
-            } else {
-                console.log('🔐 AuthContext: No authenticated user found, clearing storage');
-                setUser(null);
-
-                // Clear user data from AsyncStorage
-                try {
-                    await AsyncStorage.removeItem('user');
-                    console.log('🔐 AuthContext: User data cleared from AsyncStorage');
-                } catch (error) {
-                    console.error('🔐 AuthContext: Failed to clear user from AsyncStorage:', error);
-                }
+            } catch (error) {
+                console.error('🔐 AuthContext: Error in auth state change handler:', error);
+            } finally {
+                setLoading(false);
             }
-
+        }, (error) => {
+            console.error('🔐 AuthContext: Firebase auth error:', error);
             setLoading(false);
         });
 
