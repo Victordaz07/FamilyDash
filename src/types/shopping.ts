@@ -39,6 +39,7 @@ export type ShoppingList = {
   title: string;
   stores: ShoppingStore[];
   currency: string;           // "USD", "DOP"…
+  budgetLimit?: number;       // presupuesto total de la lista
   createdBy: string;          // userId
   createdAt?: any;
   updatedAt?: any;

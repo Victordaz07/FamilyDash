@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import { useRole } from '../contexts/RoleContext';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 
@@ -212,7 +212,7 @@ export const Example7_ActionGuard = () => {
 
   const handleDeleteTask = () => {
     if (!can('delete')) {
-      alert('No tienes permisos para eliminar tareas');
+      Alert.alert('Error', 'No tienes permisos para eliminar tareas');
       return;
     }
 
@@ -222,7 +222,7 @@ export const Example7_ActionGuard = () => {
 
   const handleApproveTask = () => {
     if (!can('approve')) {
-      alert('Solo los padres pueden aprobar tareas');
+      Alert.alert('Error', 'Solo los padres pueden aprobar tareas');
       return;
     }
 

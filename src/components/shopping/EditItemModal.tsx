@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ShoppingItem, ShoppingStore } from "../../types/shopping";
+import { ShoppingItem, ShoppingStore, UnitKey } from "../../types/shopping";
 
 type Props = {
   visible: boolean;
@@ -258,7 +258,7 @@ export default function EditItemModal({ visible, onClose, item, stores, onSave, 
                       unit === option.value && styles.unitPickerOptionSelected
                     ]}
                     onPress={() => {
-                      setUnit(option.value);
+                      setUnit(option.value as UnitKey);
                       setShowUnitPicker(false);
                     }}
                   >

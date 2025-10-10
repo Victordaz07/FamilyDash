@@ -51,7 +51,7 @@ export const DeveloperPanel: React.FC<DeveloperPanelProps> = ({ visible, onClose
             title: 'Firebase Test',
             subtitle: 'Live Firebase Testing',
             icon: 'flame',
-            colors: ['#8B5CF6', '#06B6D4'],
+            colors: ['#8B5CF6', '#06B6D4'] as const,
             screen: 'FirebaseTestLive'
         },
         {
@@ -59,7 +59,7 @@ export const DeveloperPanel: React.FC<DeveloperPanelProps> = ({ visible, onClose
             title: 'Sync Testing',
             subtitle: 'Multi-device sync test',
             icon: 'sync',
-            colors: ['#FF6B6B', '#4ECDC4'],
+            colors: ['#FF6B6B', '#4ECDC4'] as const,
             screen: 'SyncTesting'
         },
         {
@@ -67,7 +67,7 @@ export const DeveloperPanel: React.FC<DeveloperPanelProps> = ({ visible, onClose
             title: 'Debug Mode',
             subtitle: 'Error detection & auto-fix',
             icon: 'bug',
-            colors: ['#9C27B0', '#673AB7'],
+            colors: ['#9C27B0', '#673AB7'] as const,
             screen: 'DebugDashboard'
         },
         {
@@ -75,7 +75,7 @@ export const DeveloperPanel: React.FC<DeveloperPanelProps> = ({ visible, onClose
             title: 'Testing Reports',
             subtitle: 'Comprehensive Firebase tests',
             icon: 'checkmark-circle',
-            colors: ['#00BCD4', '#0097A7'],
+            colors: ['#00BCD4', '#0097A7'] as const,
             screen: 'TestingReports'
         }
     ];
@@ -88,7 +88,7 @@ export const DeveloperPanel: React.FC<DeveloperPanelProps> = ({ visible, onClose
 
             <Animated.View style={[styles.panel, { transform: [{ translateY }] }]}>
                 <LinearGradient
-                    colors={['#1F2937', '#111827']}
+                    colors={['#1F2937', '#111827'] as const}
                     style={styles.panelGradient}
                 >
                     {/* Header */}

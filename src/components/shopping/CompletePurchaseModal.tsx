@@ -59,6 +59,7 @@ export default function CompletePurchaseModal({
         taxes: taxesNum,
         currency: list.currency,
         items: items.filter(item => item.status === "purchased"),
+        completedAt: new Date(),
         completedBy: userId,
         notes: notes.trim() || undefined,
       });

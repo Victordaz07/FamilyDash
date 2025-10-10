@@ -1143,20 +1143,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
-  budgetSpent: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#111827",
-  },
-  budgetLimit: {
-    fontSize: 12,
-    color: "#6b7280",
-  },
-  budgetPercentage: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#6b7280",
-  },
   totalRow: {
     flexDirection: "row",
     alignItems: "center",
