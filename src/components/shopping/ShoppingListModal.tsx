@@ -52,33 +52,14 @@ export default function ShoppingListModal({
     { value: "lb", label: "Pound" },
     { value: "g", label: "Gram" },
     { value: "oz", label: "Ounce" },
-    { value: "l", label: "Liter" },
-    { value: "ml", label: "Milliliter" },
+    { value: "L", label: "Liter" },
     { value: "gal", label: "Gallon" },
-    { value: "can", label: "Can" },
-    { value: "box", label: "Box" },
-    { value: "bag", label: "Bag" },
-    { value: "bottle", label: "Bottle" },
     { value: "dozen", label: "Dozen" },
-    { value: "pack", label: "Pack" },
-    { value: "piece", label: "Piece" },
-    { value: "package", label: "Package" },
-    { value: "bunch", label: "Bunch" },
-    { value: "head", label: "Head" },
-    { value: "slice", label: "Slice" },
-    { value: "cup", label: "Cup" },
-    { value: "tbsp", label: "Tablespoon" },
-    { value: "tsp", label: "Teaspoon" },
-    { value: "jar", label: "Jar" },
-    { value: "tube", label: "Tube" },
-    { value: "roll", label: "Roll" },
-    { value: "sheet", label: "Sheet" },
-    { value: "bar", label: "Bar" },
-    { value: "loaf", label: "Loaf" },
-    { value: "ear", label: "Ear" },
-    { value: "clove", label: "Clove" },
-    { value: "sprig", label: "Sprig" },
-    { value: "pinch", label: "Pinch" },
+    { value: "half_dozen", label: "Half Dozen" },
+    { value: "pack_4", label: "Pack of 4" },
+    { value: "pack_6", label: "Pack of 6" },
+    { value: "pack_12", label: "Pack of 12" },
+    { value: "pack", label: "Custom Pack" },
   ];
 
   useEffect(() => {
@@ -679,7 +660,7 @@ export default function ShoppingListModal({
           >
             <View style={styles.unitPickerCard}>
               <Text style={styles.unitPickerTitle}>Select Unit</Text>
-              <View style={styles.unitPickerList}>
+              <ScrollView style={styles.unitPickerList} showsVerticalScrollIndicator={false}>
                 {unitOptions.map((option) => (
                   <TouchableOpacity
                     key={option.value}
@@ -703,7 +684,7 @@ export default function ShoppingListModal({
                     )}
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
             </View>
           </TouchableOpacity>
         </Modal>
