@@ -1,5 +1,5 @@
 export type PriceMode = "unit" | "total";
-export type UnitKey = "u" | "dozen" | "half_dozen" | "pack" | "pack_4" | "pack_6" | "pack_12" | "lb" | "kg" | "g" | "L" | "mL";
+export type UnitKey = "u" | "dozen" | "half_dozen" | "pack" | "pack_4" | "pack_6" | "pack_12" | "lb" | "kg" | "g" | "oz" | "L" | "gal";
 export type ShoppingStatus = "pending" | "in_cart" | "purchased";
 
 export type ShoppingStore = {

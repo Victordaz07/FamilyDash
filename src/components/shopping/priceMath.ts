@@ -12,18 +12,19 @@ export function unitMultiplier(unit: UnitKey, packSize?: number | null): number 
     case "lb": return 1;
     case "kg": return 2.20462; // kg to lb
     case "g": return 0.00220462; // g to lb
+    case "oz": return 0.0625; // oz to lb
     case "L": return 1;
-    case "mL": return 0.001; // mL to L
+    case "gal": return 3.78541; // gal to L
     default: return 1;
   }
 }
 
 export function isWeight(unit: UnitKey): boolean {
-  return ["lb", "kg", "g"].includes(unit);
+  return ["lb", "kg", "g", "oz"].includes(unit);
 }
 
 export function isVolume(unit: UnitKey): boolean {
-  return ["L", "mL"].includes(unit);
+  return ["L", "gal"].includes(unit);
 }
 
 export function displayUnitLabel(unit: UnitKey, packSize?: number | null): string {
@@ -38,8 +39,9 @@ export function displayUnitLabel(unit: UnitKey, packSize?: number | null): strin
     case "lb": return "lb";
     case "kg": return "kg";
     case "g": return "g";
+    case "oz": return "oz";
     case "L": return "L";
-    case "mL": return "mL";
+    case "gal": return "gal";
     default: return "unit";
   }
 }

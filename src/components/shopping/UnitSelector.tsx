@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { UnitKey } from "../../types/shopping";
 
@@ -17,9 +17,10 @@ export default function UnitSelector({ selectedUnit, packSize, onSelect }: Props
     {
       title: "Weight",
       units: [
-        { key: "lb", label: "Pound (lb)", icon: "📏" },
+        { key: "lb", label: "Pound (lb)", icon: "⚖️" },
         { key: "kg", label: "Kilogram (kg)", icon: "⚖️" },
         { key: "g", label: "Gram (g)", icon: "⚖️" },
+        { key: "oz", label: "Ounce (oz)", icon: "⚖️" },
       ],
     },
     {
@@ -38,7 +39,7 @@ export default function UnitSelector({ selectedUnit, packSize, onSelect }: Props
       title: "Volume",
       units: [
         { key: "L", label: "Liter (L)", icon: "🥤" },
-        { key: "mL", label: "Milliliter (mL)", icon: "🥤" },
+        { key: "gal", label: "Gallon (gal)", icon: "🥤" },
       ],
     },
   ];
@@ -67,7 +68,7 @@ export default function UnitSelector({ selectedUnit, packSize, onSelect }: Props
       case "kg": return "kg";
       case "g": return "g";
       case "L": return "L";
-      case "mL": return "mL";
+      case "gal": return "gal";
       default: return "unit";
     }
   };
@@ -98,7 +99,7 @@ export default function UnitSelector({ selectedUnit, packSize, onSelect }: Props
               </TouchableOpacity>
             </View>
 
-            <View style={styles.content}>
+            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
               {unitSections.map((section, sectionIndex) => (
                 <View key={section.title} style={styles.section}>
                   <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -143,7 +144,7 @@ export default function UnitSelector({ selectedUnit, packSize, onSelect }: Props
                   </View>
                 </View>
               )}
-            </View>
+            </ScrollView>
 
             <View style={styles.footer}>
               <TouchableOpacity 
@@ -194,9 +195,9 @@ const styles = StyleSheet.create({
   modal: {
     backgroundColor: "#fff",
     borderRadius: 20,
-    width: "100%",
+    width: "90%",
     maxWidth: 400,
-    maxHeight: "80%",
+    maxHeight: "75%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -224,9 +225,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: {
-    maxHeight: 400,
+  scrollContent: {
     paddingHorizontal: 20,
+    flexGrow: 1,
   },
   section: {
     paddingVertical: 16,
