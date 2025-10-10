@@ -64,7 +64,13 @@
         }
       ],
       "expo-font",
-      "expo-barcode-scanner"
+      "expo-barcode-scanner",
+      [
+        "react-native-maps",
+        {
+          "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY_HERE"
+        }
+      ]
     ],
     "web": {
       "favicon": "./assets/favicon.png"
