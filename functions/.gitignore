@@ -1,0 +1,23 @@
+# Compiled JavaScript files
+lib/**/*.js
+lib/**/*.js.map
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Node.js dependencies
+node_modules/
+
+# Firebase cache
+.firebase/
+
+# Firebase config
+.runtimeconfig.json
+
+# Uncomment if you have local emulator data
+# *-debug.log
+# *-debug.*.log
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
