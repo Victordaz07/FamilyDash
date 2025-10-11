@@ -15,7 +15,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prepare": "husky install",
-    "secrets:scan": "git grep -n \"AIza\\|messagingSenderId\\|appId\\|firebaseapp.com\" || echo \"No exposed secrets found\""
+    "secrets:scan": "gitleaks detect -v --no-git -c .gitleaks.toml || echo \"⚠️ Gitleaks not installed. Install from: https://github.com/zricethezav/gitleaks\"",
+    "secrets:scan-staged": "gitleaks protect --staged -v -c .gitleaks.toml",
+    "secrets:scan-history": "gitleaks detect -v -c .gitleaks.toml"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

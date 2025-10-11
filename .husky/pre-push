@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check for secrets before pushing
+if command -v gitleaks >/dev/null 2>&1; then
+  echo "🔎 Running Gitleaks (pre-push)..."
+  # Scan staged changes for secrets
+  gitleaks protect --staged -v -c .gitleaks.toml || {
+    echo "❌ Gitleaks detected possible secrets. Please review and fix."
+    echo "   Run: npm run secrets:scan to see details"
+    exit 1
+  }
+  echo "✅ No secrets detected"
+else
+  echo "⚠️  Gitleaks not installed locally. Skipping..."
+  echo "   Install: https://github.com/zricethezav/gitleaks#installation"
+  echo "   CI will still check for secrets"
+fi
+

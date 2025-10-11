@@ -1,54 +1,132 @@
-# Gitleaks Configuration for FamilyDash
+# FamilyDash Secrets Policy - Gitleaks Configuration
+# Strict secret detection with high entropy and common service patterns
 # https://github.com/zricethezav/gitleaks
 
-title = "FamilyDash Secrets Detection"
+title = "FamilyDash Secrets Policy"
+
+###############################################################################
+# RULES - High-confidence secret patterns
+###############################################################################
+
+[[rules]]
+id = "generic-high-entropy"
+description = "High entropy generic secret"
+regex = '''(?i)(secret|token|apikey|api_key|auth|passwd|password|bearer|authorization)\s*[:=]\s*['"]?[0-9a-zA-Z_\-\/\.\+=]{20,}['"]?'''
+entropy = 3.5
+tags = ["generic", "entropy"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google/Firebase API Key"
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+tags = ["google", "firebase"]
+
+[[rules]]
+id = "firebase-service-account"
+description = "Firebase Service Account"
+regex = '''type['":\s]*service_account'''
+tags = ["firebase", "service-account"]
+
+[[rules]]
+id = "jwt"
+description = "JSON Web Token"
+regex = '''eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}'''
+tags = ["jwt"]
+
+[[rules]]
+id = "private-key"
+description = "Private key block"
+regex = '''-----BEGIN (EC |RSA |DSA |OPENSSH |PGP )?PRIVATE KEY-----'''
+tags = ["key"]
+
+[[rules]]
+id = "stripe-key"
+description = "Stripe secret key"
+regex = '''sk_live_[0-9a-zA-Z]{10,}'''
+tags = ["stripe"]
+
+[[rules]]
+id = "slack-token"
+description = "Slack token"
+regex = '''xox[baprs]-[0-9a-zA-Z\-]{10,}'''
+tags = ["slack"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Key"
+regex = '''(?i)aws(.{0,20})?(?-i)['\"][0-9a-zA-Z\/+]{40}['\"]'''
+tags = ["aws"]
+
+[[rules]]
+id = "github-token"
+description = "GitHub Token"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+tags = ["github"]
+
+[[rules]]
+id = "github-oauth"
+description = "GitHub OAuth Token"
+regex = '''gho_[0-9a-zA-Z]{36}'''
+tags = ["github"]
+
+[[rules]]
+id = "heroku-api-key"
+description = "Heroku API Key"
+regex = '''[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'''
+tags = ["heroku"]
+
+[[rules]]
+id = "mailgun-api-key"
+description = "Mailgun API Key"
+regex = '''key-[0-9a-zA-Z]{32}'''
+tags = ["mailgun"]
+
+[[rules]]
+id = "twilio-api-key"
+description = "Twilio API Key"
+regex = '''SK[0-9a-fA-F]{32}'''
+tags = ["twilio"]
+
+###############################################################################
+# ALLOWLIST - Exclude false positives
+###############################################################################
 
 [allowlist]
-  description = "Allowlist for safe patterns"
-  
-  # Allow example/template files
-  paths = [
-    '''\.env\.example$''',
-    '''\.env\.template$''',
-    '''firebaseConfig\.example\.ts$''',
-    '''SECURITY_AUDIT.*\.md$''',
-  ]
-  
-  # Allow specific regexes that aren't secrets
-  regexes = [
-    '''PLACEHOLDER''',
-    '''EXAMPLE''',
-    '''YOUR_.*_HERE''',
-    '''XXX+''',
-  ]
+description = "False positives, binary files, and test fixtures"
 
-[[rules]]
-  id = "firebase-api-key"
-  description = "Firebase API Key"
-  regex = '''AIza[0-9A-Za-z\\-_]{35}'''
-  tags = ["firebase", "api-key"]
-  
-[[rules]]
-  id = "generic-api-key"
-  description = "Generic API Key"
-  regex = '''(?i)(api[_-]?key|apikey)['":\s]*(['"]\S{20,}['"])'''
-  tags = ["key", "api"]
+# Exclude build directories and native code
+paths = [
+  '''^android/''',
+  '''^ios/''',
+  '''^dist/''',
+  '''^build/''',
+  '''^\.expo/''',
+  '''^node_modules/''',
+  '''^\.husky/''',
+  '''^\.github/''',
+  '''^assets/''',
+  '''^__tests__/fixtures/''',
+  '''^functions/lib/'''
+]
 
-[[rules]]
-  id = "firebase-service-account"
-  description = "Firebase Service Account"
-  regex = '''type['":\s]*service_account'''
-  tags = ["firebase", "service-account"]
+# Exclude example/template files
+regexes = [
+  '''PLACEHOLDER''',
+  '''EXAMPLE''',
+  '''YOUR_.*_HERE''',
+  '''XXX+''',
+  '''test.*secret''',
+  '''mock.*token''',
+  '''fake.*key'''
+]
 
-[[rules]]
-  id = "aws-access-key"
-  description = "AWS Access Key"
-  regex = '''AKIA[0-9A-Z]{16}'''
-  tags = ["aws", "access-key"]
-
-[[rules]]
-  id = "private-key"
-  description = "Private Key"
-  regex = '''-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----'''
-  tags = ["private-key"]
-
+# Specific commits to ignore (if needed)
+# commits = [
+#   "commit-hash-to-ignore"
+# ]
