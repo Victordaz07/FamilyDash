@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "secrets:scan": "git grep -n \"AIza\\|messagingSenderId\\|appId\\|firebaseapp.com\" || echo \"No exposed secrets found\""
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.1.1",

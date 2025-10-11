@@ -1,10 +1,235 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // PHASE 0 SECURITY LOCKDOWN - TEMPORARY TOTAL FIREWALL
-    // All access blocked while security audit is in progress
-    // Original rules backed up in firestore.rules.backup
-    // Will be replaced with proper membership-based rules in Phase 3
+    
+    // ============================================
+    // SECURITY FUNCTIONS
+    // ============================================
+    
+    /**
+     * Check if user is authenticated
+     */
+    function signedIn() {
+      return request.auth != null;
+    }
+    
+    /**
+     * Check if user is a member of a specific family
+     * Uses subcollection: families/{familyId}/members/{userId}
+     */
+    function isMember(familyId) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid));
+    }
+    
+    /**
+     * Check if user is the document owner
+     */
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Check if user is a parent/admin in the family
+     * Requires role field in member document
+     */
+    function isParent(familyId) {
+      return isMember(familyId) &&
+        get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role in ['parent', 'admin'];
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    
+    match /users/{userId} {
+      // Anyone authenticated can read any user profile
+      allow read: if signedIn();
+      
+      // Only the user themselves can write their own profile
+      allow write: if isOwner(userId);
+    }
+    
+    // ============================================
+    // FAMILIES COLLECTION
+    // ============================================
+    
+    match /families/{familyId} {
+      // Only family members can read/write family data
+      allow read, write: if isMember(familyId);
+      
+      // Members subcollection
+      match /members/{memberId} {
+        // Members can read all members in their family
+        allow read: if isMember(familyId);
+        
+        // Only parents can add/remove members
+        allow create, delete: if isParent(familyId);
+        
+        // Members can update their own profile, parents can update anyone
+        allow update: if isOwner(memberId) || isParent(familyId);
+      }
+      
+      // Tasks subcollection
+      match /tasks/{taskId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Safe Room messages subcollection
+      match /saferoom/{msgId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Goals subcollection
+      match /goals/{goalId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Penalties subcollection
+      match /penalties/{penaltyId} {
+        allow read: if isMember(familyId);
+        allow write: if isParent(familyId);
+      }
+      
+      // Calendar/Events subcollection
+      match /events/{eventId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Schedules subcollection
+      match /schedules/{scheduleId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Reminders subcollection
+      match /reminders/{reminderId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Shopping lists subcollection
+      match /shopping_lists/{listId} {
+        allow read, write: if isMember(familyId);
+      }
+      
+      // Shopping items subcollection
+      match /shopping_items/{itemId} {
+        allow read, write: if isMember(familyId);
+      }
+    }
+    
+    // ============================================
+    // LEGACY TOP-LEVEL COLLECTIONS
+    // (For backward compatibility - migrate to families subcollections)
+    // ============================================
+    
+    match /tasks/{taskId} {
+      allow read, write: if signedIn() && 
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+    }
+    
+    match /safe_room_messages/{messageId} {
+      allow read, write: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+    }
+    
+    match /voice_notes/{noteId} {
+      allow read, write: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+    }
+    
+    match /family_members/{familyId}/users/{userId} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid));
+      allow write: if signedIn() && 
+        (request.auth.uid == userId || 
+         get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role in ['parent', 'admin']);
+    }
+    
+    // ============================================
+    // NOTIFICATION SETTINGS
+    // ============================================
+    
+    match /notification_settings/{familyId} {
+      allow read, write: if isMember(familyId);
+    }
+    
+    // ============================================
+    // SHOPPING COLLECTIONS (TOP-LEVEL)
+    // ============================================
+    
+    match /shopping_stores/{storeId} {
+      // Public read for all authenticated users
+      allow read: if signedIn();
+      // Only allow writes for authenticated users
+      allow write: if signedIn();
+    }
+    
+    match /shopping_products/{productId} {
+      // Public read for all authenticated users
+      allow read: if signedIn();
+      // Only allow writes for authenticated users
+      allow write: if signedIn();
+    }
+    
+    match /price_observations/{priceId} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    
+    // ============================================
+    // FEATURE FLAGS & PLUS FEATURES
+    // ============================================
+    
+    match /feature_flags/{familyId} {
+      allow read: if isMember(familyId);
+      allow write: if isParent(familyId);
+    }
+    
+    match /emergency_logs/{logId} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+      allow create: if signedIn() && 
+        exists(/databases/$(database)/documents/families/$(request.resource.data.familyId)/members/$(request.auth.uid)) &&
+        request.resource.data.fromUid == request.auth.uid;
+    }
+    
+    match /calls/{callId} {
+      allow read, write: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+    }
+    
+    match /locations/{userId} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(get(/databases/$(database)/documents/locations/$(userId)).data.familyId)/members/$(request.auth.uid));
+      allow write: if isOwner(userId);
+    }
+    
+    match /location_history/{userId}/{historyDoc} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(get(/databases/$(database)/documents/locations/$(userId)).data.familyId)/members/$(request.auth.uid));
+      allow write: if isOwner(userId);
+    }
+    
+    match /user_consent/{userId} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+      allow write: if isOwner(userId) || 
+        (signedIn() && get(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid)).data.role in ['parent', 'admin']);
+    }
+    
+    match /analytics/{logId} {
+      allow read: if signedIn() &&
+        exists(/databases/$(database)/documents/families/$(resource.data.familyId)/members/$(request.auth.uid));
+      allow create: if signedIn() && 
+        exists(/databases/$(database)/documents/families/$(request.resource.data.familyId)/members/$(request.auth.uid)) &&
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================
+    // DEFAULT DENY ALL
+    // ============================================
+    
+    // Deny access to any other collections not explicitly allowed
     match /{document=**} {
       allow read, write: if false;
     }
