@@ -64,7 +64,6 @@
         }
       ],
       "expo-font",
-      "expo-barcode-scanner",
       "expo-secure-store"
     ],
     "web": {
