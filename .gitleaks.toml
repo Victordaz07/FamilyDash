@@ -1,0 +1,54 @@
+# Gitleaks Configuration for FamilyDash
+# https://github.com/zricethezav/gitleaks
+
+title = "FamilyDash Secrets Detection"
+
+[allowlist]
+  description = "Allowlist for safe patterns"
+  
+  # Allow example/template files
+  paths = [
+    '''\.env\.example$''',
+    '''\.env\.template$''',
+    '''firebaseConfig\.example\.ts$''',
+    '''SECURITY_AUDIT.*\.md$''',
+  ]
+  
+  # Allow specific regexes that aren't secrets
+  regexes = [
+    '''PLACEHOLDER''',
+    '''EXAMPLE''',
+    '''YOUR_.*_HERE''',
+    '''XXX+''',
+  ]
+
+[[rules]]
+  id = "firebase-api-key"
+  description = "Firebase API Key"
+  regex = '''AIza[0-9A-Za-z\\-_]{35}'''
+  tags = ["firebase", "api-key"]
+  
+[[rules]]
+  id = "generic-api-key"
+  description = "Generic API Key"
+  regex = '''(?i)(api[_-]?key|apikey)['":\s]*(['"]\S{20,}['"])'''
+  tags = ["key", "api"]
+
+[[rules]]
+  id = "firebase-service-account"
+  description = "Firebase Service Account"
+  regex = '''type['":\s]*service_account'''
+  tags = ["firebase", "service-account"]
+
+[[rules]]
+  id = "aws-access-key"
+  description = "AWS Access Key"
+  regex = '''AKIA[0-9A-Z]{16}'''
+  tags = ["aws", "access-key"]
+
+[[rules]]
+  id = "private-key"
+  description = "Private Key"
+  regex = '''-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----'''
+  tags = ["private-key"]
+

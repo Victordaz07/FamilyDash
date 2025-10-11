@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+android
+ios
+functions/lib
+.expo
+*.lock
+*.log
+coverage
+.env
+
