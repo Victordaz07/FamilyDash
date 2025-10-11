@@ -16,6 +16,7 @@ A comprehensive family management app built with **React Native + Expo** and **T
 FamilyDash has reached **production-ready status** with all core modules implemented, Firebase fully integrated, and the final APK being generated. The application is now ready for distribution and real-world use.
 
 ### 📊 **Current Metrics:**
+
 - **220+** files of code
 - **20,000+** lines of TypeScript
 - **70+** React components
@@ -30,6 +31,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 ## 🚀 **Latest Updates (v1.4.0)**
 
 ### 🎥 **Advanced Video System**
+
 - **Robust video player** with `expo-video` integration
 - **Error handling** for Android MediaCodec issues
 - **Video caching** system with LRU eviction
@@ -38,6 +40,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Fullscreen video modal** with controls
 
 ### 🎵 **Complete Audio & Video System**
+
 - **Voice recording** with `expo-av` (HIGH_QUALITY .m4a format)
 - **Audio playback** with progress controls and seek functionality
 - **Video recording** with `expo-camera` (front/back camera support)
@@ -48,24 +51,28 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Offline functionality** with local storage
 
 ### 🔄 **Shared Quick Actions**
+
 - **Unified component** for Tasks and Safe Room
 - **Context-aware behavior** with discriminated unions
 - **Voice note integration** across modules
 - **Modern UI** with gradient backgrounds
 
 ### 📅 **Enhanced Calendar System**
+
 - **Family Schedules** - Editable routines with CRUD operations
 - **Upcoming Reminders** - Smart notification system
 - **Real Firebase integration** with fallback queries
 - **Beautiful UI** with blue gradient styling
 
 ### 🔔 **Advanced Notifications**
+
 - **Detailed settings modal** with granular controls
 - **Quiet hours** and day filtering
 - **Channel-specific overrides**
 - **Expo Go compatibility** with conditional logic
 
 ### 🛒 **Professional Shopping List System**
+
 - **Complete shopping management** with status tracking (pending → in cart → purchased)
 - **Multi-store support** with location-based store selection
 - **Barcode scanner integration** with `expo-barcode-scanner` for product recognition
@@ -78,6 +85,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Professional UI** with modern card-based design and scrollable content
 
 ### 🎨 **UI/UX Improvements**
+
 - **Redesigned Dashboard header** - Cleaner, more professional
 - **Scrollable Quick Actions** - No more fixed positioning
 - **Modern gradient headers** - Consistent design language
@@ -90,6 +98,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 ## 🏗️ **Core Features**
 
 ### ✅ **Task Management System**
+
 - **Complete CRUD operations** for family tasks
 - **Smart assignment** to family members
 - **Priority levels** and status tracking
@@ -100,6 +109,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Quick Actions** for instant task creation
 
 ### 📅 **Family Calendar & Activities**
+
 - **Weekly and monthly views** with dynamic navigation
 - **Event creation** with participant management
 - **Family voting system** for activity decisions
@@ -110,6 +120,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Upcoming Reminders** - Smart notification scheduling
 
 ### 🎯 **Goals & Progress Tracking**
+
 - **Personal and family goals** with multiple categories
 - **Milestone tracking** with visual progress indicators
 - **Reward system** and achievement badges
@@ -118,6 +129,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Progress analytics** and family insights
 
 ### ⚠️ **Penalty Management System**
+
 - **Yellow Cards** (minor penalties, 3-10 days)
 - **Red Cards** (major penalties, 7-30 days)
 - **Manual duration selection** with flexible timing
@@ -126,6 +138,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Automatic notifications** and reminders
 
 ### 🛒 **Shopping List Management**
+
 - **Professional shopping lists** with complete item management
 - **Multi-store support** with location-based store selection
 - **Barcode scanner** for automatic product recognition
@@ -138,6 +151,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Status tracking** (pending → in cart → purchased)
 
 ### 🏡 **Emotional Safe Room**
+
 - **Multi-media messaging** (text, audio, video, images)
 - **Emotional expression space** for family members
 - **Guided resources** and support materials
@@ -148,6 +162,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Video preview** with robust error handling
 
 ### 👤 **Profile & Family Management**
+
 - **Comprehensive user profiles** with photo upload
 - **Role-based permissions** (Admin, Sub-Admin, Child)
 - **Family invitation system** with unique codes
@@ -156,6 +171,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Complete profile editing** with validation
 
 ### 🔔 **Advanced Notifications System**
+
 - **Smart push notifications** with deep linking
 - **Custom notification channels** for different modules
 - **Scheduled notifications** with intelligent timing
@@ -166,6 +182,7 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 - **Expo Go compatibility** with conditional logic
 
 ### 🌤️ **Weather Integration**
+
 - **Weekly weather forecast** with activity recommendations
 - **Calendar integration** for weather-aware planning
 - **Activity suggestions** based on weather conditions
@@ -177,45 +194,48 @@ FamilyDash has reached **production-ready status** with all core modules impleme
 ## 🏗️ **Technical Architecture**
 
 ### **Frontend Stack**
+
 ```typescript
 interface TechStack {
-  framework: 'React Native 0.81.4'
-  expo: 'SDK 54.0.12'
-  language: 'TypeScript 5.9.2'
-  navigation: 'React Navigation v7'
-  stateManagement: 'Zustand 5.0.8'
-  ui: 'Expo Vector Icons, Linear Gradient'
-  animations: 'React Native Animated API'
-  media: 'expo-av, expo-camera, expo-image-picker, expo-video'
-  notifications: 'expo-notifications with conditional logic'
+  framework: "React Native 0.81.4";
+  expo: "SDK 54.0.12";
+  language: "TypeScript 5.9.2";
+  navigation: "React Navigation v7";
+  stateManagement: "Zustand 5.0.8";
+  ui: "Expo Vector Icons, Linear Gradient";
+  animations: "React Native Animated API";
+  media: "expo-av, expo-camera, expo-image-picker, expo-video";
+  notifications: "expo-notifications with conditional logic";
 }
 ```
 
 ### **Backend & Services**
+
 ```typescript
 interface BackendStack {
-  platform: 'Firebase (100% Operational)'
-  authentication: 'Firebase Auth'
-  database: 'Firestore with real-time listeners'
-  storage: 'Firebase Storage for media files'
-  functions: 'Cloud Functions for server logic'
-  analytics: 'Firebase Analytics with custom events'
-  performance: 'Firebase Performance Monitoring'
-  messaging: 'Firebase Cloud Messaging'
-  hosting: 'Firebase Hosting for web version'
+  platform: "Firebase (100% Operational)";
+  authentication: "Firebase Auth";
+  database: "Firestore with real-time listeners";
+  storage: "Firebase Storage for media files";
+  functions: "Cloud Functions for server logic";
+  analytics: "Firebase Analytics with custom events";
+  performance: "Firebase Performance Monitoring";
+  messaging: "Firebase Cloud Messaging";
+  hosting: "Firebase Hosting for web version";
 }
 ```
 
 ### **Build & Deployment**
+
 ```typescript
 interface BuildSystem {
-  buildSystem: 'EAS Build (Expo Application Services)'
-  platform: 'Android APK (Primary)'
-  version: '1.3.0'
-  versionCode: 4
-  signing: 'EAS Managed Signing'
-  distribution: 'Direct APK distribution'
-  testing: 'Internal testing with Firebase App Distribution'
+  buildSystem: "EAS Build (Expo Application Services)";
+  platform: "Android APK (Primary)";
+  version: "1.4.0";
+  versionCode: 6;
+  signing: "EAS Managed Signing";
+  distribution: "Direct APK distribution";
+  testing: "Internal testing with Firebase App Distribution";
 }
 ```
 
@@ -345,84 +365,88 @@ FamilyDash/
 ## 🎨 **Design System**
 
 ### **Color Palette**
+
 ```typescript
 interface ColorSystem {
   // Primary Colors
-  primary: '#3B82F6'          // Blue - Main brand color
-  primaryDark: '#1E40AF'      // Dark blue
-  primaryLight: '#60A5FA'     // Light blue
-  
+  primary: "#3B82F6"; // Blue - Main brand color
+  primaryDark: "#1E40AF"; // Dark blue
+  primaryLight: "#60A5FA"; // Light blue
+
   // Secondary Colors
-  secondary: '#10B981'        // Green - Success, positive actions
-  secondaryDark: '#047857'    // Dark green
-  secondaryLight: '#34D399'   // Light green
-  
+  secondary: "#10B981"; // Green - Success, positive actions
+  secondaryDark: "#047857"; // Dark green
+  secondaryLight: "#34D399"; // Light green
+
   // Accent Colors
-  accent: '#8B5CF6'           // Purple - Accent elements
-  accentDark: '#7C3AED'       // Dark purple
-  accentLight: '#A78BFA'      // Light purple
-  
+  accent: "#8B5CF6"; // Purple - Accent elements
+  accentDark: "#7C3AED"; // Dark purple
+  accentLight: "#A78BFA"; // Light purple
+
   // Status Colors
-  success: '#10B981'          // Green - Completed, success
-  warning: '#F59E0B'          // Orange - Warnings, pending
-  error: '#EF4444'            // Red - Errors, penalties
-  info: '#3B82F6'             // Blue - Information
-  
+  success: "#10B981"; // Green - Completed, success
+  warning: "#F59E0B"; // Orange - Warnings, pending
+  error: "#EF4444"; // Red - Errors, penalties
+  info: "#3B82F6"; // Blue - Information
+
   // Neutral Scale
-  gray50: '#F9FAFB'           // Very light gray
-  gray100: '#F3F4F6'          // Light gray
-  gray200: '#E5E7EB'          // Medium light gray
-  gray300: '#D1D5DB'          // Medium gray
-  gray400: '#9CA3AF'          // Medium dark gray
-  gray500: '#6B7280'          // Dark gray
-  gray600: '#4B5563'          // Very dark gray
-  gray700: '#374151'          // Almost black
-  gray800: '#1F2937'          // Black gray
-  gray900: '#111827'          // Black
+  gray50: "#F9FAFB"; // Very light gray
+  gray100: "#F3F4F6"; // Light gray
+  gray200: "#E5E7EB"; // Medium light gray
+  gray300: "#D1D5DB"; // Medium gray
+  gray400: "#9CA3AF"; // Medium dark gray
+  gray500: "#6B7280"; // Dark gray
+  gray600: "#4B5563"; // Very dark gray
+  gray700: "#374151"; // Almost black
+  gray800: "#1F2937"; // Black gray
+  gray900: "#111827"; // Black
 }
 ```
 
 ### **Typography System**
+
 ```typescript
 interface TypographySystem {
   // Headers
-  h1: { fontSize: 32, fontWeight: 'bold', lineHeight: 40 }
-  h2: { fontSize: 28, fontWeight: 'bold', lineHeight: 36 }
-  h3: { fontSize: 24, fontWeight: '600', lineHeight: 32 }
-  h4: { fontSize: 20, fontWeight: '600', lineHeight: 28 }
-  h5: { fontSize: 18, fontWeight: '600', lineHeight: 24 }
-  h6: { fontSize: 16, fontWeight: '600', lineHeight: 22 }
-  
+  h1: { fontSize: 32; fontWeight: "bold"; lineHeight: 40 };
+  h2: { fontSize: 28; fontWeight: "bold"; lineHeight: 36 };
+  h3: { fontSize: 24; fontWeight: "600"; lineHeight: 32 };
+  h4: { fontSize: 20; fontWeight: "600"; lineHeight: 28 };
+  h5: { fontSize: 18; fontWeight: "600"; lineHeight: 24 };
+  h6: { fontSize: 16; fontWeight: "600"; lineHeight: 22 };
+
   // Body Text
-  body: { fontSize: 16, fontWeight: 'normal', lineHeight: 24 }
-  bodySmall: { fontSize: 14, fontWeight: 'normal', lineHeight: 20 }
-  caption: { fontSize: 12, fontWeight: 'normal', lineHeight: 16 }
-  
+  body: { fontSize: 16; fontWeight: "normal"; lineHeight: 24 };
+  bodySmall: { fontSize: 14; fontWeight: "normal"; lineHeight: 20 };
+  caption: { fontSize: 12; fontWeight: "normal"; lineHeight: 16 };
+
   // Interactive Elements
-  button: { fontSize: 16, fontWeight: '600', lineHeight: 24 }
-  buttonSmall: { fontSize: 14, fontWeight: '600', lineHeight: 20 }
+  button: { fontSize: 16; fontWeight: "600"; lineHeight: 24 };
+  buttonSmall: { fontSize: 14; fontWeight: "600"; lineHeight: 20 };
 }
 ```
 
 ### **Spacing & Layout**
+
 ```typescript
 interface SpacingSystem {
-  xs: 4      // Extra small spacing
-  sm: 8      // Small spacing
-  md: 16     // Medium spacing
-  lg: 24     // Large spacing
-  xl: 32     // Extra large spacing
-  xxl: 48    // Extra extra large spacing
+  xs: 4; // Extra small spacing
+  sm: 8; // Small spacing
+  md: 16; // Medium spacing
+  lg: 24; // Large spacing
+  xl: 32; // Extra large spacing
+  xxl: 48; // Extra extra large spacing
 }
 ```
 
 ### **Shadow System**
+
 ```typescript
 interface ShadowSystem {
-  small: { shadowRadius: 2, elevation: 2 }
-  medium: { shadowRadius: 4, elevation: 4 }
-  large: { shadowRadius: 8, elevation: 8 }
-  xlarge: { shadowRadius: 16, elevation: 16 }
+  small: { shadowRadius: 2; elevation: 2 };
+  medium: { shadowRadius: 4; elevation: 4 };
+  large: { shadowRadius: 8; elevation: 8 };
+  xlarge: { shadowRadius: 16; elevation: 16 };
 }
 ```
 
@@ -431,6 +455,7 @@ interface ShadowSystem {
 ## 🔥 **Firebase Integration (100% Operational)**
 
 ### **Authentication System**
+
 - ✅ **Email/Password** authentication
 - ✅ **Google Sign-In** integration
 - ✅ **Profile management** with photo upload
@@ -439,6 +464,7 @@ interface ShadowSystem {
 - ✅ **Security rules** and validation
 
 ### **Database (Firestore)**
+
 - ✅ **Real-time listeners** for live updates
 - ✅ **Complex queries** with filtering
 - ✅ **Batch operations** for efficiency
@@ -449,6 +475,7 @@ interface ShadowSystem {
 - ✅ **Fallback queries** for missing indexes
 
 ### **Storage System**
+
 - ✅ **File upload/download** for media
 - ✅ **Image compression** and optimization
 - ✅ **Audio file storage** for voice notes
@@ -458,6 +485,7 @@ interface ShadowSystem {
 - ✅ **Buckets**: profile-images, safeRoom-media, attachments, audio-notes, shopping-receipts
 
 ### **Analytics & Performance**
+
 - ✅ **Custom event tracking** for user behavior
 - ✅ **Performance monitoring** for app optimization
 - ✅ **Real-time metrics** and reporting
@@ -465,6 +493,7 @@ interface ShadowSystem {
 - ✅ **Conversion tracking** for features
 
 ### **Cloud Messaging**
+
 - ✅ **Push notifications** with deep linking
 - ✅ **Topic subscriptions** for targeted messaging
 - ✅ **Device management** and registration
@@ -477,6 +506,7 @@ interface ShadowSystem {
 ## 🚀 **Getting Started**
 
 ### **Prerequisites**
+
 - **Node.js** (v16 or higher)
 - **npm** or **yarn**
 - **Expo CLI** (`npm install -g @expo/cli`)
@@ -487,17 +517,20 @@ interface ShadowSystem {
 ### **Installation**
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Victordaz07/FamilyDash.git
    cd FamilyDash
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure Firebase** (Optional - app works with mock data)
+
    ```bash
    # Copy Firebase configuration
    cp src/config/firebaseConfig.example.ts src/config/firebase.ts
@@ -505,6 +538,7 @@ interface ShadowSystem {
    ```
 
 4. **Start the development server**
+
    ```bash
    npx expo start
    ```
@@ -515,6 +549,7 @@ interface ShadowSystem {
    - **iOS**: Press `i` for iOS simulator
 
 ### **Available Scripts**
+
 ```bash
 npm start              # Start Expo development server
 npm run android        # Run on Android emulator
@@ -529,6 +564,7 @@ npx eas build         # Build APK with EAS Build
 ## 📊 **Development Status**
 
 ### ✅ **Completed Features (100%)**
+
 - [x] **Complete UI/UX implementation** with modern design
 - [x] **Navigation system** with bottom tabs and stack navigation
 - [x] **Task management module** with full CRUD operations
@@ -563,11 +599,13 @@ npx eas build         # Build APK with EAS Build
 - [x] **Map integration** with Expo Go fallback
 
 ### 🔄 **In Progress**
+
 - [ ] **APK Build** - Final production build (Currently building)
 - [ ] **Device Testing** - Testing on physical devices
 - [ ] **Performance Optimization** - Final optimizations
 
 ### 📋 **Planned Features**
+
 - [ ] **iOS App Store** - Apple App Store submission
 - [ ] **Google Play Store** - Google Play Store submission
 - [ ] **Offline Mode** - Enhanced offline functionality
@@ -583,6 +621,7 @@ npx eas build         # Build APK with EAS Build
 ## 🧪 **Testing & Quality**
 
 ### **Code Quality Metrics**
+
 - ✅ **TypeScript Errors**: 0
 - ✅ **Linting Errors**: 0
 - ✅ **Build Errors**: 0
@@ -592,6 +631,7 @@ npx eas build         # Build APK with EAS Build
 - ✅ **Maintainability Index**: High
 
 ### **Testing Strategy**
+
 - **Unit Tests**: Component and utility testing
 - **Integration Tests**: Module interaction testing
 - **E2E Tests**: Complete user flow testing
@@ -603,6 +643,7 @@ npx eas build         # Build APK with EAS Build
 ## 🚀 **Deployment & Distribution**
 
 ### **Build Process**
+
 ```bash
 # Development build
 npx expo start
@@ -615,6 +656,7 @@ npx eas build --platform android --profile preview
 ```
 
 ### **Distribution Methods**
+
 - **Direct APK**: Download and install directly
 - **Firebase App Distribution**: Internal testing
 - **Google Play Store**: Public distribution (planned)
@@ -633,6 +675,7 @@ We welcome contributions! Please follow these steps:
 5. **Open a Pull Request**
 
 ### **Development Guidelines**
+
 - Follow **TypeScript** best practices
 - Write **meaningful commit messages**
 - Add **tests** for new features
@@ -653,7 +696,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 FamilyDash is designed to **help families with children (8–12 years old)** manage responsibilities, communicate openly, and grow together in a safe digital environment.
 
 ### **Our Mission**
+
 To create a comprehensive digital platform where families can:
+
 - **Organize** daily responsibilities and tasks efficiently
 - **Communicate** openly about feelings and challenges
 - **Learn** from mistakes through structured reflection
@@ -661,12 +706,14 @@ To create a comprehensive digital platform where families can:
 - **Grow** as a cohesive family unit
 
 ### **Target Audience**
+
 - **Parents** seeking modern family management tools
 - **Children** (8-12 years) learning responsibility and accountability
 - **Families** wanting to improve communication and organization
 - **Educators** interested in family dynamics and child development
 
 ### **Key Benefits**
+
 - **Improved Family Organization** through task management
 - **Enhanced Communication** via emotional safe spaces
 - **Positive Behavior Development** through structured penalties
@@ -680,6 +727,7 @@ To create a comprehensive digital platform where families can:
 **Víctor Ruiz** - [@Victordaz07](https://github.com/Victordaz07)
 
 This project represents a **comprehensive portfolio project** showcasing:
+
 - **Modern React Native development** with advanced patterns
 - **Firebase integration** with real-time features
 - **Professional UI/UX design** with accessibility
@@ -729,4 +777,4 @@ If you have any questions or need help:
 
 **Made with ❤️ for families everywhere**
 
-*FamilyDash v1.3.0 - Building the future of family management*
+_FamilyDash v1.4.0 - Building the future of family management_

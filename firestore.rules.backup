@@ -1,0 +1,107 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isMember(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/family_members/$(familyId)/users/$(request.auth.uid));
+    }
+    
+    function isParent(familyId) {
+      return isMember(familyId) &&
+        get(/databases/$(database)/documents/family_members/$(familyId)/users/$(request.auth.uid)).data.role == "parent";
+    }
+    
+    function isPlus(familyId) {
+      return get(/databases/$(database)/documents/families/$(familyId)).data.plan == "plus";
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Existing collections (keeping original rules)
+    match /families/{familyId} {
+      allow read, write: if isMember(familyId);
+    }
+    
+    match /family_members/{familyId}/users/{userId} {
+      allow read: if isMember(familyId);
+      allow write: if isMember(familyId) && (isOwner(userId) || isParent(familyId));
+    }
+    
+    match /voice_notes/{noteId} {
+      allow read, write: if isMember(resource.data.familyId);
+    }
+    
+    match /tasks/{taskId} {
+      allow read, write: if isMember(resource.data.familyId);
+    }
+    
+    match /safe_room_messages/{messageId} {
+      allow read, write: if isMember(resource.data.familyId);
+    }
+    
+    // FamilyDash+ specific collections
+    
+    // Feature flags - readable by all members, writable by parents only
+    match /feature_flags/{familyId} {
+      allow read: if isMember(familyId);
+      allow write: if isParent(familyId);
+    }
+    
+    // Emergency logs - readable by family members, creatable by authenticated users
+    match /emergency_logs/{logId} {
+      allow read: if isMember(resource.data.familyId);
+      allow create: if isAuthenticated() && 
+        isMember(request.resource.data.familyId) &&
+        request.resource.data.fromUid == request.auth.uid;
+    }
+    
+    // Live Audio SOS calls - readable and writable by family members
+    match /calls/{callId} {
+      allow read, write: if isMember(resource.data.familyId);
+    }
+    
+    // Location data - readable by family members, writable by owner only
+    match /locations/{userId} {
+      allow read: if isMember(get(/databases/$(database)/documents/locations/$(userId)).data.familyId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Location history - readable by family members, writable by owner only
+    match /location_history/{userId}/{historyDoc} {
+      allow read: if isMember(get(/databases/$(database)/documents/locations/$(userId)).data.familyId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Notification settings - readable and writable by family members
+    match /notification_settings/{familyId} {
+      allow read, write: if isMember(familyId);
+    }
+    
+    // User consent - readable by family members, writable by owner or parents
+    match /user_consent/{userId} {
+      allow read: if isMember(get(/databases/$(database)/documents/user_consent/$(userId)).data.familyId);
+      allow write: if isOwner(userId) || isParent(get(/databases/$(database)/documents/user_consent/$(userId)).data.familyId);
+    }
+    
+    // Analytics and usage logs - readable by family members, creatable by authenticated users
+    match /analytics/{logId} {
+      allow read: if isMember(resource.data.familyId);
+      allow create: if isAuthenticated() && 
+        isMember(request.resource.data.familyId) &&
+        request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Default deny rule for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

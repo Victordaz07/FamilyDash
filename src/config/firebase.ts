@@ -13,16 +13,20 @@ import { getAnalytics } from 'firebase/analytics';
 import { getPerformance } from 'firebase/performance';
 // import { getMessaging } from 'firebase/messaging'; // Removed - causes issues in React Native
 
-// Firebase configuration - Replace with your actual config
+// TEMP during Phase 0: config removed; will be loaded from env in Phase 1
+// SECURITY AUDIT: Hardcoded credentials disabled
 const firebaseConfig = {
-  apiKey: "AIzaSyBqZSqW2ZU1EZldEuc0rktxMuSYi1hleq8",
-  authDomain: "family-dash-15944.firebaseapp.com",
-  projectId: "family-dash-15944",
-  storageBucket: "family-dash-15944.firebasestorage.app",
-  messagingSenderId: "3950658017",
-  appId: "1:3950658017:web:9d4d2ddea39f8a785e12a0",
-  measurementId: "G-ENM2KQWEPX"
+  apiKey: "__PLACEHOLDER__FIREBASE_CONFIG_DISABLED__",
+  authDomain: "__PLACEHOLDER__",
+  projectId: "__PLACEHOLDER__",
+  storageBucket: "__PLACEHOLDER__",
+  messagingSenderId: "__PLACEHOLDER__",
+  appId: "__PLACEHOLDER__",
+  measurementId: "__PLACEHOLDER__"
 };
+
+// WARNING: This file will be replaced in Phase 1 with env-based config
+export const __FIREBASE_CONFIG_DISABLED__ = true;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

@@ -32,9 +32,22 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.*
+!.env.example
+
+# Firebase config files (security)
+firebase-config.env
+src/config/firebase.ts.bak
 
 # typescript
 *.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # generated native folders
 /ios
