@@ -1,6 +1,7 @@
 /**
  * Firebase Real Configuration for FamilyDash
  * Production-ready Firebase services integration
+ * SECURITY: All credentials loaded from environment variables
  */
 
 import { initializeApp } from 'firebase/app';
@@ -9,39 +10,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, connectFirestoreEmulator, getDoc, doc, collection, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
-import { getAnalytics } from 'firebase/analytics';
-import { getPerformance } from 'firebase/performance';
-// import { getMessaging } from 'firebase/messaging'; // Removed - causes issues in React Native
+// NOTE: In React Native, DO NOT use firebase/analytics or firebase/performance from web SDK
+// These will be migrated to react-native-firebase in Phase 8
 
-// TEMP during Phase 0: config removed; will be loaded from env in Phase 1
-// SECURITY AUDIT: Hardcoded credentials disabled
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "__PLACEHOLDER__FIREBASE_CONFIG_DISABLED__",
-  authDomain: "__PLACEHOLDER__",
-  projectId: "__PLACEHOLDER__",
-  storageBucket: "__PLACEHOLDER__",
-  messagingSenderId: "__PLACEHOLDER__",
-  appId: "__PLACEHOLDER__",
-  measurementId: "__PLACEHOLDER__"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID, // empty in RN (ok)
 };
 
-// WARNING: This file will be replaced in Phase 1 with env-based config
-export const __FIREBASE_CONFIG_DISABLED__ = true;
+// Validate required config
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error(
+    '🔥 Firebase configuration missing! Please ensure all EXPO_PUBLIC_FIREBASE_* environment variables are set in your .env file.'
+  );
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Enable Analytics and Performance
-console.log('🔥 Firebase initialized with project: family-dash-15944');
-
-// Initialize Analytics (optional for React Native)
-// const analytics = getAnalytics(app);
-
-// Initialize Performance Monitoring
-// const perf = getPerformance(app);
-
-// Initialize Cloud Messaging
-// const messaging = getMessaging(app);
+console.log(`🔥 Firebase initialized with project: ${firebaseConfig.projectId}`);
 
 // Initialize Firebase services with React Native persistence
 const auth = initializeAuth(app, {
@@ -49,16 +42,18 @@ const auth = initializeAuth(app, {
 });
 const db = getFirestore(app);
 
-// Enable offline persistence
-enableIndexedDbPersistence(db).catch((err) => {
-  if (err.code === 'failed-precondition') {
-    console.log('⚠️ Multiple tabs open, persistence can only be enabled in one tab at a time.');
-  } else if (err.code === 'unimplemented') {
-    console.log('⚠️ The current browser does not support all features required for persistence');
-  } else {
-    console.log('❌ Persistence error:', err);
-  }
-});
+// Enable offline persistence (web only)
+if (typeof window !== 'undefined') {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.log('⚠️ Multiple tabs open, persistence can only be enabled in one tab at a time.');
+    } else if (err.code === 'unimplemented') {
+      console.log('⚠️ The current browser does not support all features required for persistence');
+    } else {
+      console.log('❌ Persistence error:', err);
+    }
+  });
+}
 
 const storage = getStorage(app);
 const functions = getFunctions(app);
@@ -70,32 +65,13 @@ const facebookProvider = new FacebookAuthProvider();
 // Configure providers
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
-
 facebookProvider.addScope('email');
-
-// Initialize analytics (only in production)
-let analytics = null;
-let performance = null;
-let messaging = null;
-
-if (process.env.NODE_ENV === 'production') {
-  analytics = getAnalytics(app);
-  performance = getPerformance(app);
-
-  // Initialize messaging (only in production and web)
-  // Temporarily disabled - causes issues in React Native
-  // if (typeof global !== 'undefined' && global.window) {
-  //   messaging = getMessaging(app);
-  // }
-}
 
 // Development emulator configuration
 if (__DEV__) {
-  console.log('🔧 Firebase running in development mode with emulators');
-
+  console.log('🔧 Firebase running in development mode');
   // Connect to Firestore emulator (uncomment if using emulators)
   // connectFirestoreEmulator(db, 'localhost', 8080);
-
   // Connect to Functions emulator (uncomment if using emulators)
   // connectFunctionsEmulator(functions, 'localhost', 5001);
 }
@@ -152,47 +128,32 @@ export const callFunction = async (functionName: string, data?: any) => {
   return await functionRef(data);
 };
 
-// Analytics helpers
+// Analytics helpers (placeholder for future react-native-firebase integration)
 export const trackEvent = (eventName: string, parameters?: any) => {
-  try {
-    if (analytics && typeof analytics.logEvent === 'function') {
-      analytics.logEvent(eventName, parameters);
-    } else {
-      // Fallback: log to console in development
-      console.log(`📊 Analytics Event: ${eventName}`, parameters);
-    }
-  } catch (error) {
-    console.warn(`⚠️ Analytics tracking failed for event: ${eventName}`, error);
+  if (__DEV__) {
+    console.log(`📊 Analytics Event: ${eventName}`, parameters);
   }
+  // Will be replaced with react-native-firebase in Phase 8
 };
 
 export const trackScreen = (screenName: string) => {
-  try {
-    if (analytics && typeof analytics.logEvent === 'function') {
-      analytics.logEvent('screen_view', { screen_name: screenName });
-    } else {
-      // Fallback: log to console in development
-      console.log(`📊 Screen View: ${screenName}`);
-    }
-  } catch (error) {
-    console.warn(`⚠️ Analytics tracking failed for screen: ${screenName}`, error);
+  if (__DEV__) {
+    console.log(`📊 Screen View: ${screenName}`);
   }
+  // Will be replaced with react-native-firebase in Phase 8
 };
 
-// Performance helpers
+// Performance helpers (placeholder for future react-native-firebase integration)
 export const startTrace = (traceName: string) => {
-  if (performance) {
-    const trace = performance.trace(traceName);
-    trace.start();
-    return trace;
+  if (__DEV__) {
+    console.log(`⚡ Performance Trace Started: ${traceName}`);
   }
   return null;
+  // Will be replaced with react-native-firebase in Phase 8
 };
 
 export const stopTrace = (trace: any) => {
-  if (trace) {
-    trace.stop();
-  }
+  // Will be replaced with react-native-firebase in Phase 8
 };
 
 // Environment utilities
@@ -219,12 +180,8 @@ export {
   functions,
   googleProvider,
   facebookProvider,
-  analytics,
-  performance,
-  messaging,
   firebaseConfig,
 };
 
 // Export app instance
 export default app;
-

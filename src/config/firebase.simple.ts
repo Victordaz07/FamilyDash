@@ -1,26 +1,30 @@
 /**
  * Simplified Firebase Configuration
  * Minimal setup to avoid initialization issues
+ * SECURITY: All credentials loaded from environment variables
  */
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// TEMP during Phase 0: config removed; will be loaded from env in Phase 1
-// SECURITY AUDIT: Hardcoded credentials disabled
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "__PLACEHOLDER__FIREBASE_CONFIG_DISABLED__",
-  authDomain: "__PLACEHOLDER__",
-  projectId: "__PLACEHOLDER__",
-  storageBucket: "__PLACEHOLDER__",
-  messagingSenderId: "__PLACEHOLDER__",
-  appId: "__PLACEHOLDER__",
-  measurementId: "__PLACEHOLDER__"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// WARNING: This file will be replaced in Phase 1 with env-based config
-export const __FIREBASE_CONFIG_DISABLED__ = true;
+// Validate required config
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error(
+    '🔥 Firebase configuration missing! Please ensure all EXPO_PUBLIC_FIREBASE_* environment variables are set in your .env file.'
+  );
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -29,7 +33,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-console.log('🔥 Firebase initialized (simplified)');
+console.log(`🔥 Firebase initialized (simplified) with project: ${firebaseConfig.projectId}`);
 
 // Export Firebase instances
 export { app, db, storage, firebaseConfig };
