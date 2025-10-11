@@ -7,7 +7,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { RealAuthService } from '../services';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SecureStorage, STORAGE_KEYS } from '../utils/secureStorage';
+import { secureLog, secureError, logAuthEvent } from '../utils/secureLog';
 
 interface User {
     uid: string;
@@ -36,14 +37,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Listen to Firebase auth state changes with persistence
     useEffect(() => {
-        console.log('🔐 AuthContext: Setting up Firebase auth listener with persistence...');
+        secureLog('🔐 AuthContext: Setting up Firebase auth listener with persistence...');
 
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            console.log('🔐 AuthContext: Firebase auth state changed:', firebaseUser ? `User logged in: ${firebaseUser.email}` : 'User logged out');
+            logAuthEvent('auth_state_changed', firebaseUser?.uid);
 
             try {
                 if (firebaseUser) {
-                    console.log('🔐 AuthContext: User found, setting user state and saving to storage');
+                    secureLog('🔐 AuthContext: User found, setting user state and saving to secure storage');
                     const userData = {
                         uid: firebaseUser.uid,
                         email: firebaseUser.email || '',
@@ -52,48 +53,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                     setUser(userData);
 
-                    // Save user data to AsyncStorage for persistence
+                    // Save user data to SecureStorage for encrypted persistence
                     try {
-                        await AsyncStorage.setItem('user', JSON.stringify(userData));
-                        console.log('🔐 AuthContext: User data saved to AsyncStorage');
+                        await SecureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+                        secureLog('🔐 AuthContext: User data saved to SecureStorage');
                     } catch (error) {
-                        console.error('🔐 AuthContext: Failed to save user to AsyncStorage:', error);
+                        secureError('🔐 AuthContext: Failed to save user to SecureStorage', error);
                     }
                 } else {
-                    console.log('🔐 AuthContext: No authenticated user found, clearing storage');
+                    secureLog('🔐 AuthContext: No authenticated user found, clearing storage');
                     setUser(null);
 
-                    // Clear user data from AsyncStorage
+                    // Clear user data from SecureStorage
                     try {
-                        await AsyncStorage.removeItem('user');
-                        console.log('🔐 AuthContext: User data cleared from AsyncStorage');
+                        await SecureStorage.deleteItem(STORAGE_KEYS.USER_DATA);
+                        secureLog('🔐 AuthContext: User data cleared from SecureStorage');
                     } catch (error) {
-                        console.error('🔐 AuthContext: Failed to clear user from AsyncStorage:', error);
+                        secureError('🔐 AuthContext: Failed to clear user from SecureStorage', error);
                     }
                 }
             } catch (error) {
-                console.error('🔐 AuthContext: Error in auth state change handler:', error);
+                secureError('🔐 AuthContext: Error in auth state change handler', error);
             } finally {
                 setLoading(false);
             }
         }, (error) => {
-            console.error('🔐 AuthContext: Firebase auth error:', error);
+            secureError('🔐 AuthContext: Firebase auth error', error);
             setLoading(false);
         });
 
         // Cleanup function
         return () => {
-            console.log('🔐 AuthContext: Cleaning up auth listener');
+            secureLog('🔐 AuthContext: Cleaning up auth listener');
             unsubscribe();
         };
     }, []);
 
     const login = async (email: string, password: string) => {
         try {
-            console.log('AuthContext: Attempting login for:', email);
+            logAuthEvent('login_attempt');
             const result = await RealAuthService.signInWithEmail({ email, password });
 
-            console.log('AuthContext: Login result:', result.success ? 'SUCCESS' : 'FAILED');
+            logAuthEvent('login_result', result.success ? 'success' : 'failed');
 
             // Note: We don't need to manually set user state here because
             // the Firebase auth listener will automatically update it

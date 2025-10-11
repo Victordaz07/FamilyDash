@@ -29,6 +29,8 @@ import {
 import { db } from '../../config/firebase';
 import RealAuthService from '../auth/RealAuthService';
 import Logger from '../Logger';
+import { sanitizeObject } from '../../utils/sanitize';
+import { logDatabaseOperation } from '../../utils/secureLog';
 
 export interface DatabaseDocument {
   id: string;
@@ -67,9 +69,12 @@ class RealDatabaseService {
     try {
       Logger.debug(`📝 Creating document in collection: ${collectionPath}`);
 
+      // SECURITY: Sanitize user input before writing to Firestore
+      const sanitizedData = sanitizeObject(data);
+
       // Add server timestamp for creation
       const documentData = {
-        ...data,
+        ...sanitizedData,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         createdBy: await this.getCurrentUserId(),
@@ -77,10 +82,11 @@ class RealDatabaseService {
 
       const docRef = await addDoc(collection(db, collectionPath), documentData);
       const documentId = docRef.id;
+      logDatabaseOperation('write', collectionPath, documentId);
 
       // Create the document data with ID
       const documentWithId = {
-        ...data,
+        ...sanitizedData,
         id: documentId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -162,14 +168,18 @@ class RealDatabaseService {
 
       const docRef = doc(db, collectionPath, documentId);
 
+      // SECURITY: Sanitize user input before writing to Firestore
+      const sanitizedData = sanitizeObject(data);
+
       // Add server timestamp for update
       const updateData = {
-        ...data,
+        ...sanitizedData,
         updatedAt: serverTimestamp(),
         updatedBy: await this.getCurrentUserId(),
       };
 
       await updateDoc(docRef, updateData);
+      logDatabaseOperation('update', collectionPath, documentId);
 
       // Get the updated document
       const updatedDoc = await this.getDocument<T>(collectionPath, documentId);
