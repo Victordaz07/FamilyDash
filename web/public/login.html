@@ -486,7 +486,7 @@
         } else if (isFamilyAdmin) {
           // Redirect to family admin dashboard
           alert('¡Bienvenido! Redirigiendo a tu panel familiar...');
-          window.location.href = '/admin/family';
+          window.location.href = '/admin/dashboard';
         } else {
           // Regular user - redirect to app download
           alert('¡Inicio de sesión exitoso! Descarga la app para continuar.');
@@ -537,10 +537,58 @@
       }
     }
     
-    // Social login handlers (redirect to mobile app)
-    document.getElementById('googleLogin').addEventListener('click', function(e) {
+    // Social login handlers
+    document.getElementById('googleLogin').addEventListener('click', async function(e) {
       e.preventDefault();
-      alert('Para iniciar sesión con Google, usa la app móvil de FamilyDash.');
+      const btn = this;
+      const originalText = btn.innerHTML;
+      
+      // Mostrar loading
+      btn.innerHTML = '<span class="loading"></span> Iniciando sesión...';
+      btn.disabled = true;
+      
+      try {
+        const result = await window.FamilyDashAuth.loginWithGoogle();
+        
+        if (result.success) {
+          // Verificar si el email está verificado
+          if (!result.user.emailVerified) {
+            alert('¡Registro exitoso con Google! Por favor verifica tu email. Te hemos enviado un email de verificación.');
+            // Enviar email premium manualmente
+            try {
+              await window.FamilyDashAuth.resendVerificationEmail();
+              alert('Email premium enviado! Revisa tu bandeja de entrada.');
+            } catch (emailError) {
+              console.log('Email premium no se pudo enviar:', emailError);
+            }
+            window.location.href = '/verified?email=' + encodeURIComponent(result.user.email);
+          } else {
+            // Usuario verificado, verificar rol
+            const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(result.user.uid);
+            const isFamilyAdmin = await window.FamilyDashAuth.isFamilyAdmin(result.user.uid);
+            
+            if (isSuperAdmin) {
+              alert('¡Bienvenido Super Admin! Redirigiendo al panel de control...');
+              window.location.href = '/admin/dashboard';
+            } else if (isFamilyAdmin) {
+              alert('¡Bienvenido! Redirigiendo a tu panel familiar...');
+              window.location.href = '/admin/dashboard';
+            } else {
+              alert('¡Inicio de sesión exitoso! Descarga la app para continuar.');
+              window.location.href = '/#download';
+            }
+          }
+        } else {
+          alert('Error en el login: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Error en Google login:', error);
+        alert('Error en el login: ' + error.message);
+      } finally {
+        // Restaurar botón
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     });
     
     document.getElementById('appleLogin').addEventListener('click', function(e) {

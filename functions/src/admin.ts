@@ -107,7 +107,7 @@ export const promoteToSuperAdmin = functions.https.onCall(async (data, context) 
  * GET ALL FAMILIES STATS
  * Obtiene estadísticas globales de todas las familias
  */
-export const getAllFamiliesStats = functions.https.onCall(async (data, context) => {
+export const getAllFamiliesStats = functions.https.onCall(async (_data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
   }
@@ -247,7 +247,7 @@ export const bulkUserOperation = functions.https.onCall(async (data, context) =>
 
   try {
     const batch = db.batch();
-    const results: any[] = [];
+    // const results: any[] = []; // Not used yet
 
     switch (operation) {
       case 'verify':
@@ -277,7 +277,7 @@ export const bulkUserOperation = functions.https.onCall(async (data, context) =>
           batch.update(userRef, {
             role: newRole,
             roleUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-            roleUpdatedBy: context.auth.uid,
+            roleUpdatedBy: context.auth?.uid,
           });
         });
         break;

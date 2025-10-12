@@ -10,7 +10,10 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 // Import admin functions
-import * as adminFunctions from './admin';
+// import * as adminFunctions from './admin';
+
+// Import custom email verification
+// import { sendCustomVerification } from './customEmailVerification';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -301,8 +304,7 @@ export const updateUserProfile = functions
 // EXPORTS
 // ============================================
 
-// Export existing functions
-export { createTask, emailVerifiedGuard, updateUserProfile };
+// Export existing functions (removed duplicate exports)
 
 // Export admin functions
 export {
@@ -314,4 +316,8 @@ export {
   bulkUserOperation,
   moderateContent,
 } from './admin';
+
+// Export custom email verification
+export { sendCustomVerification } from './customEmailVerification';
+export { resendVerificationEmail } from './customEmailVerification';
 

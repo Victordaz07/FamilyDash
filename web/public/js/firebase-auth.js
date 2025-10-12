@@ -56,14 +56,9 @@ async function registerWithEmail(email, password, displayName = '') {
       });
     }
 
-    // Enviar email de verificación
-    const actionCodeSettings = {
-      url: 'https://family-dash-15944.web.app/verified',
-      handleCodeInApp: false,
-    };
-
-    await user.sendEmailVerification(actionCodeSettings);
-    console.log('📧 Email de verificación enviado');
+    // NOTA: Email de verificación personalizado se envía automáticamente 
+    // via Cloud Function sendCustomVerification (onUserCreated trigger)
+    console.log('📧 Email de verificación personalizado será enviado automáticamente');
 
     // Crear documento de usuario en Firestore
     await db.collection('users').doc(user.uid).set({
@@ -126,7 +121,8 @@ async function loginWithEmail(email, password) {
         handleCodeInApp: false,
       };
       
-      await user.sendEmailVerification(actionCodeSettings);
+      // NOTA: Email de verificación personalizado se maneja via Cloud Function
+      // await user.sendEmailVerification(actionCodeSettings);
       
       // Cerrar sesión y mostrar error
       await auth.signOut();
@@ -324,15 +320,16 @@ async function resendVerificationEmail() {
     const user = auth.currentUser;
     if (!user) throw new Error('No user logged in');
 
-    const actionCodeSettings = {
-      url: 'https://family-dash-15944.web.app/verified',
-      handleCodeInApp: false,
-    };
-
-    await user.sendEmailVerification(actionCodeSettings);
-    console.log('📧 Email de verificación reenviado');
-
-    return { success: true };
+    // Llamar a nuestra Cloud Function personalizada
+    const resendVerification = firebase.functions().httpsCallable('resendVerificationEmail');
+    const result = await resendVerification();
+    
+    if (result.data.success) {
+      console.log('📧 Email de verificación personalizado reenviado');
+      return { success: true };
+    } else {
+      return { success: false, error: result.data.message };
+    }
   } catch (error) {
     console.error('❌ Error reenviando email:', error);
     return { success: false, error: error.message };
