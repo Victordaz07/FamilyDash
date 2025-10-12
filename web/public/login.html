@@ -93,24 +93,14 @@
       font-size: 32px;
       font-weight: 800;
       margin-bottom: 8px;
-      background: var(--success-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 
-        -1px -1px 0 #ffffff,
-         1px -1px 0 #ffffff,
-        -1px  1px 0 #ffffff,
-         1px  1px 0 #ffffff,
-         0   -1px 0 #ffffff,
-         0    1px 0 #ffffff,
-        -1px  0   0 #ffffff,
-         1px  0   0 #ffffff;
+      color: #ffffff;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
     
     .logo p {
-      color: var(--text-secondary);
+      color: #ffffff;
       font-size: 16px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
     .form-group {
@@ -363,7 +353,7 @@
 <body>
   <div class="login-container">
     <div class="logo">
-      <img src="/logo.svg" alt="FamilyDash" class="logo-image">
+      <img src="/assets/brand/logo-256.png" alt="FamilyDash" class="logo-image">
       <h1>FamilyDash</h1>
       <p>Bienvenido de vuelta</p>
     </div>
@@ -415,12 +405,12 @@
       <p>O inicia sesión con:</p>
       <div class="social-buttons">
         <a href="#" class="social-btn" id="googleLogin">
-          <span class="icon">🔍</span>
-          Google
+          <span class="icon">🔐</span>
+          Continuar con Google
         </a>
         <a href="#" class="social-btn" id="appleLogin">
-          <span class="icon">🍎</span>
-          Apple
+          <span class="icon">🔑</span>
+          Continuar con Apple
         </a>
       </div>
     </div>

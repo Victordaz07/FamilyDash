@@ -1,0 +1,70 @@
+# 🚀 ROBUST REGISTRATION SYSTEM - ENVIRONMENT VARIABLES
+
+# ============================================
+# CLOUDFLARE TURNSTILE (CAPTCHA)
+# ============================================
+TURNSTILE_SITE_KEY=0x4AAAAAAAbXqV2FmWgKqV2F
+TURNSTILE_SECRET_KEY=0x4AAAAAAAbXqV2FmWgKqV2F_SECRET_KEY
+
+# ============================================
+# STRIPE (PAYMENTS)
+# ============================================
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# ============================================
+# RESEND (EMAIL PREMIUM)
+# ============================================
+RESEND_API_KEY=re_...
+
+# ============================================
+# SYSTEM CONFIGURATION
+# ============================================
+ADMIN_MIN_AGE=18
+ADMIN_ACTIVATION_FEE_USD=200
+
+# ============================================
+# FIREBASE CONFIGURATION
+# ============================================
+FIREBASE_API_KEY=AIzaSyD6KqV2FmWgKqV2FmWgKqV2FmWgKqV2F
+FIREBASE_AUTH_DOMAIN=family-dash-15944.firebaseapp.com
+FIREBASE_PROJECT_ID=family-dash-15944
+FIREBASE_STORAGE_BUCKET=family-dash-15944.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=123456789012
+FIREBASE_APP_ID=1:123456789012:web:abcdef1234567890
+
+# ============================================
+# DOMAIN CONFIGURATION
+# ============================================
+WEB_APP_DOMAIN=https://family-dash-15944.web.app
+MOBILE_APP_SCHEME=familydash://
+VERIFICATION_URL=https://family-dash-15944.web.app/verified.html
+
+# ============================================
+# STRIPE WEBHOOK ENDPOINTS
+# ============================================
+STRIPE_WEBHOOK_URL=https://us-central1-family-dash-15944.cloudfunctions.net/stripeWebhook
+STRIPE_SUCCESS_URL=https://family-dash-15944.web.app/admin/dashboard?admin_activated=true
+STRIPE_CANCEL_URL=https://family-dash-15944.web.app/admin/dashboard?admin_activation=cancelled
+
+# ============================================
+# EMAIL CONFIGURATION
+# ============================================
+EMAIL_FROM=FamilyDash <verify@familydash.app>
+EMAIL_REPLY_TO=support@familydash.app
+EMAIL_SUBJECT=✅ Verifica tu correo y empieza con FamilyDash
+
+# ============================================
+# SECURITY CONFIGURATION
+# ============================================
+CORS_ORIGINS=https://family-dash-15944.web.app,https://familydash.app
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=5
+
+# ============================================
+# DEBUG CONFIGURATION
+# ============================================
+DEBUG_MODE=false
+LOG_LEVEL=info
+ENABLE_ANALYTICS=true

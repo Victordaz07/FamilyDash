@@ -13,7 +13,11 @@ import * as functions from 'firebase-functions';
 // import * as adminFunctions from './admin';
 
 // Import custom email verification
-// import { sendCustomVerification } from './customEmailVerification';
+// import { sendCustomVerification, resendVerificationEmail } from './customEmailVerification';
+
+// Import robust registration functions
+import './registerUser';
+import './adminActivation';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -318,6 +322,9 @@ export {
 } from './admin';
 
 // Export custom email verification
-export { sendCustomVerification } from './customEmailVerification';
-export { resendVerificationEmail } from './customEmailVerification';
+export { sendCustomVerification, resendVerificationEmail } from './customEmailVerification';
+
+// Export robust registration functions
+export { registerUser } from './registerUser';
+export { createAdminActivationCheckout, stripeWebhook } from './adminActivation';
 

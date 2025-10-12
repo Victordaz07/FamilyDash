@@ -27,14 +27,14 @@ const ConditionalNavigator: React.FC = () => {
     if (loading || verificationLoading) {
         return (
             <LinearGradient
-                colors={[theme.colors.background, theme.colors.gradientEnd]}
+                colors={['#FF8A00', '#FF6B35']}
                 style={styles.loadingContainer}
             >
                 <View style={styles.loadingContent}>
                     {/* FamilyDash Official Icon */}
                     <View style={styles.iconContainer}>
                         <Image
-                            source={require('../../assets/icon.png')}
+                            source={require('../../assets/brand/logo-256.png')}
                             style={styles.logoImage}
                             contentFit="contain"
                         />
@@ -43,11 +43,11 @@ const ConditionalNavigator: React.FC = () => {
                     <Text style={styles.loadingText}>FamilyDash</Text>
                     <ActivityIndicator
                         size="large"
-                        color={theme.colors.primary}
+                        color="#FFFFFF"
                         style={styles.spinner}
                     />
                     <Text style={styles.loadingSubtext}>
-                        {loading ? 'Loading...' : 'Verifying email...'}
+                        {loading ? 'Cargando...' : 'Verificando correo...'}
                     </Text>
                 </View>
             </LinearGradient>
@@ -87,33 +87,43 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     iconContainer: {
-        width: 100,
-        height: 100,
-        marginBottom: 32,
-        elevation: 15,
-        shadowColor: '#FF6B35',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 15,
+        width: 120,
+        height: 120,
+        marginBottom: 40,
+        elevation: 20,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.5,
+        shadowRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        borderRadius: 20,
     },
     logoImage: {
-        width: '100%',
-        height: '100%',
+        width: '90%',
+        height: '90%',
+        borderRadius: 15,
     },
     loadingText: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
-        color: theme.colors.textPrimary,
+        color: '#FFFFFF',
         marginBottom: 16,
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
     },
     spinner: {
         marginBottom: 16,
     },
     loadingSubtext: {
-        fontSize: 16,
-        color: theme.colors.textSecondary,
+        fontSize: 18,
+        color: '#FFFFFF',
+        textAlign: 'center',
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
 });
 

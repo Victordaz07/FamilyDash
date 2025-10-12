@@ -8,6 +8,18 @@ export const metadata: Metadata = {
   authors: [{ name: "FamilyDash Team" }],
   creator: "FamilyDash",
   publisher: "FamilyDash",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/assets/brand/logo-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/brand/logo-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/assets/brand/logo-64.png", sizes: "64x64", type: "image/png" },
+      { url: "/assets/brand/logo-128.png", sizes: "128x128", type: "image/png" },
+      { url: "/assets/brand/logo-256.png", sizes: "256x256", type: "image/png" },
+    ],
+    apple: "/assets/brand/apple-touch-icon.png",
+    shortcut: "/assets/brand/logo-32.png",
+  },
   openGraph: {
     type: "website",
     locale: "es_ES",
@@ -17,9 +29,9 @@ export const metadata: Metadata = {
     description: "FamilyDash es el dashboard familiar completo: metas, calendario, tareas, Safe Room y más.",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "/assets/brand/logo-1024.png",
+        width: 1024,
+        height: 1024,
         alt: "FamilyDash - Dashboard Familiar Integral",
       },
     ],
@@ -28,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "FamilyDash - Dashboard Familiar Integral",
     description: "FamilyDash es el dashboard familiar completo: metas, calendario, tareas, Safe Room y más.",
-    images: ["/og-image.png"],
+    images: ["/assets/brand/logo-1024.png"],
   },
   robots: {
     index: true,

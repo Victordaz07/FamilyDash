@@ -35,7 +35,25 @@ service cloud.firestore {
      */
     function isParent(familyId) {
       return isMember(familyId) &&
-        get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role in ['parent', 'admin'];
+        get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role in ['parent', 'admin', 'parent-admin'];
+    }
+    
+    /**
+     * Check if user is a super admin
+     */
+    function isSuperAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin';
+    }
+    
+    /**
+     * Check if user can change roles (only Cloud Functions or super admins)
+     * Cloud Functions have admin privileges and can bypass these rules
+     */
+    function canChangeRole() {
+      return isSuperAdmin() || 
+        // Allow Cloud Functions to change roles (they have admin privileges)
+        request.auth.token.firebase.sign_in_provider == 'custom';
     }
     
     // ============================================
@@ -46,8 +64,12 @@ service cloud.firestore {
       // Anyone authenticated can read any user profile
       allow read: if signedIn();
       
-      // Only the user themselves can write their own profile
-      allow write: if isOwner(userId);
+      // Users can write their own profile, but cannot change their role
+      // Only Cloud Functions or super admins can change roles
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && 
+        (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || canChangeRole());
+      allow delete: if isSuperAdmin();
     }
     
     // ============================================
@@ -67,7 +89,10 @@ service cloud.firestore {
         allow create, delete: if isParent(familyId);
         
         // Members can update their own profile, parents can update anyone
-        allow update: if isOwner(memberId) || isParent(familyId);
+        // But role changes are restricted to Cloud Functions or super admins
+        allow update: if (isOwner(memberId) && 
+          !('role' in request.resource.data.diff(resource.data).affectedKeys())) ||
+          (isParent(familyId) && canChangeRole());
       }
       
       // Tasks subcollection
@@ -223,6 +248,54 @@ service cloud.firestore {
       allow create: if signedIn() && 
         exists(/databases/$(database)/documents/families/$(request.resource.data.familyId)/members/$(request.auth.uid)) &&
         request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================
+    // ROBUST REGISTRATION SYSTEM COLLECTIONS
+    // ============================================
+    
+    // Family invitation codes
+    match /families/{familyId}/codes/{codeId} {
+      allow read: if isParent(familyId);
+      allow write: if isParent(familyId);
+    }
+    
+    // Admin activation requests
+    match /adminRequests/{userId} {
+      allow read: if isOwner(userId) || isSuperAdmin();
+      allow write: if isOwner(userId) || canChangeRole();
+    }
+    
+    // Stripe subscriptions
+    match /subscriptions/{familyId} {
+      allow read: if isParent(familyId) || isSuperAdmin();
+      allow write: if canChangeRole();
+    }
+    
+    // Daily usage tracking
+    match /usageDaily/{docId} {
+      allow read: if isParent(resource.data.familyId) || isSuperAdmin();
+      allow write: if false; // Only backend can write
+    }
+    
+    // System configuration
+    match /system/config {
+      allow read: if signedIn();
+      allow write: if isSuperAdmin();
+    }
+    
+    // ============================================
+    // PUBLIC DATA (for landing page/website)
+    // ============================================
+    
+    // Public statistics for landing page
+    match /public_stats/general {
+      allow read: if true;
+    }
+    
+    // Public testimonials for landing page
+    match /public_testimonials/{testimonialId} {
+      allow read: if true;
     }
     
     // ============================================

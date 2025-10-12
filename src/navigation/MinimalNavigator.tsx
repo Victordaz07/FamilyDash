@@ -12,32 +12,32 @@ import { Image } from 'expo-image';
 const MinimalNavigator: React.FC = () => {
     return (
         <LinearGradient
-            colors={['#EC4899', '#DB2777']}
+            colors={['#FF8A00', '#FF6B35']}
             style={styles.container}
         >
             <View style={styles.content}>
                 {/* FamilyDash Official Icon */}
                 <View style={styles.iconContainer}>
                     <Image
-                        source={require('../../assets/icon.png')}
+                        source={require('../../assets/brand/logo-256.png')}
                         style={styles.logoImage}
                         contentFit="contain"
                     />
                 </View>
 
                 <Text style={styles.title}>FamilyDash</Text>
-                <Text style={styles.subtitle}>Voice Module Ready!</Text>
+                <Text style={styles.subtitle}>¡Sistema Listo!</Text>
                 
                 <View style={styles.features}>
-                    <Text style={styles.featureText}>✅ Voice Recording</Text>
-                    <Text style={styles.featureText}>✅ Audio Playback</Text>
-                    <Text style={styles.featureText}>✅ Firebase Integration</Text>
-                    <Text style={styles.featureText}>✅ Progress Bar</Text>
+                    <Text style={styles.featureText}>✅ Grabación de Voz</Text>
+                    <Text style={styles.featureText}>✅ Reproducción de Audio</Text>
+                    <Text style={styles.featureText}>✅ Integración Firebase</Text>
+                    <Text style={styles.featureText}>✅ Barra de Progreso</Text>
                 </View>
 
                 <TouchableOpacity style={styles.button}>
                     <Ionicons name="checkmark-circle" size={20} color="white" />
-                    <Text style={styles.buttonText}>System Ready</Text>
+                    <Text style={styles.buttonText}>Sistema Listo</Text>
                 </TouchableOpacity>
             </View>
         </LinearGradient>
@@ -55,35 +55,42 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
     },
     iconContainer: {
-        width: 120,
-        height: 120,
-        marginBottom: 32,
-        elevation: 15,
-        shadowColor: '#FF6B35',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 15,
+        width: 140,
+        height: 140,
+        marginBottom: 40,
+        elevation: 20,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.5,
+        shadowRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: 24,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        borderRadius: 30,
     },
     logoImage: {
-        width: '80%',
-        height: '80%',
+        width: '85%',
+        height: '85%',
+        borderRadius: 20,
     },
     title: {
-        fontSize: 32,
+        fontSize: 36,
         fontWeight: 'bold',
         color: 'white',
-        marginBottom: 8,
+        marginBottom: 12,
         textAlign: 'center',
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
     },
     subtitle: {
-        fontSize: 18,
-        color: 'rgba(255, 255, 255, 0.9)',
-        marginBottom: 32,
+        fontSize: 20,
+        color: 'rgba(255, 255, 255, 0.95)',
+        marginBottom: 40,
         textAlign: 'center',
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
     features: {
         marginBottom: 32,
@@ -93,6 +100,9 @@ const styles = StyleSheet.create({
         color: 'white',
         marginBottom: 8,
         textAlign: 'center',
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 1,
     },
     button: {
         flexDirection: 'row',

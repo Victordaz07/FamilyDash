@@ -400,8 +400,12 @@ FamilyDash/
 │   │   └── firebase.ts       # Firebase configuration
 │   └── utils/                # Utility functions
 ├── assets/                   # Static assets
-│   ├── icon.png             # App icon
-│   ├── icon.svg             # Vector icon
+│   ├── brand/               # Official brand assets (USE THESE!)
+│   │   ├── icon-1024.png    # iOS/Android app icon
+│   │   ├── adaptive-foreground-432.png  # Android adaptive icon
+│   │   └── logo-256.png     # In-app UI logo
+│   ├── icon.png             # Legacy (use brand/ instead)
+│   ├── icon.svg             # Legacy vector
 │   └── splash-icon.png      # Splash screen
 ├── docs/                    # Documentation
 ├── app.json                 # Expo configuration
@@ -710,6 +714,52 @@ npx eas build --platform android --profile preview
 - **Firebase App Distribution**: Internal testing
 - **Google Play Store**: Public distribution (planned)
 - **Apple App Store**: iOS distribution (planned)
+
+---
+
+## 🎨 **Brand Guidelines**
+
+FamilyDash has official brand assets that **must be used consistently** across all platforms.
+
+### **Official Logo**
+
+- **Master Source**: `assets/icon.png`
+- **SHA256**: `ead05b18830ae731e24567f99242384bb8f8e986f5845b06fb82e6c3b26af87e`
+- **Colors**: Primary `#FF8A00` (orange), White `#FFFFFF`
+
+### **Brand Asset Locations**
+
+#### Web Assets
+```
+web/public/assets/brand/
+├── logo-16.png through logo-1024.png
+├── android-chrome-192x192.png
+├── android-chrome-512x512.png
+├── apple-touch-icon.png
+└── favicon.png
+```
+
+#### Mobile Assets
+```
+assets/brand/
+├── icon-1024.png (iOS/Android)
+├── adaptive-foreground-432.png (Android)
+└── logo-256.png (in-app UI)
+```
+
+### **⚠️ IMPORTANT RULES**
+
+1. ✅ **DO** use pre-generated PNGs from `assets/brand/` or `web/public/assets/brand/`
+2. ✅ **DO** reference files by explicit path (e.g., `/assets/brand/logo-256.png`)
+3. ❌ **DO NOT** recreate, redraw, or reinterpret the logo
+4. ❌ **DO NOT** use SVG approximations or CSS-drawn versions
+5. ❌ **DO NOT** modify colors, proportions, or design elements
+
+### **Documentation**
+
+- **Full Guidelines**: See [BRAND_GUARD.md](BRAND_GUARD.md)
+- **Email Templates**: See [EMAIL_TEMPLATE_REFERENCE.md](EMAIL_TEMPLATE_REFERENCE.md)
+- **Regenerate Assets**: Run `node generate-brand-assets.js`
 
 ---
 

@@ -393,7 +393,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation, onSu
                     <View style={styles.header}>
                         <View style={styles.iconContainer}>
                             <Image
-                                source={require('../../assets/icon.png')}
+                                source={require('../../assets/brand/logo-256.png')}
                                 style={styles.logoImage}
                                 contentFit="contain"
                             />

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const features = [
@@ -47,7 +48,16 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-6 py-20">
         <div className="max-w-5xl mx-auto text-center animate-fadeIn">
-          <div className="text-8xl mb-8">🏠</div>
+          <div className="mb-8 flex justify-center">
+            <Image 
+              src="/assets/brand/logo-512.png" 
+              alt="FamilyDash" 
+              width={120} 
+              height={120}
+              priority
+              className="animate-pulse"
+            />
+          </div>
           <h1 className="text-5xl md:text-7xl font-extrabold mb-8 bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">
             FamilyDash
           </h1>
@@ -172,7 +182,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4">🏠 FamilyDash</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <Image 
+                  src="/assets/brand/logo-256.png" 
+                  alt="FamilyDash" 
+                  width={32} 
+                  height={32}
+                />
+                <h3 className="text-2xl font-bold">FamilyDash</h3>
+              </div>
               <p className="text-white/70">
                 Dashboard familiar integral para organizar y fortalecer tu familia.
               </p>

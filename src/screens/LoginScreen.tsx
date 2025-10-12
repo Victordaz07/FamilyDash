@@ -108,7 +108,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                         {/* FamilyDash Official Icon */}
                         <View style={styles.iconContainer}>
                             <Image
-                                source={require('../../assets/icon.png')}
+                                source={require('../../assets/brand/logo-256.png')}
                                 style={styles.logoImage}
                                 contentFit="contain"
                             />
