@@ -48,6 +48,12 @@ import VideoTestScreen from '../screens/VideoTestScreen';
 // Import Support screens
 import HelpScreen from '../screens/Support/HelpScreen';
 import ContactScreen from '../screens/Support/ContactScreen';
+
+// Import Goals screens
+import FamilyGoalsScreen from '../screens/goals/FamilyGoalsScreen';
+import AddGoalScreen from '../screens/goals/AddGoalScreen';
+import GoalDetailsScreen from '../screens/goals/GoalDetailsScreen';
+import GoalInfoScreen from '../screens/goals/GoalInfoScreen';
 import AboutScreen from '../screens/Support/AboutScreen';
 
 // Import Account screens
@@ -153,6 +159,15 @@ const PenaltiesStack = () => (
   </Stack.Navigator>
 );
 
+const GoalsStack = () => (
+  <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="GoalsMain" component={FamilyGoalsScreen} />
+    <Stack.Screen name="AddGoal" component={AddGoalScreen} />
+    <Stack.Screen name="GoalDetails" component={GoalDetailsScreen} />
+    <Stack.Screen name="GoalInfo" component={GoalInfoScreen} />
+  </Stack.Navigator>
+);
+
 const ProfileStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ProfileMain" component={ProfileScreen as any} />
@@ -232,6 +247,8 @@ const AppNavigator = () => {
             iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Vision') {
             iconName = focused ? 'eye' : 'eye-outline';
+          } else if (route.name === 'Goals') {
+            iconName = focused ? 'flag' : 'flag-outline';
           } else if (route.name === 'Penalties') {
             iconName = focused ? 'warning' : 'warning-outline';
           } else if (route.name === 'SafeRoom') {
@@ -280,6 +297,11 @@ const AppNavigator = () => {
         name="Vision"
         component={FamilyVisionNavigator}
         options={{ tabBarLabel: getTabLabel('Vision') }}
+      />
+      <Tab.Screen
+        name="Goals"
+        component={GoalsStack}
+        options={{ tabBarLabel: getTabLabel('Goals') }}
       />
       <Tab.Screen
         name="Penalties"
