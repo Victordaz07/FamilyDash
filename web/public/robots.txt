@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://family-dash-15944.web.app/sitemap.xml
+
+# Disallow authentication pages from indexing
+Disallow: /verified
+Disallow: /signup
+Disallow: /login
+
+# Allow public pages
+Allow: /features
+Allow: /parents
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /blog

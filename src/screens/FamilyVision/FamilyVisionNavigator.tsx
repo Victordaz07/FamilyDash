@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import FamilyVisionScreen from './FamilyVisionScreen';
 import AddFamilyVisionScreen from './AddFamilyVisionScreen';
+import AddInspirationScreen from './AddInspirationScreen';
 
 const Stack = createStackNavigator();
 
@@ -10,6 +11,7 @@ const FamilyVisionNavigator: React.FC = () => {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="FamilyVisionMain" component={FamilyVisionScreen} />
             <Stack.Screen name="AddGoal" component={AddFamilyVisionScreen} />
+            <Stack.Screen name="AddInspiration" component={AddInspirationScreen} />
         </Stack.Navigator>
     );
 };

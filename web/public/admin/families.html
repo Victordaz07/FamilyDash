@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Familias - Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.svg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #667eea; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+      --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --border: #334155;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .main-content { flex: 1; padding: 32px; margin-left: 260px; }
+    .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .header p { color: var(--text-secondary); margin-bottom: 32px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .stat-title { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-title { font-size: 20px; font-weight: 700; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; font-size: 14px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--text-secondary); }
+    td { padding: 16px 12px; border-bottom: 1px solid var(--border); }
+    tr:hover { background: var(--bg-tertiary); }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge-active { background: var(--success); color: white; }
+    .badge-inactive { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 64px; }
+    .spinner { border: 4px solid var(--bg-tertiary); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-right: 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .search-input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); font-size: 14px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar (Simplified) -->
+    <aside style="width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+      <div style="display: flex; align-items: center; font-size: 24px; font-weight: 700; margin-bottom: 32px; color: var(--primary);">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px;">
+        FamilyDash Admin
+      </div>
+      <div id="userInfo" style="background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div id="userEmail" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Cargando...</div>
+        <span id="userRole" class="badge">...</span>
+      </div>
+      <nav style="margin-bottom: 32px;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px;">Dashboard</div>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/admin/dashboard" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📊 Overview</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/analytics" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📈 Analytics</a></li>
+        </ul>
+      </nav>
+      <nav style="margin-bottom: 32px;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 12px;">Administración</div>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/admin/users" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">👥 Usuarios</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/families" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; background: var(--primary); color: white; text-decoration: none;">👨‍👩‍👧‍👦 Familias</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/content" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📝 Contenido</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/system" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">⚙️ Sistema</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🌐 Ver Sitio</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" onclick="handleLogout(); return false;" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🚪 Salir</a></li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>👨‍👩‍👧‍👦 Gestión de Familias</h1>
+        <p>Administra todas las familias de la plataforma</p>
+      </div>
+      
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar familia por nombre o ID..." onkeyup="filterFamilies()">
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Total Familias</div>
+          <div class="stat-value" id="totalFamilies">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Familias Activas</div>
+          <div class="stat-value" style="color: var(--success);" id="activeFamilies">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Total Miembros</div>
+          <div class="stat-value" id="totalMembers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Promedio por Familia</div>
+          <div class="stat-value" id="avgMembers">0</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Todas las Familias</h2>
+          <button class="btn btn-primary" onclick="createFamily()">➕ Nueva Familia</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Familia</th>
+              <th>Miembros</th>
+              <th>Admins</th>
+              <th>Tareas</th>
+              <th>Eventos</th>
+              <th>Creada</th>
+              <th>Última Actividad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="familiesTable">
+            <tr><td colspan="8" class="loading"><div class="spinner"></div> Cargando familias...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    let allFamilies = [];
+    
+    async function init() {
+      const authData = await checkAuth();
+      if (!authData || !authData.isSuperAdmin) {
+        alert('Solo Super Admins pueden acceder.');
+        window.location.href = '/admin/dashboard';
+        return;
+      }
+      await loadUserInfo();
+      await loadFamilies();
+    }
+    
+    async function loadUserInfo() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userRole').textContent = 'Super Admin';
+      document.getElementById('userRole').className = 'badge badge-superadmin';
+      document.getElementById('userRole').style.background = 'var(--warning)';
+      document.getElementById('userRole').style.color = '#000';
+    }
+    
+    async function loadFamilies() {
+      try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('families').get();
+        
+        allFamilies = [];
+        for (const doc of snapshot.docs) {
+          const family = { id: doc.id, ...doc.data() };
+          
+          // Count members
+          const membersSnapshot = await db.collection('families').doc(doc.id).collection('members').get();
+          family.membersCount = membersSnapshot.size;
+          
+          allFamilies.push(family);
+        }
+        
+        updateStats();
+        renderFamilies();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('familiesTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger);">Error: ' + error.message + '</td></tr>';
+      }
+    }
+    
+    function updateStats() {
+      const total = allFamilies.length;
+      const active = allFamilies.filter(f => f.isActive !== false).length;
+      const totalMembers = allFamilies.reduce((sum, f) => sum + (f.membersCount || 0), 0);
+      const avg = total > 0 ? (totalMembers / total).toFixed(1) : 0;
+      
+      document.getElementById('totalFamilies').textContent = total;
+      document.getElementById('activeFamilies').textContent = active;
+      document.getElementById('totalMembers').textContent = totalMembers;
+      document.getElementById('avgMembers').textContent = avg;
+    }
+    
+    function renderFamilies() {
+      const tableBody = document.getElementById('familiesTable');
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = allFamilies;
+      if (searchTerm) {
+        filtered = allFamilies.filter(f => 
+          (f.name || '').toLowerCase().includes(searchTerm) ||
+          (f.id || '').toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      tableBody.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-secondary);">No se encontraron familias</td></tr>';
+        return;
+      }
+      
+      filtered.forEach(family => {
+        const row = document.createElement('tr');
+        const created = family.createdAt ? new Date(family.createdAt.toDate()).toLocaleDateString('es-ES') : '-';
+        const lastActive = family.lastActive ? new Date(family.lastActive.toDate()).toLocaleDateString('es-ES') : '-';
+        
+        row.innerHTML = `
+          <td><strong>${family.name || 'Sin nombre'}</strong><br><small style="color:var(--text-secondary);">${family.id}</small></td>
+          <td>${family.membersCount || 0}</td>
+          <td>${family.adminsCount || '-'}</td>
+          <td>${family.tasksCount || '-'}</td>
+          <td>${family.eventsCount || '-'}</td>
+          <td>${created}</td>
+          <td>${lastActive}</td>
+          <td>
+            <button onclick="viewFamily('${family.id}')" style="padding:6px 12px;background:var(--primary);color:white;border:none;border-radius:6px;cursor:pointer;margin-right:4px;">👁️</button>
+            <button onclick="deleteFamily('${family.id}')" style="padding:6px 12px;background:var(--danger);color:white;border:none;border-radius:6px;cursor:pointer;">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+    
+    function filterFamilies() { renderFamilies(); }
+    
+    function viewFamily(familyId) {
+      alert('Ver detalles de familia: ' + familyId + '\n(Funcionalidad en desarrollo)');
+    }
+    
+    async function deleteFamily(familyId) {
+      if (!confirm('¿Eliminar esta familia? Esta acción no se puede deshacer.')) return;
+      
+      try {
+        const db = firebase.firestore();
+        await db.collection('families').doc(familyId).delete();
+        alert('Familia eliminada');
+        await loadFamilies();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+    
+    function createFamily() {
+      alert('Crear nueva familia\n(Funcionalidad en desarrollo)');
+    }
+    
+    async function checkAuth() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      if (!user) { window.location.href = '/login'; return null; }
+      const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(user.uid);
+      return { user, isSuperAdmin };
+    }
+    
+    async function handleLogout() {
+      if (confirm('¿Cerrar sesión?')) {
+        await window.FamilyDashAuth.logout();
+        window.location.href = '/login';
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

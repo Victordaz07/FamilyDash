@@ -3,13 +3,40 @@
  * Sistema de roles y permisos para gestión familiar
  */
 
-export type Role = 'admin' | 'co_admin' | 'member' | 'viewer';
+export type Role = 'superadmin' | 'admin' | 'co_admin' | 'member' | 'viewer';
 
 export interface PermissionMap {
   [key: string]: string[];
 }
 
 export const rolePermissions: PermissionMap = {
+  superadmin: [
+    // Todos los permisos de admin +
+    'create',
+    'edit',
+    'delete',
+    'approve',
+    'assign',
+    'view',
+    'manage_family',
+    'manage_penalties',
+    'view_reports',
+    'manage_rewards',
+    'configure_settings',
+    'emergency_access',
+    'delete_family',
+    // Permisos de super admin
+    'manage_all_users',
+    'manage_all_families',
+    'view_global_analytics',
+    'manage_system_config',
+    'manage_content',
+    'moderate_content',
+    'access_admin_dashboard',
+    'manage_roles',
+    'view_logs',
+    'manage_firebase',
+  ],
   admin: [
     'create',
     'edit',
@@ -57,6 +84,14 @@ export interface RoleConfig {
 }
 
 export const roleConfigs: Record<Role, RoleConfig> = {
+  superadmin: {
+    role: 'superadmin',
+    displayName: 'Super Admin (System)',
+    description: 'Full platform control - Manage all users, families, and system configuration',
+    icon: 'star',
+    color: '#F59E0B',
+    level: 5,
+  },
   admin: {
     role: 'admin',
     displayName: 'Parent (Admin)',
@@ -160,5 +195,19 @@ export const isParentalRole = (role: Role): boolean => {
  */
 export const isChildRole = (role: Role): boolean => {
   return role === 'member';
+};
+
+/**
+ * Verificar si es super admin (administrador del sistema)
+ */
+export const isSuperAdmin = (role: Role): boolean => {
+  return role === 'superadmin';
+};
+
+/**
+ * Verificar si tiene permisos de administración global
+ */
+export const hasGlobalAdminAccess = (role: Role): boolean => {
+  return role === 'superadmin';
 };
 

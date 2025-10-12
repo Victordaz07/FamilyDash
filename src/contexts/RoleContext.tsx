@@ -64,14 +64,14 @@ export const RoleProvider: React.FC<RoleProviderProps> = ({ children }) => {
               id: authUser.uid,
               name: authUser.displayName || 'User',
               email: authUser.email || undefined,
-              role: 'viewer',
+              role: 'member',
             };
 
             // Crear documento de usuario en Firebase
             await RealDatabaseService.setDocument('users', authUser.uid, {
               displayName: defaultUser.name,
               email: defaultUser.email,
-              role: 'viewer',
+              role: 'member',
               joinedAt: new Date().toISOString(),
               lastActive: new Date().toISOString(),
             });

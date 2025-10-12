@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Título del Artículo - Recursos Familiares | FamilyDash</title>
+  <meta name="description" content="Descripción breve del artículo sobre organización familiar y consejos para padres.">
+  <meta name="keywords" content="familia, organización, consejos, crianza, tips">
+  <meta property="og:title" content="Título del Artículo - Recursos Familiares | FamilyDash">
+  <meta property="og:description" content="Descripción breve del artículo sobre organización familiar y consejos para padres.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://family-dash-15944.web.app/blog/post-template">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Animación de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: backgroundFloat 30s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    /* Article */
+    .article {
+      padding: 120px 0 80px;
+    }
+    
+    .article-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .breadcrumb a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .breadcrumb a:hover {
+      color: var(--text-primary);
+    }
+    
+    .article-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .article-title {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    
+    .article-excerpt {
+      font-size: 20px;
+      color: var(--text-secondary);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .article-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: var(--shadow-primary);
+    }
+    
+    .article-content h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 48px 0 24px 0;
+      color: var(--text-primary);
+    }
+    
+    .article-content h3 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: var(--text-primary);
+    }
+    
+    .article-content p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+    
+    .article-content ul,
+    .article-content ol {
+      margin: 24px 0;
+      padding-left: 32px;
+    }
+    
+    .article-content li {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+    
+    .article-content blockquote {
+      border-left: 4px solid #10b981;
+      padding-left: 24px;
+      margin: 32px 0;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--text-secondary);
+    }
+    
+    .article-content img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 32px 0;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .article-content a {
+      color: #10b981;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .article-content a:hover {
+      text-decoration: underline;
+    }
+    
+    .article-footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    .tags {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    
+    .tag {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .social-share {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    
+    .share-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .share-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .related-posts {
+      margin-top: 80px;
+    }
+    
+    .related-posts h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      text-align: center;
+      color: var(--text-primary);
+    }
+    
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    
+    .related-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: var(--transition);
+    }
+    
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .related-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+    
+    .related-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    .related-card a {
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    
+    .back-to-blog {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 16px;
+      }
+      
+      .nav-links a {
+        font-size: 14px;
+      }
+      
+      .article-title {
+        font-size: 36px;
+      }
+      
+      .article-content {
+        padding: 32px 24px;
+      }
+      
+      .article-content h2 {
+        font-size: 28px;
+      }
+      
+      .article-content h3 {
+        font-size: 22px;
+      }
+      
+      .article-content p {
+        font-size: 16px;
+      }
+      
+      .article-content li {
+        font-size: 16px;
+      }
+      
+      .article-meta {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .social-share {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .share-btn {
+        width: 100%;
+        max-width: 200px;
+        justify-content: center;
+      }
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <a href="/" class="logo-nav">🏠 FamilyDash</a>
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/features">Características</a></li>
+        <li><a href="/parents">Para Padres</a></li>
+        <li><a href="/contact">Contacto</a></li>
+        <li><a href="/login">Iniciar Sesión</a></li>
+        <li><a href="/signup">Registrarse</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Article -->
+  <main class="article">
+    <div class="container">
+      <div class="back-to-blog">
+        <a href="/blog" class="back-btn">
+          <span>←</span>
+          <span>Volver al blog</span>
+        </a>
+      </div>
+      
+      <header class="article-header">
+        <nav class="breadcrumb">
+          <a href="/">Inicio</a>
+          <span>›</span>
+          <a href="/blog">Blog</a>
+          <span>›</span>
+          <span>Título del Artículo</span>
+        </nav>
+        
+        <div class="article-meta">
+          <div class="meta-item">
+            <span>📅</span>
+            <span>15 de Enero, 2025</span>
+          </div>
+          <div class="meta-item">
+            <span>⏱️</span>
+            <span>5 min de lectura</span>
+          </div>
+          <div class="meta-item">
+            <span>👤</span>
+            <span>Equipo FamilyDash</span>
+          </div>
+        </div>
+        
+        <h1 class="article-title">Título del Artículo</h1>
+        <p class="article-excerpt">
+          Esta es una descripción breve del artículo que aparece debajo del título. 
+          Explica de manera concisa de qué trata el contenido y por qué es útil para los lectores.
+        </p>
+      </header>
+      
+      <article class="article-content">
+        <p>
+          Este es el contenido principal del artículo. Aquí se desarrolla el tema principal con 
+          información valiosa, consejos prácticos y ejemplos que ayudan a las familias a 
+          organizarse mejor.
+        </p>
+        
+        <h2>Subtítulo Principal</h2>
+        <p>
+          Los subtítulos ayudan a organizar el contenido y facilitan la lectura. Cada sección 
+          debe tener un propósito claro y proporcionar valor al lector.
+        </p>
+        
+        <h3>Subtítulo Secundario</h3>
+        <p>
+          Los subtítulos secundarios permiten una organización más granular del contenido. 
+          Son útiles para dividir temas complejos en partes más manejables.
+        </p>
+        
+        <blockquote>
+          "Las familias organizadas son familias felices. La clave está en encontrar el 
+          equilibrio entre estructura y flexibilidad."
+        </blockquote>
+        
+        <h2>Lista de Consejos</h2>
+        <ul>
+          <li>Establece rutinas claras para todos los miembros de la familia</li>
+          <li>Usa herramientas digitales para mantener todo organizado</li>
+          <li>Comunica expectativas de manera clara y consistente</li>
+          <li>Celebra los logros y progresos de cada miembro</li>
+          <li>Mantén la flexibilidad para adaptarte a cambios inesperados</li>
+        </ul>
+        
+        <h2>Conclusión</h2>
+        <p>
+          Este artículo ha cubierto los aspectos principales del tema. Recuerda que cada 
+          familia es única y lo que funciona para una puede no funcionar para otra. 
+          Experimenta, ajusta y encuentra lo que mejor se adapte a tu situación.
+        </p>
+      </article>
+      
+      <footer class="article-footer">
+        <div class="tags">
+          <span class="tag">Organización</span>
+          <span class="tag">Familia</span>
+          <span class="tag">Consejos</span>
+          <span class="tag">Productividad</span>
+        </div>
+        
+        <div class="social-share">
+          <a href="#" class="share-btn">
+            <span>📧</span>
+            <span>Email</span>
+          </a>
+          <a href="#" class="share-btn">
+            <span>🐦</span>
+            <span>Twitter</span>
+          </a>
+          <a href="#" class="share-btn">
+            <span>📘</span>
+            <span>Facebook</span>
+          </a>
+          <a href="#" class="share-btn">
+            <span>💼</span>
+            <span>LinkedIn</span>
+          </a>
+        </div>
+      </footer>
+      
+      <section class="related-posts">
+        <h2>Artículos Relacionados</h2>
+        <div class="related-grid">
+          <div class="related-card">
+            <a href="#">
+              <h3>10 Consejos para Organizar tu Hogar</h3>
+              <p>Aprende estrategias simples y efectivas para mantener tu casa organizada y funcional.</p>
+            </a>
+          </div>
+          
+          <div class="related-card">
+            <a href="#">
+              <h3>Cómo Establecer Rutinas Familiares</h3>
+              <p>Descubre la importancia de las rutinas y cómo implementarlas de manera efectiva.</p>
+            </a>
+          </div>
+          
+          <div class="related-card">
+            <a href="#">
+              <h3>Balance Vida-Trabajo para Padres</h3>
+              <p>Encuentra el equilibrio perfecto entre tu vida profesional y familiar.</p>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('.header');
+      if (window.scrollY > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    // Social sharing functionality
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const platform = this.textContent.trim();
+        alert(`Compartiendo en ${platform}...`);
+      });
+    });
+  </script>
+</body>
+</html>

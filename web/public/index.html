@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FamilyDash - Dashboard Familiar Integral</title>
+  <meta name="description" content="Organiza tu familia sin estrés. Metas, tareas, calendario y Safe Room para emociones — todo en un solo lugar. Gratis y seguro.">
+  <meta name="keywords" content="familia, dashboard, organización, metas, calendario, tareas, Safe Room, React Native, Firebase">
+  <meta name="author" content="FamilyDash Team">
+  <meta property="og:title" content="FamilyDash - Dashboard Familiar Integral">
+  <meta property="og:description" content="Organiza tu familia de manera inteligente con FamilyDash">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://family-dash-15944.web.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FamilyDash",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "Android, iOS",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "500"
+    },
+    "description": "Dashboard familiar integral para organizar metas, tareas, calendario y Safe Room emocional. Gratis y seguro.",
+    "url": "https://family-dash-15944.web.app/",
+    "image": "https://family-dash-15944.web.app/screenshots/home/dashboard-main.svg",
+    "author": {
+      "@type": "Organization",
+      "name": "FamilyDash Team"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "FamilyDash",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://family-dash-15944.web.app/icon.png"
+      }
+    }
+  }
+  </script>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FamilyDash",
+    "url": "https://family-dash-15944.web.app/",
+    "logo": "https://family-dash-15944.web.app/icon.png",
+    "sameAs": [
+      "https://twitter.com/familydash",
+      "https://facebook.com/familydash"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "support@familydash.app",
+      "availableLanguage": ["Spanish", "English"]
+    }
+  }
+  </script>
+  
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Animación de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: backgroundFloat 30s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .header.scrolled {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 24px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+    
+    .logo-nav:hover {
+      transform: scale(1.05);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--text-primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    .nav-cta {
+      background: var(--success-gradient) !important;
+      color: white !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+    }
+    
+    .nav-cta:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    .nav-cta::after {
+      display: none !important;
+    }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+      animation: slideInUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo-image {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px auto;
+      display: block;
+      animation: logoFloat 4s ease-in-out infinite;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    h1 { 
+      font-size: 64px; 
+      font-weight: 800; 
+      margin: 0 0 32px 0;
+      background: linear-gradient(45deg, #fff, #f0f9ff, #e0f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShine 4s ease-in-out infinite;
+      line-height: 1.1;
+    }
+    
+    @keyframes textShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .subtitle {
+      font-size: 28px;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      line-height: 1.5;
+      font-weight: 400;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .hero-micro-copy {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 64px;
+      opacity: 0.9;
+    }
+    
+    .btn { 
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px; 
+      border-radius: 20px; 
+      background: var(--success-gradient);
+      color: white; 
+      text-decoration: none; 
+      font-weight: 700;
+      font-size: 18px;
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-width: 200px;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    /* Features Section */
+    /* How It Works Section */
+    .how-it-works {
+      padding: 120px 0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .section-subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 64px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 60px;
+      margin-top: 64px;
+    }
+    
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    
+    .step-number {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--success-gradient);
+      color: white;
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    .step-content {
+      margin-bottom: 32px;
+    }
+    
+    .step-content h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    
+    .step-content p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    .step-screenshot {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+    }
+    
+    .step-screenshot:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .step-screenshot img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .features {
+      padding: 120px 0;
+    }
+
+    /* Testimonials Section */
+    .testimonials {
+      padding: 120px 0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 40px;
+      margin-top: 64px;
+    }
+    
+    .testimonial-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      transition: var(--transition);
+    }
+    
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .testimonial-content p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--success-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .author-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    .author-info p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* Statistics Section */
+    .statistics {
+      padding: 120px 0;
+    }
+    
+    .statistics h2 {
+      font-size: 48px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-top: 64px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 32px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+    
+    .stat-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .stat-number {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      background: var(--success-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Trust Badges Section */
+    .trust-badges {
+      padding: 80px 0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .trust-badges h3 {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 48px;
+      color: var(--text-primary);
+    }
+    
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+    
+    .badge:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .badge-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    
+    .badge-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .badge-text strong {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .badge-text span {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .features h2 {
+      font-size: 48px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 64px;
+      background: linear-gradient(45deg, #fff, #f0f9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 40px;
+      margin-top: 64px;
+    }
+    
+    .feature-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .feature-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      animation: featurePulse 3s ease-in-out infinite;
+    }
+    
+    .feature-card:nth-child(1) .feature-icon { animation-delay: 0s; }
+    .feature-card:nth-child(2) .feature-icon { animation-delay: 0.5s; }
+    .feature-card:nth-child(3) .feature-icon { animation-delay: 1s; }
+    .feature-card:nth-child(4) .feature-icon { animation-delay: 1.5s; }
+    
+    @keyframes featurePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .feature-card h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    /* Stats Section */
+    .stats {
+      padding: 120px 0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      text-align: center;
+    }
+    
+    .stat-item {
+      animation: statCount 2s ease-out;
+    }
+    
+    @keyframes statCount {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stat-number {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(45deg, #10b981, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 80px 0 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .footer-logo {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    
+    .footer-text {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .nav-links { gap: 24px; }
+      h1 { font-size: 56px; }
+      .subtitle { font-size: 24px; }
+      .features h2 { font-size: 40px; }
+    }
+    
+    @media (max-width: 768px) {
+      .container { padding: 0 16px; }
+      .nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { padding-top: 100px; }
+      .logo-image { width: 100px; height: 100px; }
+      h1 { font-size: 48px; }
+      .subtitle { font-size: 20px; }
+      .cta-buttons { flex-direction: column; align-items: center; }
+      .btn { min-width: 250px; }
+      .features-grid { grid-template-columns: 1fr; gap: 32px; }
+      .features h2 { font-size: 36px; }
+      .feature-card { padding: 32px 24px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+      .footer-links { gap: 24px; }
+    }
+    
+    @media (max-width: 480px) {
+      .logo-image { width: 80px; height: 80px; }
+      h1 { font-size: 36px; }
+      .subtitle { font-size: 18px; }
+      .btn { padding: 16px 32px; font-size: 16px; min-width: 200px; }
+      .features { padding: 80px 0; }
+      .features h2 { font-size: 32px; }
+      .feature-card { padding: 24px 20px; }
+      .feature-icon { font-size: 48px; }
+      .stats { padding: 80px 0; }
+      .stat-number { font-size: 36px; }
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+      .feature-card, .header {
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid white;
+      }
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Accessibility: Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    
+    /* Focus styles for accessibility */
+    *:focus-visible {
+      outline: 3px solid #10b981;
+      outline-offset: 2px;
+    }
+    
+    .btn:focus-visible,
+    .nav-links a:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header" role="banner">
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+      <a href="/" class="logo-nav" aria-label="FamilyDash - Ir a inicio">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 32px; height: 32px; margin-right: 8px; vertical-align: middle;">
+        FamilyDash
+      </a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">Inicio</a></li>
+        <li><a href="/features">Características</a></li>
+        <li><a href="/parents">Para Padres</a></li>
+        <li><a href="/blog">Recursos</a></li>
+        <li><a href="/contact">Contacto</a></li>
+        <li><a href="/login">Iniciar Sesión</a></li>
+        <li><a href="/signup" class="nav-cta">Registrarse</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" role="main">
+    <div class="container">
+      <div class="hero-content">
+        <img src="/logo.svg" alt="FamilyDash" class="logo-image">
+        <h1>Organiza tu familia sin estrés</h1>
+        <p class="subtitle">
+          Metas, tareas, calendario y un Safe Room para emociones — todo en un solo lugar. 
+          Gratis, seguro y diseñado para familias modernas.
+        </p>
+        <div class="cta-buttons">
+          <a href="/signup" class="btn" data-track-cta>
+            <span class="btn-icon">🚀</span>
+            <span>Empezar Gratis</span>
+          </a>
+          <a href="/login" class="btn btn-secondary" data-track-cta>
+            <span class="btn-icon">🔑</span>
+            <span>Ya tengo cuenta</span>
+          </a>
+        </div>
+        <p class="hero-micro-copy">
+          ✅ Sin tarjeta de crédito • 🔒 Tus datos seguros • 🚫 Sin spam
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2>¿Cómo funciona?</h2>
+      <p class="section-subtitle">En solo 3 pasos tu familia estará organizada</p>
+      
+      <div class="steps-container">
+        <div class="step animate-on-scroll">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Regístrate gratis</h3>
+            <p>Crea tu cuenta familiar en segundos. Sin tarjeta de crédito, sin complicaciones.</p>
+          </div>
+          <div class="step-screenshot">
+            <img src="/screenshots/home/dashboard-main.svg" alt="Dashboard de FamilyDash" loading="lazy">
+          </div>
+        </div>
+        
+        <div class="step animate-on-scroll">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Invita a tu familia</h3>
+            <p>Agrega a todos los miembros con roles personalizados y permisos granulares.</p>
+          </div>
+          <div class="step-screenshot">
+            <img src="/screenshots/tasks/task-creation.svg" alt="Creación de tareas" loading="lazy">
+          </div>
+        </div>
+        
+        <div class="step animate-on-scroll">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>¡Empieza a organizarte!</h3>
+            <p>Crea tareas, eventos, metas y comparte emociones en un espacio seguro.</p>
+          </div>
+          <div class="step-screenshot">
+            <img src="/screenshots/saferoom/emotional-entry.svg" alt="Safe Room emocional" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2>Características Principales</h2>
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🎯</div>
+          <h3>Metas Familiares</h3>
+          <p>
+            Establece y rastrea metas familiares colaborativas con hitos, 
+            fechas límite y seguimiento de progreso en tiempo real.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Calendario Integrado</h3>
+          <p>
+            Mantén todos los eventos familiares organizados con un calendario 
+            inteligente que sincroniza con todos los dispositivos.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛒</div>
+          <h3>Lista de Compras</h3>
+          <p>
+            Lista de compras colaborativa con categorización automática, 
+            historial de compras y notificaciones inteligentes.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Safe Room</h3>
+          <p>
+            Espacio seguro para compartir pensamientos, recuerdos y 
+            contenido multimedia privado solo para la familia.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>Lo que dicen las familias</h2>
+      <p class="section-subtitle">Miles de familias ya organizan su vida con FamilyDash</p>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card animate-on-scroll">
+          <div class="testimonial-content">
+            <p>"FamilyDash ha transformado completamente cómo organizamos nuestra familia. Las tareas se completan sin recordatorios constantes."</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👩‍👧‍👦</div>
+            <div class="author-info">
+              <h4>María González</h4>
+              <p>Madre de 2 hijos</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <p>"El Safe Room es increíble. Mis hijos se sienten seguros compartiendo sus emociones y nosotros podemos apoyarlos mejor."</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👨‍👩‍👦‍👦</div>
+            <div class="author-info">
+              <h4>Carlos Rodríguez</h4>
+              <p>Padre de 3 hijos</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <p>"Finalmente tenemos un calendario familiar que todos respetan. Nunca más olvidamos citas médicas o eventos importantes."</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👩‍👩‍👧</div>
+            <div class="author-info">
+              <h4>Ana Martínez</h4>
+              <p>Madre soltera</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="statistics">
+    <div class="container">
+      <h2>Por los números</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" data-target="500">0</div>
+          <div class="stat-label">Familias activas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="12500">0</div>
+          <div class="stat-label">Tareas completadas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="3200">0</div>
+          <div class="stat-label">Eventos organizados</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="890">0</div>
+          <div class="stat-label">Metas alcanzadas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Badges Section -->
+  <section class="trust-badges">
+    <div class="container">
+      <h3>Seguro y Confiable</h3>
+      <div class="badges-grid">
+        <div class="badge">
+          <div class="badge-icon">🔒</div>
+          <div class="badge-text">
+            <strong>Datos Cifrados</strong>
+            <span>TLS 1.3 + AES-256</span>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="badge-icon">🛡️</div>
+          <div class="badge-text">
+            <strong>COPPA Compliant</strong>
+            <span>Privacidad infantil</span>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="badge-icon">✅</div>
+          <div class="badge-text">
+            <strong>Firebase Secure</strong>
+            <span>Google Cloud Platform</span>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="badge-icon">🚫</div>
+          <div class="badge-text">
+            <strong>Sin Anuncios</strong>
+            <span>100% libre de ads</span>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="badge-icon">🔐</div>
+          <div class="badge-text">
+            <strong>Control Parental</strong>
+            <span>Permisos granulares</span>
+          </div>
+        </div>
+        <div class="badge">
+          <div class="badge-icon">💯</div>
+          <div class="badge-text">
+            <strong>100% Gratis</strong>
+            <span>Sin costos ocultos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact" role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px; vertical-align: middle;">
+          FamilyDash
+        </div>
+        <p class="footer-text">
+          Dashboard familiar integral con React Native, TypeScript y Firebase. 
+          Organiza tu familia de manera inteligente y moderna.
+        </p>
+        <div class="footer-links">
+          <a href="/">Inicio</a>
+          <a href="/features">Características</a>
+          <a href="/parents">Para Padres</a>
+          <a href="/blog">Recursos</a>
+          <a href="/contact">Contacto</a>
+          <a href="/privacy">Privacidad</a>
+          <a href="/terms">Términos</a>
+        </div>
+        <p class="footer-copyright">
+          © 2025 FamilyDash. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Google Analytics 4 -->
+  <script src="/js/analytics.js"></script>
+  
+  <!-- Animations -->
+  <script src="/js/animations.js"></script>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Animated counter for stats
+    function animateCounter(element, target, duration = 2000) {
+      let start = 0;
+      const increment = target / (duration / 16);
+      
+      function updateCounter() {
+        start += increment;
+        if (start < target) {
+          element.textContent = Math.floor(start);
+          requestAnimationFrame(updateCounter);
+        } else {
+          element.textContent = target;
+        }
+      }
+      
+      updateCounter();
+    }
+
+    // Intersection Observer for stats animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statNumber = entry.target.querySelector('.stat-number');
+          const target = parseInt(statNumber.getAttribute('data-target'));
+          animateCounter(statNumber, target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-item').forEach(item => {
+      observer.observe(item);
+    });
+
+    // Add loading state to buttons
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        if (this.getAttribute('href').startsWith('#')) return; // Skip for anchor links
+        
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="loading"></span> Cargando...';
+        this.style.pointerEvents = 'none';
+        
+        // Reset after 2 seconds (in case of slow navigation)
+        setTimeout(() => {
+          this.innerHTML = originalText;
+          this.style.pointerEvents = 'auto';
+        }, 2000);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.target.classList.contains('btn')) {
+        e.target.click();
+      }
+    });
+
+    // Performance monitoring
+    if ('performance' in window) {
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+        }, 0);
+      });
+    }
+
+    // Analytics tracking (opcional)
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'page_view', {
+        'page_title': 'FamilyDash Landing',
+        'page_location': window.location.href
+      });
+    }
+
+    // Feature cards hover effect enhancement
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // Parallax effect for background
+    window.addEventListener('scroll', function() {
+      const scrolled = window.pageYOffset;
+      const parallax = document.querySelector('body::before');
+      if (parallax) {
+        parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+      }
+    });
+
+    // Add focus indicators for accessibility
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        document.body.classList.add('keyboard-navigation');
+      }
+    });
+
+    document.addEventListener('mousedown', function() {
+      document.body.classList.remove('keyboard-navigation');
+    });
+  </script>
+</body>
+</html>

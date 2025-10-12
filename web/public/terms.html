@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Términos de Uso - FamilyDash</title>
+  <meta name="description" content="Términos de uso de FamilyDash. Condiciones y reglas para el uso de nuestra aplicación familiar.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 24px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    
+    .back-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .back-btn:hover {
+      color: var(--text-primary);
+    }
+    
+    /* Content */
+    .content {
+      margin-top: 120px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 60px;
+    }
+    
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    
+    .last-updated {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      font-size: 16px;
+    }
+    
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 48px 0 24px 0;
+      color: var(--text-primary);
+    }
+    
+    h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: var(--text-primary);
+    }
+    
+    p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+    
+    ul {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+    
+    li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    
+    .highlight-box {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+    
+    .highlight-box h3 {
+      margin-top: 0;
+      color: #10b981;
+    }
+    
+    .warning-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+    
+    .warning-box h3 {
+      margin-top: 0;
+      color: #ef4444;
+    }
+    
+    .contact-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+    
+    .contact-info h3 {
+      margin-top: 0;
+      color: #10b981;
+    }
+    
+    .contact-info a {
+      color: #10b981;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 80px;
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 20px 16px; }
+      .nav { padding: 0 16px; }
+      .content { padding: 40px 24px; margin-top: 100px; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 20px; }
+      .footer-links { gap: 24px; }
+    }
+    
+    @media (max-width: 480px) {
+      .content { padding: 32px 20px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 22px; }
+      .footer-links { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <a href="/" class="logo-nav">🏠 FamilyDash</a>
+      <a href="/" class="back-btn">← Volver al inicio</a>
+    </nav>
+  </header>
+
+  <!-- Content -->
+  <div class="container">
+    <div class="content">
+      <h1>Términos de Uso</h1>
+      <p class="last-updated">Última actualización: Enero 2025</p>
+
+      <h2>1. Aceptación de los Términos</h2>
+      <p>
+        Al usar FamilyDash, aceptas estos términos de uso y nuestra política de privacidad. 
+        Si no estás de acuerdo con alguno de estos términos, no uses nuestra aplicación.
+      </p>
+
+      <h2>2. Descripción del Servicio</h2>
+      <p>
+        FamilyDash es una aplicación móvil diseñada para ayudar a las familias a organizarse, 
+        establecer metas, gestionar tareas, mantener calendarios compartidos y proporcionar 
+        un espacio seguro para compartir emociones y contenido multimedia.
+      </p>
+
+      <h2>3. Cuentas de Usuario</h2>
+      
+      <h3>3.1 Registro</h3>
+      <ul>
+        <li>Debes proporcionar información precisa y actualizada</li>
+        <li>Eres responsable de mantener la confidencialidad de tu cuenta</li>
+        <li>Debes notificarnos inmediatamente sobre cualquier uso no autorizado</li>
+        <li>Una cuenta por persona física</li>
+      </ul>
+
+      <h3>3.2 Responsabilidad del Usuario</h3>
+      <ul>
+        <li>Eres responsable de toda la actividad en tu cuenta</li>
+        <li>Debes usar la aplicación de acuerdo con estos términos</li>
+        <li>No puedes transferir tu cuenta a otra persona</li>
+      </ul>
+
+      <h2>4. Uso Aceptable</h2>
+      
+      <h3>4.1 Uso Permitido</h3>
+      <ul>
+        <li>Organizar actividades familiares</li>
+        <li>Establecer y rastrear metas familiares</li>
+        <li>Gestionar tareas y responsabilidades</li>
+        <li>Compartir contenido apropiado en el Safe Room</li>
+        <li>Usar características de comunicación familiar</li>
+      </ul>
+
+      <h3>4.2 Uso Prohibido</h3>
+      <div class="warning-box">
+        <h3>⚠️ No está permitido:</h3>
+        <ul>
+          <li>Compartir contenido inapropiado, ofensivo o ilegal</li>
+          <li>Harassar, amenazar o intimidar a otros usuarios</li>
+          <li>Intentar acceder a cuentas de otros usuarios</li>
+          <li>Usar la aplicación para actividades comerciales no autorizadas</li>
+          <li>Intentar dañar, deshabilitar o sobrecargar nuestros servidores</li>
+          <li>Usar bots, scripts o herramientas automatizadas</li>
+          <li>Violar cualquier ley o regulación aplicable</li>
+        </ul>
+      </div>
+
+      <h2>5. Contenido del Usuario</h2>
+      
+      <h3>5.1 Propiedad del Contenido</h3>
+      <p>
+        Mantienes todos los derechos sobre el contenido que subes a FamilyDash. 
+        Al usar nuestro servicio, nos otorgas una licencia limitada para almacenar, 
+        procesar y mostrar tu contenido según sea necesario para proporcionar el servicio.
+      </p>
+
+      <h3>5.2 Responsabilidad del Contenido</h3>
+      <ul>
+        <li>Eres responsable de todo el contenido que subes</li>
+        <li>Debes tener los derechos necesarios sobre el contenido</li>
+        <li>El contenido debe ser apropiado para una audiencia familiar</li>
+        <li>No debes infringir derechos de terceros</li>
+      </ul>
+
+      <h2>6. Controles Parentales</h2>
+      <div class="highlight-box">
+        <h3>👨‍👩‍👧‍👦 Para Padres</h3>
+        <p>
+          Los padres tienen control total sobre las cuentas de sus hijos menores de edad:
+        </p>
+        <ul>
+          <li>Pueden establecer límites y controles de contenido</li>
+          <li>Pueden monitorear la actividad de sus hijos</li>
+          <li>Pueden eliminar cuentas de menores en cualquier momento</li>
+          <li>Son responsables del uso de la aplicación por parte de sus hijos</li>
+        </ul>
+      </div>
+
+      <h2>7. Privacidad y Protección de Datos</h2>
+      <p>
+        Tu privacidad es importante para nosotros. Nuestra recopilación y uso de 
+        información personal se rige por nuestra Política de Privacidad, que forma 
+        parte integral de estos términos.
+      </p>
+
+      <h2>8. Disponibilidad del Servicio</h2>
+      <p>
+        Nos esforzamos por mantener FamilyDash disponible 24/7, pero no garantizamos 
+        disponibilidad ininterrumpida. Podemos realizar mantenimiento programado o 
+        no programado que resulte en interrupciones temporales.
+      </p>
+
+      <h2>9. Modificaciones del Servicio</h2>
+      <p>
+        Podemos modificar, actualizar o discontinuar características de FamilyDash 
+        en cualquier momento. Te notificaremos sobre cambios significativos que 
+        afecten tu experiencia de usuario.
+      </p>
+
+      <h2>10. Terminación</h2>
+      
+      <h3>10.1 Terminación por el Usuario</h3>
+      <p>
+        Puedes terminar tu cuenta en cualquier momento eliminando la aplicación 
+        y solicitando la eliminación de tus datos.
+      </p>
+
+      <h3>10.2 Terminación por FamilyDash</h3>
+      <p>
+        Podemos suspender o terminar tu cuenta si violas estos términos o si 
+        determinamos que tu uso representa un riesgo para otros usuarios o para nuestro servicio.
+      </p>
+
+      <h2>11. Limitación de Responsabilidad</h2>
+      <p>
+        FamilyDash se proporciona "tal como está". No garantizamos que el servicio 
+        sea libre de errores o que satisfaga tus necesidades específicas. En la 
+        máxima medida permitida por la ley, no seremos responsables por daños 
+        indirectos, incidentales o consecuenciales.
+      </p>
+
+      <h2>12. Indemnización</h2>
+      <p>
+        Aceptas indemnizar y mantener indemne a FamilyDash contra cualquier reclamo 
+        que surja de tu uso del servicio o violación de estos términos.
+      </p>
+
+      <h2>13. Ley Aplicable</h2>
+      <p>
+        Estos términos se rigen por las leyes aplicables y cualquier disputa se 
+        resolverá en los tribunales competentes.
+      </p>
+
+      <h2>14. Cambios a los Términos</h2>
+      <p>
+        Podemos actualizar estos términos ocasionalmente. Te notificaremos sobre 
+        cambios significativos. El uso continuado de FamilyDash después de los 
+        cambios constituye aceptación de los nuevos términos.
+      </p>
+
+      <div class="contact-info">
+        <h3>¿Preguntas sobre estos Términos?</h3>
+        <p>
+          Si tienes preguntas sobre estos términos de uso, contáctanos en:
+        </p>
+        <p>
+          📧 <a href="mailto:legal@familydash.app">legal@familydash.app</a><br>
+          📞 <a href="/contact">Formulario de Contacto</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/">Inicio</a>
+        <a href="/features">Características</a>
+        <a href="/parents">Para Padres</a>
+        <a href="/contact">Contacto</a>
+        <a href="/privacy">Política de Privacidad</a>
+      </div>
+      <p class="footer-copyright">
+        © 2025 FamilyDash. Todos los derechos reservados.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

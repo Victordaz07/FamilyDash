@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Correo verificado | FamilyDash</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="description" content="Tu correo electrónico ha sido verificado exitosamente. Continúa con FamilyDash para acceder a todas las funciones.">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    
+    /* Animación de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: backgroundFloat 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    
+    .container {
+      max-width: 700px;
+      width: 100%;
+      margin: 0 auto;
+      animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card { 
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px; 
+      padding: 48px;
+      text-align: center;
+      box-shadow: var(--shadow-primary);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: successPulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 10px 20px rgba(16, 185, 129, 0.3));
+    }
+    
+    @keyframes successPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .logo-image {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 16px auto;
+      display: block;
+      animation: logoFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    h1 { 
+      font-size: 36px; 
+      font-weight: 800; 
+      margin: 0 0 16px 0;
+      background: linear-gradient(45deg, #fff, #f0f9ff, #e0f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShine 3s ease-in-out infinite;
+    }
+    
+    @keyframes textShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    
+    .steps {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 32px;
+      margin: 32px 0;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      font-size: 16px;
+      transition: var(--transition);
+      padding: 12px;
+      border-radius: 12px;
+    }
+    
+    .step:last-child {
+      margin-bottom: 0;
+    }
+    
+    .step:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(8px);
+    }
+    
+    .step-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+    }
+    
+    .step-icon:hover {
+      transform: scale(1.1);
+    }
+    
+    .step-icon.success { background: var(--success-gradient); }
+    .step-icon.info { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+    .step-icon.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .step-icon.primary { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    
+    .step-content {
+      flex: 1;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    .step-content strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    .cta-section {
+      margin: 40px 0 24px 0;
+    }
+    
+    .btn { 
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 32px; 
+      border-radius: 16px; 
+      background: var(--success-gradient);
+      color: white; 
+      text-decoration: none; 
+      font-weight: 700;
+      font-size: 16px;
+      margin: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-icon {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .info-section {
+      margin-top: 32px;
+      text-align: center;
+    }
+    
+    .info-section p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin: 4px 0;
+    }
+    
+    .info-section .brand {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .debug-info {
+      margin-top: 32px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+      opacity: 0.7;
+    }
+    
+    .debug-info:hover {
+      opacity: 1;
+    }
+    
+    .debug-info h4 {
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .debug-info p {
+      margin: 4px 0;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .debug-info code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container { padding: 16px; }
+      .card { padding: 32px 24px; }
+      h1 { font-size: 28px; }
+      .subtitle { font-size: 18px; }
+      .steps { padding: 24px; }
+      .step { font-size: 15px; }
+      .step-icon { width: 36px; height: 36px; font-size: 16px; }
+      .btn { padding: 14px 24px; font-size: 15px; }
+      .success-icon { font-size: 64px; }
+      .logo-image { width: 80px; height: 80px; }
+    }
+    
+    @media (max-width: 480px) {
+      .card { padding: 24px 20px; }
+      h1 { font-size: 24px; }
+      .subtitle { font-size: 16px; }
+      .steps { padding: 20px; }
+      .btn { padding: 12px 20px; font-size: 14px; margin: 6px; }
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+      .card {
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid white;
+      }
+      .step-icon {
+        border: 2px solid white;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <!-- Success Animation -->
+      <div class="success-icon">✅</div>
+      
+      <!-- Logo -->
+      <img src="/logo.svg" alt="FamilyDash" class="logo-image">
+      
+      <!-- Title -->
+      <h1>¡Correo Verificado!</h1>
+      
+      <!-- Description -->
+      <p class="subtitle">
+        Tu dirección de correo electrónico ha sido verificada exitosamente con Firebase. 
+        ¡Ya puedes acceder a todas las funciones de FamilyDash!
+      </p>
+
+      <!-- Steps -->
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon success">✓</div>
+          <div class="step-content">
+            <strong>Email verificado en Firebase</strong><br>
+            Tu cuenta está ahora completamente activada
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon info">📱</div>
+          <div class="step-content">
+            <strong>Regresa a la aplicación FamilyDash</strong><br>
+            Abre la app en tu dispositivo móvil
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon warning">🔄</div>
+          <div class="step-content">
+            <strong>Toca "Ya verifiqué — Comprobar"</strong><br>
+            Confirma que has completado la verificación
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-icon primary">🎉</div>
+          <div class="step-content">
+            <strong>¡Acceso completo a la app!</strong><br>
+            Disfruta de todas las funciones de FamilyDash
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="cta-section">
+        <a href="/" class="btn">
+          <span class="btn-icon">🏠</span>
+          <span>Ir al Inicio</span>
+        </a>
+        <a href="mailto:support@familydash.com" class="btn btn-secondary">
+          <span class="btn-icon">📧</span>
+          <span>Soporte</span>
+        </a>
+      </div>
+
+      <!-- Info -->
+      <div class="info-section">
+        <p class="brand">FamilyDash</p>
+        <p>Dashboard familiar integral</p>
+        <p>Metas • Calendario • Tareas • Seguridad</p>
+      </div>
+
+      <!-- Debug Info -->
+      <div class="debug-info" id="debug">
+        <h4>Información de Debug:</h4>
+        <p>URL: <code id="url"></code></p>
+        <p>Parámetros: <code id="params"></code></p>
+        <p><em>Esta información es útil para el soporte técnico</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Analytics 4 -->
+  <script src="/js/analytics.js"></script>
+
+  <script>
+    // Debug info
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlElement = document.getElementById('url');
+      const paramsElement = document.getElementById('params');
+      
+      if (urlElement) {
+        urlElement.textContent = window.location.href;
+      }
+      
+      if (paramsElement) {
+        const params = new URLSearchParams(window.location.search);
+        const paramArray = [];
+        for (const [key, value] of params) {
+          paramArray.push(`${key}=${value}`);
+        }
+        paramsElement.textContent = paramArray.length ? paramArray.join(', ') : 'Ninguno';
+      }
+    });
+
+    // Analytics tracking (opcional)
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'email_verification_completed', {
+        'event_category': 'authentication',
+        'event_label': 'web_verification'
+      });
+    }
+
+    // Auto-hide debug info after 15 seconds
+    setTimeout(() => {
+      const debug = document.getElementById('debug');
+      if (debug) {
+        debug.style.transition = 'opacity 1s ease-out';
+        debug.style.opacity = '0.3';
+      }
+    }, 15000);
+
+    // Add loading state to buttons
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        if (this.href && this.href !== 'mailto:support@familydash.com') {
+          const originalText = this.innerHTML;
+          this.innerHTML = '<span class="loading"></span> Cargando...';
+          this.style.pointerEvents = 'none';
+          
+          // Reset after 2 seconds (in case of slow navigation)
+          setTimeout(() => {
+            this.innerHTML = originalText;
+            this.style.pointerEvents = 'auto';
+          }, 2000);
+        }
+      });
+    });
+
+    // Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.target.classList.contains('btn')) {
+        e.target.click();
+      }
+    });
+
+    // Performance monitoring
+    if ('performance' in window) {
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+        }, 0);
+      });
+    }
+  </script>
+</body>
+</html>

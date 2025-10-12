@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytics Global - Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #667eea; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+      --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --border: #334155;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .main-content { flex: 1; padding: 32px; margin-left: 260px; }
+    .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .header p { color: var(--text-secondary); margin-bottom: 32px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .stat-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .stat-title { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+    .stat-icon { font-size: 24px; }
+    .stat-value { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    .stat-change { font-size: 14px; }
+    .stat-change.positive { color: var(--success); }
+    .chart-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .chart-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+    canvas { max-height: 400px; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside style="width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+      <div style="display: flex; align-items: center; font-size: 24px; font-weight: 700; margin-bottom: 32px; color: var(--primary);">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px;">
+        FamilyDash Admin
+      </div>
+      <div id="userInfo" style="background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div id="userEmail" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Cargando...</div>
+        <span id="userRole" style="padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">...</span>
+      </div>
+      <nav style="margin-bottom: 32px;">
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/admin/dashboard" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📊 Overview</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/analytics" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; background: var(--primary); color: white; text-decoration: none;">📈 Analytics</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/users" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">👥 Usuarios</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/families" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">👨‍👩‍👧‍👦 Familias</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/content" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📝 Contenido</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/system" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">⚙️ Sistema</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🌐 Ver Sitio</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" onclick="handleLogout(); return false;" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🚪 Salir</a></li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>📈 Analytics Global</h1>
+        <p>Estadísticas y métricas de toda la plataforma</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Usuarios Totales</span>
+            <span class="stat-icon">👥</span>
+          </div>
+          <div class="stat-value" id="totalUsers">0</div>
+          <div class="stat-change positive" id="usersChange">↑ +12% vs. mes anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Usuarios Activos (30d)</span>
+            <span class="stat-icon">🔥</span>
+          </div>
+          <div class="stat-value" id="activeUsers">0</div>
+          <div class="stat-change positive">↑ +8% vs. mes anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Tasa de Conversión</span>
+            <span class="stat-icon">📊</span>
+          </div>
+          <div class="stat-value" id="conversionRate">0%</div>
+          <div class="stat-change positive">↑ +2.5% vs. mes anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Retención (7d)</span>
+            <span class="stat-icon">🔄</span>
+          </div>
+          <div class="stat-value" id="retentionRate">0%</div>
+          <div class="stat-change positive">↑ +5% vs. mes anterior</div>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <h3 class="chart-title">📈 Crecimiento de Usuarios (Últimos 30 días)</h3>
+        <canvas id="usersChart"></canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3 class="chart-title">🎯 Uso de Features</h3>
+        <canvas id="featuresChart"></canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3 class="chart-title">📱 Distribución de Plataforma</h3>
+        <canvas id="platformChart"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    async function init() {
+      const authData = await checkAuth();
+      if (!authData) return;
+      
+      await loadUserInfo();
+      await loadAnalytics();
+      initCharts();
+    }
+    
+    async function loadUserInfo() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userRole').textContent = 'Super Admin';
+      document.getElementById('userRole').style.background = 'var(--warning)';
+      document.getElementById('userRole').style.color = '#000';
+    }
+    
+    async function loadAnalytics() {
+      try {
+        const db = firebase.firestore();
+        
+        const usersSnap = await db.collection('users').get();
+        const totalUsers = usersSnap.size;
+        
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const activeSnap = await db.collection('users').where('lastActive', '>=', thirtyDaysAgo).get();
+        const activeUsers = activeSnap.size;
+        
+        document.getElementById('totalUsers').textContent = totalUsers;
+        document.getElementById('activeUsers').textContent = activeUsers;
+        document.getElementById('conversionRate').textContent = '3.5%';
+        document.getElementById('retentionRate').textContent = '68%';
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+      }
+    }
+    
+    function initCharts() {
+      // Users Growth Chart
+      const usersCtx = document.getElementById('usersChart').getContext('2d');
+      new Chart(usersCtx, {
+        type: 'line',
+        data: {
+          labels: ['1', '5', '10', '15', '20', '25', '30'],
+          datasets: [{
+            label: 'Usuarios Totales',
+            data: [10, 25, 45, 78, 125, 180, 250],
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: {
+            y: { ticks: { color: '#cbd5e1' }, grid: { color: '#334155' } },
+            x: { ticks: { color: '#cbd5e1' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+      
+      // Features Usage Chart
+      const featuresCtx = document.getElementById('featuresChart').getContext('2d');
+      new Chart(featuresCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Tasks', 'Calendar', 'Safe Room', 'Goals', 'Shopping', 'Penalties'],
+          datasets: [{
+            label: 'Uso Diario',
+            data: [850, 620, 420, 380, 290, 150],
+            backgroundColor: ['#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#f59e0b', '#ef4444'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: {
+            y: { ticks: { color: '#cbd5e1' }, grid: { color: '#334155' } },
+            x: { ticks: { color: '#cbd5e1' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+      
+      // Platform Distribution
+      const platformCtx = document.getElementById('platformChart').getContext('2d');
+      new Chart(platformCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Mobile Android', 'Mobile iOS', 'Web'],
+          datasets: [{
+            data: [620, 280, 100],
+            backgroundColor: ['#10b981', '#3b82f6', '#667eea'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } }
+        }
+      });
+    }
+    
+    async function checkAuth() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      if (!user) { window.location.href = '/login'; return null; }
+      const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(user.uid);
+      if (!isSuperAdmin) {
+        alert('Solo Super Admins.');
+        window.location.href = '/admin/dashboard';
+        return null;
+      }
+      return { user, isSuperAdmin };
+    }
+    
+    async function handleLogout() {
+      if (confirm('¿Cerrar sesión?')) {
+        await window.FamilyDashAuth.logout();
+        window.location.href = '/login';
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

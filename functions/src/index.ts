@@ -3,10 +3,14 @@
  * Server-side validation, rate limiting, and security enforcement
  * 
  * Phase 4: Cloud Functions + Rate Limit + Email Verification
+ * Phase 9: Admin Dashboard Functions
  */
 
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+
+// Import admin functions
+import * as adminFunctions from './admin';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -297,10 +301,17 @@ export const updateUserProfile = functions
 // EXPORTS
 // ============================================
 
-// Re-export all functions for Firebase
-export default {
-  createTask,
-  emailVerifiedGuard,
-  updateUserProfile,
-};
+// Export existing functions
+export { createTask, emailVerifiedGuard, updateUserProfile };
+
+// Export admin functions
+export {
+  deleteUserAccount,
+  promoteToSuperAdmin,
+  getAllFamiliesStats,
+  sendGlobalNotification,
+  exportUserData,
+  bulkUserOperation,
+  moderateContent,
+} from './admin';
 

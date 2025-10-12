@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Características - FamilyDash | Dashboard Familiar Integral</title>
+  <meta name="description" content="Descubre todas las características de FamilyDash: metas familiares, calendario compartido, tareas con recompensas, Safe Room emocional y más.">
+  <meta name="keywords" content="familia, dashboard, metas, calendario, tareas, Safe Room, organización familiar">
+  <meta property="og:title" content="Características - FamilyDash">
+  <meta property="og:description" content="Todo lo que necesitas para organizar tu familia en un solo lugar">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://family-dash-15944.web.app/features">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Características - FamilyDash",
+    "description": "Descubre todas las características de FamilyDash: metas familiares, calendario compartido, tareas con recompensas, Safe Room emocional y más.",
+    "url": "https://family-dash-15944.web.app/features",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "https://family-dash-15944.web.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Características"
+        }
+      ]
+    }
+  }
+  </script>
+  
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Animación de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: backgroundFloat 30s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .header.scrolled {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 24px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+    
+    .logo-nav:hover {
+      transform: scale(1.05);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--text-primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      width: 100%;
+    }
+    
+    .nav-cta {
+      background: var(--success-gradient) !important;
+      color: white !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+    }
+    
+    .nav-cta:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    .nav-cta::after {
+      display: none !important;
+    }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+      animation: slideInUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo {
+      font-size: 96px;
+      margin-bottom: 32px;
+      animation: logoFloat 4s ease-in-out infinite;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    h1 { 
+      font-size: 64px; 
+      font-weight: 800; 
+      margin: 0 0 32px 0;
+      background: linear-gradient(45deg, #fff, #f0f9ff, #e0f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: textShine 4s ease-in-out infinite;
+      line-height: 1.1;
+    }
+    
+    @keyframes textShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .subtitle {
+      font-size: 28px;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      line-height: 1.5;
+      font-weight: 400;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Features Grid */
+    .features {
+      padding: 120px 0;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+      margin-top: 64px;
+    }
+    
+    .feature-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .feature-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      animation: featurePulse 3s ease-in-out infinite;
+    }
+    
+    .feature-card:nth-child(1) .feature-icon { animation-delay: 0s; }
+    .feature-card:nth-child(2) .feature-icon { animation-delay: 0.5s; }
+    .feature-card:nth-child(3) .feature-icon { animation-delay: 1s; }
+    .feature-card:nth-child(4) .feature-icon { animation-delay: 1.5s; }
+    .feature-card:nth-child(5) .feature-icon { animation-delay: 2s; }
+    .feature-card:nth-child(6) .feature-icon { animation-delay: 2.5s; }
+    
+    @keyframes featurePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .feature-card h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .feature-benefits {
+      list-style: none;
+      text-align: left;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .feature-benefits li {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .feature-benefits li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+    }
+    
+    .feature-screenshot {
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transition: var(--transition);
+    }
+    
+    .feature-screenshot:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+    
+    .feature-screenshot img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      padding: 120px 0;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+    
+    .btn { 
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px; 
+      border-radius: 20px; 
+      background: var(--success-gradient);
+      color: white; 
+      text-decoration: none; 
+      font-weight: 700;
+      font-size: 18px;
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-width: 200px;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 80px 0 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .footer-logo {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+    
+    .footer-text {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .nav-links { gap: 24px; }
+      h1 { font-size: 56px; }
+      .subtitle { font-size: 24px; }
+      .features-grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+    
+    @media (max-width: 768px) {
+      .container { padding: 0 16px; }
+      .nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { padding-top: 100px; }
+      .logo { font-size: 80px; }
+      h1 { font-size: 48px; }
+      .subtitle { font-size: 20px; }
+      .cta-buttons { flex-direction: column; align-items: center; }
+      .btn { min-width: 250px; }
+      .feature-card { padding: 32px 24px; }
+      .footer-links { gap: 24px; }
+    }
+    
+    @media (max-width: 480px) {
+      .logo { font-size: 64px; }
+      h1 { font-size: 36px; }
+      .subtitle { font-size: 18px; }
+      .btn { padding: 16px 32px; font-size: 16px; min-width: 200px; }
+      .features { padding: 80px 0; }
+      .feature-card { padding: 24px 20px; }
+      .feature-icon { font-size: 48px; }
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <nav class="nav">
+      <a href="/" class="logo-nav">🏠 FamilyDash</a>
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/features" class="active">Características</a></li>
+        <li><a href="/parents">Para Padres</a></li>
+        <li><a href="/contact">Contacto</a></li>
+        <li><a href="/login">Iniciar Sesión</a></li>
+        <li><a href="/signup" class="nav-cta">Registrarse</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="logo">🎯</div>
+        <h1>Características</h1>
+        <p class="subtitle">
+          Todo lo que necesitas para organizar tu familia en un solo lugar.
+          Descubre cómo FamilyDash transforma la gestión familiar.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Metas Familiares</h3>
+          <p>
+            Establece y rastrea metas familiares colaborativas con hitos, 
+            fechas límite y seguimiento de progreso en tiempo real.
+          </p>
+          <ul class="feature-benefits">
+            <li>Crear metas en 5 segundos</li>
+            <li>Progreso visual por miembro</li>
+            <li>Recordatorios automáticos</li>
+            <li>Celebración de logros</li>
+          </ul>
+          <div class="feature-screenshot">
+            <img src="/screenshots/home/dashboard-main.svg" alt="Dashboard de FamilyDash mostrando metas familiares" loading="lazy">
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Calendario Hub</h3>
+          <p>
+            Mantén todos los eventos familiares organizados con un calendario 
+            inteligente que sincroniza con todos los dispositivos.
+          </p>
+          <ul class="feature-benefits">
+            <li>Sincronización automática</li>
+            <li>Recordatorios personalizados</li>
+            <li>Eventos recurrentes</li>
+            <li>Integración con apps externas</li>
+          </ul>
+          <div class="feature-screenshot">
+            <img src="/screenshots/calendar/calendar-view.svg" alt="Calendario familiar de FamilyDash" loading="lazy">
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">✅</div>
+          <h3>Tareas con Recompensas</h3>
+          <p>
+            Sistema de tareas gamificado que motiva a todos los miembros 
+            de la familia a completar sus responsabilidades.
+          </p>
+          <ul class="feature-benefits">
+            <li>Arrastra tareas fácilmente</li>
+            <li>Sistema de puntos</li>
+            <li>Recompensas personalizables</li>
+            <li>Tableros visuales</li>
+          </ul>
+          <div class="feature-screenshot">
+            <img src="/screenshots/tasks/task-creation.svg" alt="Creación de tareas en FamilyDash" loading="lazy">
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Safe Room</h3>
+          <p>
+            Espacio seguro para compartir pensamientos, emociones y 
+            contenido multimedia privado solo para la familia.
+          </p>
+          <ul class="feature-benefits">
+            <li>Check-ins emocionales</li>
+            <li>Ejercicios de respiración</li>
+            <li>Diario privado</li>
+            <li>Contenido multimedia</li>
+          </ul>
+          <div class="feature-screenshot">
+            <img src="/screenshots/saferoom/emotional-entry.svg" alt="Safe Room emocional de FamilyDash" loading="lazy">
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">👥</div>
+          <h3>Roles y Permisos</h3>
+          <p>
+            Sistema de roles por edad con controles parentales granulares 
+            y permisos personalizables para cada miembro.
+          </p>
+          <ul class="feature-benefits">
+            <li>Perfiles por edad</li>
+            <li>Controles parentales</li>
+            <li>Permisos granulares</li>
+            <li>Monitoreo de actividad</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Logros y Motivación</h3>
+          <p>
+            Sistema de insignias y logros que motiva a toda la familia 
+            a alcanzar sus objetivos y celebrar sus éxitos.
+          </p>
+          <ul class="feature-benefits">
+            <li>Insignias personalizadas</li>
+            <li>Rachas de logros</li>
+            <li>Estadísticas familiares</li>
+            <li>Celebraciones automáticas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 24px;">
+        ¿Listo para transformar tu familia?
+      </h2>
+      <p style="font-size: 20px; color: var(--text-secondary); margin-bottom: 48px;">
+        Únete a miles de familias que ya organizan su vida con FamilyDash
+      </p>
+      <div class="cta-buttons">
+        <a href="/signup" class="btn">
+          <span class="btn-icon">🚀</span>
+          <span>Empezar Gratis</span>
+        </a>
+        <a href="/parents" class="btn btn-secondary">
+          <span class="btn-icon">👨‍👩‍👧‍👦</span>
+          <span>Para Padres</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">🏠 FamilyDash</div>
+        <p class="footer-text">
+          Dashboard familiar integral con React Native, TypeScript y Firebase.
+        </p>
+        <div class="footer-links">
+          <a href="/">Inicio</a>
+          <a href="/features">Características</a>
+          <a href="/parents">Para Padres</a>
+          <a href="/contact">Contacto</a>
+          <a href="/privacy">Privacidad</a>
+          <a href="/terms">Términos</a>
+        </div>
+        <p class="footer-copyright">
+          © 2025 FamilyDash. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Google Analytics 4 -->
+  <script src="/js/analytics.js"></script>
+  
+  <!-- Animations -->
+  <script src="/js/animations.js"></script>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Add loading state to buttons
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        if (this.getAttribute('href').startsWith('#')) return;
+        
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="loading"></span> Cargando...';
+        this.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+          this.innerHTML = originalText;
+          this.style.pointerEvents = 'auto';
+        }, 2000);
+      });
+    });
+
+    // Feature cards hover effect enhancement
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

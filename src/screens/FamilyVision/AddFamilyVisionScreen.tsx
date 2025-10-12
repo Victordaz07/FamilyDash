@@ -1,6 +1,6 @@
 /**
- * 🌟 ADD FAMILY VISION SCREEN — FamilyDash+
- * Create new family goals and visions with inspiration
+ * 🎯 CREATE FAMILY GOAL SCREEN — FamilyDash+
+ * Create specific, measurable family goals with milestones and deadlines
  */
 
 import React, { useState } from "react";
@@ -16,12 +16,20 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useFamily } from "../../contexts/FamilyContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AddFamilyVisionScreen() {
     const navigation = useNavigation();
+    const { createVision } = useFamily();
+    const { user } = useAuth();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
+    const [targetDate, setTargetDate] = useState("");
+    const [milestone, setMilestone] = useState("");
+    const [milestones, setMilestones] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const categories = [
         { id: "spiritual", name: "Spiritual", icon: "leaf", color: "#81C784" },
@@ -30,7 +38,7 @@ export default function AddFamilyVisionScreen() {
         { id: "health", name: "Health", icon: "fitness", color: "#4FC3F7" },
     ];
 
-    const handleCreateVision = () => {
+    const handleCreateVision = async () => {
         if (!title.trim()) {
             Alert.alert("Missing Title", "Please enter a title for your family vision");
             return;
@@ -41,9 +49,48 @@ export default function AddFamilyVisionScreen() {
             return;
         }
 
-        Alert.alert("Vision Created", "Your family vision has been created! 🌟", [
-            { text: "OK", onPress: () => navigation.goBack() }
-        ]);
+        if (!user?.uid) {
+            Alert.alert("Error", "You must be logged in to create a vision");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const visionData = {
+                title: title.trim(),
+                description: description.trim(),
+                category: category as any,
+                progress: 0,
+                createdBy: user.uid,
+                assignedTo: [user.uid],
+                status: 'active' as const,
+                milestones: milestones.map((milestone, index) => ({
+                    id: `milestone_${index}`,
+                    title: milestone,
+                    description: '',
+                    completed: false,
+                    completedAt: undefined,
+                    completedBy: undefined
+                })),
+                targetDate: targetDate ? new Date(targetDate) : undefined,
+                notes: ''
+            };
+
+            const success = await createVision(visionData);
+            
+            if (success) {
+                Alert.alert("Vision Created", "Your family vision has been created! 🌟", [
+                    { text: "OK", onPress: () => navigation.goBack() }
+                ]);
+            } else {
+                Alert.alert("Error", "Failed to create vision. Please try again.");
+            }
+        } catch (error) {
+            console.error('Error creating vision:', error);
+            Alert.alert("Error", "An error occurred while creating the vision.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -55,8 +102,8 @@ export default function AddFamilyVisionScreen() {
                         <Ionicons name="arrow-back" size={24} color="white" />
                     </TouchableOpacity>
                     <View style={styles.headerText}>
-                        <Text style={styles.headerTitle}>New Family Vision</Text>
-                        <Text style={styles.headerSubtitle}>Create something beautiful together</Text>
+                        <Text style={styles.headerTitle}>Create Family Goal</Text>
+                        <Text style={styles.headerSubtitle}>Set a specific goal with milestones and deadlines 🎯</Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -121,15 +168,28 @@ export default function AddFamilyVisionScreen() {
                 </View>
 
                 {/* CREATE BUTTON */}
-                <TouchableOpacity style={styles.createButton} onPress={handleCreateVision}>
+                <TouchableOpacity 
+                    style={[styles.createButton, loading && styles.createButtonDisabled]} 
+                    onPress={handleCreateVision}
+                    disabled={loading}
+                >
                     <LinearGradient
-                        colors={["#7B6CF6", "#E96AC0"]}
+                        colors={loading ? ["#ccc", "#999"] : ["#7B6CF6", "#E96AC0"]}
                         style={styles.createButtonGradient}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                     >
-                        <Ionicons name="sparkles" size={20} color="white" />
-                        <Text style={styles.createButtonText}>Create Vision</Text>
+                        {loading ? (
+                            <>
+                                <Ionicons name="hourglass" size={20} color="white" />
+                                <Text style={styles.createButtonText}>Creating...</Text>
+                            </>
+                        ) : (
+                            <>
+                                <Ionicons name="sparkles" size={20} color="white" />
+                                <Text style={styles.createButtonText}>Create Vision</Text>
+                            </>
+                        )}
                     </LinearGradient>
                 </TouchableOpacity>
             </View>
@@ -223,6 +283,10 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         overflow: "hidden",
         elevation: 4,
+    },
+    createButtonDisabled: {
+        opacity: 0.6,
+        elevation: 2,
     },
     createButtonGradient: {
         flexDirection: "row",

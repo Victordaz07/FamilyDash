@@ -26,133 +26,86 @@ export default function ShoppingHistoryModal({ visible, onClose, familyId }: Pro
       const data = await getShoppingHistory(familyId);
       setHistory(data);
     } catch (error) {
-      console.error("Error loading shopping history:", error);
+      console.error('Error loading shopping history:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDate = (timestamp: any) => {
-    if (!timestamp) return "Unknown date";
-    
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   };
 
-  const renderHistoryItem = ({ item }: { item: ShoppingHistory }) => {
-    const difference = item.actualTotal - item.estimatedTotal;
-    const differencePercentage = item.estimatedTotal > 0 
-      ? ((difference / item.estimatedTotal) * 100).toFixed(1)
-      : "0";
+  const formatTotal = (total: number) => {
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(total);
+  };
 
-    return (
-      <View style={styles.historyCard}>
-        <View style={styles.historyHeader}>
-          <View style={styles.historyTitleContainer}>
-            <Ionicons name="cart" size={20} color="#7c3aed" />
-            <Text style={styles.historyTitle}>{item.listTitle}</Text>
-          </View>
-          <Text style={styles.historyDate}>{formatDate(item.completedAt)}</Text>
-        </View>
-
-        {item.storeName && (
-          <View style={styles.storeInfo}>
-            <Ionicons name="storefront" size={16} color="#6b7280" />
-            <Text style={styles.storeName}>{item.storeName}</Text>
-          </View>
-        )}
-
-        <View style={styles.totalsContainer}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Estimated:</Text>
-            <Text style={styles.totalAmount}>
-              {item.currency} {item.estimatedTotal.toFixed(2)}
-            </Text>
-          </View>
-          
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Actual:</Text>
-            <Text style={styles.actualAmount}>
-              {item.currency} {item.actualTotal.toFixed(2)}
-            </Text>
-          </View>
-
-          {item.taxes > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Taxes:</Text>
-              <Text style={styles.taxesAmount}>
-                {item.currency} {item.taxes.toFixed(2)}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.differenceRow}>
-            <Text style={styles.differenceLabel}>Difference:</Text>
-            <Text style={[
-              styles.differenceAmount,
-              { color: difference >= 0 ? "#ef4444" : "#10b981" }
-            ]}>
-              {difference >= 0 ? "+" : ""}{item.currency} {difference.toFixed(2)} ({differencePercentage}%)
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.itemsInfo}>
-          <Text style={styles.itemsCount}>
-            {item.items.length} item{item.items.length !== 1 ? "s" : ""} purchased
-          </Text>
-        </View>
+  const renderHistoryItem = ({ item }: { item: ShoppingHistory }) => (
+    <View style={styles.historyItem}>
+      <View style={styles.historyHeader}>
+        <Text style={styles.storeName}>{item.storeName}</Text>
+        <Text style={styles.date}>{formatDate(item.date)}</Text>
       </View>
-    );
-  };
+      
+      <View style={styles.itemsContainer}>
+        {item.items.map((item, index) => (
+          <View key={index} style={styles.itemRow}>
+            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemPrice}>{formatTotal(item.price)}</Text>
+          </View>
+        ))}
+      </View>
+      
+      <View style={styles.totalRow}>
+        <Text style={styles.totalLabel}>Total:</Text>
+        <Text style={styles.totalAmount}>{formatTotal(item.total)}</Text>
+      </View>
+    </View>
+  );
 
   return (
-    <Modal visible={visible} onRequestClose={onClose} animationType="slide">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View style={styles.headerLeft}>
-              <View style={styles.headerIcon}>
-                <Ionicons name="time" size={20} color="#fff" />
-              </View>
-              <Text style={styles.headerTitle}>Shopping History</Text>
-            </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.title}>Historial de Compras</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={24} color="#666" />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.content}>
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Loading history...</Text>
-            </View>
-          ) : history.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Ionicons name="time-outline" size={64} color="#d1d5db" />
-              <Text style={styles.emptyTitle}>No Shopping History</Text>
-              <Text style={styles.emptySubtitle}>
-                Complete your first shopping trip to see it here
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              data={history}
-              keyExtractor={(item) => item.id || item.completedAt?.toString() || Math.random().toString()}
-              renderItem={renderHistoryItem}
-              contentContainerStyle={styles.listContainer}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Cargando historial...</Text>
+          </View>
+        ) : history.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="receipt-outline" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>No hay compras registradas</Text>
+            <Text style={styles.emptySubtext}>Las compras aparecerán aquí una vez que las completes</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={history}
+            keyExtractor={(item, index) => `${item.date.getTime()}-${index}`}
+            renderItem={renderHistoryItem}
+            contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
     </Modal>
   );
@@ -161,187 +114,123 @@ export default function ShoppingHistoryModal({ visible, onClose, familyId }: Pro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: "#7c3aed",
-    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    paddingVertical: 16,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e9ecef',
   },
-  headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  headerIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontWeight: "700",
-    fontSize: 18,
-    color: "#fff",
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#212529',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    padding: 8,
   },
   loadingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: "#6b7280",
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#374151",
+    color: '#666',
     marginTop: 16,
-    marginBottom: 8,
   },
-  emptySubtitle: {
-    fontSize: 16,
-    color: "#6b7280",
-    textAlign: "center",
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#666',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   listContainer: {
-    paddingBottom: 20,
+    padding: 16,
   },
-  separator: {
-    height: 16,
-  },
-  historyCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  historyHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  historyTitleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  historyTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#111827",
-    marginLeft: 8,
-    flex: 1,
-  },
-  historyDate: {
-    fontSize: 12,
-    color: "#6b7280",
-    marginLeft: 8,
-  },
-  storeInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  storeName: {
-    fontSize: 14,
-    color: "#6b7280",
-    marginLeft: 6,
-  },
-  totalsContainer: {
-    backgroundColor: "#f9fafb",
+  historyItem: {
+    backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  storeName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#212529',
+  },
+  date: {
+    fontSize: 12,
+    color: '#666',
+  },
+  itemsContainer: {
+    marginBottom: 12,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  itemName: {
+    fontSize: 14,
+    color: '#495057',
+    flex: 1,
+  },
+  itemPrice: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#495057',
   },
   totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e9ecef',
   },
   totalLabel: {
-    fontSize: 14,
-    color: "#6b7280",
-    fontWeight: "500",
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#212529',
   },
   totalAmount: {
-    fontSize: 14,
-    color: "#111827",
-    fontWeight: "600",
-  },
-  actualAmount: {
     fontSize: 16,
-    color: "#10b981",
-    fontWeight: "700",
-  },
-  taxesAmount: {
-    fontSize: 14,
-    color: "#f59e0b",
-    fontWeight: "600",
-  },
-  differenceRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-  },
-  differenceLabel: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#374151",
-  },
-  differenceAmount: {
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  itemsInfo: {
-    alignItems: "center",
-  },
-  itemsCount: {
-    fontSize: 12,
-    color: "#6b7280",
-    fontWeight: "500",
+    fontWeight: '700',
+    color: '#28a745',
   },
 });

@@ -12,16 +12,19 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SimpleAppNavigator from './SimpleAppNavigator';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
+import VerifyEmailScreen from '../screens/VerifyEmailScreen';
 import { useAuth } from '../contexts/AuthContext';
+import { useEmailVerificationGate } from '../hooks/useEmailVerificationGate';
 import { theme } from '../styles/simpleTheme';
 
 const AuthStack = createStackNavigator();
 
 const ConditionalNavigator: React.FC = () => {
     const { user, loading } = useAuth();
+    const { loading: verificationLoading, verified } = useEmailVerificationGate();
 
     // Show loading screen while checking auth state
-    if (loading) {
+    if (loading || verificationLoading) {
         return (
             <LinearGradient
                 colors={[theme.colors.background, theme.colors.gradientEnd]}
@@ -43,7 +46,9 @@ const ConditionalNavigator: React.FC = () => {
                         color={theme.colors.primary}
                         style={styles.spinner}
                     />
-                    <Text style={styles.loadingSubtext}>Loading...</Text>
+                    <Text style={styles.loadingSubtext}>
+                        {loading ? 'Loading...' : 'Verifying email...'}
+                    </Text>
                 </View>
             </LinearGradient>
         );
@@ -58,11 +63,17 @@ const ConditionalNavigator: React.FC = () => {
             >
                 <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
                 <AuthStack.Screen name="RegisterScreen" component={RegisterScreen} />
+                <AuthStack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
             </AuthStack.Navigator>
         );
     }
 
-    // Show main app when authenticated
+    // Show email verification screen when authenticated but not verified
+    if (!verified) {
+        return <VerifyEmailScreen />;
+    }
+
+    // Show main app when authenticated and verified
     return <SimpleAppNavigator />;
 };
 

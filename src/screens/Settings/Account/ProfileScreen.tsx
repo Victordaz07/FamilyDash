@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../../contexts/AuthContext';
+import { VerifyEmailBlock } from '../../../components/verify/VerifyEmailBlock';
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
@@ -254,12 +255,8 @@ export default function ProfileScreen() {
                                 }
                             </Text>
                         </View>
-                        <View style={styles.infoRow}>
-                            <Ionicons name="shield-checkmark-outline" size={20} color="#667eea" />
-                            <Text style={styles.infoText}>
-                                Account verified: {user?.emailVerified ? 'Yes' : 'No'}
-                            </Text>
-                        </View>
+                        {/* Email Verification Block */}
+                        <VerifyEmailBlock />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

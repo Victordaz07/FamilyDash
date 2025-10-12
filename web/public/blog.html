@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recursos y Consejos - FamilyDash</title>
+  <meta name="description" content="Consejos, guías y recursos para organizar mejor tu familia. Tips de organización, crianza positiva y tecnología familiar.">
+  <meta name="keywords" content="familia, organización, consejos, crianza, tips, recursos">
+  <meta property="og:title" content="Recursos y Consejos - FamilyDash">
+  <meta property="og:description" content="Consejos y recursos para organizar mejor tu familia">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://family-dash-15944.web.app/blog">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Animación de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: backgroundFloat 30s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes backgroundFloat {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+    
+    .nav-cta {
+      background: var(--success-gradient) !important;
+      color: white !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+    }
+    
+    .nav-cta:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+      animation: slideInUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo {
+      font-size: 96px;
+      margin-bottom: 32px;
+      animation: logoFloat 4s ease-in-out infinite;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    h1 {
+      font-size: 64px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      background: var(--success-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+    
+    .subtitle {
+      font-size: 28px;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      line-height: 1.5;
+      font-weight: 400;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Coming Soon Section */
+    .coming-soon {
+      padding: 120px 0;
+      text-align: center;
+    }
+    
+    .coming-soon-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 64px 48px;
+      max-width: 800px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-primary);
+    }
+    
+    .coming-soon-icon {
+      font-size: 96px;
+      margin-bottom: 32px;
+      display: block;
+    }
+    
+    .coming-soon h2 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+    
+    .coming-soon p {
+      font-size: 20px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 48px 0;
+    }
+    
+    .feature-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .feature-item .icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    
+    .feature-item h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    
+    .feature-item p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn { 
+      display: inline-flex;
+      align-items: center;
+      padding: 18px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    }
+    
+    .btn-primary {
+      background: var(--success-gradient);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+    }
+    
+    .btn-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+    
+    /* Footer */
+    .footer {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      padding: 48px 0 24px;
+      margin-top: 120px;
+    }
+    
+    .footer-content {
+      text-align: center;
+    }
+    
+    .footer-logo {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: var(--success-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .footer-text {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid var(--glass-border);
+      padding-top: 24px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 16px;
+      }
+      
+      .nav-links a {
+        font-size: 14px;
+      }
+      
+      h1 {
+        font-size: 48px;
+      }
+      
+      .subtitle {
+        font-size: 20px;
+      }
+      
+      .coming-soon-card {
+        padding: 48px 24px;
+      }
+      
+      .coming-soon h2 {
+        font-size: 36px;
+      }
+      
+      .feature-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <nav class="nav">
+      <a href="/" class="logo-nav">🏠 FamilyDash</a>
+      <ul class="nav-links">
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/features">Características</a></li>
+        <li><a href="/parents">Para Padres</a></li>
+        <li><a href="/contact">Contacto</a></li>
+        <li><a href="/login">Iniciar Sesión</a></li>
+        <li><a href="/signup" class="nav-cta">Registrarse</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="logo">📚</div>
+        <h1>Recursos Familiares</h1>
+        <p class="subtitle">
+          Consejos, guías y recursos para organizar mejor tu familia. 
+          Tips de organización, crianza positiva y tecnología familiar.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon Section -->
+  <section class="coming-soon">
+    <div class="container">
+      <div class="coming-soon-card">
+        <span class="coming-soon-icon">🚀</span>
+        <h2>¡Próximamente!</h2>
+        <p>
+          Estamos preparando contenido increíble para ayudarte a organizar mejor tu familia. 
+          Pronto tendrás acceso a consejos expertos, guías prácticas y recursos valiosos.
+        </p>
+        
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="icon">📝</span>
+            <h3>Consejos de Organización</h3>
+            <p>Tips prácticos para mantener tu hogar organizado</p>
+          </div>
+          
+          <div class="feature-item">
+            <span class="icon">👨‍👩‍👧‍👦</span>
+            <h3>Crianza Positiva</h3>
+            <p>Estrategias para una crianza efectiva y amorosa</p>
+          </div>
+          
+          <div class="feature-item">
+            <span class="icon">🎯</span>
+            <h3>Metas Familiares</h3>
+            <p>Cómo establecer y alcanzar objetivos en familia</p>
+          </div>
+          
+          <div class="feature-item">
+            <span class="icon">🛡️</span>
+            <h3>Seguridad Digital</h3>
+            <p>Protege a tu familia en el mundo digital</p>
+          </div>
+          
+          <div class="feature-item">
+            <span class="icon">⚖️</span>
+            <h3>Balance Vida-Trabajo</h3>
+            <p>Equilibra tu vida personal y profesional</p>
+          </div>
+          
+          <div class="feature-item">
+            <span class="icon">🎨</span>
+            <h3>Actividades Familiares</h3>
+            <p>Ideas para pasar tiempo de calidad juntos</p>
+          </div>
+        </div>
+        
+        <div class="cta-buttons">
+          <a href="/signup" class="btn btn-primary">
+            <span class="btn-icon">🚀</span>
+            <span>Empezar Gratis</span>
+          </a>
+          <a href="/parents" class="btn btn-secondary">
+            <span class="btn-icon">👨‍👩‍👧‍👦</span>
+            <span>Centro para Padres</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">🏠 FamilyDash</div>
+        <p class="footer-text">
+          La plataforma familiar integral que necesitas para organizar, 
+          comunicar y hacer crecer a tu familia con tecnología moderna.
+        </p>
+        <div class="footer-links">
+          <a href="/">Inicio</a>
+          <a href="/features">Características</a>
+          <a href="/parents">Para Padres</a>
+          <a href="/contact">Contacto</a>
+          <a href="/privacy">Privacidad</a>
+          <a href="/terms">Términos</a>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 FamilyDash. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Google Analytics 4 -->
+  <script src="/js/analytics.js"></script>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+  </script>
+</body>
+</html>

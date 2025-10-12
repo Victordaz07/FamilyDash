@@ -12,7 +12,7 @@ import StorePickerModal from "./StorePickerModal";
 import BudgetProgressBar from "./BudgetProgressBar";
 import BarcodeScannerFallback from "./BarcodeScannerFallback";
 import EditItemModal from "./EditItemModal";
-import ShoppingHistoryModal from "./ShoppingHistoryModal";
+// import ShoppingHistoryModal from "../../components/shopping/ShoppingHistoryModal";
 import CompletePurchaseModal from "./CompletePurchaseModal";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {
@@ -690,11 +690,11 @@ export default function ShoppingListModal({
         </Modal>
 
         {/* Shopping History Modal */}
-        <ShoppingHistoryModal
+        {/* <ShoppingHistoryModal
           visible={historyModal}
           onClose={() => setHistoryModal(false)}
           familyId={familyId}
-        />
+        /> */}
 
         {/* Complete Purchase Modal */}
         {list && (

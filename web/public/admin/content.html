@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Contenido - Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.svg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #667eea; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+      --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --border: #334155;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .main-content { flex: 1; padding: 32px; margin-left: 260px; }
+    .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .header p { color: var(--text-secondary); margin-bottom: 32px; }
+    .tabs { display: flex; gap: 16px; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .tab { padding: 12px 24px; border-bottom: 2px solid transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+    .tab.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; font-size: 14px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; font-weight: 600; }
+    .form-input, .form-textarea { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; font-family: inherit; }
+    .form-textarea { min-height: 200px; resize: vertical; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--text-secondary); }
+    td { padding: 16px 12px; border-bottom: 1px solid var(--border); }
+    tr:hover { background: var(--bg-tertiary); }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge-published { background: var(--success); color: white; }
+    .badge-draft { background: var(--warning); color: #000; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside style="width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+      <div style="display: flex; align-items: center; font-size: 24px; font-weight: 700; margin-bottom: 32px; color: var(--primary);">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px;">
+        FamilyDash Admin
+      </div>
+      <div id="userInfo" style="background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div id="userEmail" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Cargando...</div>
+        <span id="userRole" class="badge">...</span>
+      </div>
+      <nav>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/admin/dashboard" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📊 Overview</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/analytics" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">📈 Analytics</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/users" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">👥 Usuarios</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/families" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">👨‍👩‍👧‍👦 Familias</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/content" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; background: var(--primary); color: white; text-decoration: none;">📝 Contenido</a></li>
+          <li style="margin-bottom: 4px;"><a href="/admin/system" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">⚙️ Sistema</a></li>
+          <li style="margin-bottom: 4px;"><a href="/" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🌐 Ver Sitio</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" onclick="handleLogout(); return false;" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🚪 Salir</a></li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>📝 Gestión de Contenido</h1>
+        <p>Administra blog posts, anuncios y contenido de la plataforma</p>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('posts')">📄 Blog Posts</div>
+        <div class="tab" onclick="switchTab('announcements')">📢 Anuncios</div>
+        <div class="tab" onclick="switchTab('media')">🖼️ Media</div>
+      </div>
+      
+      <!-- Blog Posts Tab -->
+      <div id="postsTab">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 700;">Blog Posts</h2>
+            <button class="btn btn-primary" onclick="createPost()">➕ Nuevo Post</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="postsTable">
+              <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No hay posts aún. Crea el primero.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Announcements Tab -->
+      <div id="announcementsTab" style="display:none;">
+        <div class="card">
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Crear Anuncio Global</h2>
+          <div class="form-group">
+            <label class="form-label">Título del Anuncio</label>
+            <input type="text" class="form-input" id="announcementTitle" placeholder="Ej: Nuevas características disponibles">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mensaje</label>
+            <textarea class="form-textarea" id="announcementMessage" placeholder="Escribe el mensaje del anuncio..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-input" id="announcementType">
+              <option value="info">ℹ️ Información</option>
+              <option value="success">✅ Éxito</option>
+              <option value="warning">⚠️ Advertencia</option>
+              <option value="danger">🚨 Urgente</option>
+            </select>
+          </div>
+          <button class="btn btn-success" onclick="publishAnnouncement()">📢 Publicar Anuncio</button>
+        </div>
+      </div>
+      
+      <!-- Media Tab -->
+      <div id="mediaTab" style="display:none;">
+        <div class="card">
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Librería de Media</h2>
+          <p style="color: var(--text-secondary);">Gestión de imágenes y archivos multimedia (Próximamente)</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    async function init() {
+      const authData = await checkAuth();
+      if (!authData) return;
+      await loadUserInfo();
+    }
+    
+    async function loadUserInfo() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userRole').textContent = 'Super Admin';
+      document.getElementById('userRole').style.background = 'var(--warning)';
+      document.getElementById('userRole').style.color = '#000';
+    }
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.tab').classList.add('active');
+      
+      document.getElementById('postsTab').style.display = tab === 'posts' ? 'block' : 'none';
+      document.getElementById('announcementsTab').style.display = tab === 'announcements' ? 'block' : 'none';
+      document.getElementById('mediaTab').style.display = tab === 'media' ? 'block' : 'none';
+      
+      event.target.classList.add('active');
+    }
+    
+    function createPost() {
+      alert('Crear nuevo blog post\n(Funcionalidad en desarrollo)');
+    }
+    
+    async function publishAnnouncement() {
+      const title = document.getElementById('announcementTitle').value;
+      const message = document.getElementById('announcementMessage').value;
+      const type = document.getElementById('announcementType').value;
+      
+      if (!title || !message) {
+        alert('Por favor completa todos los campos');
+        return;
+      }
+      
+      try {
+        const db = firebase.firestore();
+        await db.collection('announcements').add({
+          title,
+          message,
+          type,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          createdBy: (await window.FamilyDashAuth.getCurrentUser()).uid,
+          active: true,
+        });
+        
+        alert('Anuncio publicado exitosamente');
+        document.getElementById('announcementTitle').value = '';
+        document.getElementById('announcementMessage').value = '';
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+    
+    async function checkAuth() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      if (!user) { window.location.href = '/login'; return null; }
+      const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(user.uid);
+      if (!isSuperAdmin) {
+        alert('Solo Super Admins.');
+        window.location.href = '/admin/dashboard';
+        return null;
+      }
+      return { user, isSuperAdmin };
+    }
+    
+    async function handleLogout() {
+      if (confirm('¿Cerrar sesión?')) {
+        await window.FamilyDashAuth.logout();
+        window.location.href = '/login';
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

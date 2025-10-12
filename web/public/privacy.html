@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Política de Privacidad - FamilyDash</title>
+  <meta name="description" content="Política de privacidad de FamilyDash. Cómo protegemos y manejamos los datos de tu familia.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px 0;
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    .logo-nav {
+      font-size: 24px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    
+    .back-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .back-btn:hover {
+      color: var(--text-primary);
+    }
+    
+    /* Content */
+    .content {
+      margin-top: 120px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 60px;
+    }
+    
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    
+    .last-updated {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      font-size: 16px;
+    }
+    
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 48px 0 24px 0;
+      color: var(--text-primary);
+    }
+    
+    h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: var(--text-primary);
+    }
+    
+    p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+    
+    ul {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+    
+    li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    
+    .contact-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+    
+    .contact-info h3 {
+      margin-top: 0;
+      color: #10b981;
+    }
+    
+    .contact-info a {
+      color: #10b981;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 80px;
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 20px 16px; }
+      .nav { padding: 0 16px; }
+      .content { padding: 40px 24px; margin-top: 100px; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 20px; }
+      .footer-links { gap: 24px; }
+    }
+    
+    @media (max-width: 480px) {
+      .content { padding: 32px 20px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 22px; }
+      .footer-links { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <a href="/" class="logo-nav">🏠 FamilyDash</a>
+      <a href="/" class="back-btn">← Volver al inicio</a>
+    </nav>
+  </header>
+
+  <!-- Content -->
+  <div class="container">
+    <div class="content">
+      <h1>Política de Privacidad</h1>
+      <p class="last-updated">Última actualización: Enero 2025</p>
+
+      <h2>1. Introducción</h2>
+      <p>
+        En FamilyDash, valoramos profundamente la privacidad y seguridad de tu familia. 
+        Esta política de privacidad explica cómo recopilamos, usamos, almacenamos y 
+        protegemos la información de tu familia cuando usas nuestra aplicación.
+      </p>
+
+      <h2>2. Información que Recopilamos</h2>
+      
+      <h3>2.1 Información Personal</h3>
+      <ul>
+        <li>Nombres y direcciones de correo electrónico de los miembros de la familia</li>
+        <li>Información del perfil (edad, rol familiar)</li>
+        <li>Preferencias de notificaciones y configuración</li>
+      </ul>
+
+      <h3>2.2 Contenido Familiar</h3>
+      <ul>
+        <li>Metas y objetivos familiares</li>
+        <li>Tareas y responsabilidades</li>
+        <li>Eventos del calendario familiar</li>
+        <li>Contenido del Safe Room (diarios, emociones, multimedia)</li>
+        <li>Logros y progreso familiar</li>
+      </ul>
+
+      <h3>2.3 Información Técnica</h3>
+      <ul>
+        <li>Datos de uso de la aplicación (características utilizadas, frecuencia)</li>
+        <li>Información del dispositivo (tipo, sistema operativo, versión de la app)</li>
+        <li>Direcciones IP (anonimizadas para análisis)</li>
+      </ul>
+
+      <h2>3. Cómo Usamos tu Información</h2>
+      
+      <h3>3.1 Funcionalidad Principal</h3>
+      <ul>
+        <li>Proporcionar y mantener la funcionalidad de FamilyDash</li>
+        <li>Sincronizar datos entre dispositivos familiares</li>
+        <li>Enviar notificaciones y recordatorios</li>
+        <li>Generar reportes de progreso familiar</li>
+      </ul>
+
+      <h3>3.2 Mejora del Servicio</h3>
+      <ul>
+        <li>Analizar el uso para mejorar la experiencia</li>
+        <li>Desarrollar nuevas características</li>
+        <li>Optimizar el rendimiento de la aplicación</li>
+      </ul>
+
+      <h3>3.3 Seguridad y Soporte</h3>
+      <ul>
+        <li>Detectar y prevenir fraudes o uso inadecuado</li>
+        <li>Proporcionar soporte técnico</li>
+        <li>Cumplir con obligaciones legales</li>
+      </ul>
+
+      <h2>4. Compartir Información</h2>
+      <p>
+        <strong>No vendemos, alquilamos ni compartimos tu información personal con terceros</strong>, 
+        excepto en las siguientes circunstancias:
+      </p>
+      <ul>
+        <li><strong>Proveedores de servicios:</strong> Utilizamos Firebase (Google) para el almacenamiento seguro de datos</li>
+        <li><strong>Cumplimiento legal:</strong> Cuando sea requerido por ley o para proteger nuestros derechos</li>
+        <li><strong>Consentimiento:</strong> Cuando tengas consentimiento explícito para compartir información específica</li>
+      </ul>
+
+      <h2>5. Seguridad de los Datos</h2>
+      <p>Implementamos múltiples capas de seguridad para proteger tu información:</p>
+      <ul>
+        <li><strong>Cifrado:</strong> Todos los datos se cifran en tránsito (TLS) y en reposo</li>
+        <li><strong>Autenticación:</strong> Sistema de autenticación robusto con Firebase Auth</li>
+        <li><strong>Controles de acceso:</strong> Permisos granulares por rol familiar</li>
+        <li><strong>Monitoreo:</strong> Supervisión continua de la seguridad</li>
+        <li><strong>Actualizaciones:</strong> Mantenemos la aplicación actualizada con las últimas medidas de seguridad</li>
+      </ul>
+
+      <h2>6. Tus Derechos</h2>
+      <p>Tienes control total sobre tu información:</p>
+      <ul>
+        <li><strong>Acceso:</strong> Puedes ver toda la información que tenemos sobre tu familia</li>
+        <li><strong>Corrección:</strong> Puedes actualizar o corregir información incorrecta</li>
+        <li><strong>Eliminación:</strong> Puedes eliminar tu cuenta y todos los datos asociados</li>
+        <li><strong>Exportación:</strong> Puedes descargar todos tus datos en formato JSON</li>
+        <li><strong>Restricción:</strong> Puedes limitar cómo usamos tu información</li>
+      </ul>
+
+      <h2>7. Retención de Datos</h2>
+      <p>
+        Conservamos tu información solo el tiempo necesario para proporcionar nuestros servicios. 
+        Los datos se eliminan automáticamente cuando eliminas tu cuenta, o puedes solicitar 
+        la eliminación en cualquier momento.
+      </p>
+
+      <h2>8. Privacidad de los Niños</h2>
+      <p>
+        FamilyDash está diseñado para familias y puede incluir información de menores. 
+        Los padres tienen control total sobre la información de sus hijos y pueden:
+      </p>
+      <ul>
+        <li>Establecer límites y controles parentales</li>
+        <li>Monitorear la actividad de sus hijos</li>
+        <li>Eliminar la información de menores en cualquier momento</li>
+      </ul>
+
+      <h2>9. Cambios a esta Política</h2>
+      <p>
+        Podemos actualizar esta política de privacidad ocasionalmente. Te notificaremos 
+        sobre cambios significativos a través de la aplicación o por correo electrónico. 
+        El uso continuado de FamilyDash después de los cambios constituye aceptación de la nueva política.
+      </p>
+
+      <div class="contact-info">
+        <h3>¿Preguntas sobre Privacidad?</h3>
+        <p>
+          Si tienes preguntas sobre esta política de privacidad o cómo manejamos tu información, 
+          contáctanos en:
+        </p>
+        <p>
+          📧 <a href="mailto:privacy@familydash.app">privacy@familydash.app</a><br>
+          🔒 <a href="mailto:security@familydash.app">security@familydash.app</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/">Inicio</a>
+        <a href="/features">Características</a>
+        <a href="/parents">Para Padres</a>
+        <a href="/contact">Contacto</a>
+        <a href="/terms">Términos de Uso</a>
+      </div>
+      <p class="footer-copyright">
+        © 2025 FamilyDash. Todos los derechos reservados.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

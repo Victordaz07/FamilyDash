@@ -1,0 +1,120 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs18",
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ]
+  },
+  "hosting": {
+    "public": "web/public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+            "rewrites": [
+              {
+                "source": "/verified",
+                "destination": "/verified.html"
+              },
+              {
+                "source": "/features",
+                "destination": "/features.html"
+              },
+              {
+                "source": "/parents",
+                "destination": "/parents.html"
+              },
+              {
+                "source": "/contact",
+                "destination": "/contact.html"
+              },
+              {
+                "source": "/privacy",
+                "destination": "/privacy.html"
+              },
+              {
+                "source": "/terms",
+                "destination": "/terms.html"
+              },
+              {
+                "source": "/signup",
+                "destination": "/signup.html"
+              },
+              {
+                "source": "/login",
+                "destination": "/login.html"
+              },
+              {
+                "source": "/blog",
+                "destination": "/blog.html"
+              },
+              {
+                "source": "/admin/dashboard",
+                "destination": "/admin/dashboard.html"
+              },
+              {
+                "source": "/admin/users",
+                "destination": "/admin/users.html"
+              },
+              {
+                "source": "/admin/families",
+                "destination": "/admin/families.html"
+              },
+              {
+                "source": "/admin/analytics",
+                "destination": "/admin/analytics.html"
+              },
+              {
+                "source": "/admin/content",
+                "destination": "/admin/content.html"
+              },
+              {
+                "source": "/admin/system",
+                "destination": "/admin/system.html"
+              },
+              {
+                "source": "/admin/family",
+                "destination": "/admin/family.html"
+              }
+            ],
+    "headers": [
+      {
+        "source": "**/*.@(html|css|js)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(png|jpg|jpeg|gif|ico|svg)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=86400"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    }
+  }
+}

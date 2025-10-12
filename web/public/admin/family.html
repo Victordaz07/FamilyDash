@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Familiar - Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.svg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #667eea; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+      --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --border: #334155;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .main-content { flex: 1; padding: 32px; margin-left: 260px; }
+    .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .header p { color: var(--text-secondary); margin-bottom: 32px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .stat-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .stat-title { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .card-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--text-secondary); }
+    td { padding: 16px 12px; border-bottom: 1px solid var(--border); }
+    tr:hover { background: var(--bg-tertiary); }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 64px; }
+    .spinner { border: 4px solid var(--bg-tertiary); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-right: 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside style="width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 24px; position: fixed; height: 100vh; overflow-y: auto;">
+      <div style="display: flex; align-items: center; font-size: 24px; font-weight: 700; margin-bottom: 32px; color: var(--primary);">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px;">
+        Mi Familia
+      </div>
+      <div id="userInfo" style="background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div id="userEmail" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Cargando...</div>
+        <span id="userRole" class="badge">Family Admin</span>
+      </div>
+      <nav>
+        <ul style="list-style: none;">
+          <li style="margin-bottom: 4px;"><a href="/admin/family" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; background: var(--primary); color: white; text-decoration: none;">📊 Mi Familia</a></li>
+          <li style="margin-bottom: 4px;"><a href="/" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🌐 Ver Sitio</a></li>
+          <li style="margin-bottom: 4px;"><a href="#" onclick="handleLogout(); return false;" style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; color: var(--text-secondary); text-decoration: none;">🚪 Salir</a></li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>👨‍👩‍👧‍👦 Panel de Mi Familia</h1>
+        <p>Vista y estadísticas de tu familia</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">Miembros</div>
+          <div class="stat-value" id="membersCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Tareas Completadas (Mes)</div>
+          <div class="stat-value" style="color: var(--success);" id="tasksCompleted">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Eventos (Próximos)</div>
+          <div class="stat-value" style="color: var(--primary);" id="upcomingEvents">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-title">Metas Activas</div>
+          <div class="stat-value" style="color: #8b5cf6;" id="activeGoals">0</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 class="card-title">Miembros de la Familia</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Tareas Completadas</th>
+              <th>Último Acceso</th>
+            </tr>
+          </thead>
+          <tbody id="membersTable">
+            <tr><td colspan="5" class="loading"><div class="spinner"></div> Cargando miembros...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="card">
+        <h3 class="card-title">Actividad Reciente de la Familia</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Detalle</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="activityTable">
+            <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-secondary);">Sin actividad reciente</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    async function init() {
+      const authData = await checkAuth();
+      if (!authData) return;
+      
+      await loadUserInfo();
+      await loadFamilyData();
+    }
+    
+    async function loadUserInfo() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      const userData = await window.FamilyDashAuth.getUserData(user.uid);
+      
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userRole').textContent = 'Family Admin';
+      document.getElementById('userRole').style.background = '#8B5CF6';
+      document.getElementById('userRole').style.color = 'white';
+    }
+    
+    async function loadFamilyData() {
+      try {
+        const user = await window.FamilyDashAuth.getCurrentUser();
+        const userData = await window.FamilyDashAuth.getUserData(user.uid);
+        
+        if (!userData.familyId) {
+          document.getElementById('membersTable').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No perteneces a ninguna familia aún</td></tr>';
+          return;
+        }
+        
+        const db = firebase.firestore();
+        const familyRef = db.collection('families').doc(userData.familyId);
+        
+        // Get family members
+        const membersSnap = await familyRef.collection('members').get();
+        document.getElementById('membersCount').textContent = membersSnap.size;
+        
+        // Render members (placeholder data)
+        document.getElementById('tasksCompleted').textContent = '45';
+        document.getElementById('upcomingEvents').textContent = '8';
+        document.getElementById('activeGoals').textContent = '3';
+        
+        // Load members table
+        const membersTable = document.getElementById('membersTable');
+        membersTable.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-secondary);">Descarga la app móvil para ver detalles de miembros</td></tr>';
+        
+      } catch (error) {
+        console.error('Error loading family data:', error);
+        document.getElementById('membersTable').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger);">Error: ' + error.message + '</td></tr>';
+      }
+    }
+    
+    async function checkAuth() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      if (!user) { window.location.href = '/login'; return null; }
+      const isFamilyAdmin = await window.FamilyDashAuth.isFamilyAdmin(user.uid);
+      if (!isFamilyAdmin) {
+        alert('Solo admins de familia.');
+        window.location.href = '/';
+        return null;
+      }
+      return { user, isFamilyAdmin };
+    }
+    
+    async function handleLogout() {
+      if (confirm('¿Cerrar sesión?')) {
+        await window.FamilyDashAuth.logout();
+        window.location.href = '/login';
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

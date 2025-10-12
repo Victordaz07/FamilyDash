@@ -55,6 +55,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                         }
                     }
                 ]);
+            } else if (result.code === 'EMAIL_NOT_VERIFIED') {
+                // Redirigir a pantalla de verificación
+                navigation.navigate('VerifyEmail');
             } else {
                 Alert.alert('Login Failed', result.error || 'Please try again');
             }

@@ -1,0 +1,102 @@
+<svg width="375" height="812" viewBox="0 0 375 812" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#F9F9FF"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="375" height="120" fill="url(#gradient3)"/>
+  
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Title -->
+  <text x="187" y="60" text-anchor="middle" font-family="system-ui" font-size="20" font-weight="bold" fill="white">Calendario Familiar</text>
+  <text x="187" y="80" text-anchor="middle" font-family="system-ui" font-size="14" fill="rgba(255,255,255,0.8)">Enero 2025</text>
+  
+  <!-- Month Navigation -->
+  <text x="50" y="105" font-family="system-ui" font-size="16" fill="white">←</text>
+  <text x="325" y="105" font-family="system-ui" font-size="16" fill="white">→</text>
+  
+  <!-- Calendar Grid -->
+  <rect x="20" y="140" width="335" height="400" rx="16" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+  
+  <!-- Days of Week -->
+  <text x="52" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">L</text>
+  <text x="95" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">M</text>
+  <text x="138" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">X</text>
+  <text x="181" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">J</text>
+  <text x="224" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">V</text>
+  <text x="267" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">S</text>
+  <text x="310" y="170" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="600" fill="#6B7280">D</text>
+  
+  <!-- Calendar Days -->
+  <!-- Week 1 -->
+  <text x="52" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#D1D5DB">30</text>
+  <text x="95" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#D1D5DB">31</text>
+  <rect x="138" y="180" width="30" height="30" rx="4" fill="#10B981" opacity="0.1"/>
+  <text x="153" y="198" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="600" fill="#10B981">1</text>
+  <text x="181" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">2</text>
+  <text x="224" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">3</text>
+  <text x="267" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">4</text>
+  <text x="310" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">5</text>
+  
+  <!-- Week 2 -->
+  <text x="52" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">6</text>
+  <text x="95" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">7</text>
+  <text x="138" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">8</text>
+  <rect x="181" y="205" width="30" height="30" rx="4" fill="#3B82F6" opacity="0.1"/>
+  <text x="196" y="223" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="600" fill="#3B82F6">9</text>
+  <text x="224" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">10</text>
+  <text x="267" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">11</text>
+  <text x="310" y="220" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">12</text>
+  
+  <!-- Week 3 -->
+  <text x="52" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">13</text>
+  <text x="95" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">14</text>
+  <text x="138" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">15</text>
+  <text x="181" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">16</text>
+  <text x="224" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">17</text>
+  <text x="267" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">18</text>
+  <text x="310" y="245" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">19</text>
+  
+  <!-- Week 4 -->
+  <text x="52" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">20</text>
+  <text x="95" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">21</text>
+  <text x="138" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">22</text>
+  <text x="181" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">23</text>
+  <text x="224" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">24</text>
+  <text x="267" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">25</text>
+  <text x="310" y="270" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">26</text>
+  
+  <!-- Week 5 -->
+  <text x="52" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">27</text>
+  <text x="95" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">28</text>
+  <text x="138" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">29</text>
+  <text x="181" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">30</text>
+  <text x="224" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1F2937">31</text>
+  <text x="267" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#D1D5DB">1</text>
+  <text x="310" y="295" text-anchor="middle" font-family="system-ui" font-size="14" fill="#D1D5DB">2</text>
+  
+  <!-- Today's Events -->
+  <rect x="20" y="560" width="335" height="180" rx="16" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="40" y="585" font-family="system-ui" font-size="16" font-weight="600" fill="#1F2937">Eventos de hoy</text>
+  
+  <!-- Event Items -->
+  <rect x="40" y="600" width="295" height="50" rx="8" fill="#10B981" opacity="0.1"/>
+  <circle cx="60" cy="625" r="6" fill="#10B981"/>
+  <text x="80" y="620" font-family="system-ui" font-size="14" font-weight="600" fill="#1F2937">9:00 AM - Cita médica</text>
+  <text x="80" y="635" font-family="system-ui" font-size="12" fill="#6B7280">Dr. García - María</text>
+  
+  <rect x="40" y="660" width="295" height="50" rx="8" fill="#3B82F6" opacity="0.1"/>
+  <circle cx="60" cy="685" r="6" fill="#3B82F6"/>
+  <text x="80" y="680" font-family="system-ui" font-size="14" font-weight="600" fill="#1F2937">3:00 PM - Fútbol</text>
+  <text x="80" y="695" font-family="system-ui" font-size="12" fill="#6B7280">Campo Municipal - Carlos</text>
+  
+  <!-- Add Event Button -->
+  <rect x="20" y="760" width="335" height="40" rx="20" fill="url(#gradient3)"/>
+  <text x="187" y="785" text-anchor="middle" font-family="system-ui" font-size="16" font-weight="600" fill="white">+ Agregar Evento</text>
+</svg>

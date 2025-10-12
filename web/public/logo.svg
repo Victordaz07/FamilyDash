@@ -1,0 +1,23 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo naranja con esquinas redondeadas -->
+  <rect width="200" height="200" rx="24" fill="#FF6B35"/>
+  
+  <!-- Escudo blanco -->
+  <path d="M40 60 L100 40 L160 60 L160 120 C160 140 100 160 100 160 C100 160 40 140 40 120 Z" fill="white"/>
+  
+  <!-- Figuras familiares dentro del escudo -->
+  <!-- Adulto 1 (izquierda) -->
+  <circle cx="75" cy="75" r="8" fill="#FF6B35"/>
+  <rect x="70" y="83" width="10" height="15" rx="2" fill="#FF6B35"/>
+  
+  <!-- Adulto 2 (derecha) -->
+  <circle cx="125" cy="75" r="8" fill="#FF6B35"/>
+  <rect x="120" y="83" width="10" height="15" rx="2" fill="#FF6B35"/>
+  
+  <!-- Niño (centro, abajo) -->
+  <circle cx="100" cy="95" r="6" fill="#FF6B35"/>
+  <rect x="97" y="101" width="6" height="10" rx="1" fill="#FF6B35"/>
+  
+  <!-- Texto FamilyDash -->
+  <text x="100" y="180" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">FamilyDash</text>
+</svg>

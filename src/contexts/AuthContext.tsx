@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { RealAuthService } from '../services';
+import { RealAuthService, EmailNotVerifiedError } from '../services';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { SecureStorage, STORAGE_KEYS } from '../utils/secureStorage';
@@ -105,6 +105,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return result;
         } catch (error: any) {
             console.log('AuthContext: Login error:', error.message);
+            
+            // Manejar error de verificación de email
+            if (error instanceof EmailNotVerifiedError || error?.code === 'EMAIL_NOT_VERIFIED') {
+                return { success: false, error: 'EMAIL_NOT_VERIFIED', code: 'EMAIL_NOT_VERIFIED' };
+            }
+            
             return { success: false, error: error.message };
         }
     };

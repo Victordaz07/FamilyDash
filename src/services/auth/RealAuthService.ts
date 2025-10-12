@@ -12,14 +12,54 @@ import {
   updateEmail,
   updatePassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
+  reload,
   deleteUser,
   onAuthStateChanged,
   User,
   UserCredential
 } from 'firebase/auth';
-import { auth, googleProvider } from '../../config/firebase';
+import { auth, googleProvider, db } from '../../config/firebase';
+import { doc, setDoc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logger from '../Logger';
+
+// Personaliza el destino del enlace
+const actionCodeSettings = {
+  url: 'https://familydash-15944.web.app/verified', // TODO: cámbialo por tu dominio
+  handleCodeInApp: false,
+  // dynamicLinkDomain: 'familydash.page.link',
+};
+
+export class EmailNotVerifiedError extends Error {
+  constructor(message = 'EMAIL_NOT_VERIFIED') {
+    super(message);
+    this.name = 'EmailNotVerifiedError';
+  }
+}
+
+async function syncUserEmailVerified(user: User) {
+  const uid = user.uid;
+  const ref = doc(db, 'users', uid);
+  const snap = await getDoc(ref);
+  const verified = user.emailVerified === true;
+
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      uid,
+      email: user.email ?? null,
+      emailVerified: verified,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+  } else {
+    await updateDoc(ref, {
+      emailVerified: verified,
+      verifiedAt: verified ? serverTimestamp() : null,
+      updatedAt: serverTimestamp(),
+    });
+  }
+}
 
 export interface AuthUser {
   uid: string;
@@ -175,6 +215,21 @@ class RealAuthService {
         credentials.password
       );
 
+      // Bloquear si es contraseña y no verificado
+      const isEmailProvider = userCredential.user.providerData.some(p => (p?.providerId ?? '') === 'password');
+      if (isEmailProvider && !userCredential.user.emailVerified) {
+        try { 
+          await sendEmailVerification(userCredential.user, actionCodeSettings);
+          Logger.debug('📧 Verification email resent to:', credentials.email);
+        } catch (e) {
+          Logger.warn('⚠️ Resend verification failed:', e);
+        }
+        await syncUserEmailVerified(userCredential.user);
+        throw new EmailNotVerifiedError();
+      }
+
+      await syncUserEmailVerified(userCredential.user);
+
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
 
       Logger.debug('✅ Login successful:', user.displayName);
@@ -185,6 +240,15 @@ class RealAuthService {
       };
     } catch (error: any) {
       Logger.error('❌ Login error:', error);
+
+      // Si es error de verificación, lanzar error específico
+      if (error instanceof EmailNotVerifiedError) {
+        return {
+          success: false,
+          error: 'EMAIL_NOT_VERIFIED',
+          code: 'EMAIL_NOT_VERIFIED',
+        };
+      }
 
       return {
         success: false,
@@ -213,6 +277,17 @@ class RealAuthService {
           displayName: credentials.displayName,
         });
       }
+
+      // 1) Enviar correo de verificación inmediatamente
+      try {
+        await sendEmailVerification(userCredential.user, actionCodeSettings);
+        Logger.debug('📧 Verification email sent to:', credentials.email);
+      } catch (e) {
+        Logger.warn('⚠️ sendEmailVerification failed:', e);
+      }
+
+      // 2) Crear/actualizar doc de usuario en Firestore
+      await syncUserEmailVerified(userCredential.user);
 
       const user = this.mapFirebaseUserToAuthUser(userCredential.user);
 
@@ -524,6 +599,41 @@ class RealAuthService {
       const authUser = firebaseUser ? this.mapFirebaseUserToAuthUser(firebaseUser) : null;
       callback(authUser);
     });
+  }
+
+  /**
+   * Reenviar correo de verificación
+   */
+  async resendVerificationEmail(): Promise<boolean> {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('NO_AUTH');
+      
+      await sendEmailVerification(user, actionCodeSettings);
+      Logger.debug('📧 Verification email resent');
+      return true;
+    } catch (error) {
+      Logger.error('❌ Error resending verification email:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Recargar usuario y sincronizar estado de verificación
+   */
+  async reloadAndSyncEmailVerified(): Promise<boolean> {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('NO_AUTH');
+      
+      await reload(user);
+      await syncUserEmailVerified(user);
+      Logger.debug('🔄 User reloaded and synced');
+      return user.emailVerified === true;
+    } catch (error) {
+      Logger.error('❌ Error reloading user:', error);
+      throw error;
+    }
   }
 
   /**

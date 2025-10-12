@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - FamilyDash</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.svg">
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    :root {
+      --primary: #667eea;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --border: #334155;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    
+    /* Layout */
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-info {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .user-email {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .user-role {
+      display: inline-block;
+      background: var(--warning);
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .nav-section {
+      margin-bottom: 32px;
+    }
+    
+    .nav-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .nav-list {
+      list-style: none;
+    }
+    
+    .nav-item {
+      margin-bottom: 4px;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    
+    .nav-link.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .nav-icon {
+      font-size: 18px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 32px;
+    }
+    
+    .header {
+      margin-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: var(--text-secondary);
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: transform 0.2s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .stat-title {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .stat-icon {
+      font-size: 24px;
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    
+    .stat-change {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .stat-change.positive {
+      color: var(--success);
+    }
+    
+    .stat-change.negative {
+      color: var(--danger);
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      text-align: left;
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    tr:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-superadmin {
+      background: var(--warning);
+      color: #000;
+    }
+    
+    .badge-admin {
+      background: #8B5CF6;
+      color: white;
+    }
+    
+    .badge-member {
+      background: var(--success);
+      color: white;
+    }
+    
+    .badge-verified {
+      background: var(--success);
+      color: white;
+    }
+    
+    .badge-pending {
+      background: var(--warning);
+      color: #000;
+    }
+    
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px;
+      font-size: 18px;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      border: 4px solid var(--bg-tertiary);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: static;
+        height: auto;
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="/logo.svg" alt="FamilyDash" style="width: 40px; height: 40px; margin-right: 12px;">
+        <span>FamilyDash Admin</span>
+      </div>
+      
+      <div class="user-info" id="userInfo">
+        <div class="user-email" id="userEmail">Cargando...</div>
+        <span class="user-role" id="userRole">...</span>
+      </div>
+      
+      <nav class="nav-section">
+        <div class="nav-title">Dashboard</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link active">
+              <span class="nav-icon">📊</span>
+              <span>Overview</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/analytics" class="nav-link">
+              <span class="nav-icon">📈</span>
+              <span>Analytics Global</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <nav class="nav-section" id="superAdminNav">
+        <div class="nav-title">Administración</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/admin/users" class="nav-link">
+              <span class="nav-icon">👥</span>
+              <span>Usuarios</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/families" class="nav-link">
+              <span class="nav-icon">👨‍👩‍👧‍👦</span>
+              <span>Familias</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/content" class="nav-link">
+              <span class="nav-icon">📝</span>
+              <span>Contenido (Blog)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/system" class="nav-link">
+              <span class="nav-icon">⚙️</span>
+              <span>Configuración</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <nav class="nav-section">
+        <div class="nav-title">Sistema</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" class="nav-link">
+              <span class="nav-icon">🌐</span>
+              <span>Ver Sitio Web</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" onclick="handleLogout(); return false;">
+              <span class="nav-icon">🚪</span>
+              <span>Cerrar Sesión</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="header">
+        <h1>Dashboard Principal</h1>
+        <p>Vista general de la plataforma FamilyDash</p>
+      </div>
+      
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Total Usuarios</span>
+            <span class="stat-icon">👥</span>
+          </div>
+          <div class="stat-value" id="totalUsers">-</div>
+          <div class="stat-change positive">
+            <span>↑</span>
+            <span id="usersChange">-</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Total Familias</span>
+            <span class="stat-icon">👨‍👩‍👧‍👦</span>
+          </div>
+          <div class="stat-value" id="totalFamilies">-</div>
+          <div class="stat-change positive">
+            <span>↑</span>
+            <span id="familiesChange">-</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Tareas Completadas</span>
+            <span class="stat-icon">✅</span>
+          </div>
+          <div class="stat-value" id="totalTasks">-</div>
+          <div class="stat-change positive">
+            <span>↑</span>
+            <span id="tasksChange">-</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Usuarios Activos (7d)</span>
+            <span class="stat-icon">🔥</span>
+          </div>
+          <div class="stat-value" id="activeUsers">-</div>
+          <div class="stat-change positive">
+            <span>↑</span>
+            <span id="activeChange">-</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Actividad Reciente</h2>
+          <button class="btn btn-secondary">
+            <span>🔄</span>
+            <span>Actualizar</span>
+          </button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Timestamp</th>
+                <th>Familia</th>
+              </tr>
+            </thead>
+            <tbody id="activityTable">
+              <tr>
+                <td colspan="4" class="loading">
+                  <div class="spinner"></div>
+                  Cargando actividad...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Recent Users -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Usuarios Recientes</h2>
+          <a href="/admin/users" class="btn btn-primary">
+            <span>👥</span>
+            <span>Ver Todos</span>
+          </a>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Registrado</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable">
+              <tr>
+                <td colspan="5" class="loading">
+                  <div class="spinner"></div>
+                  Cargando usuarios...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Auth Integration -->
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    // Verify authentication and authorization
+    async function checkAuth() {
+      const user = await window.FamilyDashAuth.getCurrentUser();
+      
+      if (!user) {
+        // Not logged in - redirect to login
+        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        return null;
+      }
+      
+      // Check if user is admin
+      const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(user.uid);
+      const isFamilyAdmin = await window.FamilyDashAuth.isFamilyAdmin(user.uid);
+      
+      if (!isSuperAdmin && !isFamilyAdmin) {
+        // Not authorized
+        alert('No tienes permisos para acceder al panel de administración.');
+        window.location.href = '/';
+        return null;
+      }
+      
+      return { user, isSuperAdmin, isFamilyAdmin };
+    }
+    
+    // Load user info
+    async function loadUserInfo() {
+      const authData = await checkAuth();
+      if (!authData) return;
+      
+      const { user, isSuperAdmin, isFamilyAdmin } = authData;
+      const userData = await window.FamilyDashAuth.getUserData(user.uid);
+      
+      // Display user info
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userRole').textContent = isSuperAdmin ? 'Super Admin' : 'Family Admin';
+      document.getElementById('userRole').className = isSuperAdmin ? 'user-role badge-superadmin' : 'user-role badge-admin';
+      
+      // Hide super admin sections if not super admin
+      if (!isSuperAdmin) {
+        document.getElementById('superAdminNav').style.display = 'none';
+      }
+      
+      return authData;
+    }
+    
+    // Load dashboard stats
+    async function loadStats() {
+      try {
+        const db = firebase.firestore();
+        
+        // Get total users
+        const usersSnapshot = await db.collection('users').get();
+        document.getElementById('totalUsers').textContent = usersSnapshot.size;
+        
+        // Get total families
+        const familiesSnapshot = await db.collection('families').get();
+        document.getElementById('totalFamilies').textContent = familiesSnapshot.size;
+        
+        // Get total tasks (estimate)
+        const tasksSnapshot = await db.collection('tasks').limit(1000).get();
+        document.getElementById('totalTasks').textContent = tasksSnapshot.size + '+';
+        
+        // Get active users (last 7 days)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        
+        const activeUsersSnapshot = await db.collection('users')
+          .where('lastActive', '>=', sevenDaysAgo)
+          .get();
+        document.getElementById('activeUsers').textContent = activeUsersSnapshot.size;
+        
+        // Set change percentages (placeholder)
+        document.getElementById('usersChange').textContent = '+12% vs. mes anterior';
+        document.getElementById('familiesChange').textContent = '+8% vs. mes anterior';
+        document.getElementById('tasksChange').textContent = '+25% vs. mes anterior';
+        document.getElementById('activeChange').textContent = '+18% vs. semana anterior';
+        
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+    
+    // Load recent users
+    async function loadRecentUsers() {
+      try {
+        const db = firebase.firestore();
+        const usersSnapshot = await db.collection('users')
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .get();
+        
+        const tableBody = document.getElementById('usersTable');
+        tableBody.innerHTML = '';
+        
+        if (usersSnapshot.empty) {
+          tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay usuarios registrados</td></tr>';
+          return;
+        }
+        
+        usersSnapshot.forEach((doc) => {
+          const user = doc.data();
+          const row = document.createElement('tr');
+          
+          row.innerHTML = `
+            <td>${user.email || '-'}</td>
+            <td>${user.displayName || '-'}</td>
+            <td><span class="badge badge-${user.role || 'member'}">${user.role || 'member'}</span></td>
+            <td><span class="badge badge-${user.emailVerified ? 'verified' : 'pending'}">${user.emailVerified ? 'Verificado' : 'Pendiente'}</span></td>
+            <td>${user.createdAt ? new Date(user.createdAt.toDate()).toLocaleString('es-ES') : '-'}</td>
+          `;
+          
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error loading users:', error);
+        document.getElementById('usersTable').innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--danger);">Error cargando usuarios</td></tr>';
+      }
+    }
+    
+    // Logout handler
+    async function handleLogout() {
+      if (confirm('¿Estás seguro de cerrar sesión?')) {
+        await window.FamilyDashAuth.logout();
+        window.location.href = '/login';
+      }
+    }
+    
+    // Initialize dashboard
+    async function initDashboard() {
+      const authData = await loadUserInfo();
+      if (!authData) return;
+      
+      await loadStats();
+      await loadRecentUsers();
+    }
+    
+    // Run on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
+    }
+  </script>
+</body>
+</html>

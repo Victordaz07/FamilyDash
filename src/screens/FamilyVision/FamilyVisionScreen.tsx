@@ -1,7 +1,7 @@
 /**
- * 🌈 FAMILY VISION SCREEN — FamilyDash+
- * Elegant, motivational dashboard for shared family goals & reflections.
- * Visual inspiration meets progress tracking 💜
+ * 🎯 FAMILY GOALS SCREEN — FamilyDash+
+ * Powerful dashboard for family goals, targets, and achievements.
+ * Track progress, celebrate milestones, achieve together 🏆
  */
 
 import React, { useState, useEffect } from "react";
@@ -40,9 +40,9 @@ export default function FamilyVisionScreen({ navigation }: any) {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* HEADER */}
             <LinearGradient colors={["#7B6CF6", "#E96AC0"]} style={styles.header}>
-                <Text style={styles.headerTitle}>Family Vision</Text>
+                <Text style={styles.headerTitle}>Family Goals</Text>
                 <Text style={styles.headerSubtitle}>
-                    Build your dreams, together ✨
+                    Achieve your targets, together 🎯
                 </Text>
             </LinearGradient>
 
@@ -53,21 +53,21 @@ export default function FamilyVisionScreen({ navigation }: any) {
                 <VisionStat icon="sparkles" label="In Progress" value={visions.filter(v => v.progress > 0 && v.progress < 100).length} color="#81C784" />
             </View>
 
-            {/* VISION BOARD */}
+            {/* GOALS GALLERY */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                     <Ionicons name="images-outline" size={20} color="#6C63FF" />
-                    <Text style={styles.sectionTitle}>Vision Board</Text>
+                    <Text style={styles.sectionTitle}>Goals Gallery</Text>
                 </View>
                 <Text style={styles.sectionSubtitle}>
-                    Collect inspiring moments or images for your family's future.
+                    Visual inspiration for your family goals and dreams.
                 </Text>
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={() => navigation.navigate("AddGoal")}
+                    onPress={() => navigation.navigate("AddInspiration")}
                 >
                     <Ionicons name="add-circle-outline" size={20} color="#fff" />
-                    <Text style={styles.addText}>Add Inspiration</Text>
+                    <Text style={styles.addText}>Add Goal Inspiration</Text>
                 </TouchableOpacity>
             </View>
 
@@ -80,7 +80,7 @@ export default function FamilyVisionScreen({ navigation }: any) {
                 {visions.length === 0 ? (
                     <EmptyState
                         icon="flag"
-                        message="No goals yet — start your first family challenge!"
+                        message="No goals yet — create your first family target!"
                         button="Create Goal"
                         onPress={() => navigation.navigate("AddGoal")}
                     />
@@ -90,8 +90,12 @@ export default function FamilyVisionScreen({ navigation }: any) {
                         showsHorizontalScrollIndicator={false}
                         style={styles.goalsScrollView}
                     >
-                        {visions.map((vision) => (
-                            <GoalCard key={vision.id} title={vision.title} progress={vision.progress} />
+                        {visions.map((goal) => (
+                            <EnhancedGoalCard 
+                                key={goal.id} 
+                                goal={goal} 
+                                onPress={() => navigation.navigate('GoalDetails', { goalId: goal.id })}
+                            />
                         ))}
                     </ScrollView>
                 )}
@@ -131,7 +135,7 @@ export default function FamilyVisionScreen({ navigation }: any) {
                     onPress={() => navigation.navigate("AddGoal")}
                 >
                     <Ionicons name="add-outline" size={22} color="#fff" />
-                    <Text style={styles.ctaText}>Start a New Family Vision</Text>
+                    <Text style={styles.ctaText}>Create New Family Goal</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -148,15 +152,121 @@ function VisionStat({ icon, label, value, color }: any) {
     );
 }
 
-function GoalCard({ title, progress }: any) {
+function EnhancedGoalCard({ goal, onPress }: any) {
+    const getCategoryIcon = (category: string) => {
+        switch (category) {
+            case 'spiritual': return 'leaf';
+            case 'family': return 'heart';
+            case 'personal': return 'star';
+            case 'health': return 'fitness';
+            case 'education': return 'school';
+            case 'financial': return 'card';
+            case 'relationship': return 'people';
+            default: return 'flag';
+        }
+    };
+
+    const getCategoryColor = (category: string) => {
+        switch (category) {
+            case 'spiritual': return '#81C784';
+            case 'family': return '#F48FB1';
+            case 'personal': return '#FFD54F';
+            case 'health': return '#4FC3F7';
+            case 'education': return '#9575CD';
+            case 'financial': return '#FFB74D';
+            case 'relationship': return '#F06292';
+            default: return '#6C63FF';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case 'active': return 'En Progreso';
+            case 'completed': return 'Completado';
+            case 'paused': return 'Pausado';
+            case 'cancelled': return 'Cancelado';
+            default: return 'Activo';
+        }
+    };
+
+    const completedMilestones = goal.milestones?.filter((m: any) => m.completed).length || 0;
+    const totalMilestones = goal.milestones?.length || 0;
+    const categoryColor = getCategoryColor(goal.category);
+    const categoryIcon = getCategoryIcon(goal.category);
+
     return (
-        <View style={styles.goalCard}>
-            <Text style={styles.goalTitle}>{title}</Text>
-            <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${progress}%` }]} />
+        <TouchableOpacity style={styles.enhancedGoalCard} onPress={onPress}>
+            {/* Header with category */}
+            <View style={styles.goalHeader}>
+                <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
+                    <Ionicons name={categoryIcon} size={16} color="white" />
+                </View>
+                <Text style={styles.goalStatus}>{getStatusText(goal.status)}</Text>
             </View>
-            <Text style={styles.goalProgress}>{progress}%</Text>
-        </View>
+
+            {/* Title */}
+            <Text style={styles.enhancedGoalTitle} numberOfLines={2}>
+                {goal.title}
+            </Text>
+
+            {/* Description */}
+            {goal.description && (
+                <Text style={styles.goalDescription} numberOfLines={2}>
+                    {goal.description}
+                </Text>
+            )}
+
+            {/* Progress Section */}
+            <View style={styles.progressSection}>
+                <View style={styles.progressInfo}>
+                    <Text style={styles.progressLabel}>Progreso</Text>
+                    <Text style={styles.progressPercent}>{goal.progress}%</Text>
+                </View>
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressBarBackground}>
+                        <View 
+                            style={[
+                                styles.progressBarFill, 
+                                { 
+                                    width: `${goal.progress}%`,
+                                    backgroundColor: categoryColor
+                                }
+                            ]} 
+                        />
+                    </View>
+                </View>
+            </View>
+
+            {/* Milestones */}
+            {totalMilestones > 0 && (
+                <View style={styles.milestonesSection}>
+                    <View style={styles.milestonesInfo}>
+                        <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+                        <Text style={styles.milestonesText}>
+                            {completedMilestones}/{totalMilestones} hitos completados
+                        </Text>
+                    </View>
+                </View>
+            )}
+
+            {/* Target Date */}
+            {goal.targetDate && (
+                <View style={styles.dateSection}>
+                    <Ionicons name="calendar" size={14} color="#666" />
+                    <Text style={styles.dateText}>
+                        Meta: {new Date(goal.targetDate).toLocaleDateString('es-ES')}
+                    </Text>
+                </View>
+            )}
+
+            {/* Action Button */}
+            <View style={styles.goalActions}>
+                <TouchableOpacity style={[styles.actionButton, { backgroundColor: categoryColor }]}>
+                    <Ionicons name="arrow-forward" size={16} color="white" />
+                    <Text style={styles.actionButtonText}>Ver Detalles</Text>
+                </TouchableOpacity>
+            </View>
+        </TouchableOpacity>
     );
 }
 
@@ -220,29 +330,125 @@ const styles = StyleSheet.create({
     },
     addText: { color: "#fff", fontWeight: "700", marginLeft: 6 },
 
-    goalCard: {
-        backgroundColor: "#fff",
-        width: 150,
-        height: 100,
-        borderRadius: 18,
-        padding: 12,
-        marginRight: 12,
-        justifyContent: "space-between",
-        elevation: 2,
-    },
     goalsScrollView: {
         marginTop: 12,
     },
-    goalTitle: { fontWeight: "700", fontSize: 14, color: "#333" },
-    progressBar: {
-        height: 6,
-        backgroundColor: "#EEE",
+    
+    // Enhanced Goal Card Styles
+    enhancedGoalCard: {
+        backgroundColor: "#fff",
+        width: 280,
+        borderRadius: 20,
+        padding: 16,
+        marginRight: 16,
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    goalHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 12,
+    },
+    categoryBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    goalStatus: {
+        fontSize: 12,
+        color: "#666",
+        fontWeight: "500",
+    },
+    enhancedGoalTitle: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#333",
+        marginBottom: 8,
+        lineHeight: 22,
+    },
+    goalDescription: {
+        fontSize: 14,
+        color: "#666",
+        lineHeight: 20,
+        marginBottom: 16,
+    },
+    progressSection: {
+        marginBottom: 12,
+    },
+    progressInfo: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+    },
+    progressLabel: {
+        fontSize: 12,
+        color: "#666",
+        fontWeight: "500",
+    },
+    progressPercent: {
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#333",
+    },
+    progressBarContainer: {
+        height: 8,
+    },
+    progressBarBackground: {
+        height: "100%",
+        backgroundColor: "#E5E7EB",
         borderRadius: 4,
         overflow: "hidden",
-        marginVertical: 6,
     },
-    progressFill: { height: "100%", backgroundColor: "#6C63FF", borderRadius: 4 },
-    goalProgress: { fontSize: 12, color: "#666", alignSelf: "flex-end" },
+    progressBarFill: {
+        height: "100%",
+        borderRadius: 4,
+    },
+    milestonesSection: {
+        marginBottom: 12,
+    },
+    milestonesInfo: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    milestonesText: {
+        fontSize: 12,
+        color: "#10B981",
+        marginLeft: 6,
+        fontWeight: "500",
+    },
+    dateSection: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 16,
+    },
+    dateText: {
+        fontSize: 12,
+        color: "#666",
+        marginLeft: 6,
+    },
+    goalActions: {
+        alignItems: "flex-end",
+    },
+    actionButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 20,
+    },
+    actionButtonText: {
+        color: "white",
+        fontSize: 12,
+        fontWeight: "600",
+        marginLeft: 4,
+    },
 
     reflectionCard: {
         backgroundColor: "#fff",
