@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, StyleSheet } from 'react-native';
 import { Reflection } from '../../types/goals';
+import { Ionicons } from '@expo/vector-icons';
 
 interface GoalReflectionsTabProps {
   reflections: Reflection[];
@@ -84,38 +85,40 @@ export default function GoalReflectionsTab({
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4 space-y-6">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
         {/* Add New Reflection */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-900 mb-4">Add Reflection</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Add Reflection</Text>
           
           <TextInput
             value={newReflection}
             onChangeText={setNewReflection}
             placeholder="Share your thoughts about this goal..."
-            className="bg-gray-100 rounded-xl px-4 py-3 text-base mb-4 min-h-[100px]"
+            style={styles.reflectionInput}
             placeholderTextColor="#9CA3AF"
             multiline
             textAlignVertical="top"
           />
 
           {/* Mood Selection */}
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 mb-2">How are you feeling?</Text>
-            <View className="flex-row gap-3">
+          <View style={styles.moodSection}>
+            <Text style={styles.moodLabel}>How are you feeling?</Text>
+            <View style={styles.moodContainer}>
               {moods.map((mood) => (
                 <TouchableOpacity
                   key={mood.key}
                   onPress={() => setSelectedMood(mood.key)}
-                  className={`p-3 rounded-xl ${
-                    selectedMood === mood.key ? 'bg-purple-100 border-2 border-purple-300' : 'bg-gray-100'
-                  }`}
+                  style={[
+                    styles.moodButton,
+                    selectedMood === mood.key ? styles.moodButtonSelected : styles.moodButtonUnselected
+                  ]}
                 >
-                  <Text className="text-2xl">{mood.emoji}</Text>
-                  <Text className={`text-xs mt-1 ${
-                    selectedMood === mood.key ? 'text-purple-700' : 'text-gray-600'
-                  }`}>
+                  <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                  <Text style={[
+                    styles.moodText,
+                    selectedMood === mood.key ? styles.moodTextSelected : styles.moodTextUnselected
+                  ]}>
                     {mood.label}
                   </Text>
                 </TouchableOpacity>
@@ -125,82 +128,84 @@ export default function GoalReflectionsTab({
 
           <TouchableOpacity
             onPress={handleAddReflection}
-            className="bg-purple-600 py-3 rounded-xl"
+            style={[styles.addButton, { 
+              backgroundColor: newReflection.trim() ? '#3B82F6' : '#9CA3AF' 
+            }]}
             disabled={!newReflection.trim()}
           >
-            <Text className="text-white font-medium text-center">Add Reflection</Text>
+            <Text style={styles.addButtonText}>Add Reflection</Text>
           </TouchableOpacity>
         </View>
 
         {/* Reflections List */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-lg font-bold text-gray-900">Reflections</Text>
-            <Text className="text-sm text-gray-500">{reflections.length} total</Text>
+        <View style={styles.card}>
+          <View style={styles.reflectionsHeader}>
+            <Text style={styles.cardTitle}>Reflections</Text>
+            <Text style={styles.reflectionsCount}>{reflections.length} total</Text>
           </View>
           
           {reflections.length === 0 ? (
-            <View className="items-center py-8">
-              <Text className="text-4xl mb-3">💭</Text>
-              <Text className="text-gray-500 text-center">No reflections yet</Text>
-              <Text className="text-gray-400 text-center text-sm mt-1">
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyIcon}>💭</Text>
+              <Text style={styles.emptyText}>No reflections yet</Text>
+              <Text style={styles.emptySubtext}>
                 Share your thoughts about this goal
               </Text>
             </View>
           ) : (
-            <View className="space-y-4">
+            <View style={styles.reflectionsList}>
               {reflections.map((reflection) => (
-                <View key={reflection.id} className="bg-gray-50 rounded-xl p-4">
+                <View key={reflection.id} style={styles.reflectionItem}>
                   {editingReflection === reflection.id ? (
-                    <View className="space-y-3">
+                    <View style={styles.editSection}>
                       <TextInput
                         value={editContent}
                         onChangeText={setEditContent}
-                        className="bg-white rounded-lg px-3 py-2 text-base min-h-[80px]"
+                        style={styles.editInput}
                         multiline
                         textAlignVertical="top"
                         autoFocus
                       />
-                      <View className="flex-row gap-3">
+                      <View style={styles.editButtons}>
                         <TouchableOpacity
                           onPress={handleEditSave}
-                          className="flex-1 bg-green-500 py-2 rounded-lg"
+                          style={styles.saveButton}
                         >
-                          <Text className="text-white text-center font-medium">Save</Text>
+                          <Text style={styles.editButtonText}>Save</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={handleEditCancel}
-                          className="flex-1 bg-gray-500 py-2 rounded-lg"
+                          style={styles.cancelButton}
                         >
-                          <Text className="text-white text-center font-medium">Cancel</Text>
+                          <Text style={styles.editButtonText}>Cancel</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
                   ) : (
                     <>
-                      <View className="flex-row items-start justify-between mb-3">
-                        <View className="flex-row items-center gap-2">
-                          <Text className="text-2xl">{getMoodEmoji(reflection.mood)}</Text>
-                          <Text className="text-sm text-gray-500">
+                      <View style={styles.reflectionHeader}>
+                        <View style={styles.reflectionMeta}>
+                          <Text style={styles.moodEmojiLarge}>{getMoodEmoji(reflection.mood)}</Text>
+                          <Text style={styles.reflectionDate}>
                             {formatTimestamp(reflection.createdAt)}
                           </Text>
                         </View>
-                        <View className="flex-row gap-2">
+                        <View style={styles.reflectionActions}>
                           <TouchableOpacity
                             onPress={() => handleEditStart(reflection)}
-                            className="p-2"
+                            style={styles.actionButton}
                           >
-                            <Text className="text-gray-400">✏️</Text>
+                            <Ionicons name="pencil" size={16} color="#64748B" />
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={() => handleDeleteReflection(reflection.id, reflection.content)}
-                            className="p-2"
+                            style={styles.actionButton}
                           >
-                            <Text className="text-gray-400">🗑️</Text>
+                            <Ionicons name="trash" size={16} color="#EF4444" />
                           </TouchableOpacity>
                         </View>
                       </View>
-                      <Text className="text-gray-900 leading-6">{reflection.content}</Text>
+                      <Text style={styles.reflectionContent}>{reflection.content}</Text>
                     </>
                   )}
                 </View>
@@ -212,3 +217,202 @@ export default function GoalReflectionsTab({
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  content: {
+    padding: 16,
+    gap: 16,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 16,
+  },
+  reflectionInput: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1E293B',
+    minHeight: 100,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 16,
+  },
+  moodSection: {
+    marginBottom: 16,
+  },
+  moodLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#475569',
+    marginBottom: 8,
+  },
+  moodContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  moodButton: {
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 2,
+    minWidth: 60,
+  },
+  moodButtonSelected: {
+    backgroundColor: '#3B82F620',
+    borderColor: '#3B82F6',
+  },
+  moodButtonUnselected: {
+    backgroundColor: '#F8FAFC',
+    borderColor: '#E2E8F0',
+  },
+  moodEmoji: {
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  moodText: {
+    fontSize: 10,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  moodTextSelected: {
+    color: '#3B82F6',
+  },
+  moodTextUnselected: {
+    color: '#64748B',
+  },
+  addButton: {
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  reflectionsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  reflectionsCount: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  reflectionsList: {
+    gap: 16,
+  },
+  reflectionItem: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  editSection: {
+    gap: 12,
+  },
+  editInput: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+    color: '#1E293B',
+    minHeight: 80,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  editButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: '#10B981',
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#64748B',
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  editButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  reflectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  reflectionMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  moodEmojiLarge: {
+    fontSize: 24,
+  },
+  reflectionDate: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  reflectionActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    padding: 8,
+  },
+  reflectionContent: {
+    fontSize: 16,
+    color: '#1E293B',
+    lineHeight: 24,
+  },
+});

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Goal, Milestone, Reflection } from '../../types/goals';
 import { useGoals } from '../../hooks/useGoals';
@@ -21,12 +21,11 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [reflections, setReflections] = useState<Reflection[]>([]);
   
-  const { updateGoal } = useGoals();
+  const { state, actions } = useGoals();
 
   useEffect(() => {
     // Find the goal from the store
-    const { goals } = useGoals.getState();
-    const foundGoal = goals.find(g => g.id === goalId);
+    const foundGoal = state.items.find(g => g.id === goalId);
     if (foundGoal) {
       setGoal(foundGoal);
       // Mock milestones for this goal
@@ -87,17 +86,13 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
   }, [goalId]);
 
   const handleEditGoal = () => {
-    Alert.alert(
-      'Coming Soon',
-      'Goal editing will be available in the next update!',
-      [{ text: 'OK' }]
-    );
+    navigation.navigate('EditGoal', { goalId: goal.id });
   };
 
   const handleToggleStatus = () => {
     if (!goal) return;
     const newStatus = goal.status === 'active' ? 'paused' : 'active';
-    updateGoal(goal.id, { status: newStatus });
+    actions.updateGoal(goal.id, { status: newStatus });
     setGoal({ ...goal, status: newStatus });
   };
 
@@ -108,7 +103,7 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
     // Update goal progress
     if (goal) {
       const newDoneCount = done ? goal.milestonesDone + 1 : goal.milestonesDone - 1;
-      updateGoal(goal.id, { milestonesDone: newDoneCount });
+      actions.updateGoal(goal.id, { milestonesDone: newDoneCount });
       setGoal({ ...goal, milestonesDone: newDoneCount });
     }
   };
@@ -122,7 +117,7 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
     };
     setMilestones(prev => [...prev, newMilestone]);
     if (goal) {
-      updateGoal(goal.id, { milestonesCount: goal.milestonesCount + 1 });
+      actions.updateGoal(goal.id, { milestonesCount: goal.milestonesCount + 1 });
       setGoal({ ...goal, milestonesCount: goal.milestonesCount + 1 });
     }
   };
@@ -136,7 +131,7 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
   const handleDeleteMilestone = (milestoneId: string) => {
     setMilestones(prev => prev.filter(m => m.id !== milestoneId));
     if (goal) {
-      updateGoal(goal.id, { milestonesCount: goal.milestonesCount - 1 });
+      actions.updateGoal(goal.id, { milestonesCount: goal.milestonesCount - 1 });
       setGoal({ ...goal, milestonesCount: goal.milestonesCount - 1 });
     }
   };
@@ -153,7 +148,7 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
       mood: mood as any
     };
     setReflections(prev => [newReflection, ...prev]);
-    updateGoal(goal.id, { reflectionCount: (goal.reflectionCount || 0) + 1 });
+    actions.updateGoal(goal.id, { reflectionCount: (goal.reflectionCount || 0) + 1 });
     setGoal({ ...goal, reflectionCount: (goal.reflectionCount || 0) + 1 });
   };
 
@@ -166,20 +161,20 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
   const handleDeleteReflection = (reflectionId: string) => {
     setReflections(prev => prev.filter(r => r.id !== reflectionId));
     if (goal) {
-      updateGoal(goal.id, { reflectionCount: Math.max(0, (goal.reflectionCount || 0) - 1) });
+      actions.updateGoal(goal.id, { reflectionCount: Math.max(0, (goal.reflectionCount || 0) - 1) });
       setGoal({ ...goal, reflectionCount: Math.max(0, (goal.reflectionCount || 0) - 1) });
     }
   };
 
   if (!goal) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center">
-        <Text className="text-gray-500">Goal not found</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Goal not found</Text>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="mt-4 bg-purple-600 px-6 py-3 rounded-xl"
+          style={styles.errorButton}
         >
-          <Text className="text-white font-medium">Go Back</Text>
+          <Text style={styles.errorButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -222,29 +217,29 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View style={styles.container}>
       {/* Header */}
       <LinearGradient 
-        colors={['#7B6CF6', '#E96AC0']} 
-        className="px-5 pt-12 pb-6"
+        colors={['#3B82F6', '#10B981']} 
+        style={styles.header}
       >
-        <View className="flex-row items-center justify-between">
+        <View style={styles.headerContent}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            className="bg-white/20 rounded-full p-2"
+            style={styles.headerButton}
           >
-            <Text className="text-white text-lg">←</Text>
+            <Text style={styles.headerButtonText}>←</Text>
           </TouchableOpacity>
-          <View className="flex-1 mx-4">
-            <Text className="text-white text-lg font-bold text-center" numberOfLines={1}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleText} numberOfLines={1}>
               {goal.title}
             </Text>
           </View>
           <TouchableOpacity
             onPress={handleEditGoal}
-            className="bg-white/20 rounded-full p-2"
+            style={styles.headerButton}
           >
-            <Text className="text-white text-lg">✏️</Text>
+            <Text style={styles.headerButtonText}>✏️</Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -253,7 +248,72 @@ export default function GoalDetailsScreen({ navigation, route }: GoalDetailsScre
       <GoalTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Tab Content */}
-      {renderTabContent()}
+      <View style={styles.tabContent}>
+        {renderTabContent()}
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  header: {
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    padding: 8,
+  },
+  headerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+  },
+  titleContainer: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
+  titleText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  tabContent: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorText: {
+    color: '#64748B',
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  errorButton: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  errorButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+});

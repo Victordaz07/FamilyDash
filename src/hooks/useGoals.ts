@@ -6,7 +6,7 @@ import { mockGoals } from '../data/mockGoals';
 export function useGoals() {
   const store = useGoalsStore();
 
-  // Load mock data on mount
+  // Load mock data on mount (Firebase disabled for testing)
   useEffect(() => {
     if (store.items.length === 0) {
       store.setGoals(mockGoals);
@@ -15,6 +15,34 @@ export function useGoals() {
   
   return {
     // State
+    state: {
+      items: store.items,
+      loading: store.loading,
+      error: store.error,
+      search: store.search,
+      statusFilter: store.statusFilter,
+      categoryFilter: store.categoryFilter,
+      sortBy: store.sortBy,
+      view: store.view,
+    },
+    
+    // Actions
+    actions: {
+      setLoading: store.setLoading,
+      setError: store.setError,
+      setGoals: store.setGoals,
+      addGoal: store.addGoal,
+      updateGoal: store.updateGoal,
+      deleteGoal: store.deleteGoal,
+      setSearch: store.setSearch,
+      setStatusFilter: store.setStatusFilter,
+      setCategoryFilter: store.setCategoryFilter,
+      setSortBy: store.setSortBy,
+      toggleView: store.toggleView,
+      clearFilters: store.clearFilters,
+    },
+    
+    // Selectors (for backward compatibility)
     goals: store.items,
     loading: store.loading,
     error: store.error,
@@ -23,24 +51,6 @@ export function useGoals() {
     categoryFilter: store.categoryFilter,
     sortBy: store.sortBy,
     view: store.view,
-    
-    // Actions
-    setLoading: store.setLoading,
-    setError: store.setError,
-    setGoals: store.setGoals,
-    addGoal: store.addGoal,
-    updateGoal: store.updateGoal,
-    deleteGoal: store.deleteGoal,
-    
-    // Filter actions
-    setSearch: store.setSearch,
-    setStatusFilter: store.setStatusFilter,
-    setCategoryFilter: store.setCategoryFilter,
-    setSortBy: store.setSortBy,
-    toggleView: store.toggleView,
-    clearFilters: store.clearFilters,
-    
-    // Selectors
     filteredGoals: store.getFilteredGoals(),
     stats: store.getStats(),
     overdueGoals: store.getOverdueGoals(),
@@ -62,5 +72,19 @@ export function useGoals() {
           break;
       }
     },
+    
+    // Direct access to store methods (for backward compatibility)
+    setLoading: store.setLoading,
+    setError: store.setError,
+    setGoals: store.setGoals,
+    addGoal: store.addGoal,
+    updateGoal: store.updateGoal,
+    deleteGoal: store.deleteGoal,
+    setSearch: store.setSearch,
+    setStatusFilter: store.setStatusFilter,
+    setCategoryFilter: store.setCategoryFilter,
+    setSortBy: store.setSortBy,
+    toggleView: store.toggleView,
+    clearFilters: store.clearFilters,
   };
 }

@@ -10,7 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import { FirebaseTest } from '../screens/FirebaseTest';
 // import TasksScreen from '../modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
 import TaskDetails from '../modules/tasks/screens/TaskDetails';
-import FamilyVisionNavigator from '../screens/FamilyVision/FamilyVisionNavigator';
+// import FamilyVisionNavigator from '../screens/FamilyVision/FamilyVisionNavigator'; // REMOVED
 import FamilyVoteScreen from '../screens/FamilyVoteScreen';
 import FamilyChatScreen from '../screens/FamilyChatScreen';
 import NotificationsScreen from '../modules/notifications/screens/NotificationsScreen';
@@ -54,6 +54,9 @@ import FamilyGoalsScreen from '../screens/goals/FamilyGoalsScreen';
 import AddGoalScreen from '../screens/goals/AddGoalScreen';
 import GoalDetailsScreen from '../screens/goals/GoalDetailsScreen';
 import GoalInfoScreen from '../screens/goals/GoalInfoScreen';
+import EditGoalScreen from '../screens/goals/EditGoalScreen';
+import AddReflectionScreen from '../screens/goals/AddReflectionScreen';
+import InspirationGalleryScreen from '../screens/goals/InspirationGalleryScreen';
 import AboutScreen from '../screens/Support/AboutScreen';
 
 // Import Account screens
@@ -164,6 +167,9 @@ const GoalsStack = () => (
     <Stack.Screen name="GoalsMain" component={FamilyGoalsScreen} />
     <Stack.Screen name="AddGoal" component={AddGoalScreen} />
     <Stack.Screen name="GoalDetails" component={GoalDetailsScreen} />
+    <Stack.Screen name="EditGoal" component={EditGoalScreen} />
+    <Stack.Screen name="AddReflection" component={AddReflectionScreen} />
+    <Stack.Screen name="InspirationGallery" component={InspirationGalleryScreen} />
     <Stack.Screen name="GoalInfo" component={GoalInfoScreen} />
   </Stack.Navigator>
 );
@@ -245,8 +251,6 @@ const AppNavigator = () => {
             iconName = focused ? 'checkmark-circle' : 'checkmark-circle-outline';
           } else if (route.name === 'Calendar') {
             iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Vision') {
-            iconName = focused ? 'eye' : 'eye-outline';
           } else if (route.name === 'Goals') {
             iconName = focused ? 'flag' : 'flag-outline';
           } else if (route.name === 'Penalties') {
@@ -292,11 +296,6 @@ const AppNavigator = () => {
         name="Calendar"
         component={CalendarStack}
         options={{ tabBarLabel: getTabLabel('Calendar') }}
-      />
-      <Tab.Screen
-        name="Vision"
-        component={FamilyVisionNavigator}
-        options={{ tabBarLabel: getTabLabel('Vision') }}
       />
       <Tab.Screen
         name="Goals"

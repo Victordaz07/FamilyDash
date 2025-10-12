@@ -38,34 +38,47 @@ export default function GoalFilterBar({
   ];
 
   return (
-    <View className="px-4 py-3 gap-3 bg-white">
+    <View style={{ paddingVertical: 12, gap: 12 }}>
       {/* Search Bar */}
       <TextInput
         placeholder="Search goals…"
-        className="bg-gray-100 rounded-2xl px-4 py-3 text-base"
+        style={{
+          backgroundColor: '#F1F5F9',
+          borderRadius: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          fontSize: 16,
+          color: '#1E293B',
+        }}
         value={search}
         onChangeText={onSearchChange}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#64748B"
       />
 
       {/* Category Filter */}
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false} 
-        className="-mx-4 px-4"
+        style={{ marginHorizontal: -20, paddingHorizontal: 20 }}
         contentContainerStyle={{ paddingRight: 16 }}
       >
         {categories.map((category) => (
           <TouchableOpacity
             key={category}
             onPress={() => onCategoryFilterChange(category)}
-            className={`mr-2 px-3 py-2 rounded-2xl ${
-              categoryFilter === category ? 'bg-purple-100' : 'bg-gray-100'
-            }`}
+            style={{
+              marginRight: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              backgroundColor: categoryFilter === category ? '#3B82F6' : '#F1F5F9',
+            }}
           >
-            <Text className={`text-sm font-medium ${
-              categoryFilter === category ? 'text-purple-700' : 'text-gray-700'
-            }`}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: categoryFilter === category ? '#FFFFFF' : '#64748B',
+            }}>
               {category === 'all' ? 'All' : categoryLabels[category]}
             </Text>
           </TouchableOpacity>
@@ -76,20 +89,26 @@ export default function GoalFilterBar({
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false} 
-        className="-mx-4 px-4"
+        style={{ marginHorizontal: -20, paddingHorizontal: 20 }}
         contentContainerStyle={{ paddingRight: 16 }}
       >
         {statuses.map((status) => (
           <TouchableOpacity
             key={status}
             onPress={() => onStatusFilterChange(status)}
-            className={`mr-2 px-3 py-2 rounded-2xl ${
-              statusFilter === status ? 'bg-purple-100' : 'bg-gray-100'
-            }`}
+            style={{
+              marginRight: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              backgroundColor: statusFilter === status ? '#10B981' : '#F1F5F9',
+            }}
           >
-            <Text className={`text-sm font-medium ${
-              statusFilter === status ? 'text-purple-700' : 'text-gray-700'
-            }`}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: statusFilter === status ? '#FFFFFF' : '#64748B',
+            }}>
               {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
             </Text>
           </TouchableOpacity>
@@ -97,7 +116,7 @@ export default function GoalFilterBar({
       </ScrollView>
 
       {/* Sort and View Options */}
-      <View className="flex-row items-center justify-between">
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -107,13 +126,18 @@ export default function GoalFilterBar({
             <TouchableOpacity
               key={option.key}
               onPress={() => onSortChange(option.key)}
-              className={`px-3 py-2 rounded-2xl ${
-                sortBy === option.key ? 'bg-purple-100' : 'bg-gray-100'
-              }`}
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 16,
+                backgroundColor: sortBy === option.key ? '#6366F1' : '#F1F5F9',
+              }}
             >
-              <Text className={`text-sm font-medium ${
-                sortBy === option.key ? 'text-purple-700' : 'text-gray-700'
-              }`}>
+              <Text style={{
+                fontSize: 14,
+                fontWeight: '500',
+                color: sortBy === option.key ? '#FFFFFF' : '#64748B',
+              }}>
                 {option.label}
               </Text>
             </TouchableOpacity>
@@ -122,9 +146,18 @@ export default function GoalFilterBar({
 
         <TouchableOpacity
           onPress={onViewToggle}
-          className="bg-gray-100 rounded-2xl px-3 py-2"
+          style={{
+            backgroundColor: '#F1F5F9',
+            borderRadius: 16,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+          }}
         >
-          <Text className="text-gray-700 text-sm font-medium">
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '500',
+            color: '#64748B',
+          }}>
             {view === 'cards' ? '📱' : '📋'} {view === 'cards' ? 'Cards' : 'List'}
           </Text>
         </TouchableOpacity>

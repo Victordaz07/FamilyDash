@@ -141,8 +141,8 @@ export const mockGoals: Goal[] = [
     id: '9',
     familyId: 'family-1',
     ownerId: 'user-1',
-    title: 'Overdue Goal Example',
-    description: 'This goal is past its deadline',
+    title: 'Daily Meditation Practice',
+    description: 'Practice 10 minutes of family meditation each morning',
     category: 'health',
     status: 'active',
     createdAt: Date.now() - 86400000 * 60, // 60 days ago

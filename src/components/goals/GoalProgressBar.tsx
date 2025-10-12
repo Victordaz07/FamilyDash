@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface GoalProgressBarProps {
   completed: number;
@@ -11,27 +11,48 @@ interface GoalProgressBarProps {
 export default function GoalProgressBar({ 
   completed, 
   total, 
-  color = '#7B6CF6',
+  color = '#3B82F6',
   showPercentage = true 
 }: GoalProgressBarProps) {
   const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
   
   return (
-    <View className="w-full">
-      <View className="h-2 rounded-full bg-gray-200">
+    <View style={styles.container}>
+      <View style={styles.progressContainer}>
         <View 
-          style={{ 
+          style={[styles.progressBar, { 
             width: `${percentage}%`, 
             backgroundColor: color 
-          }} 
-          className="h-2 rounded-full" 
+          }]} 
         />
       </View>
       {showPercentage && (
-        <Text className="mt-1 text-xs text-gray-600">
+        <Text style={styles.progressText}>
           {percentage}% • {completed}/{total} milestones
         </Text>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  progressContainer: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#E2E8F0',
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+});

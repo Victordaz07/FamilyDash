@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface GoalTabsProps {
   activeTab: string;
@@ -15,24 +15,27 @@ const tabs = [
 
 export default function GoalTabs({ activeTab, onTabChange }: GoalTabsProps) {
   return (
-    <View className="bg-white border-b border-gray-200">
-      <View className="flex-row">
+    <View style={styles.container}>
+      <View style={styles.tabsRow}>
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
             onPress={() => onTabChange(tab.key)}
-            className={`flex-1 py-4 items-center ${
-              activeTab === tab.key ? 'border-b-2 border-purple-600' : ''
-            }`}
+            style={[
+              styles.tab,
+              activeTab === tab.key ? styles.activeTab : styles.inactiveTab
+            ]}
           >
-            <Text className={`text-lg mb-1 ${
-              activeTab === tab.key ? 'text-purple-600' : 'text-gray-400'
-            }`}>
+            <Text style={[
+              styles.tabIcon,
+              activeTab === tab.key ? styles.activeTabText : styles.inactiveTabText
+            ]}>
               {tab.icon}
             </Text>
-            <Text className={`text-sm font-medium ${
-              activeTab === tab.key ? 'text-purple-600' : 'text-gray-500'
-            }`}>
+            <Text style={[
+              styles.tabLabel,
+              activeTab === tab.key ? styles.activeTabText : styles.inactiveTabText
+            ]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -41,3 +44,41 @@ export default function GoalTabs({ activeTab, onTabChange }: GoalTabsProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  tabsRow: {
+    flexDirection: 'row',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  activeTab: {
+    borderBottomColor: '#3B82F6',
+  },
+  inactiveTab: {
+    borderBottomColor: 'transparent',
+  },
+  tabIcon: {
+    fontSize: 18,
+    marginBottom: 4,
+  },
+  tabLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: '#3B82F6',
+  },
+  inactiveTabText: {
+    color: '#9CA3AF',
+  },
+});

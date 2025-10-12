@@ -31,7 +31,7 @@ export default function EmptyState({
         <TouchableOpacity 
           onPress={onAction} 
           className="mt-6 rounded-2xl px-5 py-3" 
-          style={{ backgroundColor: '#7B6CF6' }}
+          style={{ backgroundColor: '#3B82F6' }}
         >
           <Text className="text-white font-medium text-base">
             {actionLabel}

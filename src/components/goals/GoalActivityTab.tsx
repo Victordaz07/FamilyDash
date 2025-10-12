@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Goal } from '../../types/goals';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ActivityItem {
   id: string;
@@ -63,17 +64,17 @@ export default function GoalActivityTab({ goal }: GoalActivityTabProps) {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'goal_created':
-        return '🎯';
+        return 'flag';
       case 'milestone_added':
-        return '➕';
+        return 'add-circle';
       case 'milestone_completed':
-        return '✅';
+        return 'checkmark-circle';
       case 'goal_updated':
-        return '📝';
+        return 'pencil';
       case 'reflection_added':
-        return '💭';
+        return 'chatbubble';
       default:
-        return '📋';
+        return 'list';
     }
   };
 
@@ -113,45 +114,51 @@ export default function GoalActivityTab({ goal }: GoalActivityTabProps) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4">
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-900 mb-6">Activity Timeline</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Activity Timeline</Text>
           
           {mockActivity.length === 0 ? (
-            <View className="items-center py-8">
-              <Text className="text-4xl mb-3">📋</Text>
-              <Text className="text-gray-500 text-center">No activity yet</Text>
-              <Text className="text-gray-400 text-center text-sm mt-1">
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyIcon}>📋</Text>
+              <Text style={styles.emptyText}>No activity yet</Text>
+              <Text style={styles.emptySubtext}>
                 Start working on your goal to see activity here
               </Text>
             </View>
           ) : (
-            <View className="space-y-4">
+            <View style={styles.timeline}>
               {mockActivity.map((activity, index) => (
-                <View key={activity.id} className="flex-row gap-4">
+                <View key={activity.id} style={styles.timelineItem}>
                   {/* Timeline line */}
-                  <View className="items-center">
+                  <View style={styles.timelineIcon}>
                     <View 
-                      className="w-8 h-8 rounded-full items-center justify-center"
-                      style={{ backgroundColor: `${getActivityColor(activity.type)}20` }}
+                      style={[
+                        styles.iconContainer,
+                        { backgroundColor: `${getActivityColor(activity.type)}20` }
+                      ]}
                     >
-                      <Text className="text-lg">{getActivityIcon(activity.type)}</Text>
+                      <Ionicons 
+                        name={getActivityIcon(activity.type) as any} 
+                        size={20} 
+                        color={getActivityColor(activity.type)} 
+                      />
                     </View>
                     {index < mockActivity.length - 1 && (
-                      <View className="w-0.5 h-12 bg-gray-200 mt-2" />
+                      <View style={styles.timelineLine} />
                     )}
                   </View>
                   
                   {/* Activity content */}
-                  <View className="flex-1 pb-4">
-                    <View className="flex-row items-center justify-between mb-1">
-                      <Text className="font-semibold text-gray-900">{activity.title}</Text>
-                      <Text className="text-sm text-gray-500">{formatTimestamp(activity.timestamp)}</Text>
+                  <View style={styles.activityContent}>
+                    <View style={styles.activityHeader}>
+                      <Text style={styles.activityTitle}>{activity.title}</Text>
+                      <Text style={styles.activityTime}>{formatTimestamp(activity.timestamp)}</Text>
                     </View>
-                    <Text className="text-gray-600 text-sm">{activity.description}</Text>
+                    <Text style={styles.activityDescription}>{activity.description}</Text>
                     {activity.user && (
-                      <Text className="text-gray-400 text-xs mt-1">by {activity.user}</Text>
+                      <Text style={styles.activityUser}>by {activity.user}</Text>
                     )}
                   </View>
                 </View>
@@ -163,3 +170,99 @@ export default function GoalActivityTab({ goal }: GoalActivityTabProps) {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  content: {
+    padding: 16,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 24,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  timeline: {
+    gap: 16,
+  },
+  timelineItem: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  timelineIcon: {
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  timelineLine: {
+    width: 2,
+    height: 48,
+    backgroundColor: '#E2E8F0',
+    marginTop: 8,
+  },
+  activityContent: {
+    flex: 1,
+    paddingBottom: 16,
+  },
+  activityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  activityTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  activityTime: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  activityDescription: {
+    fontSize: 14,
+    color: '#475569',
+    marginBottom: 4,
+  },
+  activityUser: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+});

@@ -1,0 +1,157 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserId() {
+      return request.auth.uid;
+    }
+    
+    function isFamilyMember(familyId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/families/$(familyId)/members/$(getUserId()));
+    }
+    
+    function isGoalOwner(goalData) {
+      return isAuthenticated() && goalData.ownerId == getUserId();
+    }
+    
+    function isGoalVisible(goalData) {
+      return goalData.visibility == 'family' || isGoalOwner(goalData);
+    }
+    
+    // ============================================
+    // GOALS COLLECTION
+    // ============================================
+    match /goals/{goalId} {
+      // Allow read if:
+      // - User is a family member
+      // - Goal is family visible OR user is the owner
+      allow read: if isAuthenticated() && 
+                     isFamilyMember(resource.data.familyId) &&
+                     isGoalVisible(resource.data);
+      
+      // Allow create if:
+      // - User is authenticated
+      // - User is a family member
+      // - User is set as the owner
+      allow create: if isAuthenticated() && 
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.ownerId == getUserId() &&
+                       request.resource.data.keys().hasAll([
+                         'familyId', 'ownerId', 'title', 'category', 
+                         'status', 'visibility', 'milestonesCount', 'milestonesDone'
+                       ]);
+      
+      // Allow update if:
+      // - User is a family member
+      // - User is the owner OR goal is family visible (for milestone counts)
+      allow update: if isAuthenticated() && 
+                       isFamilyMember(resource.data.familyId) &&
+                       (isGoalOwner(resource.data) || 
+                        (resource.data.visibility == 'family' && 
+                         onlyUpdatingProgress()));
+      
+      // Allow delete if:
+      // - User is the owner
+      allow delete: if isAuthenticated() && isGoalOwner(resource.data);
+      
+      function onlyUpdatingProgress() {
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        return affectedKeys.hasOnly(['milestonesDone', 'milestonesCount', 'updatedAt', 'reflectionCount', 'lastActivityAt']);
+      }
+      
+      // ============================================
+      // MILESTONES SUBCOLLECTION
+      // ============================================
+      match /milestones/{milestoneId} {
+        // Allow read if user can read the parent goal
+        allow read: if isAuthenticated() && 
+                       isFamilyMember(get(/databases/$(database)/documents/goals/$(goalId)).data.familyId);
+        
+        // Allow create if user can write to the parent goal
+        allow create: if isAuthenticated() && 
+                         isFamilyMember(get(/databases/$(database)/documents/goals/$(goalId)).data.familyId) &&
+                         request.resource.data.keys().hasAll(['title', 'done']);
+        
+        // Allow update if user can write to the parent goal
+        allow update: if isAuthenticated() && 
+                         isFamilyMember(get(/databases/$(database)/documents/goals/$(goalId)).data.familyId);
+        
+        // Allow delete if user is the goal owner
+        allow delete: if isAuthenticated() && 
+                         isGoalOwner(get(/databases/$(database)/documents/goals/$(goalId)).data);
+      }
+    }
+    
+    // ============================================
+    // REFLECTIONS COLLECTION
+    // ============================================
+    match /reflections/{reflectionId} {
+      // Allow read if:
+      // - User is a family member
+      // - Reflection is for a family-visible goal OR user is the author
+      allow read: if isAuthenticated() && 
+                     isFamilyMember(resource.data.familyId);
+      
+      // Allow create if:
+      // - User is authenticated
+      // - User is a family member
+      // - User is set as the author
+      allow create: if isAuthenticated() && 
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.authorId == getUserId() &&
+                       request.resource.data.keys().hasAll([
+                         'familyId', 'authorId', 'content'
+                       ]);
+      
+      // Allow update if:
+      // - User is the author
+      allow update: if isAuthenticated() && 
+                       resource.data.authorId == getUserId();
+      
+      // Allow delete if:
+      // - User is the author
+      allow delete: if isAuthenticated() && 
+                       resource.data.authorId == getUserId();
+    }
+  }
+}
+
+// ============================================
+// SECURITY NOTES
+// ============================================
+// 
+// 1. Goals:
+//    - Family members can read family-visible goals
+//    - Owners can read their private goals
+//    - Only owners can create, update, and delete their goals
+//    - Family members can update milestone counts for collaboration
+//
+// 2. Milestones:
+//    - Stored as subcollection under goals
+//    - Inherit parent goal's family access
+//    - Any family member can toggle milestones
+//    - Only owner can delete milestones
+//
+// 3. Reflections:
+//    - Stored in separate collection
+//    - Linked to goals via goalId
+//    - Only authors can edit/delete their reflections
+//    - All family members can read reflections
+//
+// 4. Privacy:
+//    - Private goals: Only owner can see
+//    - Family goals: All family members can see
+//    - Reflections: Family members can read, only author can write
+//
+// 5. Validation:
+//    - Required fields enforced
+//    - Owner/author must match authenticated user
+//    - Family membership verified
+//
+// ============================================

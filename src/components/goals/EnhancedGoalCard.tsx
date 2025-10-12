@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Goal } from '../../types/goals';
 import { categoryColors, categoryLabels, statusColors, statusLabels } from '../../theme/goalsColors';
 import GoalProgressBar from './GoalProgressBar';
+import { Ionicons } from '@expo/vector-icons';
 
 interface EnhancedGoalCardProps {
   goal: Goal;
@@ -16,77 +17,174 @@ export default function EnhancedGoalCard({ goal, onPress }: EnhancedGoalCardProp
     goal.deadlineAt && 
     goal.deadlineAt < Date.now();
 
+  const getStatusIcon = () => {
+    if (isOverdue) return 'warning';
+    switch (goal.status) {
+      case 'active': return 'play-circle';
+      case 'completed': return 'checkmark-circle';
+      case 'paused': return 'pause-circle';
+      case 'cancelled': return 'close-circle';
+      default: return 'flag';
+    }
+  };
+
+  const getDisplayStatus = () => {
+    if (isOverdue) return 'Overdue';
+    return statusLabels[goal.status];
+  };
+
+  const getDisplayStatusColor = () => {
+    if (isOverdue) return '#EF4444';
+    return statusColor;
+  };
+
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
-      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
-      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 2 }}
-    >
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-2">
-        <View className="flex-row items-center gap-2 flex-1">
-          <View 
-            style={{ 
-              width: 10, 
-              height: 10, 
-              borderRadius: 6, 
-              backgroundColor: categoryColor 
-            }} 
-          />
-          <Text className="font-semibold text-base text-gray-900 flex-1" numberOfLines={1}>
+      <View style={styles.header}>
+        <View style={styles.titleRow}>
+          <View style={[styles.categoryDot, { backgroundColor: categoryColor }]} />
+          <Text style={styles.title} numberOfLines={2}>
             {goal.title}
           </Text>
         </View>
-        <View className="flex-row items-center gap-2">
-          {isOverdue && (
-            <View className="bg-red-100 px-2 py-1 rounded-full">
-              <Text className="text-red-600 text-xs font-medium">Overdue</Text>
-            </View>
-          )}
-          <View 
-            className="px-2 py-1 rounded-full"
-            style={{ backgroundColor: `${statusColor}20` }}
-          >
-            <Text 
-              className="text-xs font-medium"
-              style={{ color: statusColor }}
-            >
-              {statusLabels[goal.status]}
-            </Text>
-          </View>
+        <View style={[styles.statusBadge, { backgroundColor: `${getDisplayStatusColor()}20` }]}>
+          <Ionicons 
+            name={getStatusIcon() as any} 
+            size={12} 
+            color={getDisplayStatusColor()} 
+          />
+          <Text style={[styles.statusText, { color: getDisplayStatusColor() }]}>
+            {getDisplayStatus()}
+          </Text>
         </View>
       </View>
 
       {/* Category */}
-      <Text className="text-xs text-gray-500 mb-3">
+      <Text style={styles.category}>
         {categoryLabels[goal.category]}
       </Text>
 
       {/* Description */}
       {goal.description && (
-        <Text className="text-sm text-gray-700 mb-3" numberOfLines={2}>
+        <Text style={styles.description} numberOfLines={2}>
           {goal.description}
         </Text>
       )}
 
       {/* Progress */}
-      <GoalProgressBar 
-        completed={goal.milestonesDone}
-        total={goal.milestonesCount}
-        color={categoryColor}
-      />
+      <View style={styles.progressContainer}>
+        <GoalProgressBar 
+          completed={goal.milestonesDone}
+          total={goal.milestonesCount}
+          color={categoryColor}
+          showPercentage={false}
+        />
+      </View>
 
       {/* Footer */}
-      <View className="flex-row items-center justify-between mt-3">
-        <Text className="text-xs text-gray-500">
-          {goal.visibility === 'family' ? '👨‍👩‍👧‍👦 Family' : '🔒 Private'}
-        </Text>
-        {goal.reflectionCount && goal.reflectionCount > 0 && (
-          <Text className="text-xs text-gray-500">
-            💭 {goal.reflectionCount} reflections
+      <View style={styles.footer}>
+        <View style={styles.footerItem}>
+          <Ionicons 
+            name={goal.visibility === 'family' ? 'people' : 'lock-closed'} 
+            size={14} 
+            color="#64748B" 
+          />
+          <Text style={styles.footerText}>
+            {goal.visibility === 'family' ? 'Family' : 'Private'}
           </Text>
+        </View>
+        {goal.reflectionCount && goal.reflectionCount > 0 && (
+          <View style={styles.footerItem}>
+            <Ionicons name="chatbubble" size={14} color="#64748B" />
+            <Text style={styles.footerText}>
+              {goal.reflectionCount} reflections
+            </Text>
+          </View>
         )}
       </View>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 8,
+    width: 280,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
+  },
+  categoryDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+    flex: 1,
+    lineHeight: 20,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  category: {
+    fontSize: 12,
+    color: '#64748B',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: '#475569',
+    marginBottom: 12,
+    lineHeight: 18,
+  },
+  progressContainer: {
+    marginBottom: 12,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  footerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 12,
+    color: '#64748B',
+    marginLeft: 4,
+  },
+});

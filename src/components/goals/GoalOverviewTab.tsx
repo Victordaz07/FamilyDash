@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Goal } from '../../types/goals';
 import { categoryColors, categoryLabels, statusColors, statusLabels } from '../../theme/goalsColors';
 import GoalProgressBar from './GoalProgressBar';
+import { Ionicons } from '@expo/vector-icons';
 
 interface GoalOverviewTabProps {
   goal: Goal;
@@ -36,84 +37,73 @@ export default function GoalOverviewTab({ goal, onEditGoal, onToggleStatus }: Go
   const daysLeft = getDaysUntilDeadline();
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4 space-y-6">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
         {/* Header Card */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <View className="flex-row items-start justify-between mb-4">
-            <View className="flex-1">
-              <View className="flex-row items-center gap-2 mb-2">
+        <View style={styles.card}>
+          <View style={styles.headerRow}>
+            <View style={styles.titleSection}>
+              <View style={styles.categoryRow}>
                 <View 
-                  style={{ 
-                    width: 12, 
-                    height: 12, 
-                    borderRadius: 6, 
-                    backgroundColor: categoryColor 
-                  }} 
+                  style={[styles.categoryDot, { backgroundColor: categoryColor }]} 
                 />
-                <Text className="text-sm text-gray-500">{categoryLabels[goal.category]}</Text>
+                <Text style={styles.categoryText}>{categoryLabels[goal.category]}</Text>
               </View>
-              <Text className="text-2xl font-bold text-gray-900 mb-2">{goal.title}</Text>
+              <Text style={styles.title}>{goal.title}</Text>
               {goal.description && (
-                <Text className="text-gray-700 text-base leading-6">{goal.description}</Text>
+                <Text style={styles.description}>{goal.description}</Text>
               )}
             </View>
           </View>
 
           {/* Status and Actions */}
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
+          <View style={styles.statusRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View 
-                className="px-3 py-1 rounded-full"
-                style={{ backgroundColor: `${statusColor}20` }}
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: isOverdue ? '#EF4444' : statusColor }
+                ]}
               >
-                <Text 
-                  className="text-sm font-medium"
-                  style={{ color: statusColor }}
-                >
-                  {statusLabels[goal.status]}
+                <Text style={styles.statusText}>
+                  {isOverdue ? 'Overdue' : statusLabels[goal.status]}
                 </Text>
               </View>
-              {isOverdue && (
-                <View className="bg-red-100 px-3 py-1 rounded-full">
-                  <Text className="text-red-600 text-sm font-medium">Overdue</Text>
-                </View>
-              )}
             </View>
             <TouchableOpacity
               onPress={onEditGoal}
-              className="bg-gray-100 px-4 py-2 rounded-xl"
+              style={styles.editButton}
             >
-              <Text className="text-gray-700 font-medium">Edit</Text>
+              <Text style={styles.editButtonText}>Edit</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Progress Card */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-900 mb-4">Progress</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Progress</Text>
           <GoalProgressBar 
             completed={goal.milestonesDone}
             total={goal.milestonesCount}
             color={categoryColor}
             showPercentage={true}
           />
-          <View className="mt-4 flex-row justify-between">
-            <View>
-              <Text className="text-sm text-gray-500">Milestones</Text>
-              <Text className="text-2xl font-bold text-gray-900">
+          <View style={[styles.statsRow, { marginTop: 16 }]}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Milestones</Text>
+              <Text style={styles.statValue}>
                 {goal.milestonesDone}/{goal.milestonesCount}
               </Text>
             </View>
-            <View>
-              <Text className="text-sm text-gray-500">Reflections</Text>
-              <Text className="text-2xl font-bold text-gray-900">
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Reflections</Text>
+              <Text style={styles.statValue}>
                 {goal.reflectionCount || 0}
               </Text>
             </View>
-            <View>
-              <Text className="text-sm text-gray-500">Visibility</Text>
-              <Text className="text-lg font-semibold text-gray-900">
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Visibility</Text>
+              <Text style={styles.statIcon}>
                 {goal.visibility === 'family' ? '👨‍👩‍👧‍👦' : '🔒'}
               </Text>
             </View>
@@ -121,28 +111,31 @@ export default function GoalOverviewTab({ goal, onEditGoal, onToggleStatus }: Go
         </View>
 
         {/* Timeline Card */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-900 mb-4">Timeline</Text>
-          <View className="space-y-4">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-gray-600">Created</Text>
-              <Text className="font-medium">{formatDate(goal.createdAt)}</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Timeline</Text>
+          <View style={styles.timelineContent}>
+            <View style={styles.timelineRow}>
+              <Text style={styles.timelineLabel}>Created</Text>
+              <Text style={styles.timelineValue}>{formatDate(goal.createdAt)}</Text>
             </View>
-            <View className="flex-row items-center justify-between">
-              <Text className="text-gray-600">Last Updated</Text>
-              <Text className="font-medium">{formatDate(goal.updatedAt)}</Text>
+            <View style={styles.timelineRow}>
+              <Text style={styles.timelineLabel}>Last Updated</Text>
+              <Text style={styles.timelineValue}>{formatDate(goal.updatedAt)}</Text>
             </View>
             {goal.deadlineAt && (
-              <View className="flex-row items-center justify-between">
-                <Text className="text-gray-600">Deadline</Text>
-                <View className="items-end">
-                  <Text className="font-medium">{formatDate(goal.deadlineAt)}</Text>
+              <View style={styles.timelineRow}>
+                <Text style={styles.timelineLabel}>Deadline</Text>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={styles.timelineValue}>{formatDate(goal.deadlineAt)}</Text>
                   {daysLeft !== null && (
-                    <Text className={`text-sm ${
-                      daysLeft < 0 ? 'text-red-600' : 
-                      daysLeft <= 3 ? 'text-orange-600' : 
-                      'text-green-600'
-                    }`}>
+                    <Text style={[
+                      styles.timelineValue,
+                      {
+                        fontSize: 12,
+                        color: daysLeft < 0 ? '#EF4444' : 
+                               daysLeft <= 3 ? '#F59E0B' : '#10B981'
+                      }
+                    ]}>
                       {daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue` :
                        daysLeft === 0 ? 'Due today' :
                        `${daysLeft} days left`}
@@ -155,30 +148,29 @@ export default function GoalOverviewTab({ goal, onEditGoal, onToggleStatus }: Go
         </View>
 
         {/* Quick Actions */}
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-900 mb-4">Quick Actions</Text>
-          <View className="flex-row gap-3">
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Quick Actions</Text>
+          <View style={styles.actionsContent}>
             <TouchableOpacity
               onPress={onToggleStatus}
-              className={`flex-1 py-3 rounded-xl ${
-                goal.status === 'active' ? 'bg-orange-100' : 'bg-green-100'
-              }`}
+              style={styles.actionButton}
             >
-              <Text className={`text-center font-medium ${
-                goal.status === 'active' ? 'text-orange-700' : 'text-green-700'
-              }`}>
-                {goal.status === 'active' ? '⏸️ Pause' : '▶️ Resume'}
+              <Ionicons 
+                name={goal.status === 'active' ? 'pause-circle' : 'play-circle'} 
+                size={24} 
+                color="#3B82F6" 
+              />
+              <Text style={styles.actionText}>
+                {goal.status === 'active' ? 'Pause' : 'Resume'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 py-3 rounded-xl bg-purple-100">
-              <Text className="text-center font-medium text-purple-700">
-                💭 Add Reflection
-              </Text>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="chatbubble-outline" size={24} color="#10B981" />
+              <Text style={styles.actionText}>Add Reflection</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 py-3 rounded-xl bg-blue-100">
-              <Text className="text-center font-medium text-blue-700">
-                ✅ Add Milestone
-              </Text>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="add-circle-outline" size={24} color="#F59E0B" />
+              <Text style={styles.actionText}>Add Milestone</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -186,3 +178,157 @@ export default function GoalOverviewTab({ goal, onEditGoal, onToggleStatus }: Go
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  content: {
+    padding: 16,
+    gap: 16,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  titleSection: {
+    flex: 1,
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  categoryDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#475569',
+    lineHeight: 24,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  editButton: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  editButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#475569',
+  },
+  progressSection: {
+    marginBottom: 16,
+  },
+  progressLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 16,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 4,
+  },
+  statIcon: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  timelineContent: {
+    gap: 16,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  timelineLabel: {
+    fontSize: 14,
+    color: '#64748B',
+  },
+  timelineValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#1E293B',
+  },
+  actionsContent: {
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  actionText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#475569',
+  },
+});
