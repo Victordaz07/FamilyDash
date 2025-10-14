@@ -1,22 +1,62 @@
-export type NotifChannelKey = "family_schedules" | "upcoming_reminders";
+/**
+ * 🔔 NOTIFICATIONS TYPE DEFINITIONS
+ */
 
-export type QuietHours = { enabled: boolean; start: string; end: string }; // "HH:mm"
-export type DayFilters = { enabled: boolean; allowedWeekdays: number[] };  // 0..6
+export type NotificationType = 
+  | 'task_due_soon'
+  | 'task_completed'
+  | 'achievement_unlocked'
+  | 'daily_reminder';
 
-export type ChannelOverrides = {
-  [K in NotifChannelKey]?: { enabled: boolean; sound?: boolean; vibration?: boolean };
-};
+export type NotificationChannel = 'tasks' | 'achievements' | 'general';
 
-export type NotificationSettings = {
-  id?: string;
-  familyId: string;
-  userId: string;
-  enableAll: boolean;
-  sound: boolean;            // default sound
-  vibration: boolean;        // default vibration
-  quietHours: QuietHours;
-  dayFilters: DayFilters;
-  channels: ChannelOverrides;
-  createdAt?: any;
-  updatedAt?: any;
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  createdAt: number;
+  read: boolean;
+  channel: NotificationChannel;
+  metadata?: {
+    taskId?: string;
+    achId?: string;
+    dueAt?: number;
+  };
+}
+
+export interface NotificationSettings {
+  dnd: {
+    enabled: boolean;
+    start: string; // "22:00"
+    end: string;   // "07:00"
+  };
+  channels: {
+    tasks: boolean;
+    achievements: boolean;
+    general: boolean;
+  };
+  dailyReminder: {
+    enabled: boolean;
+    hour: number;    // 20 (8 PM)
+    minute: number;  // 0
+  };
+}
+
+export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
+  dnd: {
+    enabled: false,
+    start: '22:00',
+    end: '07:00',
+  },
+  channels: {
+    tasks: true,
+    achievements: true,
+    general: true,
+  },
+  dailyReminder: {
+    enabled: true,
+    hour: 20,
+    minute: 0,
+  },
 };
