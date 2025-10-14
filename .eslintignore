@@ -1,0 +1,11 @@
+node_modules
+_graveyard
+dist
+build
+coverage
+android
+ios
+web
+.expo
+.firebase
+functions
