@@ -6,6 +6,7 @@
 import { useAppStore } from '@/store';
 import { Notification } from '@/types/notifications';
 import { scheduleLocalNotification } from './expoNotifications';
+import { scheduleNotificationWithDND } from './dndService';
 import { ACHIEVEMENTS } from '@/features/achievements/definitions';
 
 /**
@@ -16,18 +17,19 @@ export const triggerTaskDueSoon = async (taskId: string, title: string, dueAt: n
   
   if (!settings.channels.tasks) return;
   
-  // Schedule local notification 1 hour before
+  // Schedule local notification 1 hour before (respecting DND)
   const oneHourBefore = dueAt - (60 * 60 * 1000);
   if (oneHourBefore > Date.now()) {
-    try {
-      await scheduleLocalNotification({
-        title: '⏰ Task Due Soon',
-        body: `"${title}" is due in 1 hour`,
-        trigger: { date: new Date(oneHourBefore) },
-        data: { taskId, type: 'task_due_soon' },
-      });
-    } catch (error) {
-      console.warn('Failed to schedule task due notification:', error);
+    const scheduled = await scheduleNotificationWithDND(
+      '⏰ Task Due Soon',
+      `"${title}" is due in 1 hour`,
+      { date: new Date(oneHourBefore) },
+      'tasks',
+      { taskId, type: 'task_due_soon' }
+    );
+    
+    if (!scheduled) {
+      console.log('🔇 Task due notification blocked by DND');
     }
   }
   
@@ -92,16 +94,18 @@ export const triggerAchievementUnlocked = (achId: string) => {
   
   useAppStore.getState().addNotification(notif);
   
-  // Also send local notification
-  scheduleLocalNotification({
-    title: '🏆 Achievement Unlocked!',
-    body: `${achievement.title} (+${achievement.points} pts)`,
-    data: { achId, type: 'achievement_unlocked' },
-  }).catch(() => {});
+  // Also send local notification (respecting DND)
+  scheduleNotificationWithDND(
+    '🏆 Achievement Unlocked!',
+    `${achievement.title} (+${achievement.points} pts)`,
+    null, // Immediate notification
+    'achievements',
+    { achId, type: 'achievement_unlocked' }
+  ).catch(() => {});
 };
 
 /**
- * Schedule daily reminder
+ * Schedule daily reminder (respecting DND)
  */
 export const scheduleDailyReminder = async () => {
   const settings = useAppStore.getState().settings;
@@ -109,26 +113,21 @@ export const scheduleDailyReminder = async () => {
   if (!settings.dailyReminder.enabled) return;
   
   try {
-    // Calculate next reminder time
-    const now = new Date();
-    const reminderTime = new Date();
-    reminderTime.setHours(settings.dailyReminder.hour, settings.dailyReminder.minute, 0, 0);
-    
-    // If time has passed today, schedule for tomorrow
-    if (reminderTime.getTime() < now.getTime()) {
-      reminderTime.setDate(reminderTime.getDate() + 1);
-    }
-    
-    await scheduleLocalNotification({
-      title: '📋 Daily Reminder',
-      body: 'Check your tasks for today!',
-      trigger: { 
+    const scheduled = await scheduleNotificationWithDND(
+      '📋 Daily Reminder',
+      'Check your tasks for today!',
+      { 
         hour: settings.dailyReminder.hour,
         minute: settings.dailyReminder.minute,
         repeats: true,
       },
-      data: { type: 'daily_reminder' },
-    });
+      'general',
+      { type: 'daily_reminder' }
+    );
+    
+    if (!scheduled) {
+      console.log('🔇 Daily reminder blocked by DND - will be rescheduled');
+    }
   } catch (error) {
     console.warn('Failed to schedule daily reminder:', error);
   }
