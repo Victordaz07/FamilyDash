@@ -15,6 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import ConditionalNavigator from '@/navigation/ConditionalNavigator';
 import { preloadCriticalComponents } from '@/utils/lazyLoading';
 import { startTasksSync } from '@/services/tasksSync';
+import { analytics } from '@/analytics/events';
 
 // Initialize Firebase configuration (centralized)
 import '@/services/firebase';
@@ -47,6 +48,10 @@ export default function App() {
     
     // Start Firestore sync for tasks
     const stopSync = startTasksSync();
+    
+    // Emit login_day event for streak tracking
+    analytics.loginDay();
+    
     return () => { if (stopSync) stopSync(); };
   }, []);
 
