@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pushTaskCreate, pushTaskUpdate, pushTaskDelete } from "@/services/tasksSync";
 import { createAchievementsSlice, AchievementsState } from "./achievementsSlice";
+import { createNotificationsSlice, NotificationsState } from "./notificationsSlice";
 
 type AuthState = {
   user: { uid: string; email?: string } | null;
@@ -18,7 +19,7 @@ type TasksState = {
   remove: (id: string) => void;
 };
 
-type AppState = AuthState & TasksState & AchievementsState;
+type AppState = AuthState & TasksState & AchievementsState & NotificationsState;
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -58,6 +59,9 @@ export const useAppStore = create<AppState>()(
       
       // Achievements (from slice)
       ...createAchievementsSlice(set, get),
+      
+      // Notifications (from slice)
+      ...createNotificationsSlice(set, get),
     }),
     { name: "familydash", storage: createJSONStorage(() => AsyncStorage) }
   )

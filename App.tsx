@@ -17,6 +17,7 @@ import { preloadCriticalComponents } from '@/utils/lazyLoading';
 import { startTasksSync } from '@/services/tasksSync';
 import { startAchievementsSync } from '@/services/achievementsSync';
 import { analytics } from '@/analytics/events';
+import { useAppStore } from '@/store';
 
 // Initialize Firebase configuration (centralized)
 import '@/services/firebase';
@@ -47,9 +48,10 @@ export default function App() {
     // Preload critical components on app start
     preloadCriticalComponents().catch(console.warn);
     
-    // Start Firestore sync for tasks and achievements
+    // Start Firestore sync for tasks, achievements, and notifications
     const stopTasksSync = startTasksSync();
     const stopAchievementsSync = startAchievementsSync();
+    const stopNotificationsSync = useAppStore.getState().startNotificationsSync();
     
     // Emit login_day event for streak tracking
     analytics.loginDay();
@@ -57,6 +59,7 @@ export default function App() {
     return () => { 
       if (stopTasksSync) stopTasksSync();
       if (stopAchievementsSync) stopAchievementsSync();
+      if (stopNotificationsSync) stopNotificationsSync();
     };
   }, []);
 
