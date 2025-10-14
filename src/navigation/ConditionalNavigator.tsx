@@ -10,9 +10,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
 import { createStackNavigator } from '@react-navigation/stack';
 import SimpleAppNavigator from './SimpleAppNavigator';
-import { LoginScreen } from '../screens/LoginScreen';
-import { RegisterScreen } from '../screens/RegisterScreen';
-import VerifyEmailScreen from '../screens/VerifyEmailScreen';
+import { LoginScreen } from '@/screens/LoginScreen';
+import { RegisterScreen } from '@/screens/RegisterScreen';
+import VerifyEmailScreen from '@/screens/VerifyEmailScreen';
 import { useAuth } from '@/store';
 import { theme } from '@/styles/simpleTheme';
 

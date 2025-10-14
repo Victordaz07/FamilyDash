@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { Goal } from '../../types/goals';
+import { Goal } from '@/types/goals';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ActivityItem {

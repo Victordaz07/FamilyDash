@@ -15,9 +15,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFeatureFlags, updateUserConsent, getUserConsent } from '../../services/featureFlags';
-import { ConsentModal } from '../../components/safety/ConsentModal';
-import { UpgradePlusBanner } from '../../components/core/UpgradePlusBanner';
+import { useFeatureFlags, updateUserConsent, getUserConsent } from '@/services/featureFlags';
+import { ConsentModal } from '@/components/safety/ConsentModal';
+import { UpgradePlusBanner } from '@/components/core/UpgradePlusBanner';
 
 interface SafetySettingsScreenProps {
   navigation: any;

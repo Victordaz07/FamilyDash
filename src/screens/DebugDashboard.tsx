@@ -17,11 +17,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { RealAuthService, RealDatabaseService } from '../services';
-import { syncMonitorService } from '../services/sync/SyncMonitorService';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useCalendarStore } from '../modules/calendar/store/calendarStore';
-import { useProfileStore } from '../modules/profile/store/profileStore';
+import { syncMonitorService } from '@/services/sync/SyncMonitorService';
+import { useTasksStore } from '@/modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
+import { useCalendarStore } from '@/modules/calendar/store/calendarStore';
+import { useProfileStore } from '@/modules/profile/store/profileStore';
 
 interface DebugScreenProps {
   navigation: any;

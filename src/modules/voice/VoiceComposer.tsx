@@ -4,8 +4,8 @@ import { Audio } from "expo-av";
 // import * as FileSystem from "expo-file-system/legacy"; // No longer needed
 import { Ionicons } from "@expo/vector-icons";
 import { mmss } from "./useAudioPlayer";
-import { saveVoiceNote } from "../../services/voice.service";
-// import { useAudioPermissions } from "../../components/audio/AudioPermissionHandler";
+import { saveVoiceNote } from "@/services/voice.service";
+// import { useAudioPermissions } from "@/components/audio/AudioPermissionHandler";
 
 interface VoiceComposerProps {
   familyId: string;

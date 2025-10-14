@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useFamilyDashStore } from '../../state/store';
+import { useFamilyDashStore } from '@/state/store';
 
 interface DeviceToolsScreenProps {
     navigation: any;

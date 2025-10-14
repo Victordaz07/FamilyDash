@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useProfileStore } from '../store/profileStore';
-import { ImageService } from '../services/imageService';
+import { useProfileStore } from '@/store/profileStore';
+import { ImageService } from '@/services/imageService';
 
 interface CompleteProfileEditModalProps {
   visible: boolean;

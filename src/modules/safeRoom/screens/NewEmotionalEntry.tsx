@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert 
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Card } from '../../../components/ui/WorkingComponents';
-import { useEmotionalStore } from '../store/emotionalStore';
-import { mediaService } from '../services/mediaService';
+import { Card } from '@/components/ui/WorkingComponents';
+import { useEmotionalStore } from '@/store/emotionalStore';
+import { mediaService } from '@/services/mediaService';
 import { VideoPlayer, saveVideoNote, VideoNote } from '../../video';
 import WorkingVideoRecorder from '../../video/WorkingVideoRecorder';
 

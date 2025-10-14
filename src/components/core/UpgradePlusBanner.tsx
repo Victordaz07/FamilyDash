@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface UpgradePlusBannerProps {
-  feature: keyof import('../../services/featureFlags').FeatureFlags;
+  feature: keyof import('@/services/featureFlags').FeatureFlags;
   onUpgrade?: () => void;
   compact?: boolean;
 }

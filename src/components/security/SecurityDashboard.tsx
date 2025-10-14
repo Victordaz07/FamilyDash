@@ -17,7 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, AdvancedCard, AdvancedButton, AdvancedInput, themeUtils } from '../ui';
-import { useSecurity } from '../../hooks/useSecurity';
+import { useSecurity } from '@/hooks/useSecurity';
 
 interface SecurityDashboardProps {
   familyId: string;

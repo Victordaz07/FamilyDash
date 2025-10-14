@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { CalendarEvent, FamilyMember } from '../types/calendarTypes';
+import { CalendarEvent, FamilyMember } from '@/types/calendarTypes';
 import { categoryConfig } from '../mock/expandedCalendarData';
 
 interface EventCardProps {

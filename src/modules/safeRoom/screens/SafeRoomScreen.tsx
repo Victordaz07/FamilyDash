@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeRoom } from '../hooks/useSafeRoom';
+import { useSafeRoom } from '@/hooks/useSafeRoom';
 
 interface SafeRoomScreenProps {
     navigation: any;

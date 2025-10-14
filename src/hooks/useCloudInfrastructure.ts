@@ -4,38 +4,38 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { FirebaseMigrationService } from '../services/cloud/FirebaseMigrationService';
-import { MultiDeviceSyncService } from '../services/cloud/MultiDeviceSyncService';
-import { ProductionDeploymentService } from '../services/cloud/ProductionDeploymentService';
-import { EnterpriseSecurityService } from '../services/cloud/EnterpriseSecurityService';
+import { FirebaseMigrationService } from '@/services/cloud/FirebaseMigrationService';
+import { MultiDeviceSyncService } from '@/services/cloud/MultiDeviceSyncService';
+import { ProductionDeploymentService } from '@/services/cloud/ProductionDeploymentService';
+import { EnterpriseSecurityService } from '@/services/cloud/EnterpriseSecurityService';
 
 // Hook interfaces
 interface CloudMigrationState {
-  migrationProgress: import('../services/cloud/FirebaseMigrationService').MigrationProgress | null;
+  migrationProgress: import('@/services/cloud/FirebaseMigrationService').MigrationProgress | null;
   isMigrating: boolean;
   migrationError: string | null;
 }
 
 interface CloudSyncState {
-  syncStatus: import('../services/cloud/MultiDeviceSyncService').DeviceSyncStatus | null;
+  syncStatus: import('@/services/cloud/MultiDeviceSyncService').DeviceSyncStatus | null;
   isOnline: boolean;
-  conflicts: import('../services/cloud/MultiDeviceSyncService').Conflict[];
-  metrics: import('../services/cloud/MultiDeviceSyncService').SyncMetrics;
+  conflicts: import('@/services/cloud/MultiDeviceSyncService').Conflict[];
+  metrics: import('@/services/cloud/MultiDeviceSyncService').SyncMetrics;
 }
 
 interface DeploymentState {
-  deploymentConfig: import('../services/cloud/ProductionDeploymentService').DeploymentConfiguration | null;
-  deploymentMetrics: import('../services/cloud/ProductionDeploymentService').DeploymentMetrics | null;
-  releaseNotes: import('../services/cloud/ProductionDeploymentService').ReleaseNotes[];
+  deploymentConfig: import('@/services/cloud/ProductionDeploymentService').DeploymentConfiguration | null;
+  deploymentMetrics: import('@/services/cloud/ProductionDeploymentService').DeploymentMetrics | null;
+  releaseNotes: import('@/services/cloud/ProductionDeploymentService').ReleaseNotes[];
   isDeploying: boolean;
 }
 
 interface SecurityState {
   complianceFrameworks: string[];
-  securityAudits: import('../services/cloud/EnterpriseSecurityService').SecurityAudit[];
-  securityIncidents: import('../services/cloud/EnterpriseSecurityService').SecurityIncident[];
-  threatIntelligence: import('../services/cloud/EnterpriseSecurityService').ThreatIntelligence[];
-  securityMetrics: import('../services/cloud/EnterpriseSecurityService').SecurityMetrics;
+  securityAudits: import('@/services/cloud/EnterpriseSecurityService').SecurityAudit[];
+  securityIncidents: import('@/services/cloud/EnterpriseSecurityService').SecurityIncident[];
+  threatIntelligence: import('@/services/cloud/EnterpriseSecurityService').ThreatIntelligence[];
+  securityMetrics: import('@/services/cloud/EnterpriseSecurityService').SecurityMetrics;
 }
 
 // Combined hook for all cloud infrastructure services
@@ -475,7 +475,7 @@ export function useCloudInfrastructure(familyId: string) {
 
 // Helper hook for real-time conflict resolution
 export function useConflictResolution() {
-  const [conflicts, setConflicts] = useState<import('../services/cloud/MultiDeviceSyncService').Conflict[]>([]);
+  const [conflicts, setConflicts] = useState<import('@/services/cloud/MultiDeviceSyncService').Conflict[]>([]);
   const [isResolving, setIsResolving] = useState(false);
 
   const resolveConflict = useCallback(async (
@@ -506,7 +506,7 @@ export function useConflictResolution() {
 // Helper hook for deployment management
 export function useDeploymentManagement() {
   const [activeDeployments, setActiveDeployments] = useState<
-    import('../services/cloud/ProductionDeploymentService').DeploymentMetrics[]
+    import('@/services/cloud/ProductionDeploymentService').DeploymentMetrics[]
   >([]);
 
   const rollbackDeployment = useCallback(async (deploymentId: string) => {

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { FamilySchedule } from "../../types/schedule";
-import { createSchedule, deleteSchedule, listSchedules, updateSchedule } from "../../services/schedules";
+import { FamilySchedule } from "@/types/schedule";
+import { createSchedule, deleteSchedule, listSchedules, updateSchedule } from "@/services/schedules";
 import { ScheduleForm } from "./ScheduleForm";
 
 type Props = { route: any; navigation: any };

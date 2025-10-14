@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { categoryLabels, GoalCategory } from '../../theme/goalsColors';
-import { GoalStatus } from '../../types/goals';
+import { GoalStatus } from '@/types/goals';
 
 interface GoalFilterBarProps {
   search: string;

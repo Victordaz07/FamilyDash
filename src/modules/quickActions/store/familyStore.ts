@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { FamilyMember } from '../types/quickActionsTypes';
+import { FamilyMember } from '@/types/quickActionsTypes';
 import { mockFamilyMembers } from '../mock/mockFamily';
 
 interface FamilyStore {

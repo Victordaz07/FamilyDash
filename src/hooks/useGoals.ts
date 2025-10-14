@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useGoalsStore } from '../store/goalsSlice';
-import { Goal, GoalStatus, GoalCategory } from '../types/goals';
-import { mockGoals } from '../data/mockGoals';
+import { useGoalsStore } from '@/store/goalsSlice';
+import { Goal, GoalStatus, GoalCategory } from '@/types/goals';
+import { mockGoals } from '@/data/mockGoals';
 import { useGoalsFirebase } from './useGoalsFirebase';
 
 export function useGoals() {

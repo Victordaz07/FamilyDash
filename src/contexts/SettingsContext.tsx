@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import SettingsService, { AppSettings } from '../services/SettingsService';
+import SettingsService, { AppSettings } from '@/services/SettingsService';
 
 interface SettingsContextType {
   settings: AppSettings;

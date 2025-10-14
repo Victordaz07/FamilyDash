@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useProfileStore } from '../store/profileStore';
-import { MemberCard } from '../components/MemberCard';
+import { useProfileStore } from '@/store/profileStore';
+import { MemberCard } from '@/components/MemberCard';
 import { FamilyMember } from '../types';
 
 interface HomeManagementScreenProps {

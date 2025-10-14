@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { ShoppingStore } from "../../types/shopping";
+import { ShoppingStore } from "@/types/shopping";
 import MapPicker from "./MapPicker";
-import { openInMaps } from "../../utils/maps";
+import { openInMaps } from "@/utils/maps";
 
 export default function StorePickerModal({
   visible, onClose, initial, onSave, onDelete

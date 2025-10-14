@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { listenVoiceNotes, VoiceNote } from '../../services/voice.service';
+import { listenVoiceNotes, VoiceNote } from '@/services/voice.service';
 
 export default function VoiceNotesTest() {
   const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);

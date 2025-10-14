@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAudioPlayer, mmss } from "./useAudioPlayer";
-import type { VoiceNote } from "../../services/voice.service";
+import type { VoiceNote } from "@/services/voice.service";
 
 interface VoiceMessageCardProps {
   note: VoiceNote;

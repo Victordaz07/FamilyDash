@@ -2,17 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { ShoppingItem, ShoppingList, ShoppingStore } from "../../types/shopping";
+import { ShoppingItem, ShoppingList, ShoppingStore } from "@/types/shopping";
 import {
   addItem, cycleStatus, deleteStore, getOrCreateShoppingList, listItems,
   removeItem, updateItem, updateList, upsertStore, loadList
-} from "../../services/shopping";
-import { findProductByBarcode, upsertProduct } from "../../services/shoppingProducts";
+} from "@/services/shopping";
+import { findProductByBarcode, upsertProduct } from "@/services/shoppingProducts";
 import StorePickerModal from "./StorePickerModal";
 import BudgetProgressBar from "./BudgetProgressBar";
 import BarcodeScannerFallback from "./BarcodeScannerFallback";
 import EditItemModal from "./EditItemModal";
-// import ShoppingHistoryModal from "../../components/shopping/ShoppingHistoryModal";
+// import ShoppingHistoryModal from "@/components/shopping/ShoppingHistoryModal";
 import CompletePurchaseModal from "./CompletePurchaseModal";
 
 function statusIcon(s: "pending"|"in_cart"|"purchased") {

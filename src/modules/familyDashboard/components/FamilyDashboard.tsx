@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme, AdvancedCard, AdvancedButton, themeUtils } from '../../../components/ui';
+import { useTheme, AdvancedCard, AdvancedButton, themeUtils } from '@/components/ui';
 import { FamilyDashboardService, FamilyDashboardData } from '../FamilyDashboardService';
 
 interface FamilyDashboardProps {

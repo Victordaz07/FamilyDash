@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeRoom } from '../hooks/useSafeRoom';
+import { useSafeRoom } from '@/hooks/useSafeRoom';
 
 const { width: screenWidth } = Dimensions.get('window');
 

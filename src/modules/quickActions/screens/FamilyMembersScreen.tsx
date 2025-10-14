@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFamilyStore } from '../store/familyStore';
-import { MemberCard } from '../components/MemberCard';
+import { useFamilyStore } from '@/store/familyStore';
+import { MemberCard } from '@/components/MemberCard';
 import { theme } from '@/styles/simpleTheme';
-import { useTranslation } from '../../../locales/i18n';
+import { useTranslation } from '@/locales/i18n';
 
 interface FamilyMembersScreenProps {
     navigation: any;

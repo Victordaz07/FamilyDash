@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeRoom } from '../hooks/useSafeRoom';
-import FeelingCard from '../components/FeelingCard';
-import ResourceCard from '../components/ResourceCard';
-import StickyNote from '../components/StickyNote';
+import { useSafeRoom } from '@/hooks/useSafeRoom';
+import FeelingCard from '@/components/FeelingCard';
+import ResourceCard from '@/components/ResourceCard';
+import StickyNote from '@/components/StickyNote';
 
 interface SafeRoomTabsProps {
     navigation: any;

@@ -4,11 +4,11 @@
  */
 
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useRoleStore, User } from '../store/useRoleStore';
+import { useRoleStore, User } from '@/store/useRoleStore';
 import { useAuth } from './AuthContext';
-import RealDatabaseService from '../services/database/RealDatabaseService';
-import Logger from '../services/Logger';
-import { Role } from '../types/roles';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
+import Logger from '@/services/Logger';
+import { Role } from '@/types/roles';
 
 interface RoleContextType {
   user: User | null;

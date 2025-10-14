@@ -18,8 +18,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../../contexts/ThemeContext';
-import { SafeRoomAttachment, SafeRoomMessage } from '../types/safeRoomTypes';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
+import { SafeRoomAttachment, SafeRoomMessage } from '@/types/safeRoomTypes';
 import { VideoErrorBoundary } from '../../../video/VideoErrorBoundary';
 import { VideoPlayerViewSimple } from '../../../video/VideoPlayerViewSimple';
 

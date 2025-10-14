@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useProfileStore } from '../store/profileStore';
-import { CompleteProfileEditModal } from '../components/CompleteProfileEditModal';
+import { useProfileStore } from '@/store/profileStore';
+import { CompleteProfileEditModal } from '@/components/CompleteProfileEditModal';
 
 interface EditableProfileScreenProps {
     navigation: any;

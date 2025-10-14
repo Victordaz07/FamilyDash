@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { ShoppingItem, ShoppingList, ShoppingStore, PriceMode, UnitKey } from "../../types/shopping";
+import { ShoppingItem, ShoppingList, ShoppingStore, PriceMode, UnitKey } from "@/types/shopping";
 import {
   addItem, cycleStatus, deleteStore, getOrCreateShoppingList, listItems,
   removeItem, updateItem, updateList, upsertStore, loadList
-} from "../../services/shopping";
-import { findProductByBarcode, upsertProduct } from "../../services/shoppingProducts";
-import { recordPriceObservation, lastUnitPriceForStore, lastPriceAnyStore } from "../../services/shoppingPrices";
-import { getCurrentPosition, pickNearestStore } from "../../services/stores/currentStore";
+} from "@/services/shopping";
+import { findProductByBarcode, upsertProduct } from "@/services/shoppingProducts";
+import { recordPriceObservation, lastUnitPriceForStore, lastPriceAnyStore } from "@/services/shoppingPrices";
+import { getCurrentPosition, pickNearestStore } from "@/services/stores/currentStore";
 import StorePickerModal from "./StorePickerModal";
 import BarcodeScannerModal from "./BarcodeScannerModal";
 import UnitSelector from "./UnitSelector";

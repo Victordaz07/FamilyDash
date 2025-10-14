@@ -5,14 +5,14 @@
 
 import { create } from 'zustand';
 import React from 'react';
-import { Penalty, FamilyMember, PenaltyStats } from '../types/penaltyTypes';
+import { Penalty, FamilyMember, PenaltyStats } from '@/types/penaltyTypes';
 import { penaltyTypeConfigs } from '../mock/penaltiesData';
 import { 
   RealDatabaseService, 
   RealAuthService,
   trackEvent 
 } from '../../../services';
-import { schedulePenaltyNotification } from '../../../services/notificationService';
+import { schedulePenaltyNotification } from '@/services/notificationService';
 
 interface PenaltiesStore {
     penalties: Penalty[];

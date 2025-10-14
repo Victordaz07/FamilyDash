@@ -23,7 +23,7 @@ import { theme } from '@/styles/simpleTheme';
 //     FamilyAnalytics,
 //     AnalyticsInsight,
 //     SmartReport,
-// } from '../../services/analytics/DataAnalyticsService';
+// } from '@/services/analytics/DataAnalyticsService';
 
 // Mock types for now
 type UserBehaviorMetrics = any;

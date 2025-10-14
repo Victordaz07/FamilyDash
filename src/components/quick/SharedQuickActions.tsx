@@ -5,7 +5,7 @@
 
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { VoiceComposer } from "../../modules/voice";
+import { VoiceComposer } from "@/modules/voice";
 
 // Props with discriminated union to ensure context separation
 type Props =

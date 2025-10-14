@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useRole } from '../contexts/RoleContext';
+import { useRole } from '@/contexts/RoleContext';
 import { useFamily } from '@/store';
 import {
   Role,
@@ -24,9 +24,9 @@ import {
   RoleConfig,
   FamilyMemberWithRole,
   canManageRole,
-} from '../types/roles';
-import RealDatabaseService from '../services/database/RealDatabaseService';
-import Logger from '../services/Logger';
+} from '@/types/roles';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
+import Logger from '@/services/Logger';
 import { theme } from '@/styles/simpleTheme';
 
 interface FamilyRoleManagementScreenProps {

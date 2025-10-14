@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { UnitKey } from "../../types/shopping";
+import { UnitKey } from "@/types/shopping";
 
 type Props = {
   selectedUnit: UnitKey;

@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAchievements, useAuth } from '@/store';
-import { AchievementCard } from '../components/AchievementCard';
+import { AchievementCard } from '@/components/AchievementCard';
 import { theme } from '@/styles/simpleTheme';
 
 interface AchievementsScreenProps {

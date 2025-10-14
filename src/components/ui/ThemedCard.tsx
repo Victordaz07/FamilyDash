@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
 
 interface ThemedCardProps {
     title?: string;

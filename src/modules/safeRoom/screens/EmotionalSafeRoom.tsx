@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Card } from '../../../components/ui/WorkingComponents';
-import { useEmotionalStore, EmotionalMessage } from '../store/emotionalStore';
-import { mediaService } from '../services/mediaService';
+import { Card } from '@/components/ui/WorkingComponents';
+import { useEmotionalStore, EmotionalMessage } from '@/store/emotionalStore';
+import { mediaService } from '@/services/mediaService';
 import { useFocusEffect } from '@react-navigation/native';
-import SafeRoomService, { SafeRoomMessage } from '../../../services/SafeRoomService';
+import SafeRoomService, { SafeRoomMessage } from '@/services/SafeRoomService';
 import { 
   VoiceComposer, 
   VoiceMessageCard, 

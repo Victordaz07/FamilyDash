@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useCalendar } from '../hooks/useCalendar';
+import { useCalendar } from '@/hooks/useCalendar';
 
 interface HistoryScreenProps {
     navigation: any;

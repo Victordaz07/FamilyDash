@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import InteractiveWidget from '../components/InteractiveWidget';
+import InteractiveWidget from '@/components/InteractiveWidget';
 
 interface WidgetDemoProps {
     navigation: any;

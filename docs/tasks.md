@@ -106,6 +106,7 @@ service cloud.firestore {
 ```
 
 **Explanation**:
+
 - Users can only read/write their own tasks
 - Authentication required for all operations
 - No cross-user access

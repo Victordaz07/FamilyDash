@@ -7,39 +7,39 @@
 // Map of old relative imports to new absolute imports
 export const importMappings = {
   // Auth related
-  '../contexts/AuthContext': '@/store',
-  '../../contexts/AuthContext': '@/store',
-  '../../../contexts/AuthContext': '@/store',
+  '@/contexts/AuthContext': '@/store',
+  '@/contexts/AuthContext': '@/store',
+  '@/contexts/AuthContext': '@/store',
   
   // Family related
-  '../contexts/FamilyContext': '@/store',
-  '../../contexts/FamilyContext': '@/store',
-  '../../../contexts/FamilyContext': '@/store',
+  '@/contexts/FamilyContext': '@/store',
+  '@/contexts/FamilyContext': '@/store',
+  '@/contexts/FamilyContext': '@/store',
   
   // Settings related
-  '../contexts/SettingsContext': '@/store',
-  '../../contexts/SettingsContext': '@/store',
-  '../../../contexts/SettingsContext': '@/store',
+  '@/contexts/SettingsContext': '@/store',
+  '@/contexts/SettingsContext': '@/store',
+  '@/contexts/SettingsContext': '@/store',
   
   // Role related
-  '../contexts/RoleContext': '@/store',
-  '../../contexts/RoleContext': '@/store',
-  '../../../contexts/RoleContext': '@/store',
+  '@/contexts/RoleContext': '@/store',
+  '@/contexts/RoleContext': '@/store',
+  '@/contexts/RoleContext': '@/store',
   
   // Firebase config
-  '../config/firebase': '@/config/firebase',
-  '../../config/firebase': '@/config/firebase',
-  '../../../config/firebase': '@/config/firebase',
+  '@/config/firebase': '@/config/firebase',
+  '@/config/firebase': '@/config/firebase',
+  '@/config/firebase': '@/config/firebase',
   
   // Theme
-  '../styles/simpleTheme': '@/styles/simpleTheme',
-  '../../styles/simpleTheme': '@/styles/simpleTheme',
-  '../../../styles/simpleTheme': '@/styles/simpleTheme',
+  '@/styles/simpleTheme': '@/styles/simpleTheme',
+  '@/styles/simpleTheme': '@/styles/simpleTheme',
+  '@/styles/simpleTheme': '@/styles/simpleTheme',
   
   // Components
-  '../components/ErrorBoundary': '@/components/ErrorBoundary',
-  '../../components/ErrorBoundary': '@/components/ErrorBoundary',
-  '../../../components/ErrorBoundary': '@/components/ErrorBoundary',
+  '@/components/ErrorBoundary': '@/components/ErrorBoundary',
+  '@/components/ErrorBoundary': '@/components/ErrorBoundary',
+  '@/components/ErrorBoundary': '@/components/ErrorBoundary',
 };
 
 // Function to check if an import needs migration

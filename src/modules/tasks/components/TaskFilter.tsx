@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { FamilyMember } from '../types/taskTypes';
+import { FamilyMember } from '@/types/taskTypes';
 import { theme } from '@/styles/simpleTheme';
 
 interface TaskFilterProps {

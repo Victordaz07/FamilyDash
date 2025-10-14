@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { FamilyStats } from '../types/quickActionsTypes';
+import { FamilyStats } from '@/types/quickActionsTypes';
 import { mockFamilyStats } from '../mock/mockStats';
 
 interface StatsStore {

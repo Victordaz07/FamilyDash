@@ -6,7 +6,7 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db, storage } from "@/config/firebase";
-import { EntryCtx, AudioNoteDoc } from "../../types/entries";
+import { EntryCtx, AudioNoteDoc } from "@/types/entries";
 
 /**
  * Convert local URI to blob for upload

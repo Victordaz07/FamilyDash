@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ShoppingItem, ShoppingStore, UnitKey } from "../../types/shopping";
+import { ShoppingItem, ShoppingStore, UnitKey } from "@/types/shopping";
 
 type Props = {
   visible: boolean;

@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import { ShoppingStore } from "../../types/shopping";
+import { ShoppingStore } from "@/types/shopping";
 
 export interface Position {
   lat: number;

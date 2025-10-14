@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, AdvancedCard, AdvancedButton } from '../ui';
-import { AdvancedNotificationService, UserNotificationPreferences } from '../../services/notifications/AdvancedNotificationService';
+import { AdvancedNotificationService, UserNotificationPreferences } from '@/services/notifications/AdvancedNotificationService';
 
 interface NotificationItem {
   id: string;

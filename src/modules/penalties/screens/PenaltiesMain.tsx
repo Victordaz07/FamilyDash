@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshCon
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePenaltiesStore } from '../store/penaltiesStore';
-import PenaltyCard from '../components/PenaltyCard';
-import NewPenaltyModal from '../components/NewPenaltyModal';
+import { usePenaltiesStore } from '@/store/penaltiesStore';
+import PenaltyCard from '@/components/PenaltyCard';
+import NewPenaltyModal from '@/components/NewPenaltyModal';
 import { theme } from '@/styles/simpleTheme';
 
 interface PenaltiesMainProps {

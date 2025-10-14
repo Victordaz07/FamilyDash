@@ -12,7 +12,7 @@ import {
   StyleSheet 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { RealAuthService } from '../../services/auth/RealAuthService';
+import { RealAuthService } from '@/services/auth/RealAuthService';
 import { useAuth } from '@/store';
 
 const authService = new RealAuthService();

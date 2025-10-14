@@ -29,8 +29,8 @@ import {
 import { db } from '@/config/firebase';
 import RealAuthService from '../auth/RealAuthService';
 import Logger from '../Logger';
-import { sanitizeObject } from '../../utils/sanitize';
-import { logDatabaseOperation } from '../../utils/secureLog';
+import { sanitizeObject } from '@/utils/sanitize';
+import { logDatabaseOperation } from '@/utils/secureLog';
 
 export interface DatabaseDocument {
   id: string;

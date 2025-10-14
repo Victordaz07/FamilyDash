@@ -1,6 +1,6 @@
 import { Audio } from 'expo-av';
 import * as MediaLibrary from 'expo-media-library';
-import Logger from '../../../services/Logger';
+import Logger from '@/services/Logger';
 import * as FileSystem from 'expo-file-system';
 
 export interface RecordingResult {

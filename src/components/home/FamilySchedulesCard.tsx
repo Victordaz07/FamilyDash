@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { FamilySchedule } from "../../types/schedule";
-import { listSchedules } from "../../services/schedules";
+import { FamilySchedule } from "@/types/schedule";
+import { listSchedules } from "@/services/schedules";
 
 type Props = {
   familyId: string;

@@ -1,4 +1,4 @@
-import { Goal } from '../types/goals';
+import { Goal } from '@/types/goals';
 
 export const mockGoals: Goal[] = [
   {

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Goal, Milestone, Reflection } from '../../types/goals';
-import { useGoals } from '../../hooks/useGoals';
-import GoalTabs from '../../components/goals/GoalTabs';
-import GoalOverviewTab from '../../components/goals/GoalOverviewTab';
-import GoalMilestonesTab from '../../components/goals/GoalMilestonesTab';
-import GoalActivityTab from '../../components/goals/GoalActivityTab';
-import GoalReflectionsTab from '../../components/goals/GoalReflectionsTab';
+import { Goal, Milestone, Reflection } from '@/types/goals';
+import { useGoals } from '@/hooks/useGoals';
+import GoalTabs from '@/components/goals/GoalTabs';
+import GoalOverviewTab from '@/components/goals/GoalOverviewTab';
+import GoalMilestonesTab from '@/components/goals/GoalMilestonesTab';
+import GoalActivityTab from '@/components/goals/GoalActivityTab';
+import GoalReflectionsTab from '@/components/goals/GoalReflectionsTab';
 
 interface GoalDetailsScreenProps {
   navigation: any;

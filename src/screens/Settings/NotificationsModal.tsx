@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Modal, View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { getNotificationSettings, saveNotificationSettings } from "../../services/notifications/notificationSettings";
-import type { NotificationSettings, NotifChannelKey } from "../../types/notifications";
+import { getNotificationSettings, saveNotificationSettings } from "@/services/notifications/notificationSettings";
+import type { NotificationSettings, NotifChannelKey } from "@/types/notifications";
 
 type Props = {
   visible: boolean;

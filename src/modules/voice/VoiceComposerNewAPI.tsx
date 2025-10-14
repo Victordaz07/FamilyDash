@@ -9,7 +9,7 @@ import { Audio } from "expo-av";
 import { File } from "expo-file-system";
 import { Ionicons } from "@expo/vector-icons";
 import { mmss } from "./useAudioPlayer";
-import { saveVoiceNote } from "../../services/voice.service";
+import { saveVoiceNote } from "@/services/voice.service";
 
 interface VoiceComposerProps {
   familyId: string;

@@ -19,7 +19,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import DataExportImportManager, { ExportOptions, ImportResult } from '../services/data/DataExportImportManager';
+import DataExportImportManager, { ExportOptions, ImportResult } from '@/services/data/DataExportImportManager';
 
 interface DataExportImportScreenProps {
     navigation: any;

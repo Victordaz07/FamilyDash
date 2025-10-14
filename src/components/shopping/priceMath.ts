@@ -1,4 +1,4 @@
-import { ShoppingItem, UnitKey } from "../../types/shopping";
+import { ShoppingItem, UnitKey } from "@/types/shopping";
 
 export function unitMultiplier(unit: UnitKey, packSize?: number | null): number {
   switch (unit) {

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { usePenaltiesStore } from '../store/penaltiesStore';
-import PenaltyTimer from '../components/PenaltyTimer';
+import { usePenaltiesStore } from '@/store/penaltiesStore';
+import PenaltyTimer from '@/components/PenaltyTimer';
 
 interface PenaltyDetailsProps {
     navigation: any;

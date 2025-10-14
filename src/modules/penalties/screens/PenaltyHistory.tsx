@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { usePenaltiesStore } from '../store/penaltiesStore';
-import ReflectionCard from '../components/ReflectionCard';
+import { usePenaltiesStore } from '@/store/penaltiesStore';
+import ReflectionCard from '@/components/ReflectionCard';
 
 interface PenaltyHistoryProps {
     navigation: any;

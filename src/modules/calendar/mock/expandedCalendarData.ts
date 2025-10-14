@@ -1,4 +1,4 @@
-import { CalendarEvent, FamilyMember } from '../types/calendarTypes';
+import { CalendarEvent, FamilyMember } from '@/types/calendarTypes';
 
 // CLEAN DATA - Empty state ready for real connections
 export const mockFamilyMembers: FamilyMember[] = [];

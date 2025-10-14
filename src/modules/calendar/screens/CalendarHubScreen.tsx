@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useCalendar } from '../hooks/useCalendar';
-import ActivityCard from '../components/ActivityCard';
-import NewEventModal from '../components/NewEventModal';
-import { WeatherWidget } from '../../../components/WeatherWidget';
-import { listSchedules } from '../../../services/schedules';
-import { listReminders } from '../../../services/reminders';
+import { useCalendar } from '@/hooks/useCalendar';
+import ActivityCard from '@/components/ActivityCard';
+import NewEventModal from '@/components/NewEventModal';
+import { WeatherWidget } from '@/components/WeatherWidget';
+import { listSchedules } from '@/services/schedules';
+import { listReminders } from '@/services/reminders';
 
 const { width: screenWidth } = Dimensions.get('window');
 

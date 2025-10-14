@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
-import { Task } from '../services/tasks';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
+import { Task } from '@/services/tasks';
 import { VideoErrorBoundary } from '../video/VideoErrorBoundary';
 import { VideoPlayerViewSimple } from '../video/VideoPlayerViewSimple';
 import ShoppingListModalNew from './shopping/ShoppingListModalNew';

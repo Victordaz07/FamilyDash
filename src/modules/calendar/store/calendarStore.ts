@@ -10,7 +10,7 @@ import {
   RealAuthService,
   trackEvent
 } from '../../../services';
-import Logger from '../../../services/Logger';
+import Logger from '@/services/Logger';
 
 export interface CalendarEvent {
   id?: string;

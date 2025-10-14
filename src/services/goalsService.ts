@@ -14,7 +14,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { Goal, Milestone, Reflection } from '../types/goals';
+import { Goal, Milestone, Reflection } from '@/types/goals';
 
 const GOALS_COLLECTION = 'goals';
 const MILESTONES_COLLECTION = 'milestones';

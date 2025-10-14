@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAI } from '../../hooks/useAI';
+import { useAI } from '@/hooks/useAI';
 import { Card, Button } from '../ui/WorkingComponents';
 
 interface AIDashboardProps {

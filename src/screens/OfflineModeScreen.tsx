@@ -17,7 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import OfflineManager, { NetworkStatus, SyncConflict } from '../services/offline/OfflineManager';
+import OfflineManager, { NetworkStatus, SyncConflict } from '@/services/offline/OfflineManager';
 
 interface OfflineModeScreenProps {
     navigation: any;

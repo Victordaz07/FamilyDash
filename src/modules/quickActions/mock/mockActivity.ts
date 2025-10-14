@@ -1,4 +1,4 @@
-import { ActivityLog } from '../types/quickActionsTypes';
+import { ActivityLog } from '@/types/quickActionsTypes';
 
 export const mockActivityLogs: ActivityLog[] = [
     {

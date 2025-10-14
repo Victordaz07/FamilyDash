@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert } from
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTasksStore } from '../store/tasksStore';
+import { useTasksStore } from '@/store/tasksStore';
 import { mockFamilyMembers } from '../mock/tasksData';
-import TaskFilter from '../components/TaskFilter';
-import TaskTabs from '../components/TaskTabs';
-import TaskCard from '../components/TaskCard';
-import { SharedQuickActions } from '../../../components/quick/SharedQuickActions';
-import { TaskStatus } from '../types/taskTypes';
+import TaskFilter from '@/components/TaskFilter';
+import TaskTabs from '@/components/TaskTabs';
+import TaskCard from '@/components/TaskCard';
+import { SharedQuickActions } from '@/components/quick/SharedQuickActions';
+import { TaskStatus } from '@/types/taskTypes';
 import { theme } from '@/styles/simpleTheme';
 
 interface TaskManagementProps {

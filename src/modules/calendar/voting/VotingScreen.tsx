@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Card, Button } from '../../../components/ui/WorkingComponents';
+import { Card, Button } from '@/components/ui/WorkingComponents';
 import { theme } from '@/styles/simpleTheme';
 import useVoting, { VotingProposal } from './useVoting';
 import VotingCard from './components/VotingCard';

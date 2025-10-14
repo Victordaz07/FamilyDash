@@ -5,11 +5,11 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { useFeatureFlags, isFeatureEnabled } from '../../services/featureFlags';
+import { useFeatureFlags, isFeatureEnabled } from '@/services/featureFlags';
 import { UpgradePlusBanner } from './UpgradePlusBanner';
 
 interface FeatureGateProps {
-  flag: keyof import('../../services/featureFlags').FeatureFlags;
+  flag: keyof import('@/services/featureFlags').FeatureFlags;
   children: React.ReactNode;
   fallback?: React.ReactNode;
   familyId: string;

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { TaskNote } from '../types/taskTypes';
+import { TaskNote } from '@/types/taskTypes';
 import { theme } from '@/styles/simpleTheme';
 
 interface ParentNotesProps {

@@ -6,92 +6,92 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // i18n removed - using hardcoded English labels
 
 // Import screens
-import HomeScreen from '../screens/HomeScreen';
-import { FirebaseTest } from '../screens/FirebaseTest';
-// import TasksScreen from '../modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
-import TaskDetails from '../modules/tasks/screens/TaskDetails';
-// import FamilyVisionNavigator from '../screens/FamilyVision/FamilyVisionNavigator'; // REMOVED
-import FamilyVoteScreen from '../screens/FamilyVoteScreen';
-import FamilyChatScreen from '../screens/FamilyChatScreen';
-import NotificationsScreen from '../modules/notifications/screens/NotificationsScreen';
-import SafeRoomWrapper from '../modules/safeRoom/screens/SafeRoomWrapper';
-import NewEmotionalEntry from '../modules/safeRoom/screens/NewEmotionalEntry';
-import ProfileScreen from '../screens/ProfileScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import MainHomeScreen from '../screens/MainHomeScreen';
-import SavedLocationsScreen from '../screens/SavedLocationsScreen';
-import FamilySchedulesScreen from '../screens/schedules/FamilySchedulesScreen';
-import FamilyRemindersScreen from '../screens/reminders/FamilyRemindersScreen';
+import HomeScreen from '@/screens/HomeScreen';
+import { FirebaseTest } from '@/screens/FirebaseTest';
+// import TasksScreen from '@/modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
+import TaskDetails from '@/modules/tasks/screens/TaskDetails';
+// import FamilyVisionNavigator from '@/screens/FamilyVision/FamilyVisionNavigator'; // REMOVED
+import FamilyVoteScreen from '@/screens/FamilyVoteScreen';
+import FamilyChatScreen from '@/screens/FamilyChatScreen';
+import NotificationsScreen from '@/modules/notifications/screens/NotificationsScreen';
+import SafeRoomWrapper from '@/modules/safeRoom/screens/SafeRoomWrapper';
+import NewEmotionalEntry from '@/modules/safeRoom/screens/NewEmotionalEntry';
+import ProfileScreen from '@/screens/ProfileScreen';
+import SettingsScreen from '@/screens/SettingsScreen';
+import MainHomeScreen from '@/screens/MainHomeScreen';
+import SavedLocationsScreen from '@/screens/SavedLocationsScreen';
+import FamilySchedulesScreen from '@/screens/schedules/FamilySchedulesScreen';
+import FamilyRemindersScreen from '@/screens/reminders/FamilyRemindersScreen';
 
 // Import Auth screens
-import { LoginScreen } from '../screens/LoginScreen';
-import { RegisterScreen } from '../screens/RegisterScreen';
+import { LoginScreen } from '@/screens/LoginScreen';
+import { RegisterScreen } from '@/screens/RegisterScreen';
 
 // Import Penalties module screens
-import PenaltiesMain from '../modules/penalties/screens/PenaltiesMain';
-import PenaltyDetails from '../modules/penalties/screens/PenaltyDetails';
-import PenaltyHistory from '../modules/penalties/screens/PenaltyHistory';
+import PenaltiesMain from '@/modules/penalties/screens/PenaltiesMain';
+import PenaltyDetails from '@/modules/penalties/screens/PenaltyDetails';
+import PenaltyHistory from '@/modules/penalties/screens/PenaltyHistory';
 
 // Import Calendar module screens
-import CalendarHubScreen from '../modules/calendar/screens/CalendarHubScreen';
-import ActivityDetailScreen from '../modules/calendar/screens/ActivityDetailScreen';
-import CalendarVotingScreen from '../modules/calendar/screens/VotingScreen';
-import VotingScreen from '../modules/calendar/voting/VotingScreen';
-import ExpandedCalendar from '../modules/calendar/screens/ExpandedCalendar';
+import CalendarHubScreen from '@/modules/calendar/screens/CalendarHubScreen';
+import ActivityDetailScreen from '@/modules/calendar/screens/ActivityDetailScreen';
+import CalendarVotingScreen from '@/modules/calendar/screens/VotingScreen';
+import VotingScreen from '@/modules/calendar/voting/VotingScreen';
+import ExpandedCalendar from '@/modules/calendar/screens/ExpandedCalendar';
 
 // Import Profile module screens
-import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '../modules/profile/screens';
-import EventEditorScreen from '../modules/calendar/screens/EventEditorScreen';
-import FamilyRoleManagementScreen from '../screens/FamilyRoleManagementScreen';
-import VideoTestScreen from '../screens/VideoTestScreen';
+import { HomeManagementScreen, JoinHouseScreen, EditableProfileScreen } from '@/modules/profile/screens';
+import EventEditorScreen from '@/modules/calendar/screens/EventEditorScreen';
+import FamilyRoleManagementScreen from '@/screens/FamilyRoleManagementScreen';
+import VideoTestScreen from '@/screens/VideoTestScreen';
 
 // Import Support screens
-import HelpScreen from '../screens/Support/HelpScreen';
-import ContactScreen from '../screens/Support/ContactScreen';
+import HelpScreen from '@/screens/Support/HelpScreen';
+import ContactScreen from '@/screens/Support/ContactScreen';
 
 // Import Goals screens
-import FamilyGoalsScreen from '../screens/goals/FamilyGoalsScreen';
-import AddGoalScreen from '../screens/goals/AddGoalScreen';
-import GoalDetailsScreen from '../screens/goals/GoalDetailsScreen';
-import GoalInfoScreen from '../screens/goals/GoalInfoScreen';
-import EditGoalScreen from '../screens/goals/EditGoalScreen';
-import AddReflectionScreen from '../screens/goals/AddReflectionScreen';
-import InspirationGalleryScreen from '../screens/goals/InspirationGalleryScreen';
-import AboutScreen from '../screens/Support/AboutScreen';
+import FamilyGoalsScreen from '@/screens/goals/FamilyGoalsScreen';
+import AddGoalScreen from '@/screens/goals/AddGoalScreen';
+import GoalDetailsScreen from '@/screens/goals/GoalDetailsScreen';
+import GoalInfoScreen from '@/screens/goals/GoalInfoScreen';
+import EditGoalScreen from '@/screens/goals/EditGoalScreen';
+import AddReflectionScreen from '@/screens/goals/AddReflectionScreen';
+import InspirationGalleryScreen from '@/screens/goals/InspirationGalleryScreen';
+import AboutScreen from '@/screens/Support/AboutScreen';
 
 // Import Account screens
-import AccountProfileScreen from '../screens/Settings/Account/ProfileScreen';
-import AccountFamilyScreen from '../screens/Settings/Account/FamilyScreen';
-import AccountPrivacyScreen from '../screens/Settings/Account/PrivacyScreen';
+import AccountProfileScreen from '@/screens/Settings/Account/ProfileScreen';
+import AccountFamilyScreen from '@/screens/Settings/Account/FamilyScreen';
+import AccountPrivacyScreen from '@/screens/Settings/Account/PrivacyScreen';
 
 // Import Appearance screen
-import AppearanceScreen from '../screens/Settings/AppearanceScreen';
+import AppearanceScreen from '@/screens/Settings/AppearanceScreen';
 
 // Import Safe Room screens
-import SafeRoomScreen from '../screens/SafeRoom/SafeRoomScreen';
-import TextMessageScreen from '../screens/SafeRoom/TextMessageScreen';
-import VoiceMessageScreen from '../screens/SafeRoom/VoiceMessageScreen';
-import MoodTestScreen from '../screens/SafeRoom/MoodTestScreen';
+import SafeRoomScreen from '@/screens/SafeRoom/SafeRoomScreen';
+import TextMessageScreen from '@/screens/SafeRoom/TextMessageScreen';
+import VoiceMessageScreen from '@/screens/SafeRoom/VoiceMessageScreen';
+import MoodTestScreen from '@/screens/SafeRoom/MoodTestScreen';
 
 // Import Tasks screens
-import { TasksScreen } from '../screens/Tasks/TasksScreen';
-import AddTaskScreen from '../screens/Tasks/AddTaskScreen';
-import EditTaskScreen from '../screens/Tasks/EditTaskScreen';
-import AddPhotoTaskScreen from '../screens/Tasks/AddPhotoTaskScreen';
-import VideoInstructionsScreen from '../screens/Tasks/VideoInstructionsScreen';
-import AddRewardScreen from '../screens/Tasks/AddRewardScreen';
+import { TasksScreen } from '@/screens/Tasks/TasksScreen';
+import AddTaskScreen from '@/screens/Tasks/AddTaskScreen';
+import EditTaskScreen from '@/screens/Tasks/EditTaskScreen';
+import AddPhotoTaskScreen from '@/screens/Tasks/AddPhotoTaskScreen';
+import VideoInstructionsScreen from '@/screens/Tasks/VideoInstructionsScreen';
+import AddRewardScreen from '@/screens/Tasks/AddRewardScreen';
 
 // Import Testing & Debug screens
-import FirebaseTestLive from '../screens/FirebaseTestLive';
-import SyncTestingScreen from '../screens/SyncTestingScreen';
-import DebugDashboard from '../screens/DebugDashboard';
-import TestingReports from '../screens/TestingReports';
+import FirebaseTestLive from '@/screens/FirebaseTestLive';
+import SyncTestingScreen from '@/screens/SyncTestingScreen';
+import DebugDashboard from '@/screens/DebugDashboard';
+import TestingReports from '@/screens/TestingReports';
 
 // Import Quick Actions module screens
-import { FamilyMembersScreen } from '../modules/quickActions/screens/FamilyMembersScreen';
-import { AchievementsScreen } from '../modules/quickActions/screens/AchievementsScreen';
-import { RecentActivityScreen } from '../modules/quickActions/screens/RecentActivityScreen';
-import { StatisticsScreen } from '../modules/quickActions/screens/StatisticsScreen';
+import { FamilyMembersScreen } from '@/modules/quickActions/screens/FamilyMembersScreen';
+import { AchievementsScreen } from '@/modules/quickActions/screens/AchievementsScreen';
+import { RecentActivityScreen } from '@/modules/quickActions/screens/RecentActivityScreen';
+import { StatisticsScreen } from '@/modules/quickActions/screens/StatisticsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

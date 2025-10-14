@@ -8,11 +8,11 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from '
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
-import { listenTasks, completeTask, restoreTask, deleteTask, Task, TaskStatus } from '../../services/tasks';
-import { EmptyState, TaskPreviewModal } from '../../components/ui';
-import { SharedQuickActions } from '../../components/quick/SharedQuickActions';
-import ShoppingListModal from '../../components/shopping/ShoppingListModal';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
+import { listenTasks, completeTask, restoreTask, deleteTask, Task, TaskStatus } from '@/services/tasks';
+import { EmptyState, TaskPreviewModal } from '@/components/ui';
+import { SharedQuickActions } from '@/components/quick/SharedQuickActions';
+import ShoppingListModal from '@/components/shopping/ShoppingListModal';
 
 const { width } = Dimensions.get('window');
 

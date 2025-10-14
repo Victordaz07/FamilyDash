@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { FamilySchedule } from "../types/schedule";
+import { FamilySchedule } from "@/types/schedule";
 
 const COL = "family_schedules";
 

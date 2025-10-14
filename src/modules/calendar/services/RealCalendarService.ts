@@ -4,7 +4,7 @@
  */
 
 import { RealDatabaseService, RealAuthService } from '../../../services';
-import Logger from '../../../services/Logger';
+import Logger from '@/services/Logger';
 
 export interface FirebaseActivity {
   id?: string;

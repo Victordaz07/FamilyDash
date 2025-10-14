@@ -17,4 +17,4 @@ export { useTheme, themeUtils } from './ThemeProvider';
 export { default as TaskPreviewModal } from '../TaskPreviewModal';
 
 // Navigation Components
-export { default as IconTabBar } from '../navigation/IconTabBar';
+export { default as IconTabBar } from '@/navigation/IconTabBar';

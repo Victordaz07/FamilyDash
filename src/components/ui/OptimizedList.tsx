@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { usePagination, useSearch, useSortedData } from '../hooks/usePerformance';
+import { usePagination, useSearch, useSortedData } from '@/hooks/usePerformance';
 
 interface OptimizedListProps<T> {
   data: T[];

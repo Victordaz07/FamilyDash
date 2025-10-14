@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import NotificationSettingsModal from '../components/NotificationSettingsModal';
+import NotificationSettingsModal from '@/components/NotificationSettingsModal';
 
 const { width: screenWidth } = Dimensions.get('window');
 

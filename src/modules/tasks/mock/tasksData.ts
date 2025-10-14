@@ -1,4 +1,4 @@
-import { Task, FamilyMember } from '../types/taskTypes';
+import { Task, FamilyMember } from '@/types/taskTypes';
 
 export const mockFamilyMembers: FamilyMember[] = [];
 

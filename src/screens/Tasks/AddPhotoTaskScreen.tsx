@@ -19,8 +19,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
-import { uploadPhotoAndCreateTask } from '../../services/tasks';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
+import { uploadPhotoAndCreateTask } from '@/services/tasks';
 
 export default function AddPhotoTaskScreen() {
     const navigation = useNavigation();

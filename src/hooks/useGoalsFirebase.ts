@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useGoalsStore } from '../store/goalsSlice';
-import { Goal, Milestone, Reflection } from '../types/goals';
+import { useGoalsStore } from '@/store/goalsSlice';
+import { Goal, Milestone, Reflection } from '@/types/goals';
 
 export function useGoalsFirebase(familyId: string = 'family-1') {
   const store = useGoalsStore();
@@ -41,7 +41,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
         setError(null);
 
         // Dynamic import to avoid initialization issues
-        const { subscribeFamilyGoals } = await import('../services/goalsService');
+        const { subscribeFamilyGoals } = await import('@/services/goalsService');
         
         // Subscribe to real-time updates
         unsubscribe = subscribeFamilyGoals(
@@ -83,7 +83,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { createGoal } = await import('../services/goalsService');
+      const { createGoal } = await import('@/services/goalsService');
       const goalId = await createGoal({
         ...goalData,
         familyId
@@ -104,7 +104,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { updateGoal } = await import('../services/goalsService');
+      const { updateGoal } = await import('@/services/goalsService');
       await updateGoal(goalId, updates);
     } catch (err) {
       console.error('Error updating goal:', err);
@@ -120,7 +120,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { deleteGoal } = await import('../services/goalsService');
+      const { deleteGoal } = await import('@/services/goalsService');
       await deleteGoal(goalId);
     } catch (err) {
       console.error('Error deleting goal:', err);
@@ -137,7 +137,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { createMilestone } = await import('../services/goalsService');
+      const { createMilestone } = await import('@/services/goalsService');
       const milestoneId = await createMilestone(goalId, milestoneData);
       
       // Update goal's milestone count
@@ -163,7 +163,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { updateMilestone } = await import('../services/goalsService');
+      const { updateMilestone } = await import('@/services/goalsService');
       await updateMilestone(goalId, milestoneId, updates);
       
       // Update goal's milestone progress if needed
@@ -190,7 +190,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { deleteMilestone } = await import('../services/goalsService');
+      const { deleteMilestone } = await import('@/services/goalsService');
       await deleteMilestone(goalId, milestoneId);
       
       // Update goal's milestone count
@@ -215,7 +215,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { createReflection } = await import('../services/goalsService');
+      const { createReflection } = await import('@/services/goalsService');
       const reflectionId = await createReflection(reflectionData);
       
       // Update goal's reflection count if it's associated with a goal
@@ -243,7 +243,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { updateReflection } = await import('../services/goalsService');
+      const { updateReflection } = await import('@/services/goalsService');
       await updateReflection(reflectionId, updates);
     } catch (err) {
       console.error('Error updating reflection:', err);
@@ -259,7 +259,7 @@ export function useGoalsFirebase(familyId: string = 'family-1') {
       }
 
       setError(null);
-      const { deleteReflection } = await import('../services/goalsService');
+      const { deleteReflection } = await import('@/services/goalsService');
       await deleteReflection(reflectionId);
       
       // Update goal's reflection count if it's associated with a goal

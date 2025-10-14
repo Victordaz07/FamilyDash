@@ -16,11 +16,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { RealAuthService, RealDatabaseService } from '../services';
-import { errorDetectionService } from '../services/debug/ErrorDetectionService';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useCalendarStore } from '../modules/calendar/store/calendarStore';
-import { useProfileStore } from '../modules/profile/store/profileStore';
+import { errorDetectionService } from '@/services/debug/ErrorDetectionService';
+import { useTasksStore } from '@/modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
+import { useCalendarStore } from '@/modules/calendar/store/calendarStore';
+import { useProfileStore } from '@/modules/profile/store/profileStore';
 
 interface TestingReportsProps {
     navigation: any;

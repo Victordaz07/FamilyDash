@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/store';
-import { useFamilyStore } from '../store/familyStore';
-import NotificationService, { Notification } from '../services/notifications/NotificationService';
+import { useFamilyStore } from '@/store/familyStore';
+import NotificationService, { Notification } from '@/services/notifications/NotificationService';
 
 export const useNotifications = () => {
   const { user } = useAuth();

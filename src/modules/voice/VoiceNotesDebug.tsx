@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VoiceNote } from '../../services/voice.service';
+import { VoiceNote } from '@/services/voice.service';
 
 interface VoiceNotesDebugProps {
   voiceNotes: VoiceNote[];

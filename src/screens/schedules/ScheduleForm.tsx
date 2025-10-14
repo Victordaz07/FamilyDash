@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { FamilySchedule, RepeatKind, Weekday } from "../../types/schedule";
+import { FamilySchedule, RepeatKind, Weekday } from "@/types/schedule";
 
 type Props = {
   visible: boolean;

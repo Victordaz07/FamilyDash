@@ -11,7 +11,7 @@ import {
     AnalyticsInsight,
     SmartReport,
     UserSession,
-} from '../services/analytics/DataAnalyticsService';
+} from '@/services/analytics/DataAnalyticsService';
 
 export interface AnalyticsConfig {
     enableAutomaticTracking?: boolean;

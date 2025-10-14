@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ActivityLog } from '../types/quickActionsTypes';
+import { ActivityLog } from '@/types/quickActionsTypes';
 import { mockActivityLogs } from '../mock/mockActivity';
 
 interface ActivityStore {

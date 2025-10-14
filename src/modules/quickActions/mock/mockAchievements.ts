@@ -1,4 +1,4 @@
-import { Achievement } from '../types/quickActionsTypes';
+import { Achievement } from '@/types/quickActionsTypes';
 
 export const mockAchievements: Achievement[] = [
     {

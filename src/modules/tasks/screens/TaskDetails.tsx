@@ -3,12 +3,12 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTasksStore } from '../store/tasksStore';
+import { useTasksStore } from '@/store/tasksStore';
 import { mockFamilyMembers } from '../mock/tasksData';
-import InstructionsList from '../components/InstructionsList';
-import AttachmentsList from '../components/AttachmentsList';
-import ProgressTracker from '../components/ProgressTracker';
-import ParentNotes from '../components/ParentNotes';
+import InstructionsList from '@/components/InstructionsList';
+import AttachmentsList from '@/components/AttachmentsList';
+import ProgressTracker from '@/components/ProgressTracker';
+import ParentNotes from '@/components/ParentNotes';
 import { theme } from '@/styles/simpleTheme';
 
 interface TaskDetailsProps {

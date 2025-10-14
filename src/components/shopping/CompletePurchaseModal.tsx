@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { ShoppingList, ShoppingItem } from "../../types/shopping";
-import { saveShoppingHistory } from "../../services/shoppingHistory";
+import { ShoppingList, ShoppingItem } from "@/types/shopping";
+import { saveShoppingHistory } from "@/services/shoppingHistory";
 
 type Props = {
   visible: boolean;

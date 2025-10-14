@@ -23,7 +23,7 @@ import AndroidWidgetManager, {
     CalendarWidget,
     WeatherWidget,
     FamilyStatsWidget,
-} from '../services/widgets/AndroidWidgetManager';
+} from '@/services/widgets/AndroidWidgetManager';
 
 interface AndroidWidgetsScreenProps {
     navigation: any;

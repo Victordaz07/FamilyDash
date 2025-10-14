@@ -11,16 +11,16 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme, AdvancedCard, AdvancedButton } from '../../../components/ui';
-import { MediaPlayer } from '../../../components/ui/MediaPlayer';
-import { AdvancedMediaService } from '../services/AdvancedMediaService';
+import { useTheme, AdvancedCard, AdvancedButton } from '@/components/ui';
+import { MediaPlayer } from '@/components/ui/MediaPlayer';
+import { AdvancedMediaService } from '@/services/AdvancedMediaService';
 import {
     SafeRoomMessage,
     RecordingConfig,
     RecordingState,
     MediaMetadata,
     MediaType
-} from '../types/AdvancedTypes';
+} from '@/types/AdvancedTypes';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -612,4 +612,4 @@ const styles = StyleSheet.create({
 });
 
 // Import theme utils
-import { themeUtils } from '../../../components/ui';
+import { themeUtils } from '@/components/ui';

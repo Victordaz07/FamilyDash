@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Switch, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Goal, GoalCategory, GoalStatus } from '../../types/goals';
+import { Goal, GoalCategory, GoalStatus } from '@/types/goals';
 import { categoryColors, categoryLabels } from '../../theme/goalsColors';
-import { useGoals } from '../../hooks/useGoals';
+import { useGoals } from '@/hooks/useGoals';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 

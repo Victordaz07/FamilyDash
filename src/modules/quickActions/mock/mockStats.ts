@@ -1,4 +1,4 @@
-import { FamilyStats } from '../types/quickActionsTypes';
+import { FamilyStats } from '@/types/quickActionsTypes';
 
 export const mockFamilyStats: FamilyStats = {
     totalTasks: 45,

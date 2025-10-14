@@ -17,8 +17,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
-import { createTask } from '../../services/tasks';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
+import { createTask } from '@/services/tasks';
 
 export default function AddTaskScreen() {
     const navigation = useNavigation();

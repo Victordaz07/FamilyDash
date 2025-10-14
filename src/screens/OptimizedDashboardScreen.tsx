@@ -6,7 +6,6 @@ import { useTranslation } from '@/locales/i18n';
 import { useFamilyDashStore } from '@/state/store';
 import { useTasksStore } from '@/modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
-// import { useFamilyStore } from '@/store/familyStore'; // MOVED TO GRAVEYARD
 import { theme } from '@/styles/simpleTheme';
 
 // Performance optimizations - using React built-in hooks
@@ -71,7 +70,6 @@ const OptimizedDashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }
     // Use specific module stores
     const tasksStore = useTasksStore();
     const penaltiesStore = usePenaltiesStore();
-    // const familyMembersFromStore = useFamilyStore(state => state.familyMembers); // MOVED TO GRAVEYARD
 
     // Timer state
     const [timerState, setTimerState] = useState({

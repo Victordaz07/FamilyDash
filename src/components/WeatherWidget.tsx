@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { weatherService, WeatherData, WeeklyWeather } from '../services/weatherService';
+import { weatherService, WeatherData, WeeklyWeather } from '@/services/weatherService';
 
 interface WeatherWidgetProps {
     visible: boolean;

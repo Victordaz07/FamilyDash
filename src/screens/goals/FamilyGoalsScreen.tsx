@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useGoals } from '../../hooks/useGoals';
-import { Goal } from '../../types/goals';
-import GoalFilterBar from '../../components/goals/GoalFilterBar';
-import EnhancedGoalCard from '../../components/goals/EnhancedGoalCard';
-import EmptyState from '../../components/common/EmptyState';
+import { useGoals } from '@/hooks/useGoals';
+import { Goal } from '@/types/goals';
+import GoalFilterBar from '@/components/goals/GoalFilterBar';
+import EnhancedGoalCard from '@/components/goals/EnhancedGoalCard';
+import EmptyState from '@/components/common/EmptyState';
 import { categoryColors, categoryLabels, statusColors } from '../../theme/goalsColors';
 
 const screenWidth = Dimensions.get('window').width;

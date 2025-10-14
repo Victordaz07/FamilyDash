@@ -5,8 +5,8 @@
 
 import React from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
-import { useRole } from '../contexts/RoleContext';
-import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { useRole } from '@/contexts/RoleContext';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 // ============================================
 // EJEMPLO 1: Verificar Permisos Básicos

@@ -5,12 +5,12 @@
 
 import { create } from 'zustand';
 import React from 'react';
-import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
+import { Task, TaskStatus, TaskPriority, TaskFilter } from '@/types/taskTypes';
 // FIREBASE REAL SERVICES ACTIVATED 🔥
 import { RealDatabaseService, RealAuthService, trackEvent } from '../../../services';
-import { scheduleTaskNotification } from '../../../services/notificationService';
+import { scheduleTaskNotification } from '@/services/notificationService';
 import { mockTasks } from '../mock/tasksData';
-import Logger from '../../../services/Logger';
+import Logger from '@/services/Logger';
 import { publish } from '../../../lib/eventBus';
 
 interface TasksState {

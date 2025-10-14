@@ -18,11 +18,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFamily } from '@/store';
 import { useAuth } from '@/store';
-import { useFormValidation, COMMON_RULES } from '../hooks/useFormValidation';
-import { useFadeIn, useSlideIn } from '../hooks/useAnimations';
-import EnhancedInput from '../components/ui/EnhancedInput';
-import AnimatedButton from '../components/ui/AnimatedButton';
-import AnimatedCard from '../components/ui/AnimatedCard';
+import { useFormValidation, COMMON_RULES } from '@/hooks/useFormValidation';
+import { useFadeIn, useSlideIn } from '@/hooks/useAnimations';
+import EnhancedInput from '@/components/ui/EnhancedInput';
+import AnimatedButton from '@/components/ui/AnimatedButton';
+import AnimatedCard from '@/components/ui/AnimatedCard';
 
 interface MainHomeScreenProps {
   navigation: any;

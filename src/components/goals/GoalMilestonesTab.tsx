@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, StyleSheet } from 'react-native';
-import { Milestone } from '../../types/goals';
+import { Milestone } from '@/types/goals';
 import { Ionicons } from '@expo/vector-icons';
 
 interface GoalMilestonesTabProps {

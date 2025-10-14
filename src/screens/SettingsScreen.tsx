@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Ba
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { Card, Button } from '../components/ui/WorkingComponents';
+import { Card, Button } from '@/components/ui/WorkingComponents';
 import { theme } from '@/styles/simpleTheme';
 import { useAuth } from '@/store';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
 import { useSettings } from '@/store';
-import { RealAuthService } from '../services/auth/RealAuthService';
-import RealDatabaseService from '../services/database/RealDatabaseService';
+import { RealAuthService } from '@/services/auth/RealAuthService';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
 import NotificationsModal from './Settings/NotificationsModal';
 
 interface SettingsScreenProps {

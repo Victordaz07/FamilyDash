@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import { useLazyImage } from '../hooks/usePerformance';
+import { useLazyImage } from '@/hooks/usePerformance';
 
 interface OptimizedImageProps {
   uri: string;

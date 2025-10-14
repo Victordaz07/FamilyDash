@@ -10,9 +10,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RealDatabaseService from '../../services/database/RealDatabaseService';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
 
 interface Mood {
     id: string;

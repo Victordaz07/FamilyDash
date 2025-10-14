@@ -1,4 +1,4 @@
-import { Penalty, FamilyMember, PenaltyTypeConfig, PenaltySelectionMethod } from '../types/penaltyTypes';
+import { Penalty, FamilyMember, PenaltyTypeConfig, PenaltySelectionMethod } from '@/types/penaltyTypes';
 
 export const mockFamilyMembers: FamilyMember[] = [
     {

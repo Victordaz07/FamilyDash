@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useProfileStore } from '../store/profileStore';
+import { useProfileStore } from '@/store/profileStore';
 import { FamilyMember } from '../types';
 
 interface JoinHouseScreenProps {

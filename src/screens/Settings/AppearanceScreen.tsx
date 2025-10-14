@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme, useThemeColors, useThemeFonts, useThemeGradient, colorThemes, fontSizeThemes } from '../../contexts/ThemeContext';
+import { useTheme, useThemeColors, useThemeFonts, useThemeGradient, colorThemes, fontSizeThemes } from '@/contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 

@@ -8,7 +8,7 @@ export { AdvancedNotificationService } from './AdvancedNotificationService';
 export { DeepLinkService } from './DeepLinkService';
 
 // Components
-export { NotificationCenter } from '../../components/notifications/NotificationCenter';
+export { NotificationCenter } from '@/components/notifications/NotificationCenter';
 
 // Types
 export type {
@@ -28,4 +28,4 @@ export type {
 export type {
   NotificationCenterProps,
   NotificationItem,
-} from '../../components/notifications/NotificationCenter';
+} from '@/components/notifications/NotificationCenter';

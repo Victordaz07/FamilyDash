@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView,
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { WeatherForecast } from '../../../components/WeatherForecast';
+import { WeatherForecast } from '@/components/WeatherForecast';
 
 interface NewEventModalProps {
   visible: boolean;

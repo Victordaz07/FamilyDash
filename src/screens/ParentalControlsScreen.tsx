@@ -24,7 +24,7 @@ import ParentalControlsManager, {
     ParentalDashboard,
     ViolationReport,
     DailyReport
-} from '../services/parental/ParentalControlsManager';
+} from '@/services/parental/ParentalControlsManager';
 
 interface ParentalControlsScreenProps {
     navigation: any;

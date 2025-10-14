@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { FamilyReminder } from "../../types/reminder";
-import { createReminder, deleteReminder, listReminders, updateReminder, completeReminder } from "../../services/reminders";
+import { FamilyReminder } from "@/types/reminder";
+import { createReminder, deleteReminder, listReminders, updateReminder, completeReminder } from "@/services/reminders";
 import { ReminderForm } from "./ReminderForm";
 
 type Props = { route: any; navigation: any };

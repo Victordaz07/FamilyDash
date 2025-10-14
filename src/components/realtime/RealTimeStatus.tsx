@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, AdvancedButton, AdvancedCard, themeUtils } from '../ui';
-import { useRealTime } from '../../hooks/useRealTime';
+import { useRealTime } from '@/hooks/useRealTime';
 
 interface RealTimeStatusProps {
     compact?: boolean;

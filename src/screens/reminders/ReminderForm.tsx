@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FamilyReminder, ReminderType, ReminderPriority } from "../../types/reminder";
+import { FamilyReminder, ReminderType, ReminderPriority } from "@/types/reminder";
 
 type Props = {
   visible: boolean;

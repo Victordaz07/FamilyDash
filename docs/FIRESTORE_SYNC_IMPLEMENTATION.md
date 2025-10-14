@@ -23,6 +23,7 @@ This document summarizes the implementation of **real-time Firestore synchroniza
 ### **Service Layer: `src/services/tasksSync.ts`**
 
 Provides three main functions:
+
 - **`startTasksSync()`**: Initializes Firebase Auth listener and starts real-time sync
 - **`pushTaskCreate(id)`**: Pushes new/updated task to Firestore
 - **`pushTaskUpdate(id)`**: Updates existing task in Firestore
@@ -64,12 +65,13 @@ Provides three main functions:
 **Collection Path**: `users/{uid}/tasks/{taskId}`
 
 **Document Structure**:
+
 ```typescript
 {
-  title: string;          // Task title
-  done: boolean;          // Completion status
-  createdAt: number;      // Timestamp (client)
-  updatedAt: FieldValue;  // Server timestamp
+  title: string; // Task title
+  done: boolean; // Completion status
+  createdAt: number; // Timestamp (client)
+  updatedAt: FieldValue; // Server timestamp
 }
 ```
 
@@ -87,6 +89,7 @@ service cloud.firestore {
 ```
 
 **Key Points:**
+
 - Users can only access their own tasks
 - Authentication required for all operations
 - UID-based isolation
@@ -111,6 +114,7 @@ service cloud.firestore {
    - ✅ Verify `pushTaskDelete` is called on remove
 
 ### **Test Results:**
+
 ```bash
 PASS tests/store.test.ts
 PASS tests/tasks.toggle.test.ts
@@ -127,6 +131,7 @@ Tests:       5 passed, 5 total
 ### **1. Environment Variables**
 
 Ensure `.env` file contains (see `.env.example`):
+
 ```env
 EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
@@ -139,6 +144,7 @@ EXPO_PUBLIC_FIREBASE_APP_ID=your-app-id
 ### **2. Firestore Rules**
 
 Deploy the security rules to Firebase Console:
+
 ```bash
 firebase deploy --only firestore:rules
 ```
@@ -150,22 +156,26 @@ Or manually update via Firebase Console → Firestore Database → Rules
 ## **🚀 How to Use**
 
 ### **1. User Login**
+
 - Sync automatically starts after user authentication
 - No manual intervention required
 
 ### **2. Create Task**
+
 ```typescript
-const taskId = useAppStore.getState().add({ title: "My task" });
+const taskId = useAppStore.getState().add({ title: 'My task' });
 // ✅ Automatically pushed to Firestore
 ```
 
 ### **3. Toggle Task**
+
 ```typescript
 useAppStore.getState().toggle(taskId);
 // ✅ Automatically synced to Firestore
 ```
 
 ### **4. Delete Task**
+
 ```typescript
 useAppStore.getState().remove(taskId);
 // ✅ Automatically removed from Firestore
@@ -187,12 +197,14 @@ useAppStore.getState().remove(taskId);
 ## **⚡ Performance Considerations**
 
 ### **Optimizations:**
+
 - **Non-blocking Push**: Uses `void` to avoid blocking UI
 - **Minimal Reads**: Pull initial only on login
 - **Efficient Updates**: Only changed documents trigger updates
 - **Persistence**: Zustand + AsyncStorage for offline capability
 
 ### **Limitations:**
+
 - No conflict resolution for simultaneous edits
 - Requires active authentication
 - Network-dependent for real-time updates
@@ -202,12 +214,14 @@ useAppStore.getState().remove(taskId);
 ## **🔮 Future Enhancements**
 
 ### **Phase 2:**
+
 - Offline queue for push operations
 - Retry logic with exponential backoff
 - Conflict resolution UI
 - Batch operations for multiple tasks
 
 ### **Phase 3:**
+
 - Task sharing between family members
 - Collaborative editing
 - Task history/audit log

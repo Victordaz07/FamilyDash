@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Task } from '../types/taskTypes';
+import { Task } from '@/types/taskTypes';
 import { theme } from '@/styles/simpleTheme';
 
 interface TaskCardProps {

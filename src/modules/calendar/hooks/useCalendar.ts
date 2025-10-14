@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { mockActivities, mockFamilyMembers, mockRecentDecisions, Activity, FamilyMember } from '../mock/activities';
-import { realCalendarService, FirebaseActivity } from '../services/RealCalendarService';
+import { realCalendarService, FirebaseActivity } from '@/services/RealCalendarService';
 
 export const useCalendar = () => {
     const [activities, setActivities] = useState<Activity[]>(mockActivities);

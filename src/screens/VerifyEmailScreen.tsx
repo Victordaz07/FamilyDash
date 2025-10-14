@@ -15,7 +15,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { RealAuthService } from '../services/auth/RealAuthService';
+import { RealAuthService } from '@/services/auth/RealAuthService';
 
 const authService = new RealAuthService();
 

@@ -3,7 +3,7 @@ import {
   serverTimestamp, updateDoc, where
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { ShoppingItem, ShoppingList, ShoppingStatus, ShoppingStore } from "../types/shopping";
+import { ShoppingItem, ShoppingList, ShoppingStatus, ShoppingStore } from "@/types/shopping";
 
 const LISTS = "shopping_lists";
 const ITEMS = "shopping_items";

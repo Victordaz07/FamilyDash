@@ -7,8 +7,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { RealAuthService, EmailNotVerifiedError } from '../services';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/services/firebase';
-import { SecureStorage, STORAGE_KEYS } from '../utils/secureStorage';
-import { secureLog, secureError, logAuthEvent } from '../utils/secureLog';
+import { SecureStorage, STORAGE_KEYS } from '@/utils/secureStorage';
+import { secureLog, secureError, logAuthEvent } from '@/utils/secureLog';
 
 interface User {
     uid: string;

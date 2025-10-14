@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeRoomAttachment } from '../types/safeRoomTypes';
-import { useThemeColors, useThemeFonts } from '../../../contexts/ThemeContext';
+import { SafeRoomAttachment } from '@/types/safeRoomTypes';
+import { useThemeColors, useThemeFonts } from '@/contexts/ThemeContext';
 
 interface SafeRoomAttachmentsListProps {
   attachments: SafeRoomAttachment[];

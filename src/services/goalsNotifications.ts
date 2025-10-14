@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { Goal } from '../types/goals';
+import { Goal } from '@/types/goals';
 
 // Configure notification handler only if not in Expo Go
 if (Platform.OS !== 'web') {

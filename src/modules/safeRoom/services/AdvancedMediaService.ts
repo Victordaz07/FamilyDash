@@ -9,7 +9,7 @@ import {
     MediaMetadata,
     SafeRoomMessage,
     MediaType
-} from '../types/AdvancedTypes';
+} from '@/types/AdvancedTypes';
 
 export class AdvancedMediaService {
     private static audioRecording: Audio.Recording | null = null;

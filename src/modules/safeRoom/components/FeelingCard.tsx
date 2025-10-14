@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Feeling } from '../mock/safeRoomData';
 import SafeRoomAttachmentsList from './SafeRoomAttachmentsList';
 import SafeRoomMediaModal from './SafeRoomMediaModal';
-import { SafeRoomAttachment, SafeRoomMessage } from '../types/safeRoomTypes';
+import { SafeRoomAttachment, SafeRoomMessage } from '@/types/safeRoomTypes';
 
 interface FeelingCardProps {
     feeling: Feeling;

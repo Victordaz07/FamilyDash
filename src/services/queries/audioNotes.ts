@@ -12,7 +12,7 @@ import {
   Timestamp 
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { AudioNoteDoc } from "../../types/entries";
+import { AudioNoteDoc } from "@/types/entries";
 
 /**
  * Get audio notes for a specific Task

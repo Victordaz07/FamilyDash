@@ -16,12 +16,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useCalendarStore } from '../modules/calendar/store/calendarStore';
-import { useProfileStore } from '../modules/profile/store/profileStore';
+import { useTasksStore } from '@/modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
+import { useCalendarStore } from '@/modules/calendar/store/calendarStore';
+import { useProfileStore } from '@/modules/profile/store/profileStore';
 import { RealAuthService, RealDatabaseService } from '../services';
-import { syncMonitorService, SyncEvent } from '../services/sync/SyncMonitorService';
+import { syncMonitorService, SyncEvent } from '@/services/sync/SyncMonitorService';
 
 interface SyncTestScreenProps {
   navigation: any;

@@ -6,4 +6,4 @@ export { default as SafeRoomAttachmentsList } from './SafeRoomAttachmentsList';
 export { default as SafeRoomMediaModal } from './SafeRoomMediaModal';
 
 // Re-export types
-export * from '../types/safeRoomTypes';
+export * from '@/types/safeRoomTypes';

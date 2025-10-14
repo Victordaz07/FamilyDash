@@ -7,4 +7,4 @@
 export { SecurityDashboard } from './SecurityDashboard';
 
 // Hook
-export { useSecurity } from '../../hooks/useSecurity';
+export { useSecurity } from '@/hooks/useSecurity';

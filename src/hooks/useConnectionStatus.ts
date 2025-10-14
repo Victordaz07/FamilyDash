@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import RealDatabaseService from '../services/database/RealDatabaseService';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
 
 interface ConnectionStatus {
   isConnected: boolean;

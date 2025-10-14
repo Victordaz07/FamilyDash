@@ -22,7 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/store';
 import { theme } from '@/styles/simpleTheme';
 import * as ImagePicker from 'expo-image-picker';
-import { useSafeNavigation } from '../hooks/useSafeNavigation';
+import { useSafeNavigation } from '@/hooks/useSafeNavigation';
 
 interface RegisterScreenProps {
     navigation: any;

@@ -1,4 +1,4 @@
-import { FamilyMember } from '../types/quickActionsTypes';
+import { FamilyMember } from '@/types/quickActionsTypes';
 
 export const mockFamilyMembers: FamilyMember[] = [
     {

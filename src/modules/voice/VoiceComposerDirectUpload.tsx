@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { Audio } from "expo-av";
 import { Ionicons } from "@expo/vector-icons";
 import { mmss } from "./useAudioPlayer";
-import { saveVoiceNote } from "../../services/voice.service";
+import { saveVoiceNote } from "@/services/voice.service";
 
 interface VoiceComposerProps {
   familyId: string;

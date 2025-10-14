@@ -26,7 +26,7 @@ import SmartHomeManager, {
     AutomationRule,
     VoiceCommand,
     SmartHomeStatus
-} from '../services/smartHome/SmartHomeManager';
+} from '@/services/smartHome/SmartHomeManager';
 
 interface SmartHomeScreenProps {
     navigation: any;

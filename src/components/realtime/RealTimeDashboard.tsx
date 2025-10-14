@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, AdvancedCard, themeUtils } from '../ui';
 import { RealTimeStatus } from './RealTimeStatus';
-import { useRealTimeData, useRealTimeFamilyStatus } from '../../hooks/useRealTime';
+import { useRealTimeData, useRealTimeFamilyStatus } from '@/hooks/useRealTime';
 
 interface ActivityUpdate {
     id: string;

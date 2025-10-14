@@ -4,8 +4,8 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import FamilyService, { FamilyMember, FamilyVision, FamilyReflection } from '../services/FamilyService';
-import VotesService, { Vote } from '../services/VotesService';
+import FamilyService, { FamilyMember, FamilyVision, FamilyReflection } from '@/services/FamilyService';
+import VotesService, { Vote } from '@/services/VotesService';
 import { useAuth } from './AuthContext';
 
 export interface FamilyContextType {

@@ -1,6 +1,6 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { NotificationSettings } from "../../types/notifications";
+import { NotificationSettings } from "@/types/notifications";
 
 const COL = "notification_settings";
 const key = (familyId: string, userId: string) => `${familyId}_${userId}`;

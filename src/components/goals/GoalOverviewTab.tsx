@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Goal } from '../../types/goals';
+import { Goal } from '@/types/goals';
 import { categoryColors, categoryLabels, statusColors, statusLabels } from '../../theme/goalsColors';
 import GoalProgressBar from './GoalProgressBar';
 import { Ionicons } from '@expo/vector-icons';

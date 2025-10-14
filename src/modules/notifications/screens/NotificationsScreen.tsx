@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNotifications } from '../../../hooks/useNotifications';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useNavigation } from '@react-navigation/native';
 
 interface NotificationsScreenProps {

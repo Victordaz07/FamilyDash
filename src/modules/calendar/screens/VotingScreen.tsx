@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useCalendar } from '../hooks/useCalendar';
-import VoteOption from '../components/VoteOption';
+import { useCalendar } from '@/hooks/useCalendar';
+import VoteOption from '@/components/VoteOption';
 
 interface VotingScreenProps {
     navigation: any;

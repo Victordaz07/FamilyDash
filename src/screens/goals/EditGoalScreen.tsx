@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Goal, GoalCategory, GoalStatus } from '../../types/goals';
+import { Goal, GoalCategory, GoalStatus } from '@/types/goals';
 import { categoryColors, categoryLabels, statusColors, statusLabels } from '../../theme/goalsColors';
-import { useGoals } from '../../hooks/useGoals';
+import { useGoals } from '@/hooks/useGoals';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface EditGoalScreenProps {

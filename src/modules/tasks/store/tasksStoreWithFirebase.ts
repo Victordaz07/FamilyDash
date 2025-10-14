@@ -5,13 +5,13 @@
 
 import { create } from 'zustand';
 import React from 'react';
-import { Task, TaskStatus, TaskPriority, TaskFilter } from '../types/taskTypes';
+import { Task, TaskStatus, TaskPriority, TaskFilter } from '@/types/taskTypes';
 import {
   RealDatabaseService,
   RealAuthService,
   trackEvent
 } from '../../../services';
-import { scheduleTaskNotification } from '../../../services/notificationService';
+import { scheduleTaskNotification } from '@/services/notificationService';
 
 interface TasksState {
   tasks: Task[];

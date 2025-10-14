@@ -12,10 +12,10 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
+import { useThemeColors, useThemeFonts, useThemeGradient } from '@/contexts/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RealDatabaseService from '../../services/database/RealDatabaseService';
-import { SharedQuickActions } from '../../components/quick/SharedQuickActions';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
+import { SharedQuickActions } from '@/components/quick/SharedQuickActions';
 
 const { width } = Dimensions.get('window');
 
