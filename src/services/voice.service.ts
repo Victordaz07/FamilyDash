@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
-import { db, storage } from "../config/firebase";
+import { db, storage } from "@/config/firebase";
 
 export type VoiceNote = {
   id?: string;

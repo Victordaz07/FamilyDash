@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FamilyMember } from '../types/quickActionsTypes';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface MemberCardProps {
     member: FamilyMember;

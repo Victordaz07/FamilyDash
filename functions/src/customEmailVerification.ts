@@ -24,22 +24,34 @@ async function sendVerificationEmail(user: UserRecord) {
       handleCodeInApp: false,
     });
 
-    // 2) Renderizar HTML premium
-    const html = renderEmail({
-      verifyLink: link,
-      displayName: user.displayName || "¡Hola!",
-      heroUrl: "https://family-dash-15944.web.app/email-assets/hero-verify.svg",
+    // 2) Intentar enviar con Resend primero
+    try {
+      const html = renderEmail({
+        verifyLink: link,
+        displayName: user.displayName || "¡Hola!",
+        heroUrl: "https://family-dash-15944.web.app/email-assets/hero-verify.svg",
+      });
+
+      await resend.emails.send({
+        from: "FamilyDash <noreply@family-dash-15944.firebaseapp.com>",
+        to: user.email,
+        subject: "✅ Verifica tu correo y empieza con FamilyDash",
+        html,
+      });
+
+      console.log(`Email premium enviado exitosamente a: ${user.email}`);
+      return;
+    } catch (resendError) {
+      console.warn("Resend falló, usando Firebase nativo:", resendError);
+    }
+
+    // 3) Fallback: Usar Firebase nativo
+    await admin.auth().generateEmailVerificationLink(user.email, {
+      url: "https://family-dash-15944.web.app/verified",
+      handleCodeInApp: false,
     });
 
-    // 3) Enviar correo con Resend
-    await resend.emails.send({
-      from: "FamilyDash <noreply@family-dash-15944.firebaseapp.com>",
-      to: user.email,
-      subject: "✅ Verifica tu correo y empieza con FamilyDash",
-      html,
-    });
-
-    console.log(`Email de verificación enviado exitosamente a: ${user.email}`);
+    console.log(`Email nativo de Firebase enviado a: ${user.email}`);
   } catch (error) {
     console.error("Error enviando email de verificación:", error);
     // No lanzar error para no bloquear el registro del usuario

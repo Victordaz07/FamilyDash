@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface QuickActionsProps {
   onAddTask: () => void;

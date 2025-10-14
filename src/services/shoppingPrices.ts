@@ -1,7 +1,7 @@
 import {
   addDoc, collection, getDocs, orderBy, query, serverTimestamp, where
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "@/config/firebase";
 import { PriceObservation, UnitKey } from "../types/shopping";
 
 const COLLECTION = "product_prices";

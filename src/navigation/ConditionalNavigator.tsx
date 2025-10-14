@@ -13,18 +13,16 @@ import SimpleAppNavigator from './SimpleAppNavigator';
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import VerifyEmailScreen from '../screens/VerifyEmailScreen';
-import { useAuth } from '../contexts/AuthContext';
-import { useEmailVerificationGate } from '../hooks/useEmailVerificationGate';
-import { theme } from '../styles/simpleTheme';
+import { useAuth } from '@/store';
+import { theme } from '@/styles/simpleTheme';
 
 const AuthStack = createStackNavigator();
 
 const ConditionalNavigator: React.FC = () => {
-    const { user, loading } = useAuth();
-    const { loading: verificationLoading, verified } = useEmailVerificationGate();
-
+    const { user, isLoading } = useAuth();
+    
     // Show loading screen while checking auth state
-    if (loading || verificationLoading) {
+    if (isLoading) {
         return (
             <LinearGradient
                 colors={['#FF8A00', '#FF6B35']}
@@ -47,7 +45,7 @@ const ConditionalNavigator: React.FC = () => {
                         style={styles.spinner}
                     />
                     <Text style={styles.loadingSubtext}>
-                        {loading ? 'Cargando...' : 'Verificando correo...'}
+                        Cargando...
                     </Text>
                 </View>
             </LinearGradient>
@@ -58,7 +56,6 @@ const ConditionalNavigator: React.FC = () => {
     if (!user) {
         return (
             <AuthStack.Navigator
-                id={undefined}
                 screenOptions={{ headerShown: false }}
             >
                 <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
@@ -68,12 +65,7 @@ const ConditionalNavigator: React.FC = () => {
         );
     }
 
-    // Show email verification screen when authenticated but not verified
-    if (!verified) {
-        return <VerifyEmailScreen />;
-    }
-
-    // Show main app when authenticated and verified
+    // Show main app when authenticated
     return <SimpleAppNavigator />;
 };
 

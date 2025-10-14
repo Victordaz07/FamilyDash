@@ -9,7 +9,7 @@ import InstructionsList from '../components/InstructionsList';
 import AttachmentsList from '../components/AttachmentsList';
 import ProgressTracker from '../components/ProgressTracker';
 import ParentNotes from '../components/ParentNotes';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface TaskDetailsProps {
   navigation: any;

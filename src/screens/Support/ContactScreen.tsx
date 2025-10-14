@@ -66,7 +66,7 @@ export default function ContactScreen() {
             const subject = `[${categories.find(c => c.key === formData.category)?.label}] ${formData.subject || 'FamilyDash Contact'}`;
             const body = `Name: ${formData.name}\nEmail: ${formData.email}\nCategory: ${categories.find(c => c.key === formData.category)?.label}\n\nMessage:\n${formData.message}`;
 
-            const mailto = `mailto:support@familydash.app?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const mailto = `mailto:support@family-dash-15944.web.app?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
             await Linking.openURL(mailto);
 
@@ -81,7 +81,7 @@ export default function ContactScreen() {
 
             Alert.alert('Success', 'Your message has been prepared. Please send the email to complete your request.');
         } catch (error) {
-            Alert.alert('Error', 'Could not open email client. Please email us directly at support@familydash.app');
+            Alert.alert('Error', 'Could not open email client. Please email us directly at support@family-dash-15944.web.app');
         } finally {
             setIsSubmitting(false);
         }
@@ -271,26 +271,26 @@ export default function ContactScreen() {
 
                         <TouchableOpacity
                             style={styles.alternativeButton}
-                            onPress={() => Linking.openURL('mailto:support@familydash.app')}
+                            onPress={() => Linking.openURL('mailto:support@family-dash-15944.web.app')}
                         >
                             <View style={styles.alternativeButtonContent}>
                                 <Ionicons name="mail" size={24} color="#667eea" />
                                 <View style={styles.alternativeButtonText}>
                                     <Text style={styles.alternativeButtonTitle}>Email Support</Text>
-                                    <Text style={styles.alternativeButtonSubtitle}>support@familydash.app</Text>
+                                    <Text style={styles.alternativeButtonSubtitle}>support@family-dash-15944.web.app</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.alternativeButton}
-                            onPress={() => Linking.openURL('https://docs.familydash.app')}
+                            onPress={() => Linking.openURL('https://family-dash-15944.web.app/docs')}
                         >
                             <View style={styles.alternativeButtonContent}>
                                 <Ionicons name="document-text" size={24} color="#667eea" />
                                 <View style={styles.alternativeButtonText}>
                                     <Text style={styles.alternativeButtonTitle}>Documentation</Text>
-                                    <Text style={styles.alternativeButtonSubtitle}>docs.familydash.app</Text>
+                                    <Text style={styles.alternativeButtonSubtitle}>family-dash-15944.web.app/docs</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>

@@ -35,6 +35,7 @@ firebase deploy --only hosting
 ```
 
 **URLs Live:**
+
 - 🏠 Landing: https://family-dash-15944.web.app/
 - ✅ Verification: https://family-dash-15944.web.app/verified
 - 🎨 Features: https://family-dash-15944.web.app/features
@@ -171,8 +172,8 @@ SEO:            100/100  ✅
 
 ## 📞 Soporte
 
-- **Email General:** support@familydash.app
-- **Email Privacidad:** privacy@familydash.app
+- **Email General:** support@family-dash-15944.web.app
+- **Email Privacidad:** privacy@family-dash-15944.web.app
 
 ---
 

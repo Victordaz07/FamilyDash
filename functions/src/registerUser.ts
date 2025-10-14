@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import fetch from 'node-fetch';
 
-const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY!;
-const ADMIN_MIN_AGE = parseInt(process.env.ADMIN_MIN_AGE || '18', 10);
+const TURNSTILE_SECRET = functions.config().turnstile?.secret_key || 'test-key-for-development';
+const ADMIN_MIN_AGE = parseInt(functions.config().admin?.min_age || '18', 10);
 
 export const registerUser = functions.https.onCall(async (data, _context) => {
   const { fullName, email, password, dob, wantsAdmin, captchaToken } = data || {};
@@ -18,6 +17,7 @@ export const registerUser = functions.https.onCall(async (data, _context) => {
     console.log('Using simulated CAPTCHA for testing');
   } else {
     // Real Turnstile verification
+    const { default: fetch } = await import('node-fetch');
     const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -90,17 +90,15 @@ export const registerUser = functions.https.onCall(async (data, _context) => {
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   }, { merge: true });
 
-  // 6) Set custom claims
-  await admin.auth().setCustomUserClaims(userRecord.uid, { familyId, role });
-
-  // 7) Generate custom token
-  const customToken = await admin.auth().createCustomToken(userRecord.uid);
+  // 6) Simplified version - no custom claims or tokens for now
+  // TODO: Add custom claims and tokens when permissions are configured
   
   return { 
     uid: userRecord.uid, 
     familyId, 
     role, 
     isAdult,
-    customToken 
+    message: 'User registered successfully',
+    email: userRecord.email
   };
 });

@@ -10,7 +10,7 @@ import TaskTabs from '../components/TaskTabs';
 import TaskCard from '../components/TaskCard';
 import { SharedQuickActions } from '../../../components/quick/SharedQuickActions';
 import { TaskStatus } from '../types/taskTypes';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface TaskManagementProps {
   navigation: any;

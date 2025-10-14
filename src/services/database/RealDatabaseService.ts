@@ -26,7 +26,7 @@ import {
   QueryConstraint,
   Timestamp,
 } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '@/config/firebase';
 import RealAuthService from '../auth/RealAuthService';
 import Logger from '../Logger';
 import { sanitizeObject } from '../../utils/sanitize';

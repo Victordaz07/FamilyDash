@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarEvent, FamilyMember, ActivityCategory } from '../types/calendarTypes';
 import { categoryConfig } from '../mock/expandedCalendarData';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface EventEditorScreenProps {
     navigation: any;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/store';
 import { useFamilyStore } from '../store/familyStore';
 import NotificationService, { Notification } from '../services/notifications/NotificationService';
 

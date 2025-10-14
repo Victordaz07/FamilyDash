@@ -6,7 +6,7 @@
  */
 
 import { getFunctions, httpsCallable, HttpsCallableResult } from 'firebase/functions';
-import { app } from '../config/firebase';
+import { app } from '@/config/firebase';
 import { secureLog, secureError } from '../utils/secureLog';
 
 // Initialize Firebase Functions

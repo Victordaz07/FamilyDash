@@ -7,11 +7,13 @@ import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useFamilyStore } from '../store/familyStore';
 import { useProfileStore } from '../modules/profile/store/profileStore';
-import { theme } from '../styles/simpleTheme';
-import { useSettings } from '../contexts/SettingsContext';
+import { theme } from '@/styles/simpleTheme';
+import { useSettings } from '@/store';
 import { useNotifications } from '../hooks/useNotifications';
 import { DeveloperModeToggle } from '../components/DeveloperModeToggle';
 import { DeveloperPanel } from '../components/DeveloperPanel';
+import { AchievementsWidget } from '../components/home/AchievementsWidget';
+import { dailyNoPenaltyTick } from '../modules/quickActions/store/achievementsStore';
 import RealDatabaseService from '../services/database/RealDatabaseService';
 import Logger from '../services/Logger';
 
@@ -40,6 +42,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         { id: 'emergency', title: 'Emergency', icon: 'shield', color: '#EF4444' },
         { id: 'family-chat', title: 'Family Chat', icon: 'chatbubbles', color: '#8B5CF6' }
     ]);
+
+    // Daily no penalty tick for achievements
+    useEffect(() => {
+        const familyId = currentUser?.familyId || currentUser?.uid;
+        if (familyId && currentUser?.uid) {
+            void dailyNoPenaltyTick(familyId, currentUser.uid);
+        }
+    }, [currentUser?.familyId, currentUser?.uid]);
 
 
 
@@ -234,6 +244,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
+                {/* Achievements Widget */}
+                <AchievementsWidget familyId={currentUser?.familyId || currentUser?.uid} />
+
                 {/* Family Members */}
                 <View style={styles.firstSection}>
                     <View style={styles.familyMembersCard}>

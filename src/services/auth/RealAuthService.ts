@@ -19,16 +19,15 @@ import {
   User,
   UserCredential
 } from 'firebase/auth';
-import { auth, googleProvider, db } from '../../config/firebase';
+import { auth, googleProvider, db } from '@/config/firebase';
 import { doc, setDoc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logger from '../Logger';
 
 // Personaliza el destino del enlace
 const actionCodeSettings = {
-  url: 'https://familydash-15944.web.app/verified', // TODO: cámbialo por tu dominio
+  url: 'https://family-dash-15944.web.app/verified', // URL corregida
   handleCodeInApp: false,
-  // dynamicLinkDomain: 'familydash.page.link',
 };
 
 export class EmailNotVerifiedError extends Error {
@@ -95,6 +94,23 @@ export interface RegisterCredentials {
 export interface ProfileUpdate {
   displayName?: string;
   photoURL?: string;
+}
+
+/**
+ * Check if email already exists in Firebase Auth
+ * Note: fetchSignInMethodsForEmail is not available in React Native
+ * This function is disabled for now to prevent errors
+ */
+export async function checkEmailExists(email: string): Promise<boolean> {
+  try {
+    // fetchSignInMethodsForEmail is not available in React Native Firebase Auth
+    // We'll skip this check and let the registration process handle duplicates
+    Logger.debug('📧 Email existence check skipped (not available in React Native)');
+    return false; // Always return false to avoid blocking registration
+  } catch (error) {
+    Logger.warn('⚠️ Error checking email existence:', error);
+    return false;
+  }
 }
 
 class RealAuthService {
@@ -215,18 +231,9 @@ class RealAuthService {
         credentials.password
       );
 
-      // Bloquear si es contraseña y no verificado
-      const isEmailProvider = userCredential.user.providerData.some(p => (p?.providerId ?? '') === 'password');
-      if (isEmailProvider && !userCredential.user.emailVerified) {
-        try { 
-          await sendEmailVerification(userCredential.user, actionCodeSettings);
-          Logger.debug('📧 Verification email resent to:', credentials.email);
-        } catch (e) {
-          Logger.warn('⚠️ Resend verification failed:', e);
-        }
-        await syncUserEmailVerified(userCredential.user);
-        throw new EmailNotVerifiedError();
-      }
+      // Simplified: Allow login without email verification
+      // Email verification can be handled later if needed
+      Logger.debug('🔐 Login successful for:', credentials.email);
 
       await syncUserEmailVerified(userCredential.user);
 
@@ -265,6 +272,10 @@ class RealAuthService {
     try {
       Logger.debug('📝 Registering new user:', credentials.email);
 
+      // Note: Email existence check is disabled in React Native
+      // Firebase will handle duplicate emails with proper error messages
+      Logger.debug('📧 Proceeding with registration, Firebase will handle duplicate emails');
+
       const userCredential: UserCredential = await createUserWithEmailAndPassword(
         auth,
         credentials.email,
@@ -278,13 +289,10 @@ class RealAuthService {
         });
       }
 
-      // 1) Enviar correo de verificación inmediatamente
-      try {
-        await sendEmailVerification(userCredential.user, actionCodeSettings);
-        Logger.debug('📧 Verification email sent to:', credentials.email);
-      } catch (e) {
-        Logger.warn('⚠️ sendEmailVerification failed:', e);
-      }
+      // 1) NO enviar correo de verificación aquí
+      // El correo premium se envía automáticamente via Cloud Function sendCustomVerification
+      // Esto evita el envío del correo básico de Firebase
+      Logger.debug('📧 Premium verification email will be sent via Cloud Function to:', credentials.email);
 
       // 2) Crear/actualizar doc de usuario en Firestore
       await syncUserEmailVerified(userCredential.user);
@@ -602,15 +610,29 @@ class RealAuthService {
   }
 
   /**
-   * Reenviar correo de verificación
+   * Reenviar correo de verificación (usando sistema premium con fallback)
    */
   async resendVerificationEmail(): Promise<boolean> {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('NO_AUTH');
       
+      // Intentar usar la Cloud Function premium primero
+      try {
+        const { getFunctions, httpsCallable } = await import('firebase/functions');
+        const functions = getFunctions();
+        const resendVerification = httpsCallable(functions, 'resendVerificationEmail');
+        
+        await resendVerification();
+        Logger.debug('📧 Premium verification email resent via Cloud Function');
+        return true;
+      } catch (cloudFunctionError) {
+        Logger.warn('⚠️ Cloud Function failed, using Firebase native:', cloudFunctionError);
+      }
+
+      // Fallback: Usar Firebase nativo
       await sendEmailVerification(user, actionCodeSettings);
-      Logger.debug('📧 Verification email resent');
+      Logger.debug('📧 Verification email resent via Firebase native');
       return true;
     } catch (error) {
       Logger.error('❌ Error resending verification email:', error);

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db } from '@/config/firebase';
 
 // Feature flags types
 export type FeatureFlags = {

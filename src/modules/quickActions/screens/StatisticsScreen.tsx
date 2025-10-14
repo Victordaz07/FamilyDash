@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStatsStore } from '../store/statsStore';
 import { StatsCard } from '../components/StatsCard';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 import { useTranslation } from '../../../locales/i18n';
 
 interface StatisticsScreenProps {

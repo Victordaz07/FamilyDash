@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Card, Button } from '../ui/WorkingComponents';
-import { theme } from '../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 // Temporarily commented out - service not available
 // import {
 //     UserBehaviorMetrics,

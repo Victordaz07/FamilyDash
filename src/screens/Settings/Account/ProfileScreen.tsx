@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '@/store';
 import { VerifyEmailBlock } from '../../../components/verify/VerifyEmailBlock';
 
 export default function ProfileScreen() {

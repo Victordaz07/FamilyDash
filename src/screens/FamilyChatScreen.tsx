@@ -4,8 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { useAuth } from '../contexts/AuthContext';
+import { db } from '@/config/firebase';
+import { useAuth } from '@/store';
 
 interface ChatMessage {
     id: string;

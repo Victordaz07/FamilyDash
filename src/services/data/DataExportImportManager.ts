@@ -153,7 +153,7 @@ export class DataExportImportManager {
             family: [],
             metadata: {
                 exportDate: new Date().toISOString(),
-                version: '1.3.0',
+                version: '1.4.0',
                 totalRecords: 0,
                 familyName: 'FamilyDash Family',
             },
@@ -476,7 +476,7 @@ export class DataExportImportManager {
             family: [],
             metadata: {
                 exportDate: new Date().toISOString(),
-                version: '1.3.0',
+                version: '1.4.0',
                 totalRecords: 0,
                 familyName: 'Imported Family',
             },

@@ -13,7 +13,7 @@ import {
   getMetadata,
   updateMetadata,
 } from 'firebase/storage';
-import { storage } from '../../config/firebase';
+import { storage } from '@/config/firebase';
 import { RealAuthService } from '../auth/RealAuthService';
 import Logger from '../Logger';
 

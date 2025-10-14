@@ -7,7 +7,7 @@ import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
 import { useFamilyStore } from '../store/familyStore';
-import { theme } from '../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 // Performance optimizations - using React built-in hooks
 

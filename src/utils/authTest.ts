@@ -4,7 +4,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '../config/firebase';
+import { auth } from '@/config/firebase';
 
 export const testAuthPersistence = async () => {
     console.log('🧪 Testing Auth Persistence...');

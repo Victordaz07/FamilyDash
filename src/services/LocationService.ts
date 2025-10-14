@@ -3,7 +3,7 @@
  * Servicio para manejar ubicaciones guardadas de la familia
  */
 
-import { firestore } from '../config/firebase';
+import { firestore } from '@/config/firebase';
 import Logger from './Logger';
 
 export interface SavedLocation {

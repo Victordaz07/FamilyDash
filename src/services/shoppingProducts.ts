@@ -1,5 +1,5 @@
 import { addDoc, collection, getDocs, query, where, serverTimestamp, updateDoc, doc } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "@/config/firebase";
 import { ShoppingProduct } from "../types/shopping";
 
 const COL = "shopping_products";

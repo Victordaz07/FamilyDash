@@ -1,6 +1,5 @@
 /**
- * Login Screen
- * Modern login interface with FamilyDash branding
+ * SIMPLIFIED Login Screen - Minimal version to avoid infinite loops
  */
 
 import React, { useState } from 'react';
@@ -18,8 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useAuth } from '../contexts/AuthContext';
-import { theme } from '../styles/simpleTheme';
+import { useAuth } from '@/store';
 
 interface LoginScreenProps {
     navigation: any;
@@ -34,6 +32,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
+        console.log('Login button pressed');
+        
         if (!email.trim() || !password.trim()) {
             Alert.alert('Error', 'Please fill in all fields');
             return;
@@ -41,9 +41,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
 
         setLoading(true);
         try {
+            console.log('Attempting login for:', email);
             const result = await login(email.trim(), password);
 
             if (result.success) {
+                console.log('Login successful');
                 Alert.alert('Success', 'Welcome back!', [
                     {
                         text: 'OK',
@@ -51,17 +53,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                             if (onSuccess) {
                                 onSuccess();
                             }
-                            // Navigation is handled automatically by AuthContext
                         }
                     }
                 ]);
-            } else if (result.code === 'EMAIL_NOT_VERIFIED') {
-                // Redirigir a pantalla de verificación
+            } else if (result.message?.includes('EMAIL_NOT_VERIFIED')) {
+                console.log('Email not verified, navigating to verification');
                 navigation.navigate('VerifyEmail');
             } else {
-                Alert.alert('Login Failed', result.error || 'Please try again');
+                console.log('Login failed:', result.message);
+                Alert.alert('Login Failed', result.message || 'Please try again');
             }
         } catch (error) {
+            console.error('Login error:', error);
             Alert.alert('Error', 'An unexpected error occurred');
         } finally {
             setLoading(false);
@@ -76,11 +79,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
 
         try {
             const result = await sendPasswordReset(email.trim());
-
             if (result.success) {
                 Alert.alert('Password Reset Sent', 'Check your email for reset instructions');
             } else {
-                Alert.alert('Error', result.error || 'Failed to send reset email');
+                Alert.alert('Error', result.message || 'Failed to send reset email');
             }
         } catch (error) {
             Alert.alert('Error', 'Failed to send password reset');
@@ -105,7 +107,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                 <ScrollView contentContainerStyle={styles.scrollContent}>
                     {/* Header Section */}
                     <View style={styles.header}>
-                        {/* FamilyDash Official Icon */}
                         <View style={styles.iconContainer}>
                             <Image
                                 source={require('../../assets/brand/logo-256.png')}
@@ -128,14 +129,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your email"
-                                        placeholderTextColor={theme.colors.textSecondary}
+                                        placeholderTextColor="#999"
                                         value={email}
                                         onChangeText={setEmail}
                                         keyboardType="email-address"
                                         autoCapitalize="none"
                                         autoCorrect={false}
                                     />
-                                    <Ionicons name="mail-outline" size={20} color={theme.colors.textSecondary} style={styles.inputIcon} />
+                                    <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
                                 </View>
                             </View>
 
@@ -146,7 +147,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                                     <TextInput
                                         style={[styles.input, styles.passwordInput]}
                                         placeholder="Enter your password"
-                                        placeholderTextColor={theme.colors.textSecondary}
+                                        placeholderTextColor="#999"
                                         value={password}
                                         onChangeText={setPassword}
                                         secureTextEntry={!showPassword}
@@ -156,7 +157,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, onSuccess 
                                         <Ionicons
                                             name={showPassword ? "eye-off-outline" : "eye-outline"}
                                             size={20}
-                                            color={theme.colors.textSecondary}
+                                            color="#999"
                                         />
                                     </TouchableOpacity>
                                 </View>
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     inputLabel: {
         fontSize: 14,
         fontWeight: '600',
-        color: theme.colors.textPrimary,
+        color: '#333',
         marginBottom: 8,
     },
     inputWrapper: {
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 18,
         fontSize: 16,
-        color: theme.colors.textPrimary,
+        color: '#333',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -302,7 +303,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 20,
         top: 16,
-        color: theme.colors.textSecondary,
     },
     passwordToggle: {
         position: 'absolute',
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     },
     forgotPasswordText: {
         fontSize: 14,
-        color: theme.colors.primary,
+        color: '#8B5CF6',
         fontWeight: '600',
     },
     loginButton: {
@@ -349,11 +349,11 @@ const styles = StyleSheet.create({
     },
     registerText: {
         fontSize: 16,
-        color: theme.colors.textSecondary,
+        color: '#666',
     },
     registerLink: {
         fontSize: 16,
-        color: theme.colors.primary,
+        color: '#8B5CF6',
         fontWeight: '600',
     },
 });

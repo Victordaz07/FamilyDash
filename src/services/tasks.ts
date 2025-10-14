@@ -3,7 +3,7 @@
  * Complete task management with real-time updates, photo uploads, and offline support
  */
 
-import { db, storage } from '../config/firebase';
+import { db, storage } from '@/config/firebase';
 import {
     addDoc, collection, doc, onSnapshot, orderBy, query,
     serverTimestamp, updateDoc, where, Timestamp

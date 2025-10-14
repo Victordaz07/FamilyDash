@@ -17,7 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRole } from '../contexts/RoleContext';
-import { useFamily } from '../contexts/FamilyContext';
+import { useFamily } from '@/store';
 import {
   Role,
   roleConfigs,
@@ -27,7 +27,7 @@ import {
 } from '../types/roles';
 import RealDatabaseService from '../services/database/RealDatabaseService';
 import Logger from '../services/Logger';
-import { theme } from '../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface FamilyRoleManagementScreenProps {
   navigation: any;
@@ -391,11 +391,29 @@ export default function FamilyRoleManagementScreen({
 
           {familyMembers.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="people-outline" size={64} color="#D1D5DB" />
-              <Text style={styles.emptyTitle}>No hay miembros</Text>
+              <View style={styles.emptyIconContainer}>
+                <Ionicons name="people-outline" size={64} color="#D1D5DB" />
+              </View>
+              <Text style={styles.emptyTitle}>No hay miembros registrados</Text>
               <Text style={styles.emptySubtitle}>
-                Invita miembros a tu familia para comenzar
+                Invita miembros a tu familia para comenzar a gestionar roles y permisos
               </Text>
+              {can('manage_family') && (
+                <TouchableOpacity
+                  style={styles.emptyActionButton}
+                  onPress={() => {
+                    Alert.alert('Próximamente', 'Función de invitar miembros próximamente');
+                  }}
+                >
+                  <LinearGradient
+                    colors={['#8B5CF6', '#7C3AED']}
+                    style={styles.emptyActionButtonGradient}
+                  >
+                    <Ionicons name="person-add" size={20} color="white" />
+                    <Text style={styles.emptyActionButtonText}>Invitar Primer Miembro</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             familyMembers.map((member) => renderMemberCard(member))
@@ -769,18 +787,42 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyIconContainer: {
+    marginBottom: 24,
+    opacity: 0.6,
   },
   emptyTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
     color: '#374151',
-    marginTop: 16,
-    marginBottom: 8,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   emptySubtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  emptyActionButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  emptyActionButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 8,
+  },
+  emptyActionButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
   },
   modalOverlay: {
     flex: 1,

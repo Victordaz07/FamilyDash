@@ -3,7 +3,7 @@
  * Servicio para manejar horarios y rutinas familiares
  */
 
-import { firestore } from '../config/firebase';
+import { firestore } from '@/config/firebase';
 import Logger from './Logger';
 
 export interface FamilySchedule {

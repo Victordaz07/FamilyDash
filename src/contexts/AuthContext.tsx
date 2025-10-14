@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { RealAuthService, EmailNotVerifiedError } from '../services';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { auth } from '@/config/firebase';
 import { SecureStorage, STORAGE_KEYS } from '../utils/secureStorage';
 import { secureLog, secureError, logAuthEvent } from '../utils/secureLog';
 
@@ -16,11 +16,22 @@ interface User {
     displayName?: string;
 }
 
+interface RegisterOptions {
+    email: string;
+    password: string;
+    displayName?: string;
+    familyName?: string;
+    houseCode?: string;
+    wantsAdmin?: boolean;
+    adminReason?: string;
+    avatarUrl?: string;
+}
+
 interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-    register: (email: string, password: string, displayName?: string) => Promise<{ success: boolean; error?: string }>;
+    register: (options: RegisterOptions) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<{ success: boolean; error?: string }>;
     sendPasswordReset: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
@@ -106,26 +117,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } catch (error: any) {
             console.log('AuthContext: Login error:', error.message);
             
-            // Manejar error de verificación de email
-            if (error instanceof EmailNotVerifiedError || error?.code === 'EMAIL_NOT_VERIFIED') {
-                return { success: false, error: 'EMAIL_NOT_VERIFIED', code: 'EMAIL_NOT_VERIFIED' };
-            }
+            // Simplified: No email verification blocking
             
             return { success: false, error: error.message };
         }
     };
 
-    const register = async (email: string, password: string, displayName?: string) => {
+    const register = async (options: RegisterOptions) => {
         try {
-            const result = await RealAuthService.registerWithEmail({ email, password, displayName });
+            const result = await RealAuthService.registerWithEmail({ 
+                email: options.email, 
+                password: options.password, 
+                displayName: options.displayName 
+            });
 
             // Update local state if registration was successful
             if (result.success && result.user) {
                 setUser({
                     uid: result.user.uid,
                     email: result.user.email || '',
-                    displayName: result.user.displayName || displayName || '',
+                    displayName: result.user.displayName || options.displayName || '',
                 });
+
+                // Handle family setup and admin requests
+                if (options.wantsAdmin || options.familyName || options.houseCode) {
+                    // TODO: Call Cloud Function to handle family setup and admin requests
+                    // This would involve:
+                    // 1. Creating/joining family based on options.familyName or options.houseCode
+                    // 2. Submitting admin request if options.wantsAdmin is true
+                    // 3. Saving avatar if options.avatarUrl is provided
+                    console.log('Family setup and admin options:', {
+                        wantsAdmin: options.wantsAdmin,
+                        familyName: options.familyName,
+                        houseCode: options.houseCode,
+                        adminReason: options.adminReason,
+                        avatarUrl: options.avatarUrl
+                    });
+                }
             }
 
             return result;
@@ -139,11 +167,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('🔐 AuthContext: Attempting logout...');
             const result = await RealAuthService.signOut();
 
-            // Clear user state and storage
-            setUser(null);
-            await AsyncStorage.removeItem('user');
-            console.log('🔐 AuthContext: Logout successful, user state and storage cleared');
-
+            // Note: We don't manually set user to null here because
+            // the Firebase auth listener (onAuthStateChanged) will automatically
+            // detect the signOut and update the user state
+            // This ensures consistency and prevents race conditions
+            
+            console.log('🔐 AuthContext: Logout successful, Firebase listener will update user state');
             return result;
         } catch (error: any) {
             console.error('🔐 AuthContext: Logout error:', error);

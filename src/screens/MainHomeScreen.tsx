@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFamily } from '../contexts/FamilyContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useFamily } from '@/store';
+import { useAuth } from '@/store';
 import { useFormValidation, COMMON_RULES } from '../hooks/useFormValidation';
 import { useFadeIn, useSlideIn } from '../hooks/useAnimations';
 import EnhancedInput from '../components/ui/EnhancedInput';

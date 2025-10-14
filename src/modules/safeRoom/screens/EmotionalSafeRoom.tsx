@@ -19,7 +19,7 @@ import {
 } from '../../voice';
 import { VideoPlayer, VideoNote } from '../../video';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../../../config/firebase';
+import { db } from '@/config/firebase';
 
 const EmotionalSafeRoom: React.FC<{ navigation: any; route?: any }> = ({ navigation, route }) => {
     const [selectedReaction, setSelectedReaction] = useState<string | null>(null);

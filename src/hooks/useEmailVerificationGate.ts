@@ -1,12 +1,10 @@
 /**
- * Hook para verificar el estado de verificación de email
- * Recarga el usuario y sincroniza el estado con Firestore
+ * Hook simplificado para verificar el estado de verificación de email
+ * Evita bucles infinitos usando una verificación estática
  */
 
 import { useEffect, useState } from 'react';
-import { RealAuthService } from '../services/auth/RealAuthService';
-
-const authService = new RealAuthService();
+import { auth } from '@/config/firebase';
 
 export function useEmailVerificationGate() {
   const [loading, setLoading] = useState(true);
@@ -17,9 +15,19 @@ export function useEmailVerificationGate() {
     
     const checkVerification = async () => {
       try {
-        const ok = await authService.reloadAndSyncEmailVerified();
+        // Only check verification if there's an authenticated user
+        if (!auth.currentUser) {
+          if (mounted) {
+            setVerified(false);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Simple check without reloading - just check current state
+        const isVerified = auth.currentUser.emailVerified;
         if (mounted) {
-          setVerified(ok);
+          setVerified(isVerified);
         }
       } catch (error) {
         console.error('Error checking email verification:', error);
@@ -38,7 +46,7 @@ export function useEmailVerificationGate() {
     return () => { 
       mounted = false; 
     };
-  }, []);
+  }, []); // Empty dependency array to prevent infinite loops
 
   return { loading, verified };
 }

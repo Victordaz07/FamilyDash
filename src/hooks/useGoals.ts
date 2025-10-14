@@ -1,18 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGoalsStore } from '../store/goalsSlice';
 import { Goal, GoalStatus, GoalCategory } from '../types/goals';
 import { mockGoals } from '../data/mockGoals';
+import { useGoalsFirebase } from './useGoalsFirebase';
 
 export function useGoals() {
   const store = useGoalsStore();
+  const firebaseLogged = useRef(false);
+  const mockLogged = useRef(false);
+  
+  // Always call the Firebase hook (it will handle errors internally)
+  const firebaseHook = useGoalsFirebase('family-1');
 
-  // Load mock data on mount (Firebase disabled for testing)
+  // Load mock data on mount if Firebase fails
   useEffect(() => {
-    if (store.items.length === 0) {
+    if (firebaseHook.error && store.items.length === 0) {
+      console.warn('🔄 Firebase failed, loading mock data');
       store.setGoals(mockGoals);
     }
-  }, []);
+  }, [firebaseHook.error, store.items.length, store]);
   
+  // Use Firebase if no error, otherwise use local store
+  if (!firebaseHook.error) {
+    // Only log once when Firebase becomes available
+    if (!firebaseLogged.current) {
+      console.log('🔥 Using Firebase for Goals');
+      firebaseLogged.current = true;
+    }
+    
+    return {
+      ...firebaseHook,
+      // getState method for backward compatibility
+      getState: () => store,
+    };
+  }
+
+  // Only log once when using mock data
+  if (!mockLogged.current) {
+    console.log('📱 Using mock data for Goals');
+    mockLogged.current = true;
+  }
+
+  // Fallback to local store with mock data
   return {
     // State
     state: {
@@ -86,5 +115,8 @@ export function useGoals() {
     setSortBy: store.setSortBy,
     toggleView: store.toggleView,
     clearFilters: store.clearFilters,
+    
+    // getState method for backward compatibility
+    getState: () => store,
   };
 }

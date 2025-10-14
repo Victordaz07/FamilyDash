@@ -36,34 +36,7 @@ const roleOptions = [
 
 export default function FamilyScreen() {
     const navigation = useNavigation();
-    const [members, setMembers] = useState<FamilyMember[]>([
-        {
-            id: '1',
-            name: 'Maria Rodriguez',
-            role: 'parent',
-            email: 'maria@family.com',
-            phone: '+1234567890',
-            isActive: true,
-            joinDate: '2024-01-15'
-        },
-        {
-            id: '2',
-            name: 'Pedro Rodriguez',
-            role: 'parent',
-            email: 'pedro@family.com',
-            phone: '+1234567891',
-            isActive: true,
-            joinDate: '2024-01-15'
-        },
-        {
-            id: '3',
-            name: 'Nina Rodriguez',
-            role: 'child',
-            email: 'nina@family.com',
-            isActive: true,
-            joinDate: '2024-02-01'
-        }
-    ]);
+    const [members, setMembers] = useState<FamilyMember[]>([]);
 
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [newMember, setNewMember] = useState({
@@ -241,13 +214,37 @@ export default function FamilyScreen() {
                 </TouchableOpacity>
 
                 {/* Members List */}
-                <FlatList
-                    data={members}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderMember}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.listContainer}
-                />
+                {members.length === 0 ? (
+                    <View style={styles.emptyState}>
+                        <View style={styles.emptyIconContainer}>
+                            <Ionicons name="people-outline" size={64} color="#d1d5db" />
+                        </View>
+                        <Text style={styles.emptyTitle}>No hay miembros registrados</Text>
+                        <Text style={styles.emptySubtitle}>
+                            Invita miembros a tu familia para comenzar a usar las funciones colaborativas
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.emptyActionButton}
+                            onPress={() => setIsAddModalVisible(true)}
+                        >
+                            <LinearGradient
+                                colors={['#8b5cf6', '#7c3aed']}
+                                style={styles.emptyActionButtonGradient}
+                            >
+                                <Ionicons name="person-add" size={20} color="white" />
+                                <Text style={styles.emptyActionButtonText}>Invitar Primer Miembro</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={members}
+                        keyExtractor={(item) => item.id}
+                        renderItem={renderMember}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.listContainer}
+                    />
+                )}
             </View>
 
             {/* Add Member Modal */}
@@ -649,5 +646,47 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 16,
         marginLeft: 8,
+    },
+    emptyState: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 60,
+        paddingHorizontal: 40,
+    },
+    emptyIconContainer: {
+        marginBottom: 24,
+        opacity: 0.6,
+    },
+    emptyTitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#374151',
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+    emptySubtitle: {
+        fontSize: 16,
+        color: '#6b7280',
+        textAlign: 'center',
+        lineHeight: 24,
+        marginBottom: 32,
+    },
+    emptyActionButton: {
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    emptyActionButtonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        gap: 8,
+    },
+    emptyActionButtonText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 16,
     },
 });

@@ -88,23 +88,23 @@ export default function AboutScreen() {
     const navigation = useNavigation();
 
     const handleOpenWebsite = () => {
-        const url = 'https://familydash.app';
+        const url = 'https://family-dash-15944.web.app';
         Linking.openURL(url).catch(() => {
-            Alert.alert('Error', 'Could not open website. Please visit https://familydash.app');
+            Alert.alert('Error', 'Could not open website. Please visit https://family-dash-15944.web.app');
         });
     };
 
     const handleOpenPrivacy = () => {
-        const url = 'https://familydash.app/privacy';
+        const url = 'https://family-dash-15944.web.app/privacy';
         Linking.openURL(url).catch(() => {
-            Alert.alert('Error', 'Could not open privacy policy. Please visit https://familydash.app/privacy');
+            Alert.alert('Error', 'Could not open privacy policy. Please visit https://family-dash-15944.web.app/privacy');
         });
     };
 
     const handleOpenTerms = () => {
-        const url = 'https://familydash.app/terms';
+        const url = 'https://family-dash-15944.web.app/terms';
         Linking.openURL(url).catch(() => {
-            Alert.alert('Error', 'Could not open terms of service. Please visit https://familydash.app/terms');
+            Alert.alert('Error', 'Could not open terms of service. Please visit https://family-dash-15944.web.app/terms');
         });
     };
 

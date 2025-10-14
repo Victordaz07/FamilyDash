@@ -1,38 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar Sesión - FamilyDash</title>
-  <meta name="description" content="Accede a tu dashboard familiar. Inicia sesión en FamilyDash para organizar tu familia.">
-  <meta name="keywords" content="login, familia, dashboard, organización, sesión">
-  <meta property="og:title" content="Iniciar Sesión - FamilyDash">
-  <meta property="og:description" content="Accede a tu dashboard familiar">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://family-dash-15944.web.app/login">
+  <meta name="description" content="Accede a tu dashboard familiar con FamilyDash">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
+
     :root {
       --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
       --text-primary: #ffffff;
       --text-secondary: rgba(255, 255, 255, 0.8);
       --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
-      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--primary-gradient);
       color: var(--text-primary);
       line-height: 1.6;
@@ -42,107 +36,80 @@
       justify-content: center;
       padding: 20px;
     }
-    
-    /* Animación de fondo */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-      animation: backgroundFloat 30s ease-in-out infinite;
-      z-index: -1;
-    }
-    
-    @keyframes backgroundFloat {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(30px, -30px) rotate(120deg); }
-      66% { transform: translate(-20px, 20px) rotate(240deg); }
-    }
-    
+
     .login-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 450px;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: 48px;
+      padding: 40px;
       box-shadow: var(--shadow-primary);
-      position: relative;
     }
-    
+
     .logo {
       text-align: center;
       margin-bottom: 32px;
     }
-    
-    .logo-image {
+
+    .logo img {
       width: 80px;
       height: 80px;
-      margin: 0 auto 16px auto;
-      display: block;
+      border-radius: 20px;
+      margin-bottom: 16px;
     }
-    
+
     .logo h1 {
-      font-size: 32px;
-      font-weight: 800;
+      font-size: 28px;
+      font-weight: 700;
       margin-bottom: 8px;
-      color: #ffffff;
-      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
-    
+
     .logo p {
-      color: #ffffff;
       font-size: 16px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      color: var(--text-secondary);
     }
-    
+
     .form-group {
       margin-bottom: 24px;
     }
-    
-    .form-label {
+
+    .form-group label {
       display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
       margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
     }
-    
-    .form-input {
+
+    .form-group input {
       width: 100%;
-      padding: 16px 20px;
+      padding: 16px;
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.1);
       color: var(--text-primary);
       font-size: 16px;
-      transition: var(--transition);
       backdrop-filter: blur(10px);
+      transition: var(--transition);
     }
-    
-    .form-input::placeholder {
+
+    .form-group input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group input::placeholder {
       color: var(--text-secondary);
     }
-    
-    .form-input:focus {
-      outline: none;
-      border-color: #10b981;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-      background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .password-toggle {
+
+    .password-container {
       position: relative;
     }
-    
-    .password-toggle .toggle-btn {
+
+    .password-toggle {
       position: absolute;
       right: 16px;
       top: 50%;
@@ -154,77 +121,23 @@
       font-size: 18px;
       padding: 4px;
     }
-    
-    .password-toggle .form-input {
-      padding-right: 50px;
-    }
-    
-    .forgot-password {
-      text-align: right;
-      margin-bottom: 24px;
-    }
-    
-    .forgot-password a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 14px;
-      transition: var(--transition);
-    }
-    
-    .forgot-password a:hover {
-      color: #10b981;
-    }
-    
-    .social-login {
-      margin: 32px 0;
-      text-align: center;
-    }
-    
-    .social-login p {
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-    
-    .social-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    
-    .social-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
+
+    .password-toggle:hover {
       color: var(--text-primary);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: var(--transition);
-      backdrop-filter: blur(10px);
-      min-width: 120px;
     }
-    
-    .social-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+
+    .turnstile-container {
+      margin: 24px 0;
+      display: flex;
+      justify-content: center;
     }
-    
-    .social-btn .icon {
-      margin-right: 8px;
-      font-size: 16px;
-    }
-    
-    .login-btn {
+
+    .login-button {
       width: 100%;
-      padding: 18px;
+      padding: 16px;
+      background: var(--success-gradient);
       border: none;
       border-radius: 12px;
-      background: var(--success-gradient);
       color: white;
       font-size: 16px;
       font-weight: 600;
@@ -232,120 +145,126 @@
       transition: var(--transition);
       margin-bottom: 24px;
     }
-    
-    .login-btn:hover {
+
+    .login-button:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
     }
-    
-    .login-btn:disabled {
+
+    .login-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
     }
-    
-    .signup-link {
+
+    .forgot-password {
       text-align: center;
-      margin-top: 24px;
+      margin-bottom: 24px;
     }
-    
-    .signup-link a {
-      color: var(--text-primary);
+
+    .forgot-password a {
+      color: var(--text-secondary);
       text-decoration: none;
-      font-weight: 500;
+      font-size: 14px;
       transition: var(--transition);
     }
-    
-    .signup-link a:hover {
-      color: #10b981;
-    }
-    
-    .app-download {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-top: 32px;
-      text-align: center;
-    }
-    
-    .app-download h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 12px;
+
+    .forgot-password a:hover {
       color: var(--text-primary);
     }
-    
-    .app-download p {
-      color: var(--text-secondary);
+
+    .divider {
+      text-align: center;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--glass-border);
+    }
+
+    .divider span {
+      background: var(--primary-gradient);
+      padding: 0 16px;
       font-size: 14px;
-      margin-bottom: 20px;
+      color: var(--text-secondary);
     }
-    
-    .download-buttons {
+
+    .social-login {
       display: flex;
+      flex-direction: column;
       gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
+      margin-bottom: 24px;
     }
-    
-    .download-btn {
-      display: inline-flex;
+
+    .social-button {
+      display: flex;
       align-items: center;
-      padding: 12px 20px;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 16px;
       border: 1px solid var(--glass-border);
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text-primary);
       text-decoration: none;
       font-size: 14px;
       font-weight: 500;
       transition: var(--transition);
-      backdrop-filter: blur(10px);
     }
-    
-    .download-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+
+    .social-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
     }
-    
-    .download-btn .icon {
-      margin-right: 8px;
-      font-size: 18px;
+
+    .signup-link {
+      text-align: center;
+      font-size: 14px;
     }
-    
-    .loading {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+
+    .signup-link a {
+      color: #10b981;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
     }
-    
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+
+    .signup-link a:hover {
+      color: #059669;
     }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #fca5a5;
+      font-size: 14px;
+      text-align: center;
     }
-    
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #6ee7b7;
+      font-size: 14px;
+      text-align: center;
+    }
+
     @media (max-width: 480px) {
       .login-container {
-        padding: 32px 24px;
-      }
-      
-      .social-buttons, .download-buttons {
-        flex-direction: column;
-      }
-      
-      .social-btn, .download-btn {
-        min-width: auto;
+        padding: 24px;
+        margin: 10px;
       }
     }
   </style>
@@ -357,251 +276,218 @@
       <h1>FamilyDash</h1>
       <p>Bienvenido de vuelta</p>
     </div>
-    
-    <form id="loginForm">
+
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+    <div id="successMessage" class="success-message" style="display: none;"></div>
+
+    <form id="loginForm" method="post" action="javascript:void(0)" onsubmit="return false;" novalidate>
       <div class="form-group">
-        <label class="form-label" for="email">Correo electrónico</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          class="form-input" 
-          placeholder="tu@email.com"
-          required
-        >
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
       </div>
-      
+
       <div class="form-group">
-        <label class="form-label" for="password">Contraseña</label>
-        <div class="password-toggle">
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            class="form-input" 
-            placeholder="Tu contraseña"
-            required
-          >
-          <button type="button" class="toggle-btn" onclick="togglePassword()">
-            👁️
-          </button>
+        <label for="password">Contraseña</label>
+        <div class="password-container">
+          <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+          <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
         </div>
       </div>
-      
-      <div class="forgot-password">
-        <a href="#" onclick="forgotPassword()">¿Olvidaste tu contraseña?</a>
+
+      <div class="turnstile-container">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAABkMYinukE8nzY"></div>
       </div>
-      
-      <button type="submit" class="login-btn" id="loginBtn">
-        <span class="btn-text">Iniciar sesión</span>
-        <span class="loading">
-          <span class="spinner"></span>
-          Iniciando sesión...
-        </span>
+
+      <button type="submit" class="login-button" id="loginButton">
+        Iniciar Sesión
       </button>
     </form>
-    
+
+    <div class="forgot-password">
+      <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <div class="divider">
+      <span>o continúa con</span>
+    </div>
+
     <div class="social-login">
-      <p>O inicia sesión con:</p>
-      <div class="social-buttons">
-        <a href="#" class="social-btn" id="googleLogin">
-          <span class="icon">🔐</span>
-          Continuar con Google
-        </a>
-        <a href="#" class="social-btn" id="appleLogin">
-          <span class="icon">🔑</span>
-          Continuar con Apple
-        </a>
-      </div>
+      <a href="#" class="social-button" id="googleLogin">
+        <span class="icon">🔐</span>
+        Continuar con Google
+      </a>
+      <a href="#" class="social-button" id="appleLogin">
+        <span class="icon">🔑</span>
+        Continuar con Apple
+      </a>
     </div>
-    
+
     <div class="signup-link">
-      <p>¿No tienes cuenta? <a href="/signup">Crear cuenta</a></p>
-    </div>
-    
-    <div class="app-download">
-      <h3>📱 ¿Prefieres usar la app?</h3>
-      <p>Descarga FamilyDash en tu móvil para la mejor experiencia</p>
-      <div class="download-buttons">
-        <a href="#" class="download-btn" id="iosDownload">
-          <span class="icon">🍎</span>
-          iOS
-        </a>
-        <a href="#" class="download-btn" id="androidDownload">
-          <span class="icon">🤖</span>
-          Android
-        </a>
-      </div>
+      ¿No tienes cuenta? <a href="/signup">Crear cuenta</a>
     </div>
   </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-  <!-- Google Analytics 4 -->
-  <script src="/js/analytics.js"></script>
   
-  <!-- Firebase Auth Integration -->
-  <script src="/js/firebase-auth.js"></script>
-
   <script>
-    // Form submission
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqZSqW2ZU1EZldEuc0rktxMuSYi1hleq8",
+      authDomain: "family-dash-15944.firebaseapp.com",
+      projectId: "family-dash-15944",
+      storageBucket: "family-dash-15944.firebasestorage.app",
+      messagingSenderId: "3950658017",
+      appId: "1:3950658017:web:9d4d2ddea39f8a785e12a0"
+    };
+
+    // Initialize Firebase using compat version
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Form handling - ensure DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up login form');
+      const loginForm = document.getElementById('loginForm');
+      if (!loginForm) {
+        console.error('Login form not found');
+        return;
+      }
+      
+      console.log('Login form found, adding event listener');
+      
+      // Add direct button click listener as backup
+      const loginButton = document.getElementById('loginButton');
+      loginButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Login button clicked directly');
+        await handleLogin();
+      });
+      
+      loginForm.addEventListener('submit', async (e) => {
+        console.log('Form submit event triggered');
+        e.preventDefault();
+        e.stopPropagation();
+        await handleLogin();
+      });
+      
+      async function handleLogin() {
       
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      const loginBtn = document.getElementById('loginBtn');
+      const loginButton = document.getElementById('loginButton');
       
-      // Show loading state
-      loginBtn.disabled = true;
-      loginBtn.querySelector('.btn-text').style.display = 'none';
-      loginBtn.querySelector('.loading').style.display = 'flex';
-      
-      // Login with Firebase Auth (REAL)
-      const result = await window.FamilyDashAuth.loginWithEmail(email, password);
-      
-      if (result.success) {
-        // Check if user is admin
-        const userData = await window.FamilyDashAuth.getUserData(result.user.uid);
-        const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(result.user.uid);
-        const isFamilyAdmin = await window.FamilyDashAuth.isFamilyAdmin(result.user.uid);
+      // Validate Turnstile
+      const turnstileResponse = document.querySelector('.cf-turnstile textarea[name="cf-turnstile-response"]');
+      if (!turnstileResponse || !turnstileResponse.value) {
+        showError('Por favor, completa la verificación de seguridad');
+        return;
+      }
+
+      loginButton.disabled = true;
+      loginButton.textContent = 'Iniciando sesión...';
+
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
         
-        if (isSuperAdmin) {
-          // Redirect to admin dashboard
-          alert('¡Bienvenido Super Admin! Redirigiendo al panel de control...');
-          window.location.href = '/admin/dashboard';
-        } else if (isFamilyAdmin) {
-          // Redirect to family admin dashboard
-          alert('¡Bienvenido! Redirigiendo a tu panel familiar...');
-          window.location.href = '/admin/dashboard';
-        } else {
-          // Regular user - redirect to app download
-          alert('¡Inicio de sesión exitoso! Descarga la app para continuar.');
-          window.location.href = '/#download';
+        // Redirect to dashboard immediately - no email verification required
+        setTimeout(() => {
+          window.location.href = '/dashboard-redirect.html';
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        let errorMessage = 'Error en el login: ';
+        
+        switch (error.code) {
+          case 'auth/user-not-found':
+            errorMessage += 'No existe una cuenta con este email';
+            break;
+          case 'auth/wrong-password':
+            errorMessage += 'Contraseña incorrecta';
+            break;
+          case 'auth/invalid-email':
+            errorMessage += 'Email inválido';
+            break;
+          case 'auth/user-disabled':
+            errorMessage += 'Esta cuenta ha sido deshabilitada';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage += 'Demasiados intentos. Intenta más tarde';
+            break;
+          default:
+            errorMessage += 'Ha ocurrido un error. Por favor intenta de nuevo';
         }
-      } else {
-        if (result.code === 'EMAIL_NOT_VERIFIED') {
-          // Redirect to verification page
-          alert('Por favor verifica tu email antes de continuar. Te hemos enviado un nuevo email de verificación.');
-          window.location.href = '/verified?email=' + encodeURIComponent(email);
-        } else {
-          // Show error
-          alert('Error en el login: ' + result.error);
-          
-          // Reset button
-          loginBtn.disabled = false;
-          loginBtn.querySelector('.btn-text').style.display = 'block';
-          loginBtn.querySelector('.loading').style.display = 'none';
-          
-          if (window.FamilyDashAnimations) {
-            window.FamilyDashAnimations.shakeElement(loginBtn);
-          }
-        }
+        
+        showError(errorMessage);
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = 'Iniciar Sesión';
+      }
+      } // End handleLogin function
+    }); // End DOMContentLoaded
+
+    // Google Login
+    document.getElementById('googleLogin').addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
+        
+        setTimeout(() => {
+          window.location.href = '/dashboard-redirect.html';
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Google login error:', error);
+        showError('Error en el login con Google: ' + error.message);
       }
     });
-    
-    // Password toggle functionality
+
+    // Apple Login placeholder
+    document.getElementById('appleLogin').addEventListener('click', (e) => {
+      e.preventDefault();
+      showError('Login con Apple próximamente disponible');
+    });
+
+    // Password toggle
     function togglePassword() {
       const passwordInput = document.getElementById('password');
-      const toggleBtn = document.querySelector('.toggle-btn');
+      const toggleButton = document.querySelector('.password-toggle');
       
       if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        toggleBtn.textContent = '🙈';
+        toggleButton.textContent = '🙈';
       } else {
         passwordInput.type = 'password';
-        toggleBtn.textContent = '👁️';
+        toggleButton.textContent = '👁️';
       }
     }
-    
-    // Forgot password handler
-    function forgotPassword() {
-      const email = document.getElementById('email').value;
-      if (email) {
-        alert('Te hemos enviado un enlace para restablecer tu contraseña a: ' + email);
-      } else {
-        alert('Por favor ingresa tu email primero.');
-      }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      successDiv.style.display = 'none';
     }
-    
-    // Social login handlers
-    document.getElementById('googleLogin').addEventListener('click', async function(e) {
-      e.preventDefault();
-      const btn = this;
-      const originalText = btn.innerHTML;
+
+    // Show success message
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
       
-      // Mostrar loading
-      btn.innerHTML = '<span class="loading"></span> Iniciando sesión...';
-      btn.disabled = true;
-      
-      try {
-        const result = await window.FamilyDashAuth.loginWithGoogle();
-        
-        if (result.success) {
-          // Verificar si el email está verificado
-          if (!result.user.emailVerified) {
-            alert('¡Registro exitoso con Google! Por favor verifica tu email. Te hemos enviado un email de verificación.');
-            // Enviar email premium manualmente
-            try {
-              await window.FamilyDashAuth.resendVerificationEmail();
-              alert('Email premium enviado! Revisa tu bandeja de entrada.');
-            } catch (emailError) {
-              console.log('Email premium no se pudo enviar:', emailError);
-            }
-            window.location.href = '/verified?email=' + encodeURIComponent(result.user.email);
-          } else {
-            // Usuario verificado, verificar rol
-            const isSuperAdmin = await window.FamilyDashAuth.isSuperAdmin(result.user.uid);
-            const isFamilyAdmin = await window.FamilyDashAuth.isFamilyAdmin(result.user.uid);
-            
-            if (isSuperAdmin) {
-              alert('¡Bienvenido Super Admin! Redirigiendo al panel de control...');
-              window.location.href = '/admin/dashboard';
-            } else if (isFamilyAdmin) {
-              alert('¡Bienvenido! Redirigiendo a tu panel familiar...');
-              window.location.href = '/admin/dashboard';
-            } else {
-              alert('¡Inicio de sesión exitoso! Descarga la app para continuar.');
-              window.location.href = '/#download';
-            }
-          }
-        } else {
-          alert('Error en el login: ' + result.error);
-        }
-      } catch (error) {
-        console.error('Error en Google login:', error);
-        alert('Error en el login: ' + error.message);
-      } finally {
-        // Restaurar botón
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
-    });
-    
-    document.getElementById('appleLogin').addEventListener('click', function(e) {
-      e.preventDefault();
-      alert('Para iniciar sesión con Apple, usa la app móvil de FamilyDash.');
-    });
-    
-    // App download handlers
-    document.getElementById('iosDownload').addEventListener('click', function(e) {
-      e.preventDefault();
-      if (window.FamilyDashAnalytics) {
-        window.FamilyDashAnalytics.trackAppDownloadIntent('ios');
-      }
-      alert('Próximamente disponible en la App Store. Mientras tanto, usa la versión web.');
-    });
-    
-    document.getElementById('androidDownload').addEventListener('click', function(e) {
-      e.preventDefault();
-      if (window.FamilyDashAnalytics) {
-        window.FamilyDashAnalytics.trackAppDownloadIntent('android');
-      }
-      alert('Próximamente disponible en Google Play. Mientras tanto, usa la versión web.');
-    });
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
+    }
   </script>
 </body>
 </html>

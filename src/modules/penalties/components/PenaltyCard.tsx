@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import PenaltyTimer from './PenaltyTimer';
 import { Penalty } from '../types/penaltyTypes';
 import { penaltyTypeConfigs } from '../mock/penaltiesData';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 // i18n removed - using hardcoded English text
 
 interface PenaltyCardProps {

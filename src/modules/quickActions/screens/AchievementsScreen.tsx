@@ -1,44 +1,63 @@
-import React, { useState } from 'react';
+/**
+ * 🏆 ACHIEVEMENTS SCREEN - ROBUST VERSION
+ * Using centralized store and absolute imports
+ */
+
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAchievementsStore } from '../store/achievementsStore';
+import { useAchievements, useAuth } from '@/store';
 import { AchievementCard } from '../components/AchievementCard';
-import { theme } from '../../../styles/simpleTheme';
-import { useTranslation } from '../../../locales/i18n';
+import { theme } from '@/styles/simpleTheme';
 
 interface AchievementsScreenProps {
     navigation: any;
 }
 
 export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigation }) => {
-    const { t } = useTranslation();
-    const { achievements, getAchievementsByCategory, getLeaderboard } = useAchievementsStore();
+    const { achievements, addAchievement, updateAchievement, completeAchievement, checkAchievements } = useAchievements();
+    const { user } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
     const categories = [
-        { key: 'all', label: 'Todos', icon: 'apps' },
-        { key: 'tasksCompleted', label: 'Tareas', icon: 'checkmark-circle' },
-        { key: 'goalsReached', label: 'Metas', icon: 'trophy' },
-        { key: 'noPenalties', label: 'Sin Penas', icon: 'shield' },
-        { key: 'specialEvents', label: 'Eventos', icon: 'star' },
+        { key: 'all', label: 'All', icon: 'apps' },
+        { key: 'tasksCompleted', label: 'Tasks', icon: 'checkmark-circle' },
+        { key: 'goalsReached', label: 'Goals', icon: 'trophy' },
+        { key: 'noPenalties', label: 'Behavior', icon: 'shield' },
+        { key: 'specialEvents', label: 'Events', icon: 'star' },
     ];
 
     const filteredAchievements = selectedCategory === 'all'
         ? achievements
-        : getAchievementsByCategory(selectedCategory as any);
-
-    const leaderboard = getLeaderboard();
+        : achievements.filter(a => a.category === selectedCategory);
 
     const handleAchievementPress = (achievementId: string) => {
+        const achievement = achievements.find(a => a.id === achievementId);
+        if (!achievement) return;
+
         Alert.alert(
-            'Logro',
-            `¿Qué deseas hacer con este logro?`,
+            'Achievement',
+            `What would you like to do with "${achievement.title}"?`,
             [
-                { text: 'Ver Detalles', onPress: () => console.log('Ver detalles') },
-                { text: 'Marcar Completado', onPress: () => console.log('Marcar completado') },
-                { text: 'Cancelar', style: 'cancel' },
+                { text: 'View Details', onPress: () => console.log('View details') },
+                { 
+                    text: 'Mark Complete', 
+                    onPress: () => {
+                        completeAchievement(achievementId);
+                        Alert.alert('Success', `Achievement "${achievement.title}" completed!`);
+                    }
+                },
+                { text: 'Cancel', style: 'cancel' },
             ]
+        );
+    };
+
+    const handleCreateAchievement = () => {
+        Alert.alert(
+            'Create Custom Achievement', 
+            'Custom achievement creation will be available soon!',
+            [{ text: 'OK' }]
         );
     };
 
@@ -67,10 +86,10 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                 >
                     <Ionicons name="arrow-back" size={24} color="white" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Logros y Medallas</Text>
+                <Text style={styles.headerTitle}>Achievements & Medals</Text>
                 <TouchableOpacity
                     style={styles.settingsButton}
-                    onPress={() => Alert.alert('Configuraciones', 'Funcionalidad próximamente')}
+                    onPress={() => Alert.alert('Settings', 'Configuration coming soon')}
                 >
                     <Ionicons name="settings" size={24} color="white" />
                 </TouchableOpacity>
@@ -81,7 +100,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                 <View style={styles.statsContainer}>
                     <View style={styles.statCard}>
                         <Text style={styles.statValue}>{stats.achieved}</Text>
-                        <Text style={styles.statLabel}>Completados</Text>
+                        <Text style={styles.statLabel}>Completed</Text>
                     </View>
                     <View style={styles.statCard}>
                         <Text style={styles.statValue}>{stats.total}</Text>
@@ -89,11 +108,25 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                     </View>
                     <View style={styles.statCard}>
                         <Text style={styles.statValue}>{stats.earnedPoints}</Text>
-                        <Text style={styles.statLabel}>Puntos</Text>
+                        <Text style={styles.statLabel}>Points</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statValue}>{Math.round((stats.achieved / stats.total) * 100)}%</Text>
-                        <Text style={styles.statLabel}>Progreso</Text>
+                        <Text style={styles.statValue}>{stats.total > 0 ? Math.round((stats.achieved / stats.total) * 100) : 0}%</Text>
+                        <Text style={styles.statLabel}>Progress</Text>
+                    </View>
+                </View>
+
+                {/* Help Section */}
+                <View style={styles.helpSection}>
+                    <View style={styles.helpIcon}>
+                        <Ionicons name="information-circle" size={24} color="#3B82F6" />
+                    </View>
+                    <View style={styles.helpContent}>
+                        <Text style={styles.helpTitle}>How Achievements Work</Text>
+                        <Text style={styles.helpText}>
+                            Achievements motivate family members by rewarding good behavior and completed tasks. 
+                            Each achievement has points and progress tracking to encourage participation.
+                        </Text>
                     </View>
                 </View>
 
@@ -128,36 +161,12 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                     ))}
                 </ScrollView>
 
-                {/* Leaderboard */}
-                {leaderboard.length > 0 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>🏆 Tabla de Líderes</Text>
-                        <View style={styles.leaderboard}>
-                            {leaderboard.slice(0, 3).map((member, index) => (
-                                <View key={member.memberId} style={styles.leaderboardItem}>
-                                    <View style={styles.leaderboardRank}>
-                                        <Text style={styles.leaderboardRankText}>#{index + 1}</Text>
-                                    </View>
-                                    <View style={styles.leaderboardInfo}>
-                                        <Text style={styles.leaderboardName}>{member.memberName}</Text>
-                                        <Text style={styles.leaderboardPoints}>{member.points} puntos</Text>
-                                    </View>
-                                    <View style={styles.leaderboardMedal}>
-                                        <Ionicons
-                                            name={index === 0 ? 'trophy' : index === 1 ? 'medal' : 'ribbon'}
-                                            size={24}
-                                            color={index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'}
-                                        />
-                                    </View>
-                                </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
-
                 {/* Achievements List */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Logros Disponibles</Text>
+                    <Text style={styles.sectionTitle}>Achievement Examples</Text>
+                    <Text style={styles.sectionSubtitle}>
+                        These are example achievements to guide you. Create your own custom achievements for your family.
+                    </Text>
                     {filteredAchievements.map((achievement) => (
                         <AchievementCard
                             key={achievement.id}
@@ -171,7 +180,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                 {/* Add Achievement Button */}
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={() => Alert.alert('Agregar Logro', 'Funcionalidad próximamente')}
+                    onPress={handleCreateAchievement}
                 >
                     <LinearGradient
                         colors={['#10B981', '#34D399']}
@@ -180,7 +189,7 @@ export const AchievementsScreen: React.FC<AchievementsScreenProps> = ({ navigati
                         end={{ x: 1, y: 1 }}
                     >
                         <Ionicons name="add" size={24} color="white" />
-                        <Text style={styles.addButtonText}>Agregar Logro</Text>
+                        <Text style={styles.addButtonText}>Create Custom Achievement</Text>
                     </LinearGradient>
                 </TouchableOpacity>
             </ScrollView>
@@ -245,6 +254,34 @@ const styles = StyleSheet.create({
         color: theme.colors.textSecondary,
         textAlign: 'center',
     },
+    helpSection: {
+        flexDirection: 'row',
+        backgroundColor: '#EFF6FF',
+        borderRadius: 12,
+        padding: 16,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#3B82F6',
+    },
+    helpIcon: {
+        marginRight: 12,
+        marginTop: 2,
+    },
+    helpContent: {
+        flex: 1,
+    },
+    helpTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1E40AF',
+        marginBottom: 4,
+    },
+    helpText: {
+        fontSize: 14,
+        color: '#3B82F6',
+        lineHeight: 20,
+    },
     categoryContainer: {
         marginVertical: 16,
     },
@@ -282,48 +319,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: theme.colors.text,
         marginHorizontal: 16,
-        marginBottom: 8,
+        marginBottom: 4,
     },
-    leaderboard: {
-        backgroundColor: 'white',
-        marginHorizontal: 16,
-        borderRadius: 12,
-        padding: 16,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-    },
-    leaderboardItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 8,
-    },
-    leaderboardRank: {
-        width: 30,
-        alignItems: 'center',
-    },
-    leaderboardRankText: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: theme.colors.primary,
-    },
-    leaderboardInfo: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    leaderboardName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: theme.colors.text,
-    },
-    leaderboardPoints: {
+    sectionSubtitle: {
         fontSize: 14,
         color: theme.colors.textSecondary,
-    },
-    leaderboardMedal: {
-        marginLeft: 8,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        lineHeight: 20,
     },
     addButton: {
         marginHorizontal: 16,

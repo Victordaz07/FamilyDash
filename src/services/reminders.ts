@@ -1,5 +1,5 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "@/config/firebase";
 import { FamilyReminder } from "../types/reminder";
 
 const COL = "family_reminders";

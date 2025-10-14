@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@/store';
 
 interface AuthGuardProps {
     children: React.ReactNode;

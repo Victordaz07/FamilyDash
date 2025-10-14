@@ -1,5 +1,5 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db } from "@/config/firebase";
 import { NotificationSettings } from "../../types/notifications";
 
 const COL = "notification_settings";

@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RealDatabaseService from '../../services/database/RealDatabaseService';
 import SafeRoomService from '../../services/SafeRoomService';

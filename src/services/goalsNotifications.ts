@@ -1,14 +1,21 @@
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 import { Goal } from '../types/goals';
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+// Configure notification handler only if not in Expo Go
+if (Platform.OS !== 'web') {
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  } catch (error) {
+    console.warn('Notification handler setup failed (expected in Expo Go):', error);
+  }
+}
 
 /**
  * Request notification permissions

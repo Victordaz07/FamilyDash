@@ -2,7 +2,7 @@ import {
   addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query,
   serverTimestamp, updateDoc, where
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "@/config/firebase";
 import { ShoppingItem, ShoppingList, ShoppingStatus, ShoppingStore } from "../types/shopping";
 
 const LISTS = "shopping_lists";

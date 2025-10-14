@@ -1,38 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Crear Cuenta - FamilyDash</title>
-  <meta name="description" content="Únete a miles de familias que ya organizan su vida con FamilyDash. Registro gratuito y seguro.">
-  <meta name="keywords" content="registro, familia, dashboard, organización, gratis">
-  <meta property="og:title" content="Crear Cuenta - FamilyDash">
-  <meta property="og:description" content="Regístrate gratis y organiza tu familia">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://family-dash-15944.web.app/signup">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro Robusto - FamilyDash</title>
+  <meta name="description" content="Crea tu cuenta en FamilyDash con validaciones de seguridad">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
+
     :root {
       --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
       --glass-bg: rgba(255, 255, 255, 0.1);
       --glass-border: rgba(255, 255, 255, 0.2);
       --text-primary: #ffffff;
       --text-secondary: rgba(255, 255, 255, 0.8);
       --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
-      --shadow-hover: 0 35px 70px rgba(0, 0, 0, 0.35);
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--primary-gradient);
       color: var(--text-primary);
       line-height: 1.6;
@@ -42,53 +36,30 @@
       justify-content: center;
       padding: 20px;
     }
-    
-    /* Animación de fondo */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-      animation: backgroundFloat 30s ease-in-out infinite;
-      z-index: -1;
-    }
-    
-    @keyframes backgroundFloat {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(30px, -30px) rotate(120deg); }
-      66% { transform: translate(-20px, 20px) rotate(240deg); }
-    }
-    
+
     .signup-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: 48px;
+      padding: 40px;
       box-shadow: var(--shadow-primary);
-      position: relative;
     }
-    
+
     .logo {
       text-align: center;
       margin-bottom: 32px;
     }
-    
+
     .logo-image {
       width: 80px;
       height: 80px;
       margin: 0 auto 16px auto;
       display: block;
     }
-    
+
     .logo h1 {
       font-size: 32px;
       font-weight: 800;
@@ -107,16 +78,16 @@
         -1px  0   0 #ffffff,
          1px  0   0 #ffffff;
     }
-    
+
     .logo p {
       color: var(--text-secondary);
       font-size: 16px;
     }
-    
+
     .form-group {
       margin-bottom: 24px;
     }
-    
+
     .form-label {
       display: block;
       font-size: 14px;
@@ -124,7 +95,7 @@
       color: var(--text-primary);
       margin-bottom: 8px;
     }
-    
+
     .form-input {
       width: 100%;
       padding: 16px 20px;
@@ -136,69 +107,140 @@
       transition: var(--transition);
       backdrop-filter: blur(10px);
     }
-    
+
     .form-input::placeholder {
       color: var(--text-secondary);
     }
-    
+
     .form-input:focus {
       outline: none;
       border-color: #10b981;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
       background: rgba(255, 255, 255, 0.15);
     }
-    
-    .password-requirements {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 8px;
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #10b981;
+      margin-top: 2px;
+    }
+
+    .checkbox-group label {
+      color: var(--text-primary);
+      font-size: 14px;
       line-height: 1.4;
+      cursor: pointer;
     }
-    
-    .social-login {
-      margin: 32px 0;
-      text-align: center;
-    }
-    
-    .social-login p {
-      color: var(--text-secondary);
+
+    .admin-info {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      padding: 16px;
       margin-bottom: 20px;
       font-size: 14px;
+      color: var(--text-primary);
     }
-    
-    .social-buttons {
+
+    .admin-info h4 {
+      color: #10b981;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .admin-info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .admin-info li {
+      margin-bottom: 4px;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .admin-info li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    .captcha-container {
+      margin: 24px 0;
       display: flex;
-      gap: 12px;
       justify-content: center;
     }
-    
-    .social-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
+
+    .captcha-simulator {
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: var(--transition);
-      backdrop-filter: blur(10px);
-      min-width: 120px;
+      padding: 20px;
+      text-align: center;
+      min-width: 300px;
     }
-    
-    .social-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+
+    .captcha-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
-    
-    .social-btn .icon {
-      margin-right: 8px;
+
+    .captcha-icon {
+      font-size: 32px;
+      color: #10b981;
+    }
+
+    .captcha-text {
       font-size: 16px;
+      color: var(--text-primary);
+      font-weight: 500;
     }
-    
+
+    .captcha-btn {
+      background: var(--success-gradient);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .captcha-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .captcha-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .captcha-note {
+      margin-top: 12px;
+      color: #fbbf24;
+    }
+
+    .captcha-note small {
+      font-size: 11px;
+      color: #fbbf24;
+    }
+
     .signup-btn {
       width: 100%;
       padding: 18px;
@@ -212,71 +254,25 @@
       transition: var(--transition);
       margin-bottom: 24px;
     }
-    
+
     .signup-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
     }
-    
+
     .signup-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
     }
-    
-    .micro-copy {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-    
-    .micro-copy .highlight {
-      color: #10b981;
-      font-weight: 500;
-    }
-    
-    .login-link {
-      text-align: center;
-      margin-top: 24px;
-    }
-    
-    .login-link a {
-      color: var(--text-primary);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-    
-    .login-link a:hover {
-      color: #10b981;
-    }
-    
-    .terms-privacy {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 20px;
-      line-height: 1.4;
-    }
-    
-    .terms-privacy a {
-      color: #10b981;
-      text-decoration: none;
-    }
-    
-    .terms-privacy a:hover {
-      text-decoration: underline;
-    }
-    
+
     .loading {
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
-    
+
     .spinner {
       width: 16px;
       height: 16px;
@@ -285,36 +281,99 @@
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-    
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    @media (max-width: 480px) {
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+
+    .terms {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .terms a {
+      color: #10b981;
+      text-decoration: none;
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 24px;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 640px) {
       .signup-container {
-        padding: 32px 24px;
+        padding: 24px;
+        margin: 10px;
       }
       
-      .social-buttons {
-        flex-direction: column;
-      }
-      
-      .social-btn {
-        min-width: auto;
+      .logo h1 {
+        font-size: 24px;
       }
     }
   </style>
 </head>
 <body>
   <div class="signup-container">
+    <a href="/login.html" class="back-link">
+      ← Volver al inicio de sesión
+    </a>
+
     <div class="logo">
       <img src="/assets/brand/logo-256.png" alt="FamilyDash" class="logo-image">
       <h1>FamilyDash</h1>
-      <p>Únete a miles de familias organizadas</p>
+      <p>Crea tu cuenta con seguridad avanzada</p>
     </div>
-    
+
     <form id="signupForm">
+      <div class="form-group">
+        <label class="form-label" for="fullName">Nombre completo</label>
+        <input 
+          type="text" 
+          id="fullName" 
+          name="fullName" 
+          class="form-input" 
+          placeholder="Tu nombre completo"
+          required
+        >
+      </div>
+
       <div class="form-group">
         <label class="form-label" for="email">Correo electrónico</label>
         <input 
@@ -322,11 +381,11 @@
           id="email" 
           name="email" 
           class="form-input" 
-          placeholder="tu@email.com"
+          placeholder="tu@correo.com"
           required
         >
       </div>
-      
+
       <div class="form-group">
         <label class="form-label" for="password">Contraseña</label>
         <input 
@@ -334,175 +393,270 @@
           id="password" 
           name="password" 
           class="form-input" 
-          placeholder="Mínimo 8 caracteres"
+          placeholder="Mínimo 6 caracteres"
+          minlength="6"
           required
-          minlength="8"
         >
-        <div class="password-requirements">
-          Mínimo 8 caracteres, incluye números y letras
-        </div>
       </div>
-      
+
       <div class="form-group">
-        <label class="form-label" for="confirmPassword">Confirmar contraseña</label>
+        <label class="form-label" for="dob">Fecha de nacimiento</label>
         <input 
-          type="password" 
-          id="confirmPassword" 
-          name="confirmPassword" 
-          class="form-input" 
-          placeholder="Repite tu contraseña"
+          type="date" 
+          id="dob" 
+          name="dob" 
+          class="form-input"
           required
         >
+        <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">
+          Se usa solo para validar si puedes ser Administrador. No se almacena.
+        </small>
       </div>
-      
-      <div class="micro-copy">
-        <span class="highlight">✅ 100% Gratis</span> • 
-        <span class="highlight">🔒 Sin tarjeta de crédito</span> • 
-        <span class="highlight">🚫 Sin spam</span>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="wantsAdmin" name="wantsAdmin" checked>
+        <label for="wantsAdmin">
+          Quiero ser Administrador de mi familia (si soy adulto)
+        </label>
       </div>
-      
-      <button type="submit" class="signup-btn" id="signupBtn">
-        <span class="btn-text">Crear mi cuenta familiar</span>
-        <span class="loading">
-          <span class="spinner"></span>
-          Creando cuenta...
-        </span>
+
+      <div class="admin-info">
+        <h4>¿Qué significa ser Administrador?</h4>
+        <ul>
+          <li>Crear y gestionar tu familia</li>
+          <li>Invitar miembros con códigos</li>
+          <li>Configurar permisos y roles</li>
+          <li>Acceso al panel web administrativo</li>
+          <li>Gestionar planes y facturación</li>
+        </ul>
+      </div>
+
+      <div class="captcha-container">
+            <!-- CAPTCHA Simulado para testing -->
+            <div id="captchaSimulator" class="captcha-simulator">
+              <div class="captcha-box">
+                <div class="captcha-icon">🔒</div>
+                <div class="captcha-text">Verificación de Seguridad</div>
+                <button type="button" id="simulateCaptcha" class="captcha-btn">
+                  Completar Verificación
+                </button>
+              </div>
+              <div class="captcha-note">
+                <small>⚠️ Modo de prueba - CAPTCHA real pendiente de configuración</small>
+              </div>
+            </div>
+      </div>
+
+      <button type="submit" class="signup-btn" id="signupBtn" disabled>
+        <span id="btnText">Crear cuenta</span>
+        <div class="loading" id="loading" style="display: none;">
+          <div class="spinner"></div>
+          <span>Creando cuenta...</span>
+        </div>
       </button>
-    </form>
-    
-    <div class="social-login">
-      <p>O regístrate con:</p>
-      <div class="social-buttons">
-        <a href="#" class="social-btn" id="googleSignup">
-          <span class="icon">🔐</span>
-          Continuar con Google
-        </a>
-        <a href="#" class="social-btn" id="appleSignup">
-          <span class="icon">🔑</span>
-          Continuar con Apple
-        </a>
+
+      <div id="message"></div>
+
+      <div class="terms">
+        Al crear una cuenta, aceptas nuestros 
+        <a href="/terms" target="_blank">Términos de Servicio</a> 
+        y 
+        <a href="/privacy" target="_blank">Política de Privacidad</a>.
       </div>
-    </div>
-    
-    <div class="login-link">
-      <p>¿Ya tienes cuenta? <a href="/login">Iniciar sesión</a></p>
-    </div>
-    
-    <div class="terms-privacy">
-      Al registrarte, aceptas nuestros 
-      <a href="/terms">Términos de Uso</a> y 
-      <a href="/privacy">Política de Privacidad</a>
-    </div>
+    </form>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInWithCustomToken, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
-  <!-- Google Analytics 4 -->
-  <script src="/js/analytics.js"></script>
-  
-  <!-- Firebase Auth Integration -->
-  <script src="/js/firebase-auth.js"></script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqZSqW2ZU1EZldEuc0rktxMuSYi1hleq8",
+      authDomain: "family-dash-15944.firebaseapp.com",
+      projectId: "family-dash-15944",
+      storageBucket: "family-dash-15944.firebasestorage.app",
+      messagingSenderId: "3950658017",
+      appId: "1:3950658017:web:9d4d2ddea39f8a785e12a0",
+      measurementId: "G-ENM2KQWEPX"
+    };
 
-  <script>
-    // Form validation and submission
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, 'us-central1');
+
+    // Global variables
+    let captchaToken = null;
+
+    // CAPTCHA Simulator (temporary for testing)
+    document.getElementById('simulateCaptcha').addEventListener('click', function() {
+      captchaToken = 'simulated-captcha-token-' + Date.now();
+      document.getElementById('signupBtn').disabled = false;
+      document.getElementById('simulateCaptcha').disabled = true;
+      document.getElementById('simulateCaptcha').textContent = '✅ Verificación completada';
+      document.getElementById('simulateCaptcha').style.background = 'rgba(16, 185, 129, 0.8)';
+      console.log('CAPTCHA simulado completado');
+    });
+
+    // CAPTCHA callbacks (for real Turnstile when configured)
+    window.onCaptchaSuccess = function(token) {
+      captchaToken = token;
+      document.getElementById('signupBtn').disabled = false;
+      console.log('CAPTCHA completed successfully');
+    };
+
+    window.onCaptchaExpired = function() {
+      captchaToken = null;
+      document.getElementById('signupBtn').disabled = true;
+      console.log('CAPTCHA expired');
+    };
+
+    window.onCaptchaError = function(error) {
+      captchaToken = null;
+      document.getElementById('signupBtn').disabled = true;
+      console.error('CAPTCHA error:', error);
+      showMessage('Error en la verificación de seguridad. Inténtalo de nuevo.', 'error');
+    };
+
+    // Form submission
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const email = document.getElementById('email').value;
+      if (!captchaToken) {
+        showMessage('Por favor, completa la verificación de seguridad.', 'error');
+        return;
+      }
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const signupBtn = document.getElementById('signupBtn');
-      
-      // Track signup start
-      if (window.FamilyDashAnalytics) {
-        window.FamilyDashAnalytics.trackSignupStart('email');
-      }
-      
-      // Basic validation
-      if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
-        if (window.FamilyDashAnimations) {
-          window.FamilyDashAnimations.shakeElement(signupBtn);
-        }
+      const dob = document.getElementById('dob').value;
+      const wantsAdmin = document.getElementById('wantsAdmin').checked;
+
+      if (!fullName || !email || !password || !dob) {
+        showMessage('Por favor, completa todos los campos requeridos.', 'error');
         return;
       }
-      
-      if (password.length < 8) {
-        alert('La contraseña debe tener al menos 8 caracteres');
-        if (window.FamilyDashAnimations) {
-          window.FamilyDashAnimations.shakeElement(document.getElementById('password'));
-        }
-        return;
-      }
-      
+
       // Show loading state
-      signupBtn.disabled = true;
-      signupBtn.querySelector('.btn-text').style.display = 'none';
-      signupBtn.querySelector('.loading').style.display = 'flex';
-      
-      // Register with Firebase Auth (REAL)
-      const result = await window.FamilyDashAuth.registerWithEmail(email, password);
-      
-      if (result.success) {
-        alert('¡Registro exitoso! Te hemos enviado un email de verificación. Por favor revisa tu bandeja de entrada.');
-        // Redirect to verification page
-        window.location.href = '/verified?email=' + encodeURIComponent(email) + '&new=true';
-      } else {
-        // Show error
-        alert('Error en el registro: ' + result.error);
+      setLoadingState(true);
+
+      try {
+        // Call the registerUser Cloud Function
+        const registerUser = httpsCallable(functions, 'registerUser');
+        const result = await registerUser({
+          fullName,
+          email,
+          password,
+          dob,
+          wantsAdmin,
+          captchaToken
+        });
+
+        const data = result.data;
+
+        // Sign in with custom token
+        const userCredential = await signInWithCustomToken(auth, data.customToken);
         
-        // Reset button
-        signupBtn.disabled = false;
-        signupBtn.querySelector('.btn-text').style.display = 'block';
-        signupBtn.querySelector('.loading').style.display = 'none';
-        
-        if (window.FamilyDashAnimations) {
-          window.FamilyDashAnimations.shakeElement(signupBtn);
+        // Send email verification
+        await sendEmailVerification(userCredential.user, {
+          url: 'https://family-dash-15944.web.app/verified.html'
+        });
+
+        // Show success message
+        if (data.role === 'parent-admin') {
+          showMessage(
+            '¡Cuenta creada exitosamente! 🎉<br>' +
+            'Has sido asignado como Administrador de familia.<br>' +
+            'Revisa tu correo para verificar tu cuenta.',
+            'success'
+          );
+        } else {
+          showMessage(
+            '¡Cuenta creada exitosamente! 🎉<br>' +
+            'Revisa tu correo para verificar tu cuenta.<br>' +
+            'Puedes activar privilegios de Administrador más tarde.',
+            'success'
+          );
         }
+
+        // Clear form
+        document.getElementById('signupForm').reset();
+        captchaToken = null;
+        document.getElementById('signupBtn').disabled = true;
+
+      } catch (error) {
+        console.error('Registration error:', error);
+        
+        let errorMessage = 'Error al crear la cuenta. Inténtalo de nuevo.';
+        
+        // Mostrar el error completo en consola para debugging
+        console.log('Error completo:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          stack: error.stack
+        });
+        
+        if (error.code === 'functions/failed-precondition') {
+          if (error.message === 'UNDERAGE_ADMIN') {
+            errorMessage = 'Debes ser mayor de edad para ser Administrador. Puedes registrarte como miembro regular.';
+            document.getElementById('wantsAdmin').checked = false;
+          } else if (error.message === 'CAPTCHA verification failed') {
+            errorMessage = 'Error en la verificación de seguridad. Inténtalo de nuevo.';
+          } else {
+            errorMessage = `Error de validación: ${error.message}`;
+          }
+        } else if (error.code === 'functions/invalid-argument') {
+          errorMessage = `Datos inválidos: ${error.message}`;
+        } else if (error.code === 'functions/internal') {
+          errorMessage = 'Error interno del servidor. Inténtalo más tarde.';
+        } else if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'Este correo ya está registrado. <a href="/login.html">Inicia sesión aquí</a>.';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+        } else if (error.code === 'functions/unavailable') {
+          errorMessage = 'Servicio temporalmente no disponible. Inténtalo más tarde.';
+        } else {
+          errorMessage = `Error: ${error.message || error.code || 'Error desconocido'}`;
+        }
+        
+        showMessage(errorMessage, 'error');
+      } finally {
+        setLoadingState(false);
       }
     });
-    
-    // Social login handlers - FUNCTIONAL with Firebase
-    document.getElementById('googleSignup').addEventListener('click', async function(e) {
-      e.preventDefault();
-      if (window.FamilyDashAnalytics) {
-        window.FamilyDashAnalytics.trackSignupStart('google');
-      }
+
+    function showMessage(message, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = message;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
       
-      // Login with Google (REAL)
-      const result = await window.FamilyDashAuth.loginWithGoogle();
+      // Auto-hide after 10 seconds
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 10000);
+    }
+
+    function setLoadingState(loading) {
+      const btn = document.getElementById('signupBtn');
+      const btnText = document.getElementById('btnText');
+      const loadingDiv = document.getElementById('loading');
       
-      if (result.success) {
-        alert('¡Registro exitoso con Google! Redirigiendo...');
-        // Redirect to app or dashboard
-        window.location.href = '/login?success=google';
+      if (loading) {
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        loadingDiv.style.display = 'flex';
       } else {
-        alert('Error: ' + result.error);
+        btn.disabled = !captchaToken;
+        btnText.style.display = 'block';
+        loadingDiv.style.display = 'none';
       }
-    });
-    
-    document.getElementById('appleSignup').addEventListener('click', function(e) {
-      e.preventDefault();
-      if (window.FamilyDashAnalytics) {
-        window.FamilyDashAnalytics.trackSignupStart('apple');
-      }
-      alert('El login con Apple estará disponible próximamente. Por favor usa Google o email/contraseña.');
-    });
-    
-    // Real-time password confirmation validation
-    document.getElementById('confirmPassword').addEventListener('input', function() {
-      const password = document.getElementById('password').value;
-      const confirmPassword = this.value;
-      
-      if (confirmPassword && password !== confirmPassword) {
-        this.style.borderColor = '#ef4444';
-      } else {
-        this.style.borderColor = 'var(--glass-border)';
-      }
-    });
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actualización Requerida - FamilyDash</title>
+  <meta name="description" content="Actualiza tu cuenta para acceder al dashboard de padres de FamilyDash">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--primary-gradient);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: var(--shadow-primary);
+      text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 32px;
+    }
+
+    .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .upgrade-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fbbf24;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .features-list {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .feature-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--success-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .pricing-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      border: 2px solid #fbbf24;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--warning-gradient);
+    }
+
+    .price {
+      font-size: 36px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+
+    .price-period {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .upgrade-button {
+      width: 100%;
+      padding: 16px;
+      background: var(--warning-gradient);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 16px;
+    }
+
+    .upgrade-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+    }
+
+    .upgrade-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .security-note {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--text-primary);
+    }
+
+    .payment-methods {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+      font-size: 24px;
+    }
+
+    .loading {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .user-info {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px;
+        margin: 10px;
+      }
+      
+      .pricing-card {
+        padding: 20px;
+      }
+      
+      .price {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="/assets/brand/logo-256.png" alt="FamilyDash" class="logo-image">
+      <h1>FamilyDash</h1>
+    </div>
+
+    <div class="upgrade-icon">🔒</div>
+    
+    <h2>Actualización Requerida</h2>
+    <p class="subtitle">
+      Para acceder al dashboard de padres, necesitas actualizar tu cuenta a <strong>Padre Administrador</strong>
+    </p>
+
+    <div class="user-info" id="userInfo">
+      <strong>Usuario actual:</strong> <span id="userEmail">Cargando...</span>
+    </div>
+
+    <div class="features-list">
+      <h3 style="margin-bottom: 16px; color: var(--text-primary);">¿Qué incluye ser Padre Administrador?</h3>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Dashboard completo</strong> - Acceso a todas las funciones de gestión familiar</span>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Gestión de miembros</strong> - Agregar y administrar miembros de la familia</span>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Configuración de metas</strong> - Establecer y monitorear objetivos familiares</span>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Calendario familiar</strong> - Organizar eventos y actividades</span>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Reportes y analytics</strong> - Estadísticas detalladas del progreso familiar</span>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span><strong>Soporte prioritario</strong> - Asistencia técnica prioritaria</span>
+      </div>
+    </div>
+
+    <div class="pricing-card">
+      <div class="price">$2.00</div>
+      <div class="price-period">pago único</div>
+      <button class="upgrade-button" id="upgradeButton" onclick="initiateUpgrade()">
+        <span class="loading" id="loadingSpinner"></span>
+        <span id="buttonText">Actualizar a Padre Administrador</span>
+      </button>
+      
+      <div class="payment-methods">
+        <span>💳</span>
+        <span>🏦</span>
+        <span>📱</span>
+      </div>
+      
+      <div class="security-note">
+        🔒 Pago 100% seguro • Sin suscripción recurrente • Acceso inmediato
+      </div>
+    </div>
+
+    <a href="/" class="back-link">← Volver al inicio</a>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-auth.js"></script>
+
+  <script>
+    let currentUser = null;
+
+    // Initialize Firebase
+    window.FamilyDashAuth.initFirebase();
+
+    async function loadUserInfo() {
+      try {
+        currentUser = await window.FamilyDashAuth.getCurrentUser();
+        if (currentUser) {
+          document.getElementById('userEmail').textContent = currentUser.email;
+        } else {
+          // If no user, redirect to login
+          window.location.href = '/login';
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+        document.getElementById('userEmail').textContent = 'Error cargando información';
+      }
+    }
+
+    async function initiateUpgrade() {
+      const button = document.getElementById('upgradeButton');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const buttonText = document.getElementById('buttonText');
+
+      // Disable button and show loading
+      button.disabled = true;
+      loadingSpinner.style.display = 'inline-block';
+      buttonText.textContent = 'Procesando...';
+
+      try {
+        // Here you would integrate with your payment processor
+        // For now, we'll simulate the upgrade process
+        
+        // Update user role in Firestore
+        if (currentUser) {
+          const db = firebase.firestore();
+          await db.collection('users').doc(currentUser.uid).update({
+            role: 'admin',
+            upgradedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            upgradeSource: 'web_dashboard',
+            paymentAmount: 2.00,
+            paymentCurrency: 'USD'
+          });
+
+          // Show success and redirect
+          buttonText.textContent = '¡Actualización exitosa!';
+          loadingSpinner.style.display = 'none';
+          
+          setTimeout(() => {
+            window.location.href = '/admin/dashboard';
+          }, 2000);
+
+        } else {
+          throw new Error('Usuario no autenticado');
+        }
+
+      } catch (error) {
+        console.error('Error during upgrade:', error);
+        
+        // Reset button state
+        button.disabled = false;
+        loadingSpinner.style.display = 'none';
+        buttonText.textContent = 'Actualizar a Padre Administrador';
+        
+        // Show error message
+        alert('Error al procesar la actualización. Por favor intenta de nuevo o contacta soporte.');
+      }
+    }
+
+    // Load user info when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserInfo();
+    });
+
+    // Handle page visibility change
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && !currentUser) {
+        loadUserInfo();
+      }
+    });
+  </script>
+</body>
+</html>

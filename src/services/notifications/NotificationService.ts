@@ -1,5 +1,5 @@
 import { collection, addDoc, onSnapshot, query, orderBy, where, updateDoc, doc, serverTimestamp, Timestamp, getDocs, writeBatch } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '@/config/firebase';
 
 export interface Notification {
     id: string;

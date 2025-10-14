@@ -3,7 +3,7 @@ import { View, Text, Linking, TouchableOpacity, StyleSheet, ScrollView, Alert } 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { theme } from '../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface FAQItem {
     question: string;
@@ -41,16 +41,16 @@ export default function HelpScreen() {
     const navigation = useNavigation();
 
     const handleContactSupport = () => {
-        const mailto = 'mailto:support@familydash.app?subject=FamilyDash Support Request';
+        const mailto = 'mailto:support@family-dash-15944.web.app?subject=FamilyDash Support Request';
         Linking.openURL(mailto).catch(() => {
-            Alert.alert('Error', 'Could not open email client. Please email us at support@familydash.app');
+            Alert.alert('Error', 'Could not open email client. Please email us at support@family-dash-15944.web.app');
         });
     };
 
     const handleOpenDocumentation = () => {
-        const url = 'https://docs.familydash.app';
+        const url = 'https://family-dash-15944.web.app/docs';
         Linking.openURL(url).catch(() => {
-            Alert.alert('Error', 'Could not open documentation. Please visit https://docs.familydash.app');
+            Alert.alert('Error', 'Could not open documentation. Please visit https://family-dash-15944.web.app/docs');
         });
     };
 

@@ -13,7 +13,7 @@ import {
   Timestamp,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db } from '@/config/firebase';
 import { Goal, Milestone, Reflection } from '../types/goals';
 
 const GOALS_COLLECTION = 'goals';

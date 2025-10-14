@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Login Flow - FamilyDash</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 5px;
+    }
+    .test-link:hover {
+      background: #0056b3;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .warning { background: #fff3cd; color: #856404; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Login Flow - FamilyDash</h1>
+  
+  <div class="test-section">
+    <h2>📋 Páginas del Sistema</h2>
+    <p>Verifica que todas las páginas del flujo de login estén funcionando:</p>
+    
+    <a href="/login" class="test-link">🔐 Página de Login Principal</a>
+    <a href="/robust-login" class="test-link">🔒 Página de Login Robusto</a>
+    <a href="/dashboard-redirect.html" class="test-link">🔄 Página de Verificación de Roles</a>
+    <a href="/upgrade-required.html" class="test-link">💳 Página de Actualización</a>
+    <a href="/admin/dashboard" class="test-link">👨‍👩‍👧‍👦 Dashboard de Padres</a>
+    <a href="/admin/system" class="test-link">⚙️ Panel de Super Admin</a>
+  </div>
+
+  <div class="test-section">
+    <h2>🔍 Verificación de URLs</h2>
+    <div id="url-tests">
+      <p>Probando acceso a las páginas...</p>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📝 Instrucciones de Prueba</h2>
+    <ol>
+      <li><strong>Prueba el Login:</strong> Ve a la página de login y prueba iniciar sesión</li>
+      <li><strong>Verifica la Redirección:</strong> Después del login exitoso, deberías ir a dashboard-redirect.html</li>
+      <li><strong>Verifica el Rol:</strong> La página debería verificar tu rol y redirigirte apropiadamente</li>
+      <li><strong>Sin Credenciales en URL:</strong> Las credenciales NO deben aparecer en la barra de direcciones</li>
+    </ol>
+  </div>
+
+  <div class="test-section">
+    <h2>🐛 Debug Information</h2>
+    <p><strong>Usuario de Prueba:</strong> viruizbc@gmail.com</p>
+    <p><strong>Problema Anterior:</strong> Las credenciales aparecían en la URL</p>
+    <p><strong>Solución Implementada:</strong> Firebase compat, preventDefault robusto, novalidate</p>
+  </div>
+
+  <script>
+    // Test page accessibility
+    async function testPageAccess() {
+      const pages = [
+        { name: 'Login Principal', url: '/login' },
+        { name: 'Login Robusto', url: '/robust-login' },
+        { name: 'Dashboard Redirect', url: '/dashboard-redirect.html' },
+        { name: 'Upgrade Required', url: '/upgrade-required.html' },
+        { name: 'Admin Dashboard', url: '/admin/dashboard' },
+        { name: 'System Admin', url: '/admin/system' }
+      ];
+
+      const resultsDiv = document.getElementById('url-tests');
+      
+      for (const page of pages) {
+        try {
+          const response = await fetch(page.url, { method: 'HEAD' });
+          const statusClass = response.ok ? 'success' : 'error';
+          const statusText = response.ok ? '✅ Accesible' : '❌ Error: ' + response.status;
+          
+          resultsDiv.innerHTML += `
+            <div class="status ${statusClass}">
+              <strong>${page.name}:</strong> ${statusText}
+            </div>
+          `;
+        } catch (error) {
+          resultsDiv.innerHTML += `
+            <div class="status error">
+              <strong>${page.name}:</strong> ❌ Error de conexión
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Run tests when page loads
+    document.addEventListener('DOMContentLoaded', testPageAccess);
+  </script>
+</body>
+</html>

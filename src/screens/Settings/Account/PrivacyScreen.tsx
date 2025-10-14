@@ -197,14 +197,14 @@ export default function PrivacyScreen() {
     };
 
     const handlePrivacyPolicy = () => {
-        const url = 'https://familydash.app/privacy';
+        const url = 'https://family-dash-15944.web.app/privacy';
         Linking.openURL(url).catch(() => {
             Alert.alert('Error', 'Could not open privacy policy');
         });
     };
 
     const handleTermsOfService = () => {
-        const url = 'https://familydash.app/terms';
+        const url = 'https://family-dash-15944.web.app/terms';
         Linking.openURL(url).catch(() => {
             Alert.alert('Error', 'Could not open terms of service');
         });

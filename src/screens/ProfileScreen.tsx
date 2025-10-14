@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dim
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Card, Button, Avatar } from '../components/ui/WorkingComponents';
-import { theme } from '../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 import { useProfileStore } from '../modules/profile/store/profileStore';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';

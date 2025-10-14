@@ -11,6 +11,7 @@ import { RealDatabaseService, RealAuthService, trackEvent } from '../../../servi
 import { scheduleTaskNotification } from '../../../services/notificationService';
 import { mockTasks } from '../mock/tasksData';
 import Logger from '../../../services/Logger';
+import { publish } from '../../../lib/eventBus';
 
 interface TasksState {
   tasks: Task[];
@@ -285,10 +286,29 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   },
 
   completeTask: async (id) => {
-    return get().updateTask(id, {
+    const result = await get().updateTask(id, {
       status: 'completed' as TaskStatus,
       progress: 100,
     });
+
+    // Publish event for achievements system
+    if (result.success) {
+      try {
+        const task = get().tasks.find(t => t.id === id);
+        if (task && task.assignedTo) {
+          Logger.debug('🎉 Publishing task.completed event for achievements');
+          publish('task.completed', {
+            userId: task.assignedTo,
+            taskId: id,
+            completedAt: Date.now(),
+          });
+        }
+      } catch (error) {
+        Logger.error('❌ Error publishing task completion event:', error);
+      }
+    }
+
+    return result;
   },
 
   deleteTask: async (id) => {

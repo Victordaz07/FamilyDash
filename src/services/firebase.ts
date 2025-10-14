@@ -24,9 +24,9 @@ export {
   isProduction,
   getEnvironment,
   checkConnectionStatus
-} from '../config/firebase';
+} from '@/config/firebase';
 
 // Re-export the app instance
-export { default } from '../config/firebase';
+export { default } from '@/config/firebase';
 
 console.log('🔥 Firebase running in REAL mode - connected to Firebase services');

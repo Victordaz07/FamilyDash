@@ -16,8 +16,8 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useFamily } from "../../contexts/FamilyContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useFamily } from '@/store';
+import { useAuth } from '@/store';
 
 export default function AddFamilyVisionScreen() {
     const navigation = useNavigation();

@@ -13,7 +13,7 @@ import * as functions from 'firebase-functions';
 // import * as adminFunctions from './admin';
 
 // Import custom email verification
-// import { sendCustomVerification, resendVerificationEmail } from './customEmailVerification';
+import './customEmailVerification';
 
 // Import robust registration functions
 import './registerUser';

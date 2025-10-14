@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { useFamily } from "../../contexts/FamilyContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useFamily } from '@/store';
+import { useAuth } from '@/store';
 
 const screenWidth = Dimensions.get("window").width;
 

@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '@/config/firebase';
 
 export default function VoiceNotesManualTest() {
   const [notes, setNotes] = useState<any[]>([]);

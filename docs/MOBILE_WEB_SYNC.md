@@ -346,9 +346,9 @@ familydash://home           // Dashboard
 
 **Emails Configurados:**
 
-- `support@familydash.app` - Soporte general
-- `privacy@familydash.app` - Privacidad y datos
-- `security@familydash.app` - Seguridad
+- `support@family-dash-15944.web.app` - Soporte general
+- `privacy@family-dash-15944.web.app` - Privacidad y datos
+- `security@family-dash-15944.web.app` - Seguridad
 
 **✅ SINCRONIZADO** - Mismo sistema de soporte
 

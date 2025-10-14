@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mockFamilyMembers, penaltyTypeConfigs, penaltyCategories } from '../mock/penaltiesData';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 interface NewPenaltyModalProps {
   visible: boolean;

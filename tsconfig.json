@@ -14,7 +14,21 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": false,
-    "target": "esnext"
+    "target": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/screens/*": ["src/screens/*"],
+      "@/services/*": ["src/services/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/contexts/*": ["src/contexts/*"],
+      "@/config/*": ["src/config/*"],
+      "@/types/*": ["src/types/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/store/*": ["src/store/*"],
+      "@/modules/*": ["src/modules/*"]
+    }
   },
   "include": [
     "**/*.ts",

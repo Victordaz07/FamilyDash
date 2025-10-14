@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useActivityStore } from '../store/activityStore';
 import { ActivityItem } from '../components/ActivityItem';
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 import { useTranslation } from '../../../locales/i18n';
 
 interface RecentActivityScreenProps {

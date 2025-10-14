@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
 import { createStackNavigator } from '@react-navigation/stack';
 import SimpleAppNavigator from './SimpleAppNavigator';
-import { theme } from '../styles/simpleTheme';
+import { theme } from '@/styles/simpleTheme';
 
 const Stack = createStackNavigator();
 

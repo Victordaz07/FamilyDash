@@ -4,10 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Card, Button } from '../components/ui/WorkingComponents';
-import { theme } from '../styles/simpleTheme';
-import { useAuth } from '../contexts/AuthContext';
+import { theme } from '@/styles/simpleTheme';
+import { useAuth } from '@/store';
 import { useThemeColors, useThemeFonts, useThemeGradient } from '../contexts/ThemeContext';
-import { useSettings } from '../contexts/SettingsContext';
+import { useSettings } from '@/store';
 import { RealAuthService } from '../services/auth/RealAuthService';
 import RealDatabaseService from '../services/database/RealDatabaseService';
 import NotificationsModal from './Settings/NotificationsModal';
@@ -30,8 +30,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [isConnected, setIsConnected] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
-  const [appVersion] = useState('1.3.0');
-  const [buildNumber] = useState('4');
+  const [appVersion] = useState('1.4.0');
+  const [buildNumber] = useState('5');
   const [openNotif, setOpenNotif] = useState(false);
 
   // Theme options
@@ -141,7 +141,21 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
 
               if (result.success) {
                 console.log('✅ Logout successful');
-                Alert.alert('Success', 'Logged out successfully');
+                // Show success message briefly, then navigation will automatically redirect to login
+                Alert.alert(
+                  'Success', 
+                  'Logged out successfully',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        // Navigation will automatically redirect to login screen
+                        // because user is now null in AuthContext
+                        console.log('🔐 Redirecting to login screen...');
+                      }
+                    }
+                  ]
+                );
               } else {
                 console.error('❌ Logout failed:', result.error);
                 Alert.alert('Error', result.error || 'Logout failed');
