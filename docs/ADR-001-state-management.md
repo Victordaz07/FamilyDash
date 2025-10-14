@@ -90,7 +90,7 @@ interface TasksState {
 interface AchievementsState {
   achievements: Record<string, { unlocked: boolean; unlockedAt?: number; progress?: number }>;
   points: number;
-  stats: { totalCompleted, dayCompleted, streak, lastActiveDay, weekWindow };
+  stats: { totalCompleted; dayCompleted; streak; lastActiveDay; weekWindow };
   checkAndAward: (event) => void;
   unlock: (achId: string) => void;
   addPoints: (n: number) => void;

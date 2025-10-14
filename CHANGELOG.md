@@ -4,6 +4,18 @@
 
 ### 🎉 Major Refactor - Complete Architecture Overhaul
 
+### 🏆 Achievements & Medals System - NEW!
+
+#### ✨ Features
+- **8 Achievements** across 4 categories (Getting Started, Consistency, Helper, Habit Builder)
+- **Points System**: 345 total points available
+- **Streak Tracking**: Consecutive days with activity
+- **Progress Bars**: Real-time progress for each achievement
+- **Real-time Sync**: Achievements and stats synced with Firestore
+- **Event System**: Automatic triggers from task completion
+- **Idempotent Unlocks**: Each achievement awards points exactly once
+- **Beautiful UI**: Category tabs, stats cards, achievement grid with detail modal
+
 #### ✨ Added
 
 - **Unified Store**: Single Zustand store replacing multiple fragmented stores
