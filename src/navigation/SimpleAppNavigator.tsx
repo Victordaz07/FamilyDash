@@ -8,12 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
 import { FirebaseTest } from '@/screens/FirebaseTest';
-// import TasksScreen from '@/modules/tasks/TasksScreen'; // Replaced with new TaskListScreen
 import TaskDetails from '@/modules/tasks/screens/TaskDetails';
-// import FamilyVisionNavigator from '@/screens/FamilyVision/FamilyVisionNavigator'; // REMOVED
+import { TasksScreen } from '@/screens/Tasks/TasksScreen';
+import TaskListScreen from '@/screens/Tasks/TaskListScreen';
 import FamilyVoteScreen from '@/screens/FamilyVoteScreen';
 import FamilyChatScreen from '@/screens/FamilyChatScreen';
-import NotificationsScreen from '@/modules/notifications/screens/NotificationsScreen';
+import NotificationsScreen from '@/screens/Notifications/NotificationsScreen';
 import SafeRoomWrapper from '@/modules/safeRoom/screens/SafeRoomWrapper';
 import NewEmotionalEntry from '@/modules/safeRoom/screens/NewEmotionalEntry';
 import ProfileScreen from '@/screens/ProfileScreen';

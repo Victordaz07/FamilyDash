@@ -13,13 +13,14 @@ import SimpleAppNavigator from './SimpleAppNavigator';
 import { LoginScreen } from '@/screens/LoginScreen';
 import { RegisterScreen } from '@/screens/RegisterScreen';
 import VerifyEmailScreen from '@/screens/VerifyEmailScreen';
-import { useAuth } from '@/store';
+import { useAppStore } from '@/store';
 import { theme } from '@/styles/simpleTheme';
 
 const AuthStack = createStackNavigator();
 
 const ConditionalNavigator: React.FC = () => {
-    const { user, isLoading } = useAuth();
+    const { user } = useAppStore();
+  const isLoading = false; // No loading state in unified store
     
     // Show loading screen while checking auth state
     if (isLoading) {
