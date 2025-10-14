@@ -89,7 +89,7 @@ import TestingReports from '@/screens/TestingReports';
 
 // Import Quick Actions module screens
 import { FamilyMembersScreen } from '@/modules/quickActions/screens/FamilyMembersScreen';
-import { AchievementsScreen } from '@/modules/quickActions/screens/AchievementsScreen';
+import { AchievementsScreen } from '@/screens/Achievements/AchievementsScreen';
 import { RecentActivityScreen } from '@/modules/quickActions/screens/RecentActivityScreen';
 import { StatisticsScreen } from '@/modules/quickActions/screens/StatisticsScreen';
 
