@@ -7,6 +7,7 @@
 ### 🏆 Achievements & Medals System - NEW!
 
 #### ✨ Features
+
 - **8 Achievements** across 4 categories (Getting Started, Consistency, Helper, Habit Builder)
 - **Points System**: 345 total points available
 - **Streak Tracking**: Consecutive days with activity
@@ -94,21 +95,21 @@ Total: 5 tests passing
 
 ```typescript
 // BEFORE
-import { useFamilyStore } from '../store/familyStore';
-import { useGoalsStore } from '../store/goalsSlice';
+import { useFamilyStore } from "../store/familyStore";
+import { useGoalsStore } from "../store/goalsSlice";
 
 // AFTER
-import { useAppStore } from '@/store';
+import { useAppStore } from "@/store";
 ```
 
 ### Import Path Change
 
 ```typescript
 // BEFORE
-import { theme } from '../../../styles/simpleTheme';
+import { theme } from "../../../styles/simpleTheme";
 
 // AFTER
-import { theme } from '@/styles/simpleTheme';
+import { theme } from "@/styles/simpleTheme";
 ```
 
 ---

@@ -58,13 +58,13 @@ src/
 
 ### **✅ Achievement Catalog (8 Total)**
 
-| Category | Achievements | Total Points Available |
-|----------|--------------|------------------------|
-| Getting Started | 3 | 85 pts |
-| Consistency | 3 | 140 pts |
-| Helper | 1 | 40 pts |
-| Habit Builder | 1 | 80 pts |
-| **TOTAL** | **8** | **345 pts** |
+| Category        | Achievements | Total Points Available |
+| --------------- | ------------ | ---------------------- |
+| Getting Started | 3            | 85 pts                 |
+| Consistency     | 3            | 140 pts                |
+| Helper          | 1            | 40 pts                 |
+| Habit Builder   | 1            | 80 pts                 |
+| **TOTAL**       | **8**        | **345 pts**            |
 
 ### **✅ Tracking Systems**
 
@@ -107,13 +107,10 @@ Time:        ~60s
 
 1. **first_task unlock** ✅
    - Complete 1 task → unlock + 10 pts
-   
 2. **five_tasks unlock** ✅
    - Complete 5 tasks → unlock first_task + five_tasks
-   
 3. **Idempotency** ✅
    - Unlock same achievement twice → points only awarded once
-   
 4. **day_5_tasks unlock** ✅
    - Complete 5 tasks in one day → unlock + 40 pts
 
@@ -170,7 +167,6 @@ Week 1 (Day 7):
 - **Achievement Cards**:
   - **Locked**: Gray gradient, progress bar, opacity 0.7
   - **Unlocked**: Green gradient, checkmark badge, full opacity
-  
 - **Detail Modal**: Tap card → full achievement details + unlock date
 
 ---
@@ -228,12 +224,12 @@ service cloud.firestore {
     match /users/{uid}/tasks/{taskId} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
-    
+
     // Achievements
     match /users/{uid}/achievements/{achId} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
-    
+
     // Stats
     match /users/{uid}/stats {
       allow read, write: if request.auth != null && request.auth.uid == uid;
@@ -243,6 +239,7 @@ service cloud.firestore {
 ```
 
 **Deploy**:
+
 ```bash
 firebase deploy --only firestore:rules
 ```
@@ -272,6 +269,7 @@ firebase deploy --only firestore:rules
 ## ✅ **Validation Checklist**
 
 ### **Functionality**
+
 - [x] Achievements defined with categories
 - [x] Points system working
 - [x] Progress tracking implemented
@@ -281,6 +279,7 @@ firebase deploy --only firestore:rules
 - [x] Triggers wired (task_completed, login_day)
 
 ### **Sync**
+
 - [x] achievementsSync service created
 - [x] Pull initial on auth
 - [x] Live updates via onSnapshot
@@ -289,6 +288,7 @@ firebase deploy --only firestore:rules
 - [x] Bootstrap in App.tsx
 
 ### **UI**
+
 - [x] AchievementsScreen created
 - [x] AchievementCard component
 - [x] Category filtering
@@ -298,6 +298,7 @@ firebase deploy --only firestore:rules
 - [x] Navigation integrated
 
 ### **Testing**
+
 - [x] 9 tests passing
 - [x] Unlock logic tested
 - [x] Idempotency verified
@@ -305,6 +306,7 @@ firebase deploy --only firestore:rules
 - [x] Mocks for Firebase
 
 ### **Documentation**
+
 - [x] achievements.md created
 - [x] ADR-001 updated
 - [x] Firestore rules documented
@@ -334,18 +336,21 @@ firebase deploy --only firestore:rules
 ## 🎯 **Next Steps**
 
 ### **Immediate**
+
 - [ ] Test in device/emulator
 - [ ] Verify Firebase Console shows achievements
 - [ ] Test streak across multiple days
 - [ ] Verify points calculation
 
 ### **Short Term**
+
 - [ ] Add confetti animation on unlock (Lottie)
 - [ ] Toast notifications for achievements
 - [ ] Sound effects on unlock
 - [ ] Leaderboard view
 
 ### **Long Term**
+
 - [ ] Family-wide achievements
 - [ ] Custom achievements by parents
 - [ ] Achievement sharing
@@ -428,7 +433,7 @@ export async function pushStats() {
 ✅ **Real-time Sync** with Firestore  
 ✅ **Beautiful UI** with cards and progress bars  
 ✅ **9 Tests Passing** with comprehensive coverage  
-✅ **Complete Documentation** with examples and troubleshooting  
+✅ **Complete Documentation** with examples and troubleshooting
 
 ### **Stats**
 
@@ -453,16 +458,16 @@ export async function pushStats() {
 
 ## 🎯 **Definition of Done - ACHIEVEMENTS**
 
-| Criterion | Status | Details |
-|-----------|--------|---------|
-| **Definitions** | ✅ | 8 achievements across 4 categories |
-| **Zustand Slice** | ✅ | Points, progress, streak, week window |
-| **Triggers** | ✅ | task_completed, login_day |
-| **Firestore Sync** | ✅ | achievements + stats collections |
-| **UI Components** | ✅ | Screen + Card with progress |
-| **Tests** | ✅ | 4 unlock tests passing |
-| **Documentation** | ✅ | Complete guides + rules |
-| **Integration** | ✅ | Wired to Tasks system |
+| Criterion          | Status | Details                               |
+| ------------------ | ------ | ------------------------------------- |
+| **Definitions**    | ✅     | 8 achievements across 4 categories    |
+| **Zustand Slice**  | ✅     | Points, progress, streak, week window |
+| **Triggers**       | ✅     | task_completed, login_day             |
+| **Firestore Sync** | ✅     | achievements + stats collections      |
+| **UI Components**  | ✅     | Screen + Card with progress           |
+| **Tests**          | ✅     | 4 unlock tests passing                |
+| **Documentation**  | ✅     | Complete guides + rules               |
+| **Integration**    | ✅     | Wired to Tasks system                 |
 
 ---
 
