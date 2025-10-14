@@ -14,10 +14,10 @@ import * as Notifications from 'expo-notifications';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ConditionalNavigator from '@/navigation/ConditionalNavigator';
 import { preloadCriticalComponents } from '@/utils/lazyLoading';
-import { AppProvider } from '@/store';
+import { startTasksSync } from '@/services/tasksSync';
 
 // Initialize Firebase configuration (centralized)
-import '@/config/firebase';
+import '@/services/firebase';
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -44,20 +44,22 @@ export default function App() {
   useEffect(() => {
     // Preload critical components on app start
     preloadCriticalComponents().catch(console.warn);
+    
+    // Start Firestore sync for tasks
+    const stopSync = startTasksSync();
+    return () => { if (stopSync) stopSync(); };
   }, []);
 
   return (
     <ErrorBoundary>
-      <AppProvider>
-        <NavigationContainer>
-          <SafeAreaProvider>
-            <Suspense fallback={<AppLoading />}>
-              <StatusBar style="light" />
-              <ConditionalNavigator />
-            </Suspense>
-          </SafeAreaProvider>
-        </NavigationContainer>
-      </AppProvider>
+      <NavigationContainer>
+        <SafeAreaProvider>
+          <Suspense fallback={<AppLoading />}>
+            <StatusBar style="light" />
+            <ConditionalNavigator />
+          </Suspense>
+        </SafeAreaProvider>
+      </NavigationContainer>
     </ErrorBoundary>
   );
 }
