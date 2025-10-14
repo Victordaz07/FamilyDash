@@ -41,11 +41,12 @@ export const useAppStore = create<AppState>()(
         const cur = get().items[id];
         if (!cur) return;
         const wasDone = cur.done;
-        set({ items: { ...get().items, [id]: { ...cur, done: !cur.done } } });
+        const newDone = !cur.done;
+        set({ items: { ...get().items, [id]: { ...cur, done: newDone } } });
         void pushTaskUpdate(id);
         
         // Trigger achievement check if task was completed
-        if (!wasDone && !cur.done) {
+        if (!wasDone && newDone) {
           get().checkAndAward({ type: 'task_completed', payload: { id } });
         }
       },

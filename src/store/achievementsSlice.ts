@@ -4,6 +4,7 @@
  */
 
 import { ACHIEVEMENTS, AchievementDefinition } from "@/features/achievements/definitions";
+import { pushUnlock, pushStats } from "@/services/achievementsSync";
 
 export interface AchievementState {
   unlocked: boolean;
@@ -154,6 +155,9 @@ export const createAchievementsSlice = (set: any, get: any) => ({
     
     state.addPoints(def.points);
     
+    // Push to Firestore
+    void pushUnlock(achId);
+    
     // Show notification (future: use toast/confetti)
     console.log(`🏆 Achievement unlocked: ${def.title} (+${def.points} points)`);
   },
@@ -164,6 +168,7 @@ export const createAchievementsSlice = (set: any, get: any) => ({
   addPoints: (n: number) => {
     const state = get();
     set({ points: state.points + n });
+    void pushStats();
   },
   
   /**
@@ -243,5 +248,8 @@ export const createAchievementsSlice = (set: any, get: any) => ({
         weekWindow: newWeekWindow,
       },
     });
+    
+    // Push to Firestore (throttled)
+    void pushStats();
   },
 });

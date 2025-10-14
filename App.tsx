@@ -15,6 +15,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import ConditionalNavigator from '@/navigation/ConditionalNavigator';
 import { preloadCriticalComponents } from '@/utils/lazyLoading';
 import { startTasksSync } from '@/services/tasksSync';
+import { startAchievementsSync } from '@/services/achievementsSync';
 import { analytics } from '@/analytics/events';
 
 // Initialize Firebase configuration (centralized)
@@ -46,13 +47,17 @@ export default function App() {
     // Preload critical components on app start
     preloadCriticalComponents().catch(console.warn);
     
-    // Start Firestore sync for tasks
-    const stopSync = startTasksSync();
+    // Start Firestore sync for tasks and achievements
+    const stopTasksSync = startTasksSync();
+    const stopAchievementsSync = startAchievementsSync();
     
     // Emit login_day event for streak tracking
     analytics.loginDay();
     
-    return () => { if (stopSync) stopSync(); };
+    return () => { 
+      if (stopTasksSync) stopTasksSync();
+      if (stopAchievementsSync) stopAchievementsSync();
+    };
   }, []);
 
   return (
