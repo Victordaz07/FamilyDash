@@ -2,11 +2,11 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from '../locales/i18n';
-import { useFamilyDashStore } from '../state/store';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-// import { useFamilyStore } from '../store/familyStore'; // MOVED TO GRAVEYARD
+import { useTranslation } from '@/locales/i18n';
+import { useFamilyDashStore } from '@/state/store';
+import { useTasksStore } from '@/modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
+// import { useFamilyStore } from '@/store/familyStore'; // MOVED TO GRAVEYARD
 import { theme } from '@/styles/simpleTheme';
 
 // Performance optimizations - using React built-in hooks

@@ -2,20 +2,18 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Dimensions, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useFamilyDashStore } from '../state/store';
-import { useTasksStore } from '../modules/tasks/store/tasksStore';
-import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-// import { useFamilyStore } from '../store/familyStore'; // MOVED TO GRAVEYARD
-import { useProfileStore } from '../modules/profile/store/profileStore';
-import { theme } from '@/styles/simpleTheme';
-import { useSettings } from '@/store';
-import { useNotifications } from '../hooks/useNotifications';
-import { DeveloperModeToggle } from '../components/DeveloperModeToggle';
-import { DeveloperPanel } from '../components/DeveloperPanel';
-import { AchievementsWidget } from '../components/home/AchievementsWidget';
-import { dailyNoPenaltyTick } from '../modules/quickActions/store/achievementsStore';
-import RealDatabaseService from '../services/database/RealDatabaseService';
-import Logger from '../services/Logger';
+import { useFamilyDashStore } from '@/state/store';
+import { useTasksStore } from '@/modules/tasks/store/tasksStore';
+import { usePenaltiesStore } from '@/modules/penalties/store/penaltiesStore';
+// import { useFamilyStore } from '@/store/familyStore'; // MOVED TO GRAVEYARD
+import { useProfileStore } from '@/modules/profile/store/profileStore';
+import { useNotifications } from '@/hooks/useNotifications';
+import { DeveloperModeToggle } from '@/components/DeveloperModeToggle';
+import { DeveloperPanel } from '@/components/DeveloperPanel';
+import { AchievementsWidget } from '@/components/home/AchievementsWidget';
+import { dailyNoPenaltyTick } from '@/modules/quickActions/store/achievementsStore';
+import RealDatabaseService from '@/services/database/RealDatabaseService';
+import Logger from '@/services/Logger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
