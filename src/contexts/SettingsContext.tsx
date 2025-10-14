@@ -84,3 +84,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
         </SettingsContext.Provider>
     );
 };
+
+
+
+

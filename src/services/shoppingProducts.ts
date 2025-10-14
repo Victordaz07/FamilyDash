@@ -37,3 +37,7 @@ export async function upsertProduct(p: ShoppingProduct) {
   return ref.id;
 }
 
+
+
+
+

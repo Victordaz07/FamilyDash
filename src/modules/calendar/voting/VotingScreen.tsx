@@ -269,3 +269,7 @@ const styles = StyleSheet.create({
 });
 
 export default VotingScreen;
+
+
+
+

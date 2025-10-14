@@ -74,3 +74,7 @@ export const mockAchievements: Achievement[] = [
         maxProgress: 20,
     },
 ];
+
+
+
+

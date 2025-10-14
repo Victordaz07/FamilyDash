@@ -212,3 +212,7 @@ export const log = {
   error: (message: string, error?: any) => Logger.error(message, error),
   fatal: (message: string, error?: any) => Logger.fatal(message, error),
 };
+
+
+
+

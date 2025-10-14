@@ -38,3 +38,7 @@ console.log(`🔥 Firebase initialized (simplified) with project: ${firebaseConf
 // Export Firebase instances
 export { app, db, storage, firebaseConfig };
 export default app;
+
+
+
+

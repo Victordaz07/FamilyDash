@@ -194,3 +194,6 @@ export const TasksWidget: React.FC<{ data: any; onPress: () => void }> = ({ data
 export const CalendarWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
 export const WeatherWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
 export const FamilyStatsWidget: React.FC<{ data: any; onPress: () => void }> = ({ data, onPress }) => null;
+
+
+

@@ -1037,3 +1037,7 @@ export class MacOSAppManager {
     return this.currentScale;
   }
 }
+
+
+
+

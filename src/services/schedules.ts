@@ -78,3 +78,7 @@ export async function updateSchedule(id: string, patch: Partial<FamilySchedule>)
 export async function deleteSchedule(id: string) {
   await deleteDoc(doc(db, COL, id));
 }
+
+
+
+

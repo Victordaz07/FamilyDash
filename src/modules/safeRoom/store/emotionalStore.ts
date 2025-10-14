@@ -137,3 +137,6 @@ export const useEmotionalStore = create<EmotionalState>((set, get) => ({
         get().saveMessages();
     },
 }));
+
+
+

@@ -18,7 +18,7 @@ import { startTasksSync } from '@/services/tasksSync';
 import { startAchievementsSync } from '@/services/achievementsSync';
 import { analytics } from '@/analytics/events';
 import { useAppStore } from '@/store';
-import { scheduleDailyReminder, initializeNotificationChannels } from '@/services/notifications/expoNotifications';
+import { scheduleDailyReminder, initializeNotificationChannels, getPushToken } from '@/services/notifications/expoNotifications';
 
 // Initialize Firebase configuration (centralized)
 import '@/services/firebase';
@@ -62,6 +62,9 @@ export default function App() {
     
     // Schedule daily reminder
     scheduleDailyReminder().catch(console.warn);
+    
+    // Register for push notifications and get token
+    getPushToken().catch(console.warn);
     
     return () => { 
       if (stopTasksSync) stopTasksSync();

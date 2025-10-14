@@ -88,3 +88,7 @@ export default function GoalInfoScreen({ navigation }: GoalInfoScreenProps) {
     </View>
   );
 }
+
+
+
+

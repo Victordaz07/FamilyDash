@@ -86,3 +86,7 @@ export async function pushTaskDelete(id: string) {
     await deleteDoc(doc(db, "users", uid, "tasks", id));
   } catch {}
 }
+
+
+
+

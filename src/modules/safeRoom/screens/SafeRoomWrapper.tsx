@@ -6,3 +6,7 @@ const SafeRoomWrapper = ({ navigation, route }: any) => {
 };
 
 export default SafeRoomWrapper;
+
+
+
+

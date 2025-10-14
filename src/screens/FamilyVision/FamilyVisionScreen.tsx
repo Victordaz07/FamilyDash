@@ -482,3 +482,7 @@ const styles = StyleSheet.create({
     },
     ctaText: { color: "#fff", fontWeight: "700", marginLeft: 8 },
 });
+
+
+
+

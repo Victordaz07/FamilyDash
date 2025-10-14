@@ -148,3 +148,7 @@ export async function initializeNotificationChannels(): Promise<void> {
     await createAndroidChannel('general', 'General', Notifications.AndroidImportance.DEFAULT);
   }
 }
+
+
+
+

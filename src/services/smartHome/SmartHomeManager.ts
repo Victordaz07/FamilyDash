@@ -866,3 +866,7 @@ export class SmartHomeManager {
 
 export default SmartHomeManager;
 
+
+
+
+

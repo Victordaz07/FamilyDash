@@ -20,3 +20,7 @@ const SimpleNavigator: React.FC = () => {
 };
 
 export default SimpleNavigator;
+
+
+
+

@@ -57,3 +57,7 @@ class SettingsService {
 }
 
 export default SettingsService.getInstance();
+
+
+
+

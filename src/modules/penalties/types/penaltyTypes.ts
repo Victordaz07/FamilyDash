@@ -57,3 +57,7 @@ export interface PenaltySelectionMethod {
     description: string;
     icon: string;
 }
+
+
+
+

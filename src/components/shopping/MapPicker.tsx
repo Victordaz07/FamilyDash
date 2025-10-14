@@ -11,3 +11,7 @@ export default function MapPicker({ initial, onPick }: Props) {
   return <MapPickerFallback initial={initial} onPick={onPick} />;
 }
 
+
+
+
+

@@ -74,3 +74,7 @@ export const mockActivityLogs: ActivityLog[] = [
         details: 'Estudio de 1 hora completado',
     },
 ];
+
+
+
+

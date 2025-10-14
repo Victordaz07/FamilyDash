@@ -249,3 +249,7 @@ const styles = StyleSheet.create({
   btnGhost:{ backgroundColor:"#eef2ff" },
   btnGhostText:{ color:"#111827", fontWeight:"800" },
 });
+
+
+
+

@@ -102,3 +102,7 @@ export type ProfileStackScreenProps<T extends keyof ProfileStackParamList> = {
     params: ProfileStackParamList[T];
   };
 };
+
+
+
+

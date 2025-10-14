@@ -18,3 +18,7 @@ export const categoryConfig = {
     health: { color: '#EF4444', icon: 'medical', name: 'Health' },
     other: { color: '#6B7280', icon: 'ellipsis-horizontal', name: 'Other' }
 };
+
+
+
+

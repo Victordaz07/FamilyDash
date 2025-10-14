@@ -156,3 +156,7 @@ export const useProtectedAction = (requiredPermission: string) => {
 
 export default ProtectedRoute;
 
+
+
+
+

@@ -204,3 +204,6 @@ export const useTranslation = () => {
 
 // For compatibility with react-i18next
 export default i18n;
+
+
+

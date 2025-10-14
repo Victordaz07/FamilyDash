@@ -128,3 +128,7 @@ const styles = StyleSheet.create({
   ghostTxt: { color: "#111827", fontWeight: "700", fontSize: 16 },
 });
 
+
+
+
+

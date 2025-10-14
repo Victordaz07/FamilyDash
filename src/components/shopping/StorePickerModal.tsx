@@ -90,3 +90,7 @@ const styles = StyleSheet.create({
   mapBtnTxt:{ color:"#fff", fontWeight:"800" },
 });
 
+
+
+
+

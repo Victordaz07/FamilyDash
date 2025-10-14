@@ -62,3 +62,7 @@ export const withLazyErrorBoundary = <P extends {}>(
 ) => {
   return Component; // Simplified - just return the component as-is
 };
+
+
+
+

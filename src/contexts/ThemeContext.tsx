@@ -515,3 +515,7 @@ export const useThemeGradient = () => {
     const { theme } = useTheme();
     return theme.color.gradient;
 };
+
+
+
+

@@ -278,3 +278,7 @@ const styles = StyleSheet.create({
   box: { width: "100%", height: 220, borderRadius: 12, overflow: "hidden", backgroundColor: "#000" },
   loading: { position: "absolute", top: 8, right: 8 }
 });
+
+
+
+

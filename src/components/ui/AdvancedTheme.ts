@@ -425,3 +425,7 @@ export type ThemeSpacingType = typeof defaultTheme.spacing;
 export type ThemeShadowsType = typeof defaultTheme.shadows;
 export type ThemeBordersType = typeof defaultTheme.borders;
 export type ThemeLayoutType = typeof defaultTheme.layout;
+
+
+
+

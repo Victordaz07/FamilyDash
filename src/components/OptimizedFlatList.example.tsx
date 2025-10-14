@@ -163,3 +163,7 @@ const styles = StyleSheet.create({
  * 10. ✅ Consider react-native-fast-image for images
  */
 
+
+
+
+

@@ -50,3 +50,7 @@ export function useEmailVerificationGate() {
 
   return { loading, verified };
 }
+
+
+
+

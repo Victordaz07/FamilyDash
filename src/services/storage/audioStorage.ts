@@ -118,3 +118,7 @@ export async function uploadTextAndCreateDoc(
   const docRef = await addDoc(collection(db, "text_entries"), docData);
   return docRef.id;
 }
+
+
+
+

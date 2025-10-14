@@ -38,3 +38,7 @@ export const firebaseConfig = {
 // 6. Copia la configuración y reemplaza arriba
 // 7. Renombra este archivo a 'firebaseConfig.ts'
 // 8. ¡Listo! Tu app estará conectada a Firebase real
+
+
+
+

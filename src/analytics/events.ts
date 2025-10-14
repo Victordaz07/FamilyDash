@@ -38,3 +38,7 @@ export const analytics = {
   taskCompleted: (taskId: string) => emit('task_completed', { id: taskId }),
   loginDay: () => emit('login_day'),
 };
+
+
+
+

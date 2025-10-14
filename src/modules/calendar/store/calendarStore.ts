@@ -355,3 +355,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
 // Auto-initialize calendar when store is created
 useCalendarStore.getState().initializeCalendar();
+
+
+
+

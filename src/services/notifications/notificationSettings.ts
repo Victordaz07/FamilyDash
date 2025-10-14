@@ -37,3 +37,7 @@ export async function saveNotificationSettings(settings: NotificationSettings) {
   await setDoc(ref, payload, { merge: true });
   return id;
 }
+
+
+
+

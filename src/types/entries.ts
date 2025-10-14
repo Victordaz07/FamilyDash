@@ -52,3 +52,7 @@ export type TextEntryDoc = {
   kind: "text";
   createdAt: any;
 };
+
+
+
+
