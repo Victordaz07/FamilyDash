@@ -5,10 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store';
 import { mockFamilyMembers } from '../mock/tasksData';
-import InstructionsList from '@/components/InstructionsList';
-import AttachmentsList from '@/components/AttachmentsList';
-import ProgressTracker from '@/components/ProgressTracker';
-import ParentNotes from '@/components/ParentNotes';
+// import InstructionsList from '@/components/InstructionsList';
+// import AttachmentsList from '@/components/AttachmentsList';
+// import ProgressTracker from '@/components/ProgressTracker';
+// import ParentNotes from '@/components/ParentNotes';
 import { theme } from '@/styles/simpleTheme';
 
 interface TaskDetailsProps {
@@ -207,30 +207,30 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ navigation, route }) => {
         </View>
 
         {/* Instructions */}
-        <InstructionsList
+        {/* <InstructionsList
           steps={task.steps}
           completedSteps={completedSteps}
-        />
+        /> */}
 
         {/* Attachments */}
-        {task.attachments && task.attachments.length > 0 && (
+        {/* {task.attachments && task.attachments.length > 0 && (
           <AttachmentsList
             attachments={task.attachments}
             onAttachmentPress={handleAttachmentPress}
           />
-        )}
+        )} */}
 
         {/* Progress */}
-        <ProgressTracker
+        {/* <ProgressTracker
           progress={task.progress}
           points={task.points}
           earnedPoints={task.status === 'completed' ? task.points : Math.floor(task.points * (task.progress / 100))}
           completedSteps={completedSteps.length}
           totalSteps={task.steps.length}
-        />
+        /> */}
 
         {/* Parent Notes */}
-        {task.notes && task.notes.length > 0 && (
+        {/* {task.notes && task.notes.length > 0 && (
           <ParentNotes
             notes={task.notes}
             memberAvatars={{
@@ -238,7 +238,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ navigation, route }) => {
               dad: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
             }}
           />
-        )}
+        )} */}
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
