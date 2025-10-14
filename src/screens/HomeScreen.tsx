@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFamilyDashStore } from '../state/store';
 import { useTasksStore } from '../modules/tasks/store/tasksStore';
 import { usePenaltiesStore } from '../modules/penalties/store/penaltiesStore';
-import { useFamilyStore } from '../store/familyStore';
+// import { useFamilyStore } from '../store/familyStore'; // MOVED TO GRAVEYARD
 import { useProfileStore } from '../modules/profile/store/profileStore';
 import { theme } from '@/styles/simpleTheme';
 import { useSettings } from '@/store';
@@ -28,7 +28,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     const { currentUser } = useProfileStore();
     const { tasks, addTask, updateTask } = useTasksStore();
     const { penalties, addPenalty } = usePenaltiesStore();
-    const { familyMembers: familyMembersFromStore } = useFamilyStore();
+    // const { familyMembers: familyMembersFromStore } = useFamilyStore(); // MOVED TO GRAVEYARD
     const { settings, toggleDeveloperMode } = useSettings();
     const { unreadCount } = useNotifications();
 
