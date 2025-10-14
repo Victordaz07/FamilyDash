@@ -40,8 +40,16 @@ We implemented a unified architecture with the following principles:
 ### 5. Feature Focus: Tasks
 
 - Simple CRUD interface as proof of concept
-- Local state with future Firestore sync capability
+- Real-time Firestore sync (pull, live, push)
 - Dashboard integration via quick actions
+
+### 6. Achievements System
+
+- Achievement definitions with triggers and thresholds
+- Points and progress tracking
+- Streak calculation for consecutive days
+- Real-time Firestore sync for achievements and stats
+- Gamification to encourage task completion
 
 ## Consequences
 
@@ -77,6 +85,16 @@ interface TasksState {
   add: (t: Omit<Task, 'id' | 'createdAt'>) => string;
   toggle: (id: string) => void;
   remove: (id: string) => void;
+}
+
+interface AchievementsState {
+  achievements: Record<string, { unlocked: boolean; unlockedAt?: number; progress?: number }>;
+  points: number;
+  stats: { totalCompleted, dayCompleted, streak, lastActiveDay, weekWindow };
+  checkAndAward: (event) => void;
+  unlock: (achId: string) => void;
+  addPoints: (n: number) => void;
+  bumpDayCounters: (opts) => void;
 }
 ```
 
