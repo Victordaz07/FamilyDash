@@ -103,6 +103,20 @@ const relativePatterns = [
   { from: '"../../../data/', to: '"@/data/' },
   { from: "'../../../config/", to: "'@/config/" },
   { from: '"../../../config/', to: '"@/config/' },
+  
+  // Four levels up (rare but exists)
+  { from: "'../../../../services", to: "'@/services" },
+  { from: '"../../../../services', to: '"@/services' },
+  { from: "'../../../services", to: "'@/services" },
+  { from: '"../../../services', to: '"@/services' },
+  { from: "'../../../lib/", to: "'@/lib/" },
+  { from: '"../../../lib/', to: '"@/lib/' },
+  
+  // Module-relative imports (within same module)
+  { from: "'../mock/", to: "'@/modules/" },
+  { from: '"../mock/', to: '"@/modules/' },
+  { from: "'../store/", to: "'@/modules/" },
+  { from: '"../store/', to: '"@/modules/' },
 ];
 
 function migrateFile(filePath) {
