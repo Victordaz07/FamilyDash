@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTasksStore } from '@/store/tasksStore';
+import { useAppStore } from '@/store';
 import { mockFamilyMembers } from '../mock/tasksData';
 import InstructionsList from '@/components/InstructionsList';
 import AttachmentsList from '@/components/AttachmentsList';
@@ -19,19 +19,19 @@ interface TaskDetailsProps {
 const TaskDetails: React.FC<TaskDetailsProps> = ({ navigation, route }) => {
   const { taskId } = route.params;
   const insets = useSafeAreaInsets();
-  const { tasks, setSelectedTask, updateTask, completeTask } = useTasksStore();
+  const { items: tasks, toggle: completeTask } = useAppStore();
   
-  const task = tasks.find(t => t.id === taskId);
+  const task = tasks[taskId]; // tasks es un Record<string, Task>, no un array
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   useEffect(() => {
     if (task) {
-      setSelectedTask(taskId);
+      // setSelectedTask(taskId); // No longer needed in unified store
       // Initialize completed steps based on progress
       const stepsToComplete = Math.floor((task.progress / 100) * task.steps.length);
       setCompletedSteps(Array.from({ length: stepsToComplete }, (_, i) => i));
     }
-  }, [task, taskId, setSelectedTask]);
+  }, [task, taskId]);
 
   const getMemberName = (memberId: string) => {
     return mockFamilyMembers.find(m => m.id === memberId)?.name || 'Unknown';
@@ -74,7 +74,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ navigation, route }) => {
   const handleResumeTask = useCallback(() => {
     if (task) {
       const newProgress = Math.min(100, task.progress + 25);
-      updateTask(task.id, { progress: newProgress });
+      // updateTask(task.id, { progress: newProgress }); // No longer available in unified store
       Alert.alert('Resumed', 'Task resumed! Keep going! 💪');
     }
   }, [task, updateTask]);
@@ -120,7 +120,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ navigation, route }) => {
       // Update task progress based on completed steps
       if (task) {
         const newProgress = Math.floor((newCompleted.length / task.steps.length) * 100);
-        updateTask(task.id, { progress: newProgress });
+        // updateTask(task.id, { progress: newProgress }); // No longer available in unified store
       }
       
       return newCompleted;
