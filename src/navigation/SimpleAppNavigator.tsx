@@ -74,7 +74,7 @@ import VoiceMessageScreen from '../screens/SafeRoom/VoiceMessageScreen';
 import MoodTestScreen from '../screens/SafeRoom/MoodTestScreen';
 
 // Import Tasks screens
-import TaskListScreen from '../screens/Tasks/TaskListScreen';
+import { TasksScreen } from '../screens/Tasks/TasksScreen';
 import AddTaskScreen from '../screens/Tasks/AddTaskScreen';
 import EditTaskScreen from '../screens/Tasks/EditTaskScreen';
 import AddPhotoTaskScreen from '../screens/Tasks/AddPhotoTaskScreen';
@@ -115,7 +115,7 @@ const HomeStack = () => (
 
 const TasksStack = () => (
   <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="TasksMain" component={TaskListScreen as any} />
+    <Stack.Screen name="TasksMain" component={TasksScreen as any} />
     <Stack.Screen name="TaskDetails" component={TaskDetails as any} />
 
     {/* Tasks creation screens */}
