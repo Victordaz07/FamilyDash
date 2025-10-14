@@ -5,6 +5,7 @@
 
 import { ACHIEVEMENTS, AchievementDefinition } from "@/features/achievements/definitions";
 import { pushUnlock, pushStats } from "@/services/achievementsSync";
+import { triggerAchievementUnlocked } from "@/services/notifications/triggers";
 
 export interface AchievementState {
   unlocked: boolean;
@@ -157,6 +158,9 @@ export const createAchievementsSlice = (set: any, get: any) => ({
     
     // Push to Firestore
     void pushUnlock(achId);
+    
+    // Trigger notification
+    triggerAchievementUnlocked(achId);
     
     // Show notification (future: use toast/confetti)
     console.log(`🏆 Achievement unlocked: ${def.title} (+${def.points} points)`);

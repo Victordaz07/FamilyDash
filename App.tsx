@@ -18,6 +18,7 @@ import { startTasksSync } from '@/services/tasksSync';
 import { startAchievementsSync } from '@/services/achievementsSync';
 import { analytics } from '@/analytics/events';
 import { useAppStore } from '@/store';
+import { scheduleDailyReminder, initializeNotificationChannels } from '@/services/notifications/expoNotifications';
 
 // Initialize Firebase configuration (centralized)
 import '@/services/firebase';
@@ -48,6 +49,9 @@ export default function App() {
     // Preload critical components on app start
     preloadCriticalComponents().catch(console.warn);
     
+    // Initialize notification channels (Android)
+    initializeNotificationChannels().catch(console.warn);
+    
     // Start Firestore sync for tasks, achievements, and notifications
     const stopTasksSync = startTasksSync();
     const stopAchievementsSync = startAchievementsSync();
@@ -55,6 +59,9 @@ export default function App() {
     
     // Emit login_day event for streak tracking
     analytics.loginDay();
+    
+    // Schedule daily reminder
+    scheduleDailyReminder().catch(console.warn);
     
     return () => { 
       if (stopTasksSync) stopTasksSync();
